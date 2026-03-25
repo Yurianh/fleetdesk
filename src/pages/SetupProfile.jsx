@@ -82,7 +82,14 @@ export default function SetupProfile() {
       const { data, error: fnErr } = await supabase.functions.invoke('create-checkout-session', {
         body: { plan, return_url: `${window.location.origin}/billing/success` },
       })
-      if (fnErr) throw fnErr
+      if (fnErr) {
+        let detail = fnErr.message
+        try {
+          const body = await fnErr.context?.json?.()
+          if (body?.error) detail = body.error
+        } catch {}
+        throw new Error(detail)
+      }
       window.location.href = data.url
     } catch (e) {
       setError(e.message || t('common.error'))
