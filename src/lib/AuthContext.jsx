@@ -8,13 +8,11 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       setLoading(false)
     })
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
     })
@@ -28,10 +26,8 @@ export function AuthProvider({ children }) {
   }
 
   const signUp = async (email, password) => {
-    const url = import.meta.env.VITE_SUPABASE_URL
-    const key = import.meta.env.VITE_SUPABASE_ANON_KEY
-    console.log('[signUp] URL:', JSON.stringify(url), 'len:', url?.length)
-    console.log('[signUp] KEY len:', key?.length, 'hasNewline:', key?.includes('\n') || key?.includes('\r'))
+    const url = (import.meta.env.VITE_SUPABASE_URL || '').trim()
+    const key = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim()
     const res = await fetch(`${url}/auth/v1/signup`, {
       method: 'POST',
       headers: {
