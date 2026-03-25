@@ -1,9 +1,27 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Truck } from 'lucide-react'
+import { Truck, Eye, EyeOff, Check, X } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useTranslation } from 'react-i18next'
+
+function getPasswordStrength(p) {
+  if (p.length === 0) return 0
+  if (p.length < 6) return 1
+  let score = 1
+  if (p.length >= 8) score++
+  if (/[A-Z]/.test(p)) score++
+  if (/[0-9]/.test(p)) score++
+  if (/[^A-Za-z0-9]/.test(p)) score++
+  return Math.min(score, 4)
+}
+
+const STRENGTH_LABEL = ['', 'Trop court', 'Faible', 'Moyen', 'Fort']
+const STRENGTH_COLOR = ['', 'bg-red-400', 'bg-orange-400', 'bg-yellow-400', 'bg-emerald-500']
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
 
 export default function Login() {
   const { signIn, signUp } = useAuth()
@@ -12,14 +30,35 @@ export default function Login() {
   const [mode, setMode] = useState('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
+  const [showPass, setShowPass] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
   const [loading, setLoading] = useState(false)
+  const [touched, setTouched] = useState({ email: false, password: false, confirm: false })
+
+  const strength = useMemo(() => getPasswordStrength(password), [password])
+  const emailValid = isValidEmail(email)
+  const confirmMatch = confirm === password && confirm.length > 0
+
+  function switchMode(m) {
+    setMode(m)
+    setError('')
+    setInfo('')
+    setPassword('')
+    setConfirm('')
+    setTouched({ email: false, password: false, confirm: false })
+  }
 
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
     setInfo('')
+    if (mode === 'signup' && password !== confirm) {
+      setError('Les mots de passe ne correspondent pas.')
+      return
+    }
     setLoading(true)
     try {
       if (mode === 'login') {
@@ -50,7 +89,7 @@ export default function Login() {
       className="min-h-screen flex flex-col items-center justify-center px-4 py-12"
       style={{ background: 'linear-gradient(135deg, #bfdbfe 0%, #d1fae5 45%, #fef3c7 100%)', backgroundAttachment: 'fixed' }}
     >
-      {/* Logo above card */}
+      {/* Logo */}
       <div className="flex items-center gap-2.5 mb-6">
         <div className="w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center shadow-sm">
           <Truck className="w-4 h-4 text-white" />
@@ -58,7 +97,7 @@ export default function Login() {
         <span className="text-[15px] font-semibold text-zinc-800 tracking-tight">FleetDesk</span>
       </div>
 
-      {/* Floating card */}
+      {/* Card */}
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-8">
         <h1 className="text-[17px] font-semibold text-zinc-900 mb-1">
           {mode === 'login' ? t('login.signIn') : t('login.createAccount')}
@@ -91,30 +130,112 @@ export default function Login() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
+
+          {/* Email */}
           <div>
             <label className="block text-xs font-medium text-zinc-500 mb-1.5">{t('login.email')}</label>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/25 focus:border-[#2563EB] transition-all duration-150"
-              placeholder={t('login.emailPlaceholder')}
-            />
+            <div className="relative">
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                onBlur={() => setTouched(t => ({ ...t, email: true }))}
+                required
+                className={`w-full bg-zinc-50 border rounded-xl px-3 py-2.5 pr-9 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 transition-all duration-150 ${
+                  touched.email && !emailValid
+                    ? 'border-red-300 focus:ring-red-200 focus:border-red-400'
+                    : touched.email && emailValid
+                    ? 'border-emerald-300 focus:ring-emerald-100 focus:border-emerald-400'
+                    : 'border-zinc-200 focus:ring-[#2563EB]/20 focus:border-[#2563EB]'
+                }`}
+                placeholder={t('login.emailPlaceholder')}
+              />
+              {touched.email && (
+                <span className="absolute right-3 top-1/2 -translate-y-1/2">
+                  {emailValid
+                    ? <Check className="w-3.5 h-3.5 text-emerald-500" />
+                    : <X className="w-3.5 h-3.5 text-red-400" />}
+                </span>
+              )}
+            </div>
           </div>
 
+          {/* Password */}
           <div>
             <label className="block text-xs font-medium text-zinc-500 mb-1.5">{t('login.password')}</label>
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-              minLength={6}
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/25 focus:border-[#2563EB] transition-all duration-150"
-              placeholder={t('login.passwordPlaceholder')}
-            />
+            <div className="relative">
+              <input
+                type={showPass ? 'text' : 'password'}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                onBlur={() => setTouched(t => ({ ...t, password: true }))}
+                required
+                minLength={6}
+                className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 pr-9 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all duration-150"
+                placeholder={t('login.passwordPlaceholder')}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPass(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors"
+                tabIndex={-1}
+              >
+                {showPass ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+              </button>
+            </div>
+
+            {/* Strength bar — signup only */}
+            {mode === 'signup' && password.length > 0 && (
+              <div className="mt-2">
+                <div className="flex gap-1 mb-1">
+                  {[1,2,3,4].map(i => (
+                    <div
+                      key={i}
+                      className={`h-1 flex-1 rounded-full transition-all duration-200 ${i <= strength ? STRENGTH_COLOR[strength] : 'bg-zinc-100'}`}
+                    />
+                  ))}
+                </div>
+                <p className={`text-[11px] ${strength <= 1 ? 'text-red-400' : strength === 2 ? 'text-orange-400' : strength === 3 ? 'text-yellow-500' : 'text-emerald-500'}`}>
+                  {STRENGTH_LABEL[strength]}
+                </p>
+              </div>
+            )}
           </div>
+
+          {/* Confirm password — signup only */}
+          {mode === 'signup' && (
+            <div>
+              <label className="block text-xs font-medium text-zinc-500 mb-1.5">Confirmer le mot de passe</label>
+              <div className="relative">
+                <input
+                  type={showConfirm ? 'text' : 'password'}
+                  value={confirm}
+                  onChange={e => setConfirm(e.target.value)}
+                  onBlur={() => setTouched(t => ({ ...t, confirm: true }))}
+                  required
+                  className={`w-full bg-zinc-50 border rounded-xl px-3 py-2.5 pr-9 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 transition-all duration-150 ${
+                    touched.confirm && confirm.length > 0 && !confirmMatch
+                      ? 'border-red-300 focus:ring-red-200 focus:border-red-400'
+                      : touched.confirm && confirmMatch
+                      ? 'border-emerald-300 focus:ring-emerald-100 focus:border-emerald-400'
+                      : 'border-zinc-200 focus:ring-[#2563EB]/20 focus:border-[#2563EB]'
+                  }`}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showConfirm ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+              {touched.confirm && confirm.length > 0 && !confirmMatch && (
+                <p className="text-[11px] text-red-400 mt-1">Les mots de passe ne correspondent pas.</p>
+              )}
+            </div>
+          )}
 
           {error && (
             <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2">{error}</p>
@@ -125,7 +246,7 @@ export default function Login() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || (mode === 'signup' && password !== confirm && confirm.length > 0)}
             className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
           >
             {loading
@@ -137,7 +258,7 @@ export default function Login() {
         <p className="text-xs text-zinc-400 text-center mt-5">
           {mode === 'login' ? t('login.noAccount') : t('login.hasAccount')}{' '}
           <button
-            onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); setInfo('') }}
+            onClick={() => switchMode(mode === 'login' ? 'signup' : 'login')}
             className="text-[#2563EB] hover:underline font-semibold"
           >
             {mode === 'login' ? t('login.signUp') : t('login.signInBtn')}
@@ -145,7 +266,6 @@ export default function Login() {
         </p>
       </div>
 
-      {/* Footer */}
       <p className="mt-6 text-xs text-zinc-500/70">© 2025 FleetDesk</p>
     </div>
   )
