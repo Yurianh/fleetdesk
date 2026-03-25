@@ -24,16 +24,24 @@ export default function BillingSuccess() {
     async function confirm() {
       try {
         if (sessionId) {
-          // Direct verification — no webhook timing dependency
-          const { data, error } = await supabase.functions.invoke('confirm-payment', {
-            body: { session_id: sessionId },
+          // Direct verification — use fetch so we see the real error body
+          const { data: { session: authSession } } = await supabase.auth.getSession()
+          const token = authSession?.access_token
+          const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim()
+          const supabaseKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim()
+
+          const resp = await fetch(`${supabaseUrl}/functions/v1/confirm-payment`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+              'apikey': supabaseKey,
+            },
+            body: JSON.stringify({ session_id: sessionId }),
           })
-          if (error) {
-            let detail = error.message
-            try { const b = await error.context?.json?.(); if (b?.error) detail = b.error } catch {}
-            throw new Error(detail)
-          }
-          if (!data?.success) throw new Error('Paiement non confirmé.')
+          const json = await resp.json()
+          if (!resp.ok) throw new Error(json.error || `Erreur ${resp.status}`)
+          const data = json
 
           // Refresh user to get updated metadata
           const { data: { user } } = await supabase.auth.getUser()

@@ -46,7 +46,12 @@ Deno.serve(async (req) => {
     }
 
     // Security: session must belong to the calling user
-    if (user_id !== user.id) {
+    // Match by user_id (normal case) or by customer email (re-registration edge case)
+    const sessionBelongsToUser =
+      user_id === user.id ||
+      session.customer_email?.toLowerCase() === user.email?.toLowerCase()
+    if (!sessionBelongsToUser) {
+      console.error('[confirm-payment] mismatch — session user_id:', user_id, 'caller:', user.id, 'customer_email:', session.customer_email, 'user email:', user.email)
       return new Response(JSON.stringify({ error: 'Session invalide' }), { status: 403, headers: corsHeaders })
     }
 
