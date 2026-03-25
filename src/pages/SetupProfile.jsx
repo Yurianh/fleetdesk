@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next'
 
 const FLEET_SIZE_KEYS = ['1-5', '6-20', '21-50', '50+']
 
+const GRADIENT = 'linear-gradient(135deg, #bfdbfe 0%, #d1fae5 45%, #fef3c7 100%)'
+
 function StepIndicator({ current, total }) {
   return (
     <div className="flex items-center gap-2 mb-8 justify-center">
@@ -14,7 +16,7 @@ function StepIndicator({ current, total }) {
         <div
           key={i}
           className={`h-1 rounded-full transition-all duration-300 ${
-            i <= current ? 'bg-[#2563EB] w-8' : 'bg-white/10 w-4'
+            i <= current ? 'bg-[#2563EB] w-8' : 'bg-zinc-200 w-4'
           }`}
         />
       ))}
@@ -67,7 +69,6 @@ export default function SetupProfile() {
     setError('')
     try {
       sessionStorage.removeItem('selected_plan')
-      // Save profile data first (without onboarding_complete — webhook sets that)
       const { error: profileErr } = await supabase.auth.updateUser({
         data: {
           full_name: name.trim(),
@@ -78,7 +79,6 @@ export default function SetupProfile() {
       })
       if (profileErr) throw profileErr
 
-      // All plans go through Stripe Checkout
       const { data, error: fnErr } = await supabase.functions.invoke('create-checkout-session', {
         body: { plan, return_url: `${window.location.origin}/billing/success` },
       })
@@ -98,30 +98,32 @@ export default function SetupProfile() {
     }
   }
 
+  const inputCls = "w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all duration-150"
+
   return (
-    <div className="min-h-screen bg-[#0f172a] flex items-center justify-center px-4 py-12">
+    <div
+      className="min-h-screen flex items-center justify-center px-4 py-12"
+      style={{ background: GRADIENT, backgroundAttachment: 'fixed' }}
+    >
       <div className="w-full max-w-sm">
 
         {/* Logo */}
-        <div className="flex items-center gap-3 mb-8 justify-center">
-          <div className="w-9 h-9 bg-[#2563EB] rounded-xl flex items-center justify-center shadow-lg">
-            <Truck className="w-[17px] h-[17px] text-white" />
+        <div className="flex items-center gap-2.5 mb-6 justify-center select-none pointer-events-none">
+          <div className="w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center shadow-sm">
+            <Truck className="w-4 h-4 text-white" />
           </div>
-          <div className="leading-none">
-            <p className="text-[15px] font-semibold text-white tracking-tight">FleetDesk</p>
-            <p className="text-[11px] text-slate-500 mt-[2px]">{t('login.tagline')}</p>
-          </div>
+          <span className="text-[15px] font-semibold text-zinc-800 tracking-tight">FleetDesk</span>
         </div>
 
-        <div className={`bg-slate-800/60 border border-white/[0.08] rounded-2xl p-8 ${step === 2 ? 'max-w-lg mx-auto' : ''}`}>
+        <div className={`bg-white rounded-2xl shadow-2xl p-8 ${step === 2 ? 'max-w-lg mx-auto' : ''}`}>
 
           {/* Step 0: Name */}
           {step === 0 && (
             <>
               <StepIndicator current={0} total={3} />
               <p className="text-xs font-medium text-[#2563EB] mb-1">{t('onboarding.step1of3')}</p>
-              <h1 className="text-lg font-semibold text-white mb-1">{t('onboarding.whatIsYourName')}</h1>
-              <p className="text-sm text-slate-400 mb-6">{t('onboarding.nameVisible')}</p>
+              <h1 className="text-[17px] font-semibold text-zinc-900 mb-1">{t('onboarding.whatIsYourName')}</h1>
+              <p className="text-sm text-zinc-400 mb-6">{t('onboarding.nameVisible')}</p>
 
               <input
                 type="text"
@@ -129,13 +131,13 @@ export default function SetupProfile() {
                 onChange={e => setName(e.target.value)}
                 autoFocus
                 placeholder={t('onboarding.namePlaceholder')}
-                className="w-full bg-slate-900/60 border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/50 transition mb-4"
+                className={inputCls + ' mb-4'}
               />
 
               <button
                 onClick={() => name.trim() && setStep(1)}
                 disabled={!name.trim()}
-                className="w-full flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg py-2.5 transition-colors"
+                className="w-full flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
               >
                 {t('common.continue')} <ChevronRight className="w-4 h-4" />
               </button>
@@ -147,11 +149,11 @@ export default function SetupProfile() {
             <>
               <StepIndicator current={1} total={3} />
               <p className="text-xs font-medium text-[#2563EB] mb-1">{t('onboarding.step2of3')}</p>
-              <h1 className="text-lg font-semibold text-white mb-1">{t('onboarding.yourFleet')}</h1>
-              <p className="text-sm text-slate-400 mb-6">{t('onboarding.fleetHelp')}</p>
+              <h1 className="text-[17px] font-semibold text-zinc-900 mb-1">{t('onboarding.yourFleet')}</h1>
+              <p className="text-sm text-zinc-400 mb-6">{t('onboarding.fleetHelp')}</p>
 
               <div className="mb-4">
-                <label className="flex items-center gap-1.5 text-xs font-medium text-slate-400 mb-1.5">
+                <label className="flex items-center gap-1.5 text-xs font-medium text-zinc-500 mb-1.5">
                   <Building2 className="w-3.5 h-3.5" /> {t('onboarding.companyName')}
                 </label>
                 <input
@@ -160,12 +162,12 @@ export default function SetupProfile() {
                   onChange={e => setCompany(e.target.value)}
                   autoFocus
                   placeholder={t('onboarding.companyPlaceholder')}
-                  className="w-full bg-slate-900/60 border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/50 transition"
+                  className={inputCls}
                 />
               </div>
 
               <div className="mb-6">
-                <label className="flex items-center gap-1.5 text-xs font-medium text-slate-400 mb-2">
+                <label className="flex items-center gap-1.5 text-xs font-medium text-zinc-500 mb-2">
                   <Users className="w-3.5 h-3.5" /> {t('onboarding.fleetSize')}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -174,10 +176,10 @@ export default function SetupProfile() {
                       key={key}
                       type="button"
                       onClick={() => setFleetSize(key)}
-                      className={`text-left px-3 py-2.5 rounded-lg border text-xs transition-all ${
+                      className={`text-left px-3 py-2.5 rounded-xl border text-xs transition-all duration-150 ${
                         fleetSize === key
-                          ? 'border-[#2563EB] bg-[#2563EB]/10 text-white'
-                          : 'border-white/[0.08] bg-slate-900/40 text-slate-400 hover:border-white/20 hover:text-slate-200'
+                          ? 'border-[#2563EB] bg-[#2563EB]/5 text-zinc-900'
+                          : 'border-zinc-200 bg-zinc-50 text-zinc-500 hover:border-zinc-300 hover:text-zinc-700'
                       }`}
                     >
                       <p className="font-semibold">{t(`onboarding.fleetSizes.${key}.label`)}</p>
@@ -190,14 +192,14 @@ export default function SetupProfile() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setStep(googleName ? 1 : 0)}
-                  className="px-4 py-2.5 text-sm text-slate-400 hover:text-white transition-colors"
+                  className="px-4 py-2.5 text-sm text-zinc-400 hover:text-zinc-700 transition-colors"
                 >
                   {t('common.back')}
                 </button>
                 <button
                   onClick={() => setStep(2)}
                   disabled={!company.trim() || !fleetSize}
-                  className="flex-1 flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg py-2.5 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
                 >
                   {t('common.continue')} <ChevronRight className="w-4 h-4" />
                 </button>
@@ -210,8 +212,8 @@ export default function SetupProfile() {
             <>
               <StepIndicator current={2} total={3} />
               <p className="text-xs font-medium text-[#2563EB] mb-1">{t('onboarding.step3of3')}</p>
-              <h1 className="text-lg font-semibold text-white mb-1">{t('onboarding.choosePlan')}</h1>
-              <p className="text-sm text-slate-400 mb-6">{t('onboarding.choosePlanDesc')}</p>
+              <h1 className="text-[17px] font-semibold text-zinc-900 mb-1">{t('onboarding.choosePlan')}</h1>
+              <p className="text-sm text-zinc-400 mb-6">{t('onboarding.choosePlanDesc')}</p>
 
               <div className="space-y-3 mb-6">
                 {plans.map(p => {
@@ -222,36 +224,36 @@ export default function SetupProfile() {
                       key={p.id}
                       type="button"
                       onClick={() => setPlan(p.id)}
-                      className={`w-full text-left rounded-xl border p-4 transition-all ${
+                      className={`w-full text-left rounded-xl border p-4 transition-all duration-150 ${
                         selected
-                          ? 'border-[#2563EB] bg-[#2563EB]/10'
-                          : 'border-white/[0.08] bg-slate-900/40 hover:border-white/20'
+                          ? 'border-[#2563EB] bg-[#2563EB]/5'
+                          : 'border-zinc-200 bg-white hover:border-zinc-300'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2 mb-2.5">
                         <div className="flex items-center gap-2">
-                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${selected ? 'bg-[#2563EB]' : 'bg-white/[0.06]'}`}>
-                            <Icon className="w-3.5 h-3.5 text-white" />
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${selected ? 'bg-[#2563EB]' : 'bg-zinc-100'}`}>
+                            <Icon className={`w-3.5 h-3.5 ${selected ? 'text-white' : 'text-zinc-500'}`} />
                           </div>
                           <div>
-                            <span className="text-sm font-semibold text-white">{t(`marketing.pricing.plans.${p.id}.name`)}</span>
+                            <span className="text-sm font-semibold text-zinc-900">{t(`marketing.pricing.plans.${p.id}.name`)}</span>
                             {p.recommended && (
-                              <span className="ml-2 text-[10px] font-bold text-[#2563EB] bg-[#2563EB]/15 px-1.5 py-0.5 rounded-full">
+                              <span className="ml-2 text-[10px] font-bold text-[#2563EB] bg-[#2563EB]/10 px-1.5 py-0.5 rounded-full">
                                 {t('onboarding.recommended')}
                               </span>
                             )}
                           </div>
                         </div>
                         <div className="text-right flex-shrink-0">
-                          <span className="text-sm font-bold text-white">{p.price}</span>
-                          {p.period && <span className="text-[11px] text-slate-400">{p.period}</span>}
+                          <span className="text-sm font-bold text-zinc-900">{p.price}</span>
+                          {p.period && <span className="text-[11px] text-zinc-400">{p.period}</span>}
                         </div>
                       </div>
                       <ul className="space-y-1">
                         {Array.isArray(p.features) && p.features.map((f, i) => (
                           <li key={i} className="flex items-center gap-1.5">
-                            <Check className={`w-3 h-3 flex-shrink-0 ${selected ? 'text-[#2563EB]' : 'text-slate-600'}`} />
-                            <span className="text-[11px] text-slate-400">{f}</span>
+                            <Check className={`w-3 h-3 flex-shrink-0 ${selected ? 'text-[#2563EB]' : 'text-zinc-300'}`} />
+                            <span className="text-[11px] text-zinc-500">{f}</span>
                           </li>
                         ))}
                       </ul>
@@ -261,20 +263,20 @@ export default function SetupProfile() {
               </div>
 
               {error && (
-                <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 mb-4">{error}</p>
+                <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2 mb-4">{error}</p>
               )}
 
               <div className="flex gap-2">
                 <button
                   onClick={() => setStep(1)}
-                  className="px-4 py-2.5 text-sm text-slate-400 hover:text-white transition-colors"
+                  className="px-4 py-2.5 text-sm text-zinc-400 hover:text-zinc-700 transition-colors"
                 >
                   {t('common.back')}
                 </button>
                 <button
                   onClick={finishOnboarding}
                   disabled={loading}
-                  className="flex-1 flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg py-2.5 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
                 >
                   {loading
                     ? t('onboarding.saving')
@@ -288,16 +290,16 @@ export default function SetupProfile() {
           {/* Step 3: Done */}
           {step === 3 && (
             <div className="text-center py-4">
-              <div className="w-14 h-14 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle2 className="w-7 h-7 text-emerald-400" />
+              <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle2 className="w-7 h-7 text-emerald-500" />
               </div>
-              <h1 className="text-lg font-semibold text-white mb-2">{t('onboarding.workspaceReady')}</h1>
-              <p className="text-sm text-slate-400 mb-8">
+              <h1 className="text-[17px] font-semibold text-zinc-900 mb-2">{t('onboarding.workspaceReady')}</h1>
+              <p className="text-sm text-zinc-400 mb-8">
                 {t('onboarding.welcome', { name: name.split(' ')[0] })}
               </p>
               <button
                 onClick={() => navigate('/Dashboard', { replace: true })}
-                className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium rounded-lg py-2.5 transition-colors"
+                className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
               >
                 {t('onboarding.goToDashboard')}
               </button>
@@ -305,6 +307,8 @@ export default function SetupProfile() {
           )}
 
         </div>
+
+        <p className="mt-6 text-xs text-zinc-500/70 text-center">© 2025 FleetDesk</p>
       </div>
     </div>
   )
