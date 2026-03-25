@@ -16,7 +16,19 @@ export function AuthProvider({ children }) {
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+      const user = session?.user ?? null
+      setUser(user)
+      // Auto-activate org membership on every sign-in for collaborators.
+      // Covers cases where the join page was broken, skipped, or the update failed.
+      if (user?.user_metadata?.org_id) {
+        supabase
+          .from('org_members')
+          .update({ status: 'active', user_id: user.id })
+          .eq('email', user.email)
+          .eq('org_id', user.user_metadata.org_id)
+          .neq('status', 'active')
+          .then(() => {})
+      }
     })
 
     return () => subscription.unsubscribe()
