@@ -30,7 +30,8 @@ export function AuthProvider({ children }) {
   const signUp = async (email, password) => {
     const url = import.meta.env.VITE_SUPABASE_URL
     const key = import.meta.env.VITE_SUPABASE_ANON_KEY
-    console.log('[signUp] URL:', JSON.stringify(url), 'length:', url?.length, 'type:', typeof url)
+    console.log('[signUp] URL:', JSON.stringify(url), 'len:', url?.length)
+    console.log('[signUp] KEY len:', key?.length, 'hasNewline:', key?.includes('\n') || key?.includes('\r'))
     const res = await fetch(`${url}/auth/v1/signup`, {
       method: 'POST',
       headers: {
