@@ -28,8 +28,18 @@ export function AuthProvider({ children }) {
   }
 
   const signUp = async (email, password) => {
-    const { error } = await supabase.auth.signUp({ email, password })
-    if (error) throw error
+    const url = import.meta.env.VITE_SUPABASE_URL
+    const key = import.meta.env.VITE_SUPABASE_ANON_KEY
+    const res = await fetch(`${url}/auth/v1/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': key,
+      },
+      body: JSON.stringify({ email, password }),
+    })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.message || data.msg || 'Impossible de créer le compte.')
   }
 
   const signOut = () => supabase.auth.signOut()
