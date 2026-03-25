@@ -152,7 +152,7 @@ export default function Login() {
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                onBlur={() => setTouched(t => ({ ...t, email: true }))}
+                onBlur={() => setTouched(prev => ({ ...prev, email: true }))}
                 required
                 className={`w-full bg-zinc-50 border rounded-xl px-3 py-2.5 pr-9 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 transition-all duration-150 ${
                   touched.email && !emailValid
@@ -181,7 +181,7 @@ export default function Login() {
                 type={showPass ? 'text' : 'password'}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                onBlur={() => setTouched(t => ({ ...t, password: true }))}
+                onBlur={() => setTouched(prev => ({ ...prev, password: true }))}
                 required
                 minLength={6}
                 className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 pr-9 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all duration-150"
@@ -224,7 +224,7 @@ export default function Login() {
                   type={showConfirm ? 'text' : 'password'}
                   value={confirm}
                   onChange={e => setConfirm(e.target.value)}
-                  onBlur={() => setTouched(t => ({ ...t, confirm: true }))}
+                  onBlur={() => setTouched(prev => ({ ...prev, confirm: true }))}
                   required
                   className={`w-full bg-zinc-50 border rounded-xl px-3 py-2.5 pr-9 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 transition-all duration-150 ${
                     touched.confirm && confirm.length > 0 && !confirmMatch
