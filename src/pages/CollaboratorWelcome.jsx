@@ -34,7 +34,7 @@ export default function CollaboratorWelcome() {
 
       await supabase
         .from('org_members')
-        .update({ status: 'active', joined_at: new Date().toISOString() })
+        .update({ status: 'active', joined_at: new Date().toISOString(), user_id: user.id })
         .eq('email', user.email)
         .eq('status', 'pending')
 
