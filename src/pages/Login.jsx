@@ -68,8 +68,21 @@ export default function Login() {
         await signUp(email, password)
         setInfo(t('login.emailConfirm'))
       }
-    } catch {
-      setError(mode === 'login' ? t('login.wrongCredentials') : t('login.createError'))
+    } catch (err) {
+      if (mode === 'login') {
+        setError(t('login.wrongCredentials'))
+      } else {
+        const msg = err?.message?.toLowerCase() || ''
+        if (msg.includes('already') || msg.includes('registered') || msg.includes('existe')) {
+          setError('Cet email est déjà associé à un compte. Connectez-vous plutôt.')
+        } else if (msg.includes('password') || msg.includes('mot de passe')) {
+          setError('Le mot de passe doit contenir au moins 6 caractères.')
+        } else if (msg.includes('email') || msg.includes('invalid')) {
+          setError('Adresse email invalide.')
+        } else {
+          setError(t('login.createError'))
+        }
+      }
     } finally {
       setLoading(false)
     }
