@@ -134,7 +134,7 @@ export default function CollaboratorWelcome() {
         <div className="bg-zinc-50 rounded-xl p-3.5 mb-5 space-y-2">
           {[
             'Accès complet à la flotte partagée',
-            'Actions tracées dans le journal d'activité',
+            "Actions tracées dans le journal d'activité",
             'Connexion avec votre email et ce mot de passe',
           ].map(item => (
             <div key={item} className="flex items-center gap-2">
