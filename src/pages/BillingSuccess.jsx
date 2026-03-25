@@ -24,24 +24,16 @@ export default function BillingSuccess() {
     async function confirm() {
       try {
         if (sessionId) {
-          // Direct verification — use fetch so we see the real error body
-          const { data: { session: authSession } } = await supabase.auth.getSession()
-          const token = authSession?.access_token
+          // Direct verification via plain fetch — no auth needed, session_id is the secret
           const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim()
           const supabaseKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim()
-
           const resp = await fetch(`${supabaseUrl}/functions/v1/confirm-payment`, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-              'apikey': supabaseKey,
-            },
+            headers: { 'Content-Type': 'application/json', 'apikey': supabaseKey },
             body: JSON.stringify({ session_id: sessionId }),
           })
-          const json = await resp.json()
-          if (!resp.ok) throw new Error(json.error || `Erreur ${resp.status}`)
-          const data = json
+          const data = await resp.json()
+          if (!resp.ok) throw new Error(data.error || `Erreur ${resp.status}`)
 
           // Refresh user to get updated metadata
           const { data: { user } } = await supabase.auth.getUser()

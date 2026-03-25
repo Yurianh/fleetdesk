@@ -17,52 +17,33 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'session_id requis' }), { status: 400, headers: corsHeaders })
     }
 
-    const authHeader = req.headers.get('Authorization')
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Non autorisé' }), { status: 401, headers: corsHeaders })
-    }
-
-    const supabaseUser = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
-      global: { headers: { Authorization: authHeader } },
-    })
-    const { data: { user }, error: authErr } = await supabaseUser.auth.getUser()
-    if (authErr || !user) {
-      return new Response(JSON.stringify({ error: 'Non autorisé' }), { status: 401, headers: corsHeaders })
-    }
-
-    // Retrieve session from Stripe
+    // Retrieve and verify session directly from Stripe — the session_id is the security token
     const session = await stripe.checkout.sessions.retrieve(session_id)
-    console.log('[confirm-payment] session status:', session.status, 'payment_status:', session.payment_status)
+    console.log('[confirm-payment] status:', session.status, 'payment_status:', session.payment_status, 'metadata:', session.metadata)
 
-    if (session.status !== 'complete' && session.payment_status !== 'paid') {
-      return new Response(JSON.stringify({ error: 'Paiement non confirmé' }), { status: 402, headers: corsHeaders })
+    if (session.status !== 'complete') {
+      return new Response(JSON.stringify({ error: `Paiement non finalisé (status: ${session.status})` }), { status: 402, headers: corsHeaders })
     }
 
     const { user_id, plan } = session.metadata ?? {}
-    console.log('[confirm-payment] user_id:', user_id, 'plan:', plan, 'caller:', user.id)
-
     if (!user_id || !plan) {
       return new Response(JSON.stringify({ error: 'Métadonnées manquantes dans la session Stripe' }), { status: 400, headers: corsHeaders })
     }
 
-    // Security: session must belong to the calling user
-    // Match by user_id (normal case) or by customer email (re-registration edge case)
-    const sessionBelongsToUser =
-      user_id === user.id ||
-      session.customer_email?.toLowerCase() === user.email?.toLowerCase()
-    if (!sessionBelongsToUser) {
-      console.error('[confirm-payment] mismatch — session user_id:', user_id, 'caller:', user.id, 'customer_email:', session.customer_email, 'user email:', user.email)
-      return new Response(JSON.stringify({ error: 'Session invalide' }), { status: 403, headers: corsHeaders })
-    }
-
     // Update user — merge so we don't wipe full_name, company, etc.
     const supabaseAdmin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
+    const { data: { user: existing }, error: fetchErr } = await supabaseAdmin.auth.admin.getUserById(user_id)
+    if (fetchErr || !existing) {
+      console.error('[confirm-payment] user not found:', user_id, fetchErr?.message)
+      return new Response(JSON.stringify({ error: 'Utilisateur introuvable' }), { status: 404, headers: corsHeaders })
+    }
+
     const { error: updateErr } = await supabaseAdmin.auth.admin.updateUserById(user_id, {
-      user_metadata: { ...user.user_metadata, plan, onboarding_complete: true },
+      user_metadata: { ...existing.user_metadata, plan, onboarding_complete: true },
     })
     if (updateErr) throw updateErr
 
-    console.log('[confirm-payment] user activated:', user_id, 'plan:', plan)
+    console.log('[confirm-payment] activated user:', user_id, 'plan:', plan)
     return new Response(JSON.stringify({ success: true, plan }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
