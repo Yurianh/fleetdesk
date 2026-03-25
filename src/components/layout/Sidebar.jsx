@@ -45,7 +45,7 @@ function NavItem({ item, isActive, isCollapsed, onMobileClose }) {
 // ─── Sidebar ───────────────────────────────────────────────────────────────
 export default function Sidebar({ open, onToggle }) {
   const location = useLocation();
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const { t } = useTranslation();
 
