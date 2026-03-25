@@ -11,6 +11,7 @@ import { useOrgMembers, useInviteMember, useRemoveMember } from '@/lib/useOrg'
 import { toast } from 'sonner'
 import PageHeader from '@/components/shared/PageHeader'
 import { usePageTitle } from '@/lib/usePageTitle'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const SECTIONS = [
   { id: 'profile',  icon: User,       labelKey: 'settings.profile' },
@@ -301,14 +302,15 @@ export default function Settings() {
                           className="w-full pl-8 pr-3 py-2 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30"
                         />
                       </div>
-                      <select
-                        value={inviteRole}
-                        onChange={e => setInviteRole(e.target.value)}
-                        className="border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-700 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30"
-                      >
-                        <option value="member">Membre</option>
-                        <option value="admin">Admin</option>
-                      </select>
+                      <Select value={inviteRole} onValueChange={setInviteRole}>
+                        <SelectTrigger className="w-[110px] border-zinc-200 text-sm text-zinc-700 rounded-lg h-[38px] focus:ring-[#2563EB]/30">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="member">Membre</SelectItem>
+                          <SelectItem value="admin">Admin</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <button
                         onClick={async () => {
                           if (!inviteEmail) return
@@ -319,7 +321,7 @@ export default function Settings() {
                           } catch (e) { toast.error(e.message) }
                         }}
                         disabled={inviteMember.isPending || !inviteEmail}
-                        className="flex items-center gap-1.5 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-40 text-white text-sm font-medium rounded-lg px-4 py-2 transition-colors"
+                        className="flex items-center gap-1.5 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:bg-zinc-300 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg px-4 py-2 transition-colors h-[38px]"
                       >
                         {inviteMember.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
                         Inviter
