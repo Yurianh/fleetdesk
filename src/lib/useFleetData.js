@@ -1,10 +1,28 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from './supabase'
 
-async function uid() {
+async function orgUid() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
-  return user.id
+  // Collaborators write under org owner's user_id for unified data scoping
+  return user.user_metadata?.org_id || user.id
+}
+
+async function logActivity(action, entityType, entityId, entityLabel) {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    const orgId = user.user_metadata?.org_id || user.id
+    await supabase.from('activity_log').insert({
+      org_id: orgId,
+      user_id: user.id,
+      user_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Utilisateur',
+      action,
+      entity_type: entityType,
+      entity_id: String(entityId || ''),
+      entity_label: String(entityLabel || ''),
+    })
+  } catch { /* silent — logging must never break the main action */ }
 }
 
 // ── Queries ──────────────────────────────────────────────────────
@@ -111,98 +129,117 @@ export function useMaintenanceSchedules() {
 // ── Mutations ─────────────────────────────────────────────────────
 
 export async function createVehicle(data) {
-  const { error } = await supabase.from('vehicles').insert({ ...data, user_id: await uid() })
+  const label = data.plate || data.make || 'Véhicule'
+  const { data: result, error } = await supabase.from('vehicles').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
 }
 
 export async function createDriver(data) {
-  const { error } = await supabase.from('drivers').insert({ ...data, user_id: await uid() })
+  const label = data.first_name ? `${data.first_name} ${data.last_name || ''}`.trim() : 'Conducteur'
+  const { data: result, error } = await supabase.from('drivers').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
 }
 
 export async function createAssignment(data) {
-  const { error } = await supabase.from('assignments').insert({ ...data, user_id: await uid() })
+  const label = 'Affectation'
+  const { data: result, error } = await supabase.from('assignments').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
 }
 
 export async function createMileageEntry(data) {
-  const { error } = await supabase.from('mileage_entries').insert({ ...data, user_id: await uid() })
+  const label = 'Relevé kilométrique'
+  const { data: result, error } = await supabase.from('mileage_entries').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
 }
 
 export async function createMaintenanceRecord(data) {
-  const { error } = await supabase.from('maintenance_records').insert({ ...data, user_id: await uid() })
+  const label = data.type || 'Maintenance'
+  const { data: result, error } = await supabase.from('maintenance_records').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
 }
 
 export async function createTechnicalInspection(data) {
-  const { error } = await supabase.from('technical_inspections').insert({ ...data, user_id: await uid() })
+  const label = 'Contrôle technique'
+  const { data: result, error } = await supabase.from('technical_inspections').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
 }
 
 export async function createWashRecord(data) {
-  const { error } = await supabase.from('wash_records').insert({ ...data, user_id: await uid() })
+  const label = 'Lavage'
+  const { data: result, error } = await supabase.from('wash_records').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
 }
 
 export async function createMaintenanceSchedule(data) {
-  const { error } = await supabase.from('maintenance_schedules').insert({ ...data, user_id: await uid() })
+  const label = data.task || 'Planning maintenance'
+  const { data: result, error } = await supabase.from('maintenance_schedules').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
 }
 
 export async function updateMaintenanceSchedule(id, data) {
   const { error } = await supabase.from('maintenance_schedules').update(data).eq('id', id)
   if (error) throw error
+  logActivity('updateMaintenanceSchedule', 'maintenance_schedule', id, '')
 }
 
 export async function deleteMaintenanceSchedule(id) {
   const { error } = await supabase.from('maintenance_schedules').delete().eq('id', id)
   if (error) throw error
+  logActivity('deleteMaintenanceSchedule', 'maintenance_schedules', id, '')
 }
 
 export async function updateDriver(id, data) {
   const { error } = await supabase.from('drivers').update(data).eq('id', id)
   if (error) throw error
+  logActivity('updateDriver', 'driver', id, '')
 }
 
 export async function deleteMileageEntry(id) {
   const { error } = await supabase.from('mileage_entries').delete().eq('id', id)
   if (error) throw error
+  logActivity('deleteMileageEntry', 'mileage_entries', id, '')
 }
 
 export async function deleteAssignment(id) {
   const { error } = await supabase.from('assignments').delete().eq('id', id)
   if (error) throw error
+  logActivity('deleteAssignment', 'assignments', id, '')
 }
 
 export async function updateTechnicalInspection(id, data) {
   const { error } = await supabase.from('technical_inspections').update(data).eq('id', id)
   if (error) throw error
+  logActivity('updateTechnicalInspection', 'inspection', id, '')
 }
 
 export async function deleteTechnicalInspection(id) {
   const { error } = await supabase.from('technical_inspections').delete().eq('id', id)
   if (error) throw error
+  logActivity('deleteTechnicalInspection', 'technical_inspections', id, '')
 }
 
 export async function updateWashRecord(id, data) {
   const { error } = await supabase.from('wash_records').update(data).eq('id', id)
   if (error) throw error
+  logActivity('updateWashRecord', 'wash', id, '')
 }
 
 export async function deleteWashRecord(id) {
   const { error } = await supabase.from('wash_records').delete().eq('id', id)
   if (error) throw error
+  logActivity('deleteWashRecord', 'wash_records', id, '')
 }
 
 export async function updateMaintenanceRecord(id, data) {
   const { error } = await supabase.from('maintenance_records').update(data).eq('id', id)
   if (error) throw error
+  logActivity('updateMaintenanceRecord', 'maintenance', id, '')
 }
 
 export async function deleteMaintenanceRecord(id) {
   const { error } = await supabase.from('maintenance_records').delete().eq('id', id)
   if (error) throw error
+  logActivity('deleteMaintenanceRecord', 'maintenance_records', id, '')
 }
 
 // ── Helpers ───────────────────────────────────────────────────────

@@ -606,6 +606,7 @@
     "appearance": "Apparence",
     "appearanceTitle": "Thème",
     "lightMode": "Clair",
-    "darkMode": "Sombre"
+    "darkMode": "Sombre",
+    "team": "Équipe"
   }
 }

@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Truck, Users, ArrowLeftRight,
   Gauge, Wrench, ClipboardCheck, Droplets,
-  X, ChevronLeft, ChevronRight, LogOut, Sun, Moon, Settings,
+  X, ChevronLeft, ChevronRight, LogOut, Sun, Moon, Settings, History,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/AuthContext';
@@ -192,6 +192,21 @@ export default function Sidebar({ open, onToggle }) {
           <p className={cn('text-[10px] text-zinc-400 font-medium select-none', isCollapsed && 'lg:hidden')}>
             v1.0
           </p>
+          <Link
+            to="/Activity"
+            onClick={() => { if (window.innerWidth < 1024) onToggle() }}
+            className={cn(
+              'flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-xs font-medium',
+              'transition-colors',
+              isActive('/Activity')
+                ? 'bg-zinc-100 text-zinc-900'
+                : 'text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50',
+              isCollapsed && 'lg:justify-center lg:px-0'
+            )}
+          >
+            <History className={cn('w-[14px] h-[14px] flex-shrink-0', isActive('/Activity') ? 'text-[#2563EB]' : '')} />
+            <span className={cn(isCollapsed && 'lg:hidden')}>Activité</span>
+          </Link>
           <Link
             to="/Settings"
             onClick={() => { if (window.innerWidth < 1024) onToggle() }}

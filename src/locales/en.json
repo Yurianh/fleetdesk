@@ -606,6 +606,7 @@
     "appearance": "Appearance",
     "appearanceTitle": "Theme",
     "lightMode": "Light",
-    "darkMode": "Dark"
+    "darkMode": "Dark",
+    "team": "Team"
   }
 }

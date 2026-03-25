@@ -23,6 +23,7 @@ import Maintenance from '@/pages/Maintenance'
 import Inspections from '@/pages/Inspections'
 import Washings from '@/pages/Washings'
 import Settings from '@/pages/Settings'
+import ActivityLog from '@/pages/ActivityLog'
 
 const MARKETING_URL = 'https://fleetdesk.fr'
 
@@ -76,6 +77,7 @@ function AppRoutes() {
         <Route path="/Inspections" element={<Inspections />} />
         <Route path="/Washings" element={<Washings />} />
         <Route path="/Settings" element={<Settings />} />
+        <Route path="/Activity" element={<ActivityLog />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
