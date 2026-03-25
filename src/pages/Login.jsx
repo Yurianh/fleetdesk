@@ -73,14 +73,16 @@ export default function Login() {
         setError(t('login.wrongCredentials'))
       } else {
         const msg = err?.message?.toLowerCase() || ''
-        if (msg.includes('already') || msg.includes('registered') || msg.includes('existe')) {
+        if (msg.includes('already registered') || msg.includes('user already') || msg.includes('already exists')) {
           setError('Cet email est déjà associé à un compte. Connectez-vous plutôt.')
-        } else if (msg.includes('password') || msg.includes('mot de passe')) {
+        } else if (msg.includes('password should be') || msg.includes('password must')) {
           setError('Le mot de passe doit contenir au moins 6 caractères.')
-        } else if (msg.includes('email') || msg.includes('invalid')) {
+        } else if (msg.includes('signup') && msg.includes('disabled')) {
+          setError('Les inscriptions sont temporairement désactivées. Réessayez plus tard.')
+        } else if (msg.includes('invalid email') || msg.includes('unable to validate email')) {
           setError('Adresse email invalide.')
         } else {
-          setError(t('login.createError'))
+          setError(err?.message || t('login.createError'))
         }
       }
     } finally {
