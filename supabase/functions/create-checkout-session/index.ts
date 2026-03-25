@@ -1,7 +1,8 @@
 import Stripe from 'https://esm.sh/stripe@14'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!)
+const stripeKey = (Deno.env.get('STRIPE_SECRET_KEY') || '').trim()
+const stripe = new Stripe(stripeKey)
 
 const PRICE_IDS: Record<string, string> = {
   starter:    'price_1TEiw8B6Ej53MTDrp4sDJxQS',
@@ -21,13 +22,13 @@ Deno.serve(async (req) => {
     const body = await req.json()
     const { plan, return_url } = body
 
+    console.log('[checkout] plan:', plan, 'key_prefix:', stripeKey.substring(0, 12))
+
     if (!PRICE_IDS[plan]) {
-      console.error('Invalid plan:', plan)
-      return new Response(JSON.stringify({ error: 'Invalid plan' }), { status: 400, headers: corsHeaders })
+      return new Response(JSON.stringify({ error: 'Invalid plan: ' + plan }), { status: 400, headers: corsHeaders })
     }
 
     const authHeader = req.headers.get('Authorization')
-
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Missing auth header' }), { status: 401, headers: corsHeaders })
     }
@@ -39,14 +40,15 @@ Deno.serve(async (req) => {
     )
 
     const { data: { user }, error: authError } = await supabase.auth.getUser()
-
     if (authError || !user) {
+      console.error('[checkout] auth error:', authError?.message)
       return new Response(JSON.stringify({ error: 'Unauthorized', detail: authError?.message }), { status: 401, headers: corsHeaders })
     }
 
+    console.log('[checkout] user:', user.id, 'email:', user.email)
+
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
-      payment_method_types: ['card'],
       line_items: [{ price: PRICE_IDS[plan], quantity: 1 }],
       success_url: `${return_url}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${return_url}?cancelled=true`,
@@ -56,12 +58,18 @@ Deno.serve(async (req) => {
       locale: 'fr',
     })
 
+    console.log('[checkout] session created:', session.id)
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (err) {
-    console.error('Function error:', err.message, err.stack)
-    return new Response(JSON.stringify({ error: err.message }), {
+    const stripeErr = err as any
+    console.error('[checkout] error:', stripeErr.message, 'type:', stripeErr.type, 'code:', stripeErr.code)
+    return new Response(JSON.stringify({
+      error: stripeErr.message,
+      type: stripeErr.type,
+      code: stripeErr.code,
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
