@@ -90,7 +90,7 @@ export default function Login() {
       style={{ background: 'linear-gradient(135deg, #bfdbfe 0%, #d1fae5 45%, #fef3c7 100%)', backgroundAttachment: 'fixed' }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-2.5 mb-6">
+      <div className="flex items-center gap-2.5 mb-6 select-none pointer-events-none">
         <div className="w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center shadow-sm">
           <Truck className="w-4 h-4 text-white" />
         </div>
