@@ -1,0 +1,71 @@
+---
+const APP_URL = 'https://app.fleetdesk.fr'
+const year = new Date().getFullYear()
+
+const nav = [
+  {
+    title: 'Produit',
+    links: [
+      { label: 'Fonctionnalités', href: '/features' },
+      { label: 'Tarifs',          href: '/pricing'  },
+    ],
+  },
+  {
+    title: 'Entreprise',
+    links: [
+      { label: 'Contact', href: '/contact' },
+    ],
+  },
+  {
+    title: 'Compte',
+    links: [
+      { label: 'Se connecter', href: `${APP_URL}/login`            },
+      { label: 'Commencer',    href: `${APP_URL}/login?plan=starter` },
+    ],
+  },
+]
+---
+<footer class="border-t border-zinc-100 bg-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-10">
+
+      <!-- Brand -->
+      <div class="col-span-2 md:col-span-1">
+        <a href="/" class="flex items-center gap-2.5 mb-4">
+          <div class="w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/>
+              <rect x="9" y="11" width="14" height="10" rx="2"/>
+              <circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+            </svg>
+          </div>
+          <span class="text-[15px] font-semibold text-zinc-900 tracking-tight">FleetDesk</span>
+        </a>
+        <p class="text-sm leading-relaxed text-zinc-400">
+          La gestion de flotte pour les équipes qui bougent.
+        </p>
+      </div>
+
+      <!-- Nav columns -->
+      {nav.map(col => (
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.08em] text-zinc-400 mb-4">{col.title}</p>
+          <ul class="space-y-2.5">
+            {col.links.map(l => (
+              <li>
+                <a href={l.href} class="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-10 pt-6 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p class="text-xs text-zinc-400">© {year} FleetDesk. Tous droits réservés.</p>
+      <p class="text-xs text-zinc-400">Conçu pour les opérations de flotte modernes.</p>
+    </div>
+  </div>
+</footer>

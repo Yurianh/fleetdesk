@@ -1,0 +1,38 @@
+{
+  "name": "MaintenanceRecord",
+  "type": "object",
+  "properties": {
+    "vehicle_id": {
+      "type": "string",
+      "description": "Reference to Vehicle"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Maintenance date"
+    },
+    "mileage": {
+      "type": "number",
+      "description": "Mileage at maintenance"
+    },
+    "issue_description": {
+      "type": "string",
+      "description": "Description of the issue or maintenance performed"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "OK",
+        "PROBLEM"
+      ],
+      "description": "Maintenance status"
+    }
+  },
+  "required": [
+    "vehicle_id",
+    "date",
+    "mileage",
+    "issue_description",
+    "status"
+  ]
+}

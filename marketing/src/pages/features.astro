@@ -1,0 +1,80 @@
+---
+import Layout from '../layouts/Layout.astro'
+import Navbar from '../components/Navbar.jsx'
+import CTASection from '../components/CTASection.astro'
+import Footer from '../components/Footer.astro'
+
+const categories = [
+  {
+    title: 'Flotte & Conducteurs',
+    features: [
+      { title: 'Registre des véhicules',  desc: 'Gardez une fiche complète pour chaque véhicule — marque, modèle, plaque, statut et historique complet en un seul endroit.' },
+      { title: 'Profils conducteurs',     desc: 'Stockez les informations des conducteurs, permis et coordonnées. Sachez toujours qui est responsable de quel véhicule.' },
+      { title: 'Affectations',            desc: 'Affectez facilement des véhicules aux conducteurs, suivez les affectations en cours et passées, gérez les transitions sans confusion.' },
+      { title: 'Suivi kilométrique',      desc: 'Enregistrez les relevés d\'odomètre régulièrement pour des dossiers kilométriques précis — essentiels pour les déclencheurs de maintenance.' },
+    ],
+  },
+  {
+    title: 'Opérations',
+    features: [
+      { title: 'Historique maintenance',  desc: 'Consignez chaque service, réparation et remplacement de pièces. Définissez des plannings récurrents pour ne jamais manquer une maintenance.' },
+      { title: 'Contrôles techniques',    desc: 'Suivez les dates de contrôle, les résultats et les prochaines échéances. Restez en conformité et évitez les oublis coûteux.' },
+      { title: 'Suivi des lavages',       desc: 'Enregistrez les coûts et la fréquence de nettoyage par véhicule. Un détail qui compte pour les flottes soucieuses de leur image.' },
+    ],
+  },
+  {
+    title: 'Analyses & Alertes',
+    features: [
+      { title: 'Tableau de bord analytique', desc: 'Graphiques et résumés visuels des coûts, tendances kilométriques et activité de maintenance — sans tableur nécessaire.' },
+      { title: 'Prévision de maintenance',   desc: 'Anticipez les prochaines maintenances en fonction des intervalles kilométriques pour planifier à l\'avance et réduire les temps d\'arrêt.' },
+      { title: 'Vue conformité',             desc: 'Une vue claire des véhicules à contrôler ou en retard de service — soyez toujours prêt pour un audit.' },
+    ],
+  },
+]
+---
+<Layout
+  title="Fonctionnalités"
+  description="De l'immatriculation des véhicules au suivi de conformité, FleetDesk couvre tout le cycle de gestion de flotte — sans la complexité."
+>
+  <Navbar client:load currentPath="/features" />
+
+  <!-- Header -->
+  <section class="bg-white border-b border-zinc-100 py-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+      <p class="text-sm font-semibold text-[#2563EB] tracking-wide mb-3">Fonctionnalités</p>
+      <h1 class="text-4xl sm:text-5xl font-bold text-zinc-900 tracking-tight mb-5">
+        Tout ce qu'il faut pour votre flotte
+      </h1>
+      <p class="text-lg text-zinc-500 max-w-2xl mx-auto">
+        De l'immatriculation des véhicules au suivi de conformité, FleetDesk couvre tout le cycle de gestion de flotte — sans la complexité.
+      </p>
+    </div>
+  </section>
+
+  <!-- Feature categories -->
+  <section class="py-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 space-y-20">
+      {categories.map(cat => (
+        <div>
+          <h2 class="text-xs font-semibold uppercase tracking-[0.1em] text-[#2563EB] mb-8">{cat.title}</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {cat.features.map(f => (
+              <div class="bg-white border border-zinc-100 rounded-xl p-6 hover:shadow-md transition-shadow">
+                <div class="w-8 h-8 bg-zinc-100 rounded-lg flex items-center justify-center mb-4">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </div>
+                <h3 class="text-sm font-semibold text-zinc-900 mb-2">{f.title}</h3>
+                <p class="text-sm text-zinc-500 leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <CTASection />
+  <Footer />
+</Layout>

@@ -1,0 +1,29 @@
+{
+  "name": "WashRecord",
+  "type": "object",
+  "properties": {
+    "vehicle_id": {
+      "type": "string",
+      "description": "Reference to Vehicle"
+    },
+    "driver_id": {
+      "type": "string",
+      "description": "Reference to Driver"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Washing cost"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of wash"
+    }
+  },
+  "required": [
+    "vehicle_id",
+    "driver_id",
+    "amount",
+    "date"
+  ]
+}

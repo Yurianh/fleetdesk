@@ -1,0 +1,26 @@
+---
+const APP_URL = 'https://app.fleetdesk.fr'
+---
+<section class="py-24 border-t border-zinc-100">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+    <h2 class="text-3xl sm:text-4xl font-bold text-zinc-900 tracking-tight mb-4" style="text-wrap: balance">
+      Prêt à prendre le contrôle de votre flotte ?
+    </h2>
+    <p class="text-lg text-zinc-400 max-w-xl mx-auto mb-10">
+      Rejoignez les gestionnaires de flotte qui s'appuient sur FleetDesk pour réduire les coûts, rester conformes et garder chaque véhicule sur la route.
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+      <a href={`${APP_URL}/login?plan=starter`}
+        class="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
+        Commencer gratuitement
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </a>
+      <a href="/contact" class="text-sm font-medium text-zinc-400 hover:text-zinc-700 transition-colors">
+        Parler à un commercial
+      </a>
+    </div>
+    <p class="mt-6 text-xs text-zinc-400">Sans carte bancaire · Gratuit pour les petites flottes</p>
+  </div>
+</section>

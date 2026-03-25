@@ -1,0 +1,100 @@
+---
+import Layout from '../layouts/Layout.astro'
+import Navbar from '../components/Navbar.jsx'
+import HeroSection from '../components/HeroSection.jsx'
+import CTASection from '../components/CTASection.astro'
+import Footer from '../components/Footer.astro'
+
+const APP_URL = 'https://app.fleetdesk.fr'
+
+const stats = [
+  { value: '27%',  label: 'Réduction moyenne des pannes imprévues' },
+  { value: '2,4×', label: 'Planification de maintenance plus rapide' },
+  { value: '94%',  label: 'Visibilité sur la conformité des contrôles' },
+]
+
+const highlights = [
+  {
+    color: 'bg-blue-50 text-[#2563EB]',
+    icon: '<path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>',
+    title: 'Suivi des véhicules',
+    desc: 'Maintenez un registre complet et à jour de chaque véhicule — statut, kilométrage et historique en un seul endroit.',
+  },
+  {
+    color: 'bg-violet-50 text-violet-600',
+    icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    title: 'Gestion des conducteurs',
+    desc: 'Affectez les conducteurs aux véhicules, suivez l\'historique des affectations et gardez les profils accessibles.',
+  },
+  {
+    color: 'bg-amber-50 text-amber-600',
+    icon: '<circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>',
+    title: 'Planification de maintenance',
+    desc: 'Définissez des intervalles de maintenance récurrents et anticipez les pannes avant qu\'elles surviennent.',
+  },
+  {
+    color: 'bg-emerald-50 text-emerald-600',
+    icon: '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
+    title: 'Analytique de flotte',
+    desc: 'Transformez les données opérationnelles en insights clairs — coûts, tendances kilométriques et prévisions en un coup d\'œil.',
+  },
+]
+---
+<Layout
+  title="Gestion de flotte simple"
+  description="FleetDesk maintient votre flotte en marche — alertes de maintenance, suivi kilométrique, affectations des conducteurs et contrôles techniques."
+>
+  <Navbar client:load currentPath="/" />
+
+  <HeroSection client:load />
+
+  <!-- Stats -->
+  <section class="border-y border-zinc-100 bg-zinc-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+      <div class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-zinc-100">
+        {stats.map(s => (
+          <div class="py-6 sm:py-0 sm:px-10 first:pl-0 last:pr-0">
+            <p class="text-3xl font-bold font-mono text-zinc-900 tracking-tight mb-1">{s.value}</p>
+            <p class="text-sm text-zinc-500">{s.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Highlights -->
+  <section class="py-24">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="mb-14 max-w-2xl">
+        <h2 class="text-3xl sm:text-4xl font-bold text-zinc-900 tracking-tight mb-4">
+          Tout ce dont votre flotte a besoin
+        </h2>
+        <p class="text-lg text-zinc-500">
+          Des fiches véhicules aux prévisions de maintenance — conçu pour les équipes qui font avancer les choses.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {highlights.map(h => (
+          <div class="bg-white border border-zinc-100 rounded-xl p-5 hover:shadow-md transition-shadow">
+            <div class={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${h.color}`}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={h.icon} />
+            </div>
+            <h3 class="text-sm font-semibold text-zinc-900 mb-2">{h.title}</h3>
+            <p class="text-sm text-zinc-500 leading-relaxed">{h.desc}</p>
+          </div>
+        ))}
+      </div>
+      <div class="mt-10">
+        <a href="/features" class="inline-flex items-center gap-2 text-sm font-medium text-[#2563EB] hover:text-[#1D4ED8] transition-colors">
+          Voir toutes les fonctionnalités
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <CTASection />
+  <Footer />
+</Layout>

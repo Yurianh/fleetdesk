@@ -1,0 +1,17 @@
+{
+  "name": "Driver",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Driver full name"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Phone number (optional)"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

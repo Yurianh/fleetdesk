@@ -1,0 +1,150 @@
+---
+import Layout from '../layouts/Layout.astro'
+import Navbar from '../components/Navbar.jsx'
+import CTASection from '../components/CTASection.astro'
+import Footer from '../components/Footer.astro'
+
+const APP_URL = 'https://app.fleetdesk.fr'
+
+const plans = [
+  {
+    name: 'Starter',
+    price: '9 €',
+    period: '/mois',
+    desc: 'Pour les petites équipes qui démarrent avec la gestion de flotte.',
+    features: [
+      'Jusqu\'à 5 véhicules',
+      'Jusqu\'à 3 conducteurs',
+      'Fiches véhicules et conducteurs',
+      'Suivi kilométrique de base',
+      'Enregistrements de maintenance',
+      'Support par email',
+    ],
+    cta: 'Commencer',
+    planId: 'starter',
+    highlighted: false,
+  },
+  {
+    name: 'Pro',
+    price: '29 €',
+    period: '/mois',
+    desc: 'Pour les opérations en croissance qui ont besoin de plus de puissance.',
+    features: [
+      'Jusqu\'à 25 véhicules',
+      'Conducteurs illimités',
+      'Tout ce qui est dans Starter',
+      'Suivi des contrôles techniques',
+      'Suivi des lavages',
+      'Prévisions de maintenance',
+      'Tableau de bord analytique',
+      'Support prioritaire',
+    ],
+    cta: 'Commencer',
+    planId: 'pro',
+    highlighted: true,
+  },
+  {
+    name: 'Enterprise',
+    price: '79 €',
+    period: '/mois',
+    desc: 'Pour les grandes flottes avec des besoins avancés et des exigences personnalisées.',
+    features: [
+      'Véhicules illimités',
+      'Conducteurs illimités',
+      'Tout ce qui est dans Pro',
+      'Intégrations personnalisées',
+      'Onboarding dédié',
+      'Garantie SLA',
+      'Facturation',
+    ],
+    cta: 'Commencer',
+    planId: 'enterprise',
+    highlighted: false,
+  },
+]
+
+const faq = [
+  { q: 'Puis-je changer de formule à tout moment ?',    a: 'Oui. Vous pouvez passer à une formule supérieure ou inférieure à tout moment depuis vos paramètres de compte. Les modifications prennent effet au prochain cycle de facturation.' },
+  { q: 'Y a-t-il un essai gratuit pour Pro ?',          a: 'Absolument. Tous les nouveaux comptes Pro démarrent avec un essai gratuit de 14 jours — sans carte bancaire. Vous ne payez que si vous décidez de continuer.' },
+  { q: 'Que se passe-t-il si je dépasse ma limite ?',   a: 'Vous serez averti avant d\'atteindre votre limite et pourrez passer à une formule supérieure. Nous ne coupons jamais l\'accès sans avertissement.' },
+  { q: 'Proposez-vous une facturation annuelle ?',      a: 'Oui. La facturation annuelle est disponible avec une remise de 20 %. Contactez-nous pour la configurer sur votre compte.' },
+]
+---
+<Layout
+  title="Tarifs"
+  description="Des tarifs simples et transparents. Commencez à 9 €/mois et évoluez à mesure que votre flotte grandit. Sans frais cachés ni engagement long terme."
+>
+  <Navbar client:load currentPath="/pricing" />
+
+  <!-- Header -->
+  <section class="bg-white border-b border-zinc-100 py-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+      <p class="text-sm font-semibold text-[#2563EB] tracking-wide mb-3">Tarifs</p>
+      <h1 class="text-4xl sm:text-5xl font-bold text-zinc-900 tracking-tight mb-5">
+        Des tarifs simples et transparents
+      </h1>
+      <p class="text-lg text-zinc-500 max-w-xl mx-auto">
+        Commencez gratuitement et évoluez à mesure que votre flotte grandit. Sans frais cachés ni engagement long terme.
+      </p>
+    </div>
+  </section>
+
+  <!-- Pricing cards -->
+  <section id="plans" class="py-20 bg-zinc-50">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        {plans.map(p => (
+          <div class={`relative flex flex-col rounded-xl p-7 ${p.highlighted ? 'border-2 border-[#2563EB] bg-white shadow-lg shadow-[#2563EB]/10' : 'bg-white border border-zinc-200'}`}>
+            {p.highlighted && (
+              <div class="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                <span class="bg-[#2563EB] text-white text-xs font-semibold px-3 py-1 rounded-full">Plus populaire</span>
+              </div>
+            )}
+            <div class="mb-6">
+              <p class="text-sm font-semibold mb-1 text-[#2563EB]">{p.name}</p>
+              <div class="flex items-end gap-1 mb-3">
+                <span class="text-4xl font-bold tracking-tight text-zinc-900 font-mono">{p.price}</span>
+                <span class="text-sm mb-1.5 text-zinc-400">{p.period}</span>
+              </div>
+              <p class="text-sm text-zinc-500">{p.desc}</p>
+            </div>
+            <ul class="space-y-3 mb-8 flex-1">
+              {p.features.map(f => (
+                <li class="flex items-start gap-2.5">
+                  <svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-[#2563EB]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  <span class="text-sm text-zinc-600">{f}</span>
+                </li>
+              ))}
+            </ul>
+            <a
+              href={`${APP_URL}/login?plan=${p.planId}`}
+              class={`block w-full text-center text-sm font-semibold px-5 py-3 rounded-lg transition-colors ${p.highlighted ? 'bg-[#2563EB] text-white hover:bg-[#1D4ED8]' : 'border border-zinc-200 text-zinc-700 hover:bg-zinc-50'}`}
+            >
+              {p.cta}
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="py-20 bg-white">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+      <h2 class="text-2xl font-bold text-zinc-900 tracking-tight mb-10 text-center">Questions fréquentes</h2>
+      <div class="space-y-6">
+        {faq.map(item => (
+          <div class="border-b border-zinc-100 pb-6">
+            <p class="font-semibold text-zinc-900 mb-2">{item.q}</p>
+            <p class="text-sm text-zinc-500 leading-relaxed">{item.a}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CTASection />
+  <Footer />
+</Layout>

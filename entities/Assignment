@@ -1,0 +1,24 @@
+{
+  "name": "Assignment",
+  "type": "object",
+  "properties": {
+    "driver_id": {
+      "type": "string",
+      "description": "Reference to Driver"
+    },
+    "vehicle_id": {
+      "type": "string",
+      "description": "Reference to Vehicle"
+    },
+    "assigned_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Assignment date and time"
+    }
+  },
+  "required": [
+    "driver_id",
+    "vehicle_id",
+    "assigned_at"
+  ]
+}

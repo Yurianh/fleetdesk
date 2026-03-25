@@ -1,0 +1,52 @@
+---
+import '../styles/global.css'
+
+interface Props {
+  title: string
+  description?: string
+  ogTitle?: string
+}
+
+const APP_URL = 'https://app.fleetdesk.fr'
+const SITE_URL = 'https://fleetdesk.fr'
+const {
+  title,
+  description = 'FleetDesk — Logiciel de gestion de flotte simple pour les équipes qui bougent.',
+  ogTitle = title + ' — FleetDesk',
+} = Astro.props
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{ogTitle}</title>
+    <meta name="description" content={description} />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="FleetDesk" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- Canonical -->
+    <link rel="canonical" href={SITE_URL + Astro.url.pathname} />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-white text-zinc-900 font-sans">
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "TechnicalInspection",
+  "type": "object",
+  "properties": {
+    "vehicle_id": {
+      "type": "string",
+      "description": "Reference to Vehicle"
+    },
+    "inspection_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of inspection"
+    },
+    "expiration_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Expiration date (auto-calculated: inspection_date + 1 year)"
+    }
+  },
+  "required": [
+    "vehicle_id",
+    "inspection_date",
+    "expiration_date"
+  ]
+}

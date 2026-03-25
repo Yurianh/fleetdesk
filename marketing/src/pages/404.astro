@@ -1,0 +1,17 @@
+---
+import Layout from '../layouts/Layout.astro'
+import Navbar from '../components/Navbar.jsx'
+import Footer from '../components/Footer.astro'
+---
+<Layout title="Page introuvable" description="Cette page n'existe pas.">
+  <Navbar client:load />
+  <section class="py-32 text-center">
+    <p class="text-8xl font-bold font-mono text-zinc-100 mb-6">404</p>
+    <h1 class="text-2xl font-bold text-zinc-900 mb-3">Page introuvable</h1>
+    <p class="text-zinc-500 mb-8">Cette page n'existe pas ou a été déplacée.</p>
+    <a href="/" class="inline-flex items-center gap-2 bg-[#2563EB] text-white text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-[#1D4ED8] transition-colors">
+      Retour à l'accueil
+    </a>
+  </section>
+  <Footer />
+</Layout>
