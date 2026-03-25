@@ -11,6 +11,7 @@ import PageNotFound from './lib/PageNotFound'
 import AppLayout from '@/components/layout/AppLayout'
 import Login from '@/pages/Login'
 import SetupProfile from '@/pages/SetupProfile'
+import CollaboratorWelcome from '@/pages/CollaboratorWelcome'
 import BillingSuccess from '@/pages/BillingSuccess'
 import Dashboard from '@/pages/Dashboard'
 import Vehicles from '@/pages/Vehicles'
@@ -36,11 +37,12 @@ function AppRoutes() {
   const { user, loading } = useAuth()
   if (loading) return null
 
-  // Not signed in — only login is accessible, everything else → marketing site
+  // Not signed in
   if (!user) {
     return (
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/join" element={<Login />} />
         <Route path="/billing/success" element={<BillingSuccess />} />
         <Route path="*" element={<ExternalRedirect to={MARKETING_URL} />} />
       </Routes>
@@ -49,11 +51,16 @@ function AppRoutes() {
 
   // Signed in but onboarding not complete
   if (!user.user_metadata?.onboarding_complete) {
+    const isCollaborator = !!user.user_metadata?.org_id
     return (
       <Routes>
+        <Route path="/join" element={<CollaboratorWelcome />} />
         <Route path="/setup-profile" element={<SetupProfile />} />
         <Route path="/billing/success" element={<BillingSuccess />} />
-        <Route path="*" element={<Navigate to="/setup-profile" replace />} />
+        <Route
+          path="*"
+          element={<Navigate to={isCollaborator ? '/join' : '/setup-profile'} replace />}
+        />
       </Routes>
     )
   }
@@ -62,6 +69,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<Navigate to="/Dashboard" replace />} />
+      <Route path="/join" element={<Navigate to="/Dashboard" replace />} />
       <Route path="/setup-profile" element={<Navigate to="/Dashboard" replace />} />
       <Route path="/billing/success" element={<BillingSuccess />} />
       <Route element={<AppLayout />}>

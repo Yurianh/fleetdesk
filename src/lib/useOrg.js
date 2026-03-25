@@ -56,10 +56,14 @@ export function useInviteMember() {
 export function useRemoveMember() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({ memberId, userId }) => {
-      const { error } = await supabase.from('org_members').delete().eq('id', memberId)
-      if (error) throw error
-      // Note: removing org_id from user metadata requires service role — handled server-side in the future
+    mutationFn: async ({ memberId }) => {
+      const { data, error } = await supabase.functions.invoke('remove-member', { body: { memberId } })
+      if (error) {
+        let detail = error.message
+        try { const b = await error.context?.json?.(); if (b?.error) detail = b.error } catch {}
+        throw new Error(detail)
+      }
+      return data
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['orgMembers'] }),
   })

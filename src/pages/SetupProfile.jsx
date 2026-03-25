@@ -31,7 +31,7 @@ export default function SetupProfile() {
 
   const googleName = user?.user_metadata?.full_name || user?.user_metadata?.name || ''
 
-  const [step, setStep]           = useState(googleName ? 1 : 0)
+  const [step, setStep]           = useState(0)
   const [name, setName]           = useState(googleName)
   const [company, setCompany]     = useState('')
   const [fleetSize, setFleetSize] = useState('')

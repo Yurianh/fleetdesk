@@ -13,6 +13,7 @@ Deno.serve(async (req) => {
   try {
     event = stripe.webhooks.constructEvent(body, sig, Deno.env.get('STRIPE_WEBHOOK_SECRET')!)
   } catch (err) {
+    console.error('[webhook] signature error:', err.message)
     return new Response(`Webhook error: ${err.message}`, { status: 400 })
   }
 
@@ -25,20 +26,28 @@ Deno.serve(async (req) => {
     const session = event.data.object as Stripe.Checkout.Session
     const { user_id, plan } = session.metadata ?? {}
 
+    console.log('[webhook] checkout.session.completed — user_id:', user_id, 'plan:', plan)
+
     if (user_id && plan) {
-      const { error } = await supabase.auth.admin.updateUserById(user_id, {
-        user_metadata: { plan, onboarding_complete: true },
-      })
-      if (error) console.error('Failed to update user:', error.message)
+      // Fetch existing metadata so we don't overwrite full_name, company, etc.
+      const { data: { user }, error: fetchErr } = await supabase.auth.admin.getUserById(user_id)
+      if (fetchErr) {
+        console.error('[webhook] failed to fetch user:', fetchErr.message)
+      } else {
+        const { error } = await supabase.auth.admin.updateUserById(user_id, {
+          user_metadata: { ...user?.user_metadata, plan, onboarding_complete: true },
+        })
+        if (error) console.error('[webhook] failed to update user:', error.message)
+        else console.log('[webhook] user updated successfully')
+      }
+    } else {
+      console.error('[webhook] missing user_id or plan in metadata:', session.metadata)
     }
   }
 
   if (event.type === 'customer.subscription.deleted') {
-    // Downgrade to starter when subscription is cancelled
     const sub = event.data.object as Stripe.Subscription
-    // We need to look up the user by stripe customer id
-    // Store customer_id in a subscriptions table for production use
-    console.log('Subscription cancelled:', sub.id)
+    console.log('[webhook] subscription cancelled:', sub.id)
   }
 
   return new Response(JSON.stringify({ received: true }), {

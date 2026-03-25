@@ -2,52 +2,72 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { CheckCircle2, XCircle, Loader2, Truck, AlertCircle, ArrowRight, Sparkles } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-import { useTranslation } from 'react-i18next'
 
 const GRADIENT = 'linear-gradient(135deg, #bfdbfe 0%, #d1fae5 45%, #fef3c7 100%)'
 
-const PLAN_LABELS = {
-  starter: 'Starter',
-  pro: 'Pro',
-  enterprise: 'Enterprise',
-}
+const PLAN_LABELS = { starter: 'Starter', pro: 'Pro', enterprise: 'Enterprise' }
 
 export default function BillingSuccess() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { t } = useTranslation()
   const cancelled = searchParams.get('cancelled') === 'true'
-  const [status, setStatus] = useState(cancelled ? 'cancelled' : 'loading')
+  const sessionId  = searchParams.get('session_id')
+
+  const [status, setStatus]     = useState(cancelled ? 'cancelled' : 'loading')
   const [userName, setUserName] = useState('')
   const [planName, setPlanName] = useState('')
+  const [errMsg, setErrMsg]     = useState('')
 
   useEffect(() => {
     if (cancelled) return
 
-    let attempts = 0
-    const MAX = 10
+    async function confirm() {
+      try {
+        if (sessionId) {
+          // Direct verification — no webhook timing dependency
+          const { data, error } = await supabase.functions.invoke('confirm-payment', {
+            body: { session_id: sessionId },
+          })
+          if (error) {
+            let detail = error.message
+            try { const b = await error.context?.json?.(); if (b?.error) detail = b.error } catch {}
+            throw new Error(detail)
+          }
+          if (!data?.success) throw new Error('Paiement non confirmé.')
 
-    const poll = setInterval(async () => {
-      attempts++
-      const { data: { user } } = await supabase.auth.getUser()
-
-      if (user?.user_metadata?.onboarding_complete) {
-        clearInterval(poll)
-        const first = (user.user_metadata.full_name || user.email || '').split(' ')[0]
-        setUserName(first)
-        setPlanName(PLAN_LABELS[user.user_metadata.plan] || user.user_metadata.plan || 'Pro')
-        setStatus('success')
-        return
-      }
-
-      if (attempts >= MAX) {
-        clearInterval(poll)
+          // Refresh user to get updated metadata
+          const { data: { user } } = await supabase.auth.getUser()
+          const first = (user?.user_metadata?.full_name || user?.email || '').split(' ')[0]
+          setUserName(first)
+          setPlanName(PLAN_LABELS[data.plan] || data.plan || 'Pro')
+          setStatus('success')
+        } else {
+          // Fallback: poll for webhook update (no session_id in URL)
+          let attempts = 0
+          const poll = setInterval(async () => {
+            attempts++
+            const { data: { user } } = await supabase.auth.getUser()
+            if (user?.user_metadata?.onboarding_complete) {
+              clearInterval(poll)
+              const first = (user.user_metadata.full_name || user.email || '').split(' ')[0]
+              setUserName(first)
+              setPlanName(PLAN_LABELS[user.user_metadata.plan] || user.user_metadata.plan || 'Pro')
+              setStatus('success')
+            } else if (attempts >= 20) {
+              clearInterval(poll)
+              setStatus('delayed')
+            }
+          }, 2000)
+          return () => clearInterval(poll)
+        }
+      } catch (e) {
+        setErrMsg(e.message || 'Erreur inconnue.')
         setStatus('delayed')
       }
-    }, 1500)
+    }
 
-    return () => clearInterval(poll)
-  }, [cancelled, navigate])
+    confirm()
+  }, [cancelled, sessionId])
 
   return (
     <div
@@ -70,17 +90,14 @@ export default function BillingSuccess() {
           {status === 'loading' && (
             <>
               <Loader2 className="w-10 h-10 text-[#2563EB] animate-spin mx-auto mb-4" />
-              <h1 className="text-[17px] font-semibold text-zinc-900 mb-2">
-                {t('billing.activating')}
-              </h1>
-              <p className="text-sm text-zinc-400">{t('billing.activatingDesc')}</p>
+              <h1 className="text-[17px] font-semibold text-zinc-900 mb-2">Activation de votre plan...</h1>
+              <p className="text-sm text-zinc-400">Veuillez patienter pendant que nous confirmons votre paiement.</p>
             </>
           )}
 
           {/* Success */}
           {status === 'success' && (
             <>
-              {/* Icon with ring */}
               <div className="relative w-20 h-20 mx-auto mb-6">
                 <div className="absolute inset-0 bg-emerald-50 rounded-full" />
                 <div className="absolute inset-2 bg-emerald-100 rounded-full" />
@@ -88,27 +105,18 @@ export default function BillingSuccess() {
                   <CheckCircle2 className="w-9 h-9 text-emerald-500" />
                 </div>
               </div>
-
-              {/* Plan badge */}
               <div className="inline-flex items-center gap-1.5 bg-[#2563EB]/8 text-[#2563EB] text-xs font-semibold px-3 py-1 rounded-full mb-4">
                 <Sparkles className="w-3 h-3" />
                 Formule {planName} activée
               </div>
-
               <h1 className="text-[20px] font-semibold text-zinc-900 mb-2 leading-snug">
                 {userName ? `Bienvenue, ${userName} !` : 'Bienvenue !'}
               </h1>
               <p className="text-sm text-zinc-400 mb-8">
                 Votre compte est actif. Toute votre flotte vous attend dans le tableau de bord.
               </p>
-
-              {/* Checklist */}
               <div className="bg-zinc-50 rounded-xl p-4 mb-8 text-left space-y-2.5">
-                {[
-                  'Compte créé',
-                  'Abonnement activé',
-                  'Accès complet débloqué',
-                ].map((item) => (
+                {['Compte créé', 'Abonnement activé', 'Accès complet débloqué'].map(item => (
                   <div key={item} className="flex items-center gap-2.5">
                     <div className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
                       <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600" />
@@ -117,7 +125,6 @@ export default function BillingSuccess() {
                   </div>
                 ))}
               </div>
-
               <button
                 onClick={() => navigate('/Dashboard', { replace: true })}
                 className="w-full flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
@@ -127,27 +134,25 @@ export default function BillingSuccess() {
             </>
           )}
 
-          {/* Delayed */}
+          {/* Delayed / Error */}
           {status === 'delayed' && (
             <>
               <div className="w-14 h-14 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-4">
                 <AlertCircle className="w-7 h-7 text-amber-500" />
               </div>
-              <h1 className="text-[17px] font-semibold text-zinc-900 mb-2">
-                {t('billing.delayed')}
-              </h1>
-              <p className="text-sm text-zinc-400 mb-6">{t('billing.delayedDesc')}</p>
+              <h1 className="text-[17px] font-semibold text-zinc-900 mb-2">Vérification en cours</h1>
+              <p className="text-sm text-zinc-400 mb-2">
+                Votre paiement a peut-être été reçu. Réessayez dans quelques instants.
+              </p>
+              {errMsg && <p className="text-xs text-red-400 mb-4">{errMsg}</p>}
               <button
                 onClick={() => window.location.reload()}
                 className="w-full bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm mb-3"
               >
-                {t('billing.retry')}
+                Vérifier à nouveau
               </button>
-              <a
-                href="mailto:support@fleetdesk.app"
-                className="block w-full text-center text-sm text-zinc-400 hover:text-zinc-600 transition-colors py-1"
-              >
-                {t('billing.contactSupport')}
+              <a href="mailto:support@fleetdesk.app" className="block w-full text-center text-sm text-zinc-400 hover:text-zinc-600 transition-colors py-1">
+                Contacter le support
               </a>
             </>
           )}
@@ -158,19 +163,16 @@ export default function BillingSuccess() {
               <div className="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
                 <XCircle className="w-7 h-7 text-red-500" />
               </div>
-              <h1 className="text-[17px] font-semibold text-zinc-900 mb-2">
-                {t('billing.cancelled')}
-              </h1>
-              <p className="text-sm text-zinc-400 mb-6">{t('billing.cancelledDesc')}</p>
+              <h1 className="text-[17px] font-semibold text-zinc-900 mb-2">Paiement annulé</h1>
+              <p className="text-sm text-zinc-400 mb-6">Aucun montant n'a été débité. Vous pouvez choisir un plan et réessayer.</p>
               <button
                 onClick={() => navigate('/setup-profile', { replace: true })}
                 className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
               >
-                {t('billing.backToPlans')}
+                Retour aux plans
               </button>
             </>
           )}
-
         </div>
 
         <p className="mt-6 text-xs text-zinc-500/70 text-center">© 2025 FleetDesk</p>

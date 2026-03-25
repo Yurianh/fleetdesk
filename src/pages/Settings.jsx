@@ -266,7 +266,20 @@ export default function Settings() {
           {/* ── Team ── */}
           {section === 'team' && (
             <div className="space-y-4">
-              {isCollaborator ? (
+              {plan !== 'enterprise' && !isCollaborator ? (
+                <div className="bg-white border border-zinc-200 rounded-xl p-8 text-center">
+                  <div className="w-12 h-12 bg-violet-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users className="w-6 h-6 text-violet-600" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-zinc-900 mb-2">Collaboration — Formule Enterprise</h3>
+                  <p className="text-xs text-zinc-500 mb-5 max-w-xs mx-auto">Invitez votre équipe, gérez les rôles et suivez toutes les actions dans un journal d'activité partagé.</p>
+                  <button onClick={() => handleUpgrade('enterprise')} disabled={saving}
+                    className="inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold rounded-lg px-4 py-2 transition-colors">
+                    {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                    Passer à Enterprise <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : isCollaborator ? (
                 <div className="bg-white border border-zinc-200 rounded-xl p-5">
                   <p className="text-sm text-zinc-500">Vous êtes membre d'une organisation. Seul le propriétaire peut gérer l'équipe.</p>
                 </div>
