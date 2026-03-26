@@ -35,6 +35,7 @@ export function useFleetRealtime() {
           maintenance_schedules: 'maintenanceSchedules',
           technical_inspections: 'technicalInspections',
           wash_records: 'washRecords',
+          activity_log: 'activityLog',
         }
         const key = keyMap[table]
         if (key) qc.invalidateQueries({ queryKey: [key] })
@@ -50,16 +51,18 @@ async function logActivity(action, entityType, entityId, entityLabel) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
     const orgId = user.user_metadata?.org_id || user.id
-    await supabase.from('activity_log').insert({
+    const { error: logErr } = await supabase.from('activity_log').insert({
       org_id: orgId,
       user_id: user.id,
       user_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Utilisateur',
       action,
       entity_type: entityType,
-      entity_id: String(entityId || ''),
-      entity_label: String(entityLabel || ''),
+      entity_id: entityId || null,
+      entity_label: entityLabel || null,
     })
-  } catch { /* silent — logging must never break the main action */ }
+    if (logErr) console.error('[logActivity] insert error:', logErr)
+    else console.log('[logActivity] ok:', action)
+  } catch (e) { console.error('[logActivity] failed:', e) }
 }
 
 // ── Queries ──────────────────────────────────────────────────────
@@ -175,50 +178,57 @@ export function useMaintenanceSchedules() {
 // ── Mutations ─────────────────────────────────────────────────────
 
 export async function createVehicle(data) {
-  const label = data.plate || data.make || 'Véhicule'
-  const { data: result, error } = await supabase.from('vehicles').insert({ ...data, user_id: await orgUid() })
+  const label = `${data.plate_number || ''}${data.model ? ' — ' + data.model : ''}`.trim() || 'Véhicule'
+  const { error } = await supabase.from('vehicles').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
+  logActivity('createVehicle', 'vehicle', '', label)
 }
 
 export async function createDriver(data) {
-  const label = data.first_name ? `${data.first_name} ${data.last_name || ''}`.trim() : 'Conducteur'
-  const { data: result, error } = await supabase.from('drivers').insert({ ...data, user_id: await orgUid() })
+  const label = data.name || 'Conducteur'
+  const { error } = await supabase.from('drivers').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
+  logActivity('createDriver', 'driver', '', label)
 }
 
 export async function createAssignment(data) {
-  const { data: result, error } = await supabase.from('assignments').insert({ ...data, user_id: await orgUid() })
+  const { error } = await supabase.from('assignments').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
+  logActivity('createAssignment', 'assignment', '', '')
 }
 
 export async function createMileageEntry(data) {
-  const label = 'Relevé kilométrique'
-  const { data: result, error } = await supabase.from('mileage_entries').insert({ ...data, user_id: await orgUid() })
+  const label = data.mileage ? `${Number(data.mileage).toLocaleString('fr-FR')} km` : 'Relevé kilométrique'
+  const { error } = await supabase.from('mileage_entries').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
+  logActivity('createMileageEntry', 'mileage', '', label)
 }
 
 export async function createMaintenanceRecord(data) {
   const label = data.type || 'Maintenance'
-  const { data: result, error } = await supabase.from('maintenance_records').insert({ ...data, user_id: await orgUid() })
+  const { error } = await supabase.from('maintenance_records').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
+  logActivity('createMaintenanceRecord', 'maintenance', '', label)
 }
 
 export async function createTechnicalInspection(data) {
-  const label = 'Contrôle technique'
-  const { data: result, error } = await supabase.from('technical_inspections').insert({ ...data, user_id: await orgUid() })
+  const { error } = await supabase.from('technical_inspections').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
+  logActivity('createTechnicalInspection', 'inspection', '', 'Contrôle technique')
 }
 
 export async function createWashRecord(data) {
-  const label = 'Lavage'
-  const { data: result, error } = await supabase.from('wash_records').insert({ ...data, user_id: await orgUid() })
+  const label = data.amount ? `Lavage ${Number(data.amount).toFixed(2)} €` : 'Lavage'
+  const { error } = await supabase.from('wash_records').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
+  logActivity('createWashRecord', 'wash', '', label)
 }
 
 export async function createMaintenanceSchedule(data) {
   const label = data.task || 'Planning maintenance'
-  const { data: result, error } = await supabase.from('maintenance_schedules').insert({ ...data, user_id: await orgUid() })
+  const { error } = await supabase.from('maintenance_schedules').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
+  logActivity('createMaintenanceSchedule', 'maintenance_schedule', '', label)
 }
 
 export async function updateMaintenanceSchedule(id, data) {
