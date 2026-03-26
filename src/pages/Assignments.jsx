@@ -22,9 +22,9 @@ export default function Assignments() {
   usePageTitle('Affectations')
   const { t } = useTranslation()
   const dateLocale = useDateLocale()
-  const { data: vehicles }                  = useVehicles()
-  const { data: drivers }                   = useDrivers()
-  const { data: assignments, error: assignmentsError } = useAssignments()
+  const { data: vehicles }    = useVehicles()
+  const { data: drivers }     = useDrivers()
+  const { data: assignments } = useAssignments()
   const queryClient = useQueryClient()
 
   const [modal, setModal]     = useState(false)
@@ -71,12 +71,6 @@ export default function Assignments() {
           <Plus className="w-4 h-4 mr-2" /> {t('assignments.newAssignment')}
         </Button>
       </PageHeader>
-
-      {assignmentsError && (
-        <div className="mb-4 px-4 py-3 rounded-xl text-sm text-red-600 bg-red-50 border border-red-100">
-          Erreur de chargement: {assignmentsError.message}
-        </div>
-      )}
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         {assignments.length === 0 ? (
