@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react'
-import { format, addMonths } from 'date-fns'
+import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
-import { Plus, Wrench, Trash2, Pencil, Check, X } from 'lucide-react'
+import { Plus, Wrench, Trash2, Pencil, Check, X, ChevronDown, ChevronRight, Info } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -13,7 +13,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import PageHeader from '@/components/shared/PageHeader'
-import EmptyState from '@/components/shared/EmptyState'
 import FormModal from '@/components/shared/FormModal'
 import {
   useVehicles, useMaintenanceRecords, useMaintenanceSchedules, useMileageEntries,
@@ -21,57 +20,167 @@ import {
   createMaintenanceSchedule, updateMaintenanceSchedule, deleteMaintenanceSchedule,
   getVehicleById
 } from '@/lib/useFleetData'
-import { computeForecasts, statusColors } from '@/lib/maintenanceForecast'
-
+import { computeForecasts } from '@/lib/maintenanceForecast'
 import { usePageTitle } from '@/lib/usePageTitle'
-function ForecastCard({ forecast }) {
-  const { vehicle, lastRecord, currentMileage, nextDate, daysUntil, kmUntil, status, schedule } = forecast
-  const c = statusColors(status)
+
+// ── Forecast Card (overdue / due_soon) ────────────────────────────
+function ForecastCard({ forecast, onLogMaintenance }) {
+  const { vehicle, lastRecord, nextDate, daysUntil, kmUntil, status, schedule } = forecast
+  const isOverdue = status === 'overdue'
+
+  const s = isOverdue
+    ? { border: 'border-red-200', accent: 'bg-red-500', badge: 'bg-red-50 text-red-700', cta: 'bg-red-600 hover:bg-red-700 text-white', label: 'de retard' }
+    : { border: 'border-amber-200', accent: 'bg-amber-400', badge: 'bg-amber-50 text-amber-700', cta: 'bg-amber-500 hover:bg-amber-600 text-white', label: 'restants' }
+
   return (
-    <div className={`rounded-2xl border p-5 ${c.bg} ${c.border}`}>
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${c.dot}`} />
-          <span className={`text-xs font-semibold uppercase tracking-wide ${c.text}`}>{t(`maintenance.status.${status ?? 'unknown'}`)}</span>
-        </div>
-        <span className={`text-xs font-medium px-2.5 py-1 rounded-full border ${c.bg} ${c.text} ${c.border}`}>
-          {nextDate ? format(nextDate, 'dd/MM/yyyy') : '—'}
-        </span>
-      </div>
-      <p className="font-bold text-slate-900 text-base mb-0.5">{vehicle?.plate_number || 'Inconnu'} — {vehicle?.model || ''}</p>
-      <p className="text-xs text-slate-400 mb-4">
-        {schedule.notes || `Tous les ${schedule.interval_months} mois ou ${schedule.interval_km?.toLocaleString('fr-FR')} km`}
-      </p>
-      <div className="bg-white/80 rounded-xl px-4 py-3 mb-3">
-        {kmUntil !== null ? (
-          kmUntil <= 0 ? (
-            <p className="text-sm font-bold text-red-600">Révision dépassée de {Math.abs(kmUntil).toLocaleString('fr-FR')} km</p>
-          ) : (
-            <p className={`text-sm font-bold ${kmUntil <= 5000 ? 'text-amber-600' : 'text-slate-900'}`}>
-              Prochaine révision dans <span className="text-base">{kmUntil.toLocaleString('fr-FR')} km</span>
-              {kmUntil <= 5000 && <span className="text-xs font-normal text-amber-500 ml-1">(moins de 5 000 km !)</span>}
+    <div className={`relative bg-white rounded-2xl border ${s.border} overflow-hidden`}>
+      <div className={`absolute left-0 top-0 bottom-0 w-1 ${s.accent}`} />
+      <div className="pl-5 pr-4 pt-4 pb-4">
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div>
+            <p className="font-semibold text-slate-900 text-sm">
+              {vehicle?.plate_number || '—'}{' '}
+              <span className="font-normal text-slate-500">{vehicle?.model || ''}</span>
             </p>
-          )
-        ) : <p className="text-sm text-slate-400">Kilométrage actuel inconnu</p>}
-        {currentMileage !== null && <p className="text-xs text-slate-400 mt-0.5">Compteur actuel : {currentMileage.toLocaleString('fr-FR')} km</p>}
+            <p className="text-xs text-slate-400 mt-0.5">
+              {schedule.notes || `${schedule.interval_months} mois · ${schedule.interval_km?.toLocaleString('fr-FR')} km`}
+            </p>
+          </div>
+          <span className={`text-xs font-bold px-2.5 py-1 rounded-full shrink-0 ${s.badge}`}>
+            {Math.abs(daysUntil ?? 0)} j {s.label}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className="bg-slate-50 rounded-xl px-3 py-2">
+            <p className="text-[10px] text-slate-400 mb-0.5">Km restants</p>
+            <p className={`text-sm font-bold ${kmUntil !== null && kmUntil <= 0 ? 'text-red-600' : 'text-slate-900'}`}>
+              {kmUntil !== null
+                ? `${kmUntil <= 0 ? '−' : ''}${Math.abs(kmUntil).toLocaleString('fr-FR')}`
+                : '—'}
+            </p>
+          </div>
+          <div className="bg-slate-50 rounded-xl px-3 py-2">
+            <p className="text-[10px] text-slate-400 mb-0.5">Échéance</p>
+            <p className="text-sm font-bold text-slate-900">{nextDate ? format(nextDate, 'dd/MM/yy') : '—'}</p>
+          </div>
+          <div className="bg-slate-50 rounded-xl px-3 py-2">
+            <p className="text-[10px] text-slate-400 mb-0.5">Dernier</p>
+            <p className="text-sm font-bold text-slate-900">
+              {lastRecord ? format(new Date(lastRecord.date), 'dd/MM/yy') : 'Jamais'}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => onLogMaintenance(schedule.vehicle_id)}
+          className={`w-full py-2 rounded-xl text-sm font-semibold transition-colors ${s.cta}`}
+        >
+          {isOverdue ? "Enregistrer l'entretien maintenant" : "Enregistrer l'entretien"}
+        </button>
       </div>
-      <div className="bg-white/70 rounded-xl p-3">
-        <p className="text-xs text-slate-400 mb-0.5">Jours restants</p>
-        <p className={`text-lg font-bold ${daysUntil !== null && daysUntil < 0 ? 'text-red-600' : 'text-slate-900'}`}>
-          {daysUntil !== null ? (daysUntil < 0 ? `${Math.abs(daysUntil)} j de retard` : `${daysUntil} j`) : '—'}
-        </p>
-      </div>
-      {lastRecord && (
-        <p className="text-xs text-slate-400 mt-3">
-          Dernière révision : <span className="font-medium text-slate-600">{format(new Date(lastRecord.date), 'dd/MM/yyyy')}</span>
-          {' · '}{lastRecord.mileage?.toLocaleString('fr-FR') ?? '—'} km
-        </p>
-      )}
     </div>
   )
 }
 
-// ── Schedule inline-edit row ───────────────────────────────────────
+// ── Forecast Row (ok — compact) ────────────────────────────────────
+function ForecastRow({ forecast, onLogMaintenance }) {
+  const { vehicle, nextDate, daysUntil, schedule } = forecast
+  return (
+    <div className="flex items-center gap-3 py-3 px-4 hover:bg-slate-50 transition-colors group border-b border-slate-100 last:border-0">
+      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+      <div className="flex-1 min-w-0">
+        <span className="text-sm font-medium text-slate-800">{vehicle?.plate_number || '—'}</span>
+        <span className="text-sm text-slate-400"> · {vehicle?.model || ''}</span>
+      </div>
+      <span className="text-xs text-slate-400 shrink-0 hidden sm:block">
+        {daysUntil !== null ? `${daysUntil} j` : '—'}
+      </span>
+      <span className="text-xs text-slate-400 shrink-0 hidden sm:block">
+        {nextDate ? format(nextDate, 'dd/MM/yy') : '—'}
+      </span>
+      <button
+        onClick={() => onLogMaintenance(schedule.vehicle_id)}
+        className="opacity-0 group-hover:opacity-100 transition-opacity text-xs font-medium text-slate-500 hover:text-slate-800 shrink-0 px-2 py-1 rounded-lg hover:bg-slate-100"
+      >
+        Enregistrer
+      </button>
+    </div>
+  )
+}
+
+// ── Onboarding empty state ─────────────────────────────────────────
+function MaintenanceOnboarding({ hasVehicles, hasSchedules, hasRecords, onCreateSchedule, onCreateRecord }) {
+  const steps = [
+    {
+      done: hasVehicles,
+      number: 1,
+      title: 'Ajoutez vos véhicules',
+      desc: 'Commencez par enregistrer votre flotte.',
+      action: null,
+    },
+    {
+      done: hasSchedules,
+      number: 2,
+      title: 'Créez un planning de maintenance',
+      desc: 'Définissez les intervalles (ex : vidange tous les 10 000 km).',
+      action: hasVehicles && !hasSchedules ? { label: 'Créer un planning', onClick: onCreateSchedule } : null,
+    },
+    {
+      done: hasRecords,
+      number: 3,
+      title: 'Enregistrez le premier entretien',
+      desc: 'Indiquez le dernier entretien effectué pour calibrer les prévisions.',
+      action: hasSchedules && !hasRecords ? { label: 'Ajouter un entretien', onClick: onCreateRecord } : null,
+    },
+  ]
+
+  return (
+    <div className="max-w-md mx-auto py-8">
+      <div className="text-center mb-8">
+        <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <Wrench className="w-5 h-5 text-slate-500" />
+        </div>
+        <h3 className="font-semibold text-slate-900 text-base mb-2">Configurez le suivi maintenance</h3>
+        <p className="text-sm text-slate-500">
+          Les prévisions sont calculées automatiquement à partir de vos plannings et de l'historique d'entretiens.
+        </p>
+      </div>
+      <div className="space-y-2">
+        {steps.map((step, i) => (
+          <div
+            key={i}
+            className={`flex items-center gap-3 p-4 rounded-2xl border ${
+              step.done ? 'bg-emerald-50 border-emerald-100' : 'bg-white border-slate-200'
+            }`}
+          >
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${
+              step.done ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-500'
+            }`}>
+              {step.done ? <Check className="w-3.5 h-3.5" /> : step.number}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className={`text-sm font-medium ${step.done ? 'text-emerald-700 line-through decoration-emerald-400' : 'text-slate-900'}`}>
+                {step.title}
+              </p>
+              {!step.done && <p className="text-xs text-slate-400 mt-0.5">{step.desc}</p>}
+            </div>
+            {step.action && !step.done && (
+              <button
+                onClick={step.action.onClick}
+                className="text-xs font-semibold text-blue-600 hover:text-blue-700 shrink-0 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors"
+              >
+                {step.action.label}
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ── Schedule Row (desktop inline-edit) ────────────────────────────
 function ScheduleRow({ schedule, vehicles, onDelete, onSave }) {
   const [editing, setEditing] = useState(false)
   const [form, setForm] = useState({ interval_months: schedule.interval_months, interval_km: schedule.interval_km, notes: schedule.notes || '' })
@@ -83,31 +192,34 @@ function ScheduleRow({ schedule, vehicles, onDelete, onSave }) {
   }
 
   return (
-    <tr className="hover:bg-white transition-colors group">
-      <td className="px-5 py-3.5 font-medium text-slate-900">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</td>
+    <tr className="hover:bg-slate-50 transition-colors group">
+      <td className="px-5 py-3.5 font-medium text-slate-900 text-sm">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</td>
       <td className="px-5 py-3.5">
-        {editing ? <Input type="number" value={form.interval_months} onChange={e => setForm({...form, interval_months: e.target.value})} className="w-20 h-7 text-sm" />
-          : <span className="text-slate-700">{schedule.interval_months} mois</span>}
+        {editing
+          ? <Input type="number" value={form.interval_months} onChange={e => setForm({ ...form, interval_months: e.target.value })} className="w-20 h-7 text-sm" />
+          : <span className="text-sm text-slate-700">{schedule.interval_months} mois</span>}
       </td>
       <td className="px-5 py-3.5">
-        {editing ? <Input type="number" value={form.interval_km} onChange={e => setForm({...form, interval_km: e.target.value})} className="w-28 h-7 text-sm" />
-          : <span className="text-slate-700">{schedule.interval_km?.toLocaleString('fr-FR')} km</span>}
+        {editing
+          ? <Input type="number" value={form.interval_km} onChange={e => setForm({ ...form, interval_km: e.target.value })} className="w-28 h-7 text-sm" />
+          : <span className="text-sm text-slate-700">{schedule.interval_km?.toLocaleString('fr-FR')} km</span>}
       </td>
       <td className="px-5 py-3.5">
-        {editing ? <Input value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} className="h-7 text-sm" placeholder="Note facultative" />
-          : <span className="text-slate-500 text-sm">{schedule.notes || '—'}</span>}
+        {editing
+          ? <Input value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} className="h-7 text-sm" placeholder="Note facultative" />
+          : <span className="text-sm text-slate-400">{schedule.notes || '—'}</span>}
       </td>
       <td className="px-5 py-3.5 text-right">
         <div className="flex items-center justify-end gap-1">
           {editing ? (
             <>
-              <button onClick={handleSave} className="p-1.5 rounded-lg hover:bg-emerald-50 text-emerald-600"><Check className="w-3.5 h-3.5" /></button>
-              <button onClick={() => setEditing(false)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400"><X className="w-3.5 h-3.5" /></button>
+              <button onClick={handleSave} className="p-1.5 rounded-lg hover:bg-emerald-50 text-emerald-600 transition-colors"><Check className="w-3.5 h-3.5" /></button>
+              <button onClick={() => setEditing(false)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors"><X className="w-3.5 h-3.5" /></button>
             </>
           ) : (
             <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-              <button onClick={() => setEditing(true)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700"><Pencil className="w-3.5 h-3.5" /></button>
-              <button onClick={() => onDelete(schedule.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
+              <button onClick={() => setEditing(true)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+              <button onClick={() => onDelete(schedule.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
             </div>
           )}
         </div>
@@ -116,7 +228,7 @@ function ScheduleRow({ schedule, vehicles, onDelete, onSave }) {
   )
 }
 
-// Mobile schedule card with inline editing
+// ── Schedule Card (mobile inline-edit) ────────────────────────────
 function ScheduleCard({ schedule, vehicles, onDelete, onSave }) {
   const [editing, setEditing] = useState(false)
   const [form, setForm] = useState({ interval_months: schedule.interval_months, interval_km: schedule.interval_km, notes: schedule.notes || '' })
@@ -131,14 +243,14 @@ function ScheduleCard({ schedule, vehicles, onDelete, onSave }) {
     <div className="p-4 border-b border-slate-100 last:border-0">
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-slate-900 truncate">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</p>
+          <p className="font-semibold text-slate-900 truncate text-sm">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</p>
           {editing ? (
             <div className="mt-2 space-y-2">
               <div className="flex gap-2">
-                <div className="flex-1"><Label className="text-xs">Mois</Label><Input type="number" value={form.interval_months} onChange={e => setForm({...form, interval_months: e.target.value})} className="h-8 text-sm" /></div>
-                <div className="flex-1"><Label className="text-xs">Km</Label><Input type="number" value={form.interval_km} onChange={e => setForm({...form, interval_km: e.target.value})} className="h-8 text-sm" /></div>
+                <div className="flex-1"><Label className="text-xs">Mois</Label><Input type="number" value={form.interval_months} onChange={e => setForm({ ...form, interval_months: e.target.value })} className="h-8 text-sm" /></div>
+                <div className="flex-1"><Label className="text-xs">Km</Label><Input type="number" value={form.interval_km} onChange={e => setForm({ ...form, interval_km: e.target.value })} className="h-8 text-sm" /></div>
               </div>
-              <Input value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} className="h-8 text-sm" placeholder="Note" />
+              <Input value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} className="h-8 text-sm" placeholder="Note" />
             </div>
           ) : (
             <>
@@ -147,7 +259,7 @@ function ScheduleCard({ schedule, vehicles, onDelete, onSave }) {
             </>
           )}
         </div>
-        <div className="flex items-center gap-1 flex-shrink-0">
+        <div className="flex items-center gap-1 shrink-0">
           {editing ? (
             <>
               <button onClick={handleSave} className="p-1.5 rounded-lg hover:bg-emerald-50 text-emerald-600"><Check className="w-4 h-4" /></button>
@@ -165,10 +277,11 @@ function ScheduleCard({ schedule, vehicles, onDelete, onSave }) {
   )
 }
 
-// ── Main ───────────────────────────────────────────────────────────
+// ── Constants ──────────────────────────────────────────────────────
 const EMPTY_RECORD   = { vehicle_id: '', date: '', mileage: '', issue_description: '', status: '' }
 const EMPTY_SCHEDULE = { vehicle_id: '', interval_months: '6', interval_km: '10000', notes: '' }
 
+// ── Main ───────────────────────────────────────────────────────────
 export default function Maintenance() {
   usePageTitle('Maintenance')
   const { t } = useTranslation()
@@ -179,25 +292,35 @@ export default function Maintenance() {
   const { data: mileageEntries } = useMileageEntries()
   const queryClient = useQueryClient()
 
-  const [recordModal, setRecordModal] = useState(false)
+  const [recordModal, setRecordModal]     = useState(false)
   const [editingRecord, setEditingRecord] = useState(null)
-  const [recordForm, setRecordForm] = useState(EMPTY_RECORD)
-  const [savingRecord, setSavingRecord] = useState(false)
+  const [recordForm, setRecordForm]       = useState(EMPTY_RECORD)
+  const [savingRecord, setSavingRecord]   = useState(false)
   const [deletingRecordId, setDeletingRecordId] = useState(null)
+  const [okCollapsed, setOkCollapsed]     = useState(true)
 
   const [scheduleModal, setScheduleModal] = useState(false)
-  const [scheduleForm, setScheduleForm] = useState(EMPTY_SCHEDULE)
+  const [scheduleForm, setScheduleForm]   = useState(EMPTY_SCHEDULE)
   const [savingSchedule, setSavingSchedule] = useState(false)
 
   const forecasts = useMemo(
     () => computeForecasts({ schedules, vehicles, maintenanceRecords: records, mileageEntries }),
     [schedules, vehicles, records, mileageEntries]
   )
-  const overdueCount  = forecasts.filter(f => f.status === 'overdue').length
-  const dueSoonCount  = forecasts.filter(f => f.status === 'due_soon').length
 
-  const openCreateRecord = () => { setEditingRecord(null); setRecordForm(EMPTY_RECORD); setRecordModal(true) }
-  const openEditRecord   = (r) => {
+  const overdueForecasts = forecasts.filter(f => f.status === 'overdue')
+  const dueSoonForecasts = forecasts.filter(f => f.status === 'due_soon')
+  const okForecasts      = forecasts.filter(f => f.status !== 'overdue' && f.status !== 'due_soon')
+  const overdueCount     = overdueForecasts.length
+  const dueSoonCount     = dueSoonForecasts.length
+
+  // Open record modal, optionally pre-filled with a vehicle
+  const openRecordModal = (vehicleId = '') => {
+    setEditingRecord(null)
+    setRecordForm({ ...EMPTY_RECORD, vehicle_id: vehicleId })
+    setRecordModal(true)
+  }
+  const openEditRecord = (r) => {
     setEditingRecord(r)
     setRecordForm({ vehicle_id: r.vehicle_id, date: r.date, mileage: String(r.mileage), issue_description: r.issue_description, status: r.status })
     setRecordModal(true)
@@ -246,11 +369,10 @@ export default function Maintenance() {
       toast.success(t('maintenance.scheduleSaved'))
       setScheduleModal(false)
       setScheduleForm(EMPTY_SCHEDULE)
-    } catch (err) { 
+    } catch (err) {
       console.error('Schedule creation error:', err)
       toast.error(err?.message || 'Erreur lors de la création')
-    }
-    finally { setSavingSchedule(false) }
+    } finally { setSavingSchedule(false) }
   }
 
   const handleUpdateSchedule = async (id, data) => {
@@ -271,8 +393,8 @@ export default function Maintenance() {
 
   return (
     <div className="p-5 sm:p-8">
-      <PageHeader title="Maintenance" description="Suivi des entretiens, plannings et prévisions">
-        <div className="flex items-center gap-2 flex-wrap">
+      <PageHeader title="Maintenance" description="Suivi des entretiens et prévisions par véhicule">
+        <div className="flex items-center gap-2">
           {overdueCount > 0 && (
             <span className="text-xs font-semibold bg-red-100 text-red-600 px-3 py-1.5 rounded-full">
               {overdueCount} en retard
@@ -286,116 +408,135 @@ export default function Maintenance() {
         </div>
       </PageHeader>
 
-      <Tabs defaultValue="forecast">
+      <Tabs defaultValue="forecasts">
         <div className="overflow-x-auto">
           <TabsList className="mb-6 bg-white border border-slate-200 p-1 rounded-xl h-auto min-w-max">
-            <TabsTrigger value="forecast" className="rounded-lg data-[state=active]:bg-slate-900 data-[state=active]:text-white">
+            <TabsTrigger value="forecasts" className="rounded-lg data-[state=active]:bg-slate-900 data-[state=active]:text-white text-sm">
               Prévisions
               {(overdueCount + dueSoonCount) > 0 && (
-                <span className="ml-1.5 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
+                <span className="ml-1.5 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
                   {overdueCount + dueSoonCount}
                 </span>
               )}
             </TabsTrigger>
-            <TabsTrigger value="schedules" className="rounded-lg data-[state=active]:bg-slate-900 data-[state=active]:text-white">
-              Plannings
-              {schedules.length > 0 && <span className="ml-1.5 text-xs opacity-60">{schedules.length}</span>}
-            </TabsTrigger>
-            <TabsTrigger value="records" className="rounded-lg data-[state=active]:bg-slate-900 data-[state=active]:text-white">
+            <TabsTrigger value="records" className="rounded-lg data-[state=active]:bg-slate-900 data-[state=active]:text-white text-sm">
               Entretiens
               {records.length > 0 && <span className="ml-1.5 text-xs opacity-60">{records.length}</span>}
+            </TabsTrigger>
+            <TabsTrigger value="schedules" className="rounded-lg data-[state=active]:bg-slate-900 data-[state=active]:text-white text-sm">
+              Plannings
+              {schedules.length > 0 && <span className="ml-1.5 text-xs opacity-60">{schedules.length}</span>}
             </TabsTrigger>
           </TabsList>
         </div>
 
-        {/* PRÉVISIONS */}
-        <TabsContent value="forecast">
-          {forecasts.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
-              <Wrench className="w-10 h-10 text-slate-200 mx-auto mb-3" />
-              <p className="font-medium text-slate-500">Aucun planning configuré</p>
-              <p className="text-sm text-slate-400 mt-1">Allez dans l'onglet Plannings pour configurer les intervalles.</p>
+        {/* ── PRÉVISIONS ─────────────────────────────────────────── */}
+        <TabsContent value="forecasts">
+          {forecasts.length === 0 && schedules.length === 0 ? (
+            <MaintenanceOnboarding
+              hasVehicles={vehicles.length > 0}
+              hasSchedules={schedules.length > 0}
+              hasRecords={records.length > 0}
+              onCreateSchedule={() => setScheduleModal(true)}
+              onCreateRecord={() => openRecordModal()}
+            />
+          ) : forecasts.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center">
+              <div className="w-10 h-10 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <Check className="w-5 h-5 text-emerald-500" />
+              </div>
+              <p className="font-medium text-slate-700 mb-1">Tous les véhicules sont à jour</p>
+              <p className="text-sm text-slate-400">Aucune maintenance imminente.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {forecasts.map(f => <ForecastCard key={f.schedule.id} forecast={f} />)}
+            <div className="space-y-6">
+              {/* Overdue */}
+              {overdueForecasts.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="w-2 h-2 rounded-full bg-red-500" />
+                    <h3 className="text-xs font-semibold text-red-600 uppercase tracking-wider">En retard · {overdueForecasts.length}</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                    {overdueForecasts.map(f => (
+                      <ForecastCard key={f.schedule.id} forecast={f} onLogMaintenance={openRecordModal} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Due soon */}
+              {dueSoonForecasts.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="w-2 h-2 rounded-full bg-amber-400" />
+                    <h3 className="text-xs font-semibold text-amber-600 uppercase tracking-wider">Bientôt · {dueSoonForecasts.length}</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                    {dueSoonForecasts.map(f => (
+                      <ForecastCard key={f.schedule.id} forecast={f} onLogMaintenance={openRecordModal} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* OK — collapsible compact list */}
+              {okForecasts.length > 0 && (
+                <div>
+                  <button
+                    onClick={() => setOkCollapsed(v => !v)}
+                    className="flex items-center gap-2 mb-3 group"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider group-hover:text-slate-600 transition-colors">
+                      À jour · {okForecasts.length}
+                    </h3>
+                    {okCollapsed
+                      ? <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                      : <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                    }
+                  </button>
+                  {!okCollapsed && (
+                    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                      {okForecasts.map(f => (
+                        <ForecastRow key={f.schedule.id} forecast={f} onLogMaintenance={openRecordModal} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
+          )}
+
+          {forecasts.length > 0 && (
+            <p className="text-xs text-slate-400 mt-6 flex items-center gap-1.5">
+              <Info className="w-3.5 h-3.5 shrink-0" />
+              Prévisions calculées automatiquement à partir de vos plannings et de l'historique d'entretiens.
+            </p>
           )}
         </TabsContent>
 
-        {/* PLANNINGS */}
-        <TabsContent value="schedules">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-slate-500">{schedules.length} planning{schedules.length !== 1 ? 's' : ''} configuré{schedules.length !== 1 ? 's' : ''}</p>
-            <Button onClick={() => setScheduleModal(true)} className="bg-[#2563EB] hover:bg-[#1D4ED8]" size="sm">
-              <Plus className="w-4 h-4 mr-2" /> Nouveau planning
-            </Button>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-            {schedulesError ? (
-              <div className="p-8 text-center text-sm text-red-500">
-                Erreur de chargement des plannings. Vérifiez la connexion à la base de données.
-              </div>
-            ) : schedules.length === 0 ? (
-              <EmptyState
-                icon={Wrench}
-                title="Aucun planning configuré"
-                description="Configurez des intervalles de maintenance par véhicule pour activer les prévisions."
-                action={{ label: 'Nouveau planning', onClick: () => setScheduleModal(true) }}
-              />
-            ) : (
-              <>
-                {/* Desktop table */}
-                <div className="hidden sm:block overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="bg-white border-b border-slate-200">
-                        <th className="text-left px-5 py-3 font-medium text-slate-500">Véhicule</th>
-                        <th className="text-left px-5 py-3 font-medium text-slate-500">Intervalle</th>
-                        <th className="text-left px-5 py-3 font-medium text-slate-500">Kilométrage</th>
-                        <th className="text-left px-5 py-3 font-medium text-slate-500">Notes</th>
-                        <th className="px-5 py-3 w-24"></th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {schedules.map(s => (
-                        <ScheduleRow key={s.id} schedule={s} vehicles={vehicles} onDelete={handleDeleteSchedule} onSave={handleUpdateSchedule} />
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                {/* Mobile cards */}
-                <div className="sm:hidden">
-                  {schedules.map(s => (
-                    <ScheduleCard key={s.id} schedule={s} vehicles={vehicles} onDelete={handleDeleteSchedule} onSave={handleUpdateSchedule} />
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        </TabsContent>
-
-        {/* ENTRETIENS */}
+        {/* ── ENTRETIENS ─────────────────────────────────────────── */}
         <TabsContent value="records">
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm text-slate-500">{records.length} entretien{records.length !== 1 ? 's' : ''} enregistré{records.length !== 1 ? 's' : ''}</p>
-            <Button onClick={openCreateRecord} className="bg-[#2563EB] hover:bg-[#1D4ED8]" size="sm">
+            <Button onClick={() => openRecordModal()} className="bg-[#2563EB] hover:bg-[#1D4ED8]" size="sm">
               <Plus className="w-4 h-4 mr-2" /> Ajouter un entretien
             </Button>
           </div>
 
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
             {records.length === 0 ? (
-              <EmptyState
-                icon={Wrench}
-                title="Aucun entretien enregistré"
-                description="Enregistrez le premier entretien d'un véhicule."
-                action={{ label: 'Ajouter un entretien', onClick: openCreateRecord }}
-              />
+              <div className="p-10 text-center">
+                <Wrench className="w-8 h-8 text-slate-200 mx-auto mb-3" />
+                <p className="font-medium text-slate-500 mb-1">Aucun entretien enregistré</p>
+                <p className="text-sm text-slate-400 mb-4">Enregistrez le premier entretien d'un véhicule.</p>
+                <Button onClick={() => openRecordModal()} size="sm" className="bg-[#2563EB] hover:bg-[#1D4ED8]">
+                  <Plus className="w-4 h-4 mr-1.5" /> Ajouter un entretien
+                </Button>
+              </div>
             ) : (
               <>
-                {/* Desktop table */}
                 <div className="hidden sm:block overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
@@ -405,29 +546,25 @@ export default function Maintenance() {
                         <th className="text-left px-5 py-3 font-medium text-slate-500">Kilométrage</th>
                         <th className="text-left px-5 py-3 font-medium text-slate-500">Description</th>
                         <th className="text-left px-5 py-3 font-medium text-slate-500">Statut</th>
-                        <th className="px-5 py-3 w-24"></th>
+                        <th className="px-5 py-3 w-24" />
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {records.map(r => {
                         const vehicle = getVehicleById(vehicles, r.vehicle_id)
                         return (
-                          <tr key={r.id} className="hover:bg-white transition-colors group">
+                          <tr key={r.id} className="hover:bg-slate-50 transition-colors group">
                             <td className="px-5 py-3 font-medium text-slate-900">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</td>
                             <td className="px-5 py-3 text-slate-500">{format(new Date(r.date), 'd MMM yyyy', { locale: dateLocale })}</td>
-                            <td className="px-5 py-3">{r.mileage?.toLocaleString('fr-FR') ?? '—'} km</td>
+                            <td className="px-5 py-3 text-slate-700">{r.mileage?.toLocaleString('fr-FR') ?? '—'} km</td>
                             <td className="px-5 py-3 max-w-xs truncate text-slate-600">{r.issue_description}</td>
                             <td className="px-5 py-3">
                               <Badge variant={r.status === 'OK' ? 'default' : 'destructive'}>{r.status === 'OK' ? 'OK' : 'Problème'}</Badge>
                             </td>
                             <td className="px-5 py-3">
                               <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onClick={() => openEditRecord(r)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors">
-                                  <Pencil className="w-3.5 h-3.5" />
-                                </button>
-                                <button onClick={() => handleDeleteRecord(r.id)} disabled={deletingRecordId === r.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors">
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
+                                <button onClick={() => openEditRecord(r)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                                <button onClick={() => handleDeleteRecord(r.id)} disabled={deletingRecordId === r.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                               </div>
                             </td>
                           </tr>
@@ -436,7 +573,6 @@ export default function Maintenance() {
                     </tbody>
                   </table>
                 </div>
-                {/* Mobile cards */}
                 <div className="sm:hidden divide-y divide-slate-100">
                   {records.map(r => {
                     const vehicle = getVehicleById(vehicles, r.vehicle_id)
@@ -447,22 +583,67 @@ export default function Maintenance() {
                             <p className="font-semibold text-slate-900 truncate">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</p>
                             <p className="text-sm text-slate-600 mt-0.5 truncate">{r.issue_description}</p>
                             <p className="text-xs text-slate-400 mt-0.5">{format(new Date(r.date), 'd MMM yyyy', { locale: dateLocale })} · {r.mileage?.toLocaleString('fr-FR') ?? '—'} km</p>
-                            <div className="mt-1.5">
-                              <Badge variant={r.status === 'OK' ? 'default' : 'destructive'}>{r.status === 'OK' ? 'OK' : 'Problème'}</Badge>
-                            </div>
+                            <div className="mt-1.5"><Badge variant={r.status === 'OK' ? 'default' : 'destructive'}>{r.status === 'OK' ? 'OK' : 'Problème'}</Badge></div>
                           </div>
-                          <div className="flex items-center gap-1 flex-shrink-0">
-                            <button onClick={() => openEditRecord(r)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700">
-                              <Pencil className="w-4 h-4" />
-                            </button>
-                            <button onClick={() => handleDeleteRecord(r.id)} disabled={deletingRecordId === r.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500">
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button onClick={() => openEditRecord(r)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400"><Pencil className="w-4 h-4" /></button>
+                            <button onClick={() => handleDeleteRecord(r.id)} disabled={deletingRecordId === r.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
                           </div>
                         </div>
                       </div>
                     )
                   })}
+                </div>
+              </>
+            )}
+          </div>
+        </TabsContent>
+
+        {/* ── PLANNINGS ──────────────────────────────────────────── */}
+        <TabsContent value="schedules">
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm text-slate-500">{schedules.length} planning{schedules.length !== 1 ? 's' : ''} configuré{schedules.length !== 1 ? 's' : ''}</p>
+            <Button onClick={() => setScheduleModal(true)} className="bg-[#2563EB] hover:bg-[#1D4ED8]" size="sm">
+              <Plus className="w-4 h-4 mr-2" /> Nouveau planning
+            </Button>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+            {schedulesError ? (
+              <div className="p-8 text-center text-sm text-red-500">Erreur de chargement des plannings.</div>
+            ) : schedules.length === 0 ? (
+              <div className="p-10 text-center">
+                <Wrench className="w-8 h-8 text-slate-200 mx-auto mb-3" />
+                <p className="font-medium text-slate-500 mb-1">Aucun planning configuré</p>
+                <p className="text-sm text-slate-400 mb-4">Définissez les intervalles de maintenance par véhicule pour activer les prévisions.</p>
+                <Button onClick={() => setScheduleModal(true)} size="sm" className="bg-[#2563EB] hover:bg-[#1D4ED8]">
+                  <Plus className="w-4 h-4 mr-1.5" /> Nouveau planning
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-white border-b border-slate-200">
+                        <th className="text-left px-5 py-3 font-medium text-slate-500">Véhicule</th>
+                        <th className="text-left px-5 py-3 font-medium text-slate-500">Intervalle</th>
+                        <th className="text-left px-5 py-3 font-medium text-slate-500">Kilométrage</th>
+                        <th className="text-left px-5 py-3 font-medium text-slate-500">Notes</th>
+                        <th className="px-5 py-3 w-24" />
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {schedules.map(s => (
+                        <ScheduleRow key={s.id} schedule={s} vehicles={vehicles} onDelete={handleDeleteSchedule} onSave={handleUpdateSchedule} />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="sm:hidden">
+                  {schedules.map(s => (
+                    <ScheduleCard key={s.id} schedule={s} vehicles={vehicles} onDelete={handleDeleteSchedule} onSave={handleUpdateSchedule} />
+                  ))}
                 </div>
               </>
             )}
@@ -474,14 +655,14 @@ export default function Maintenance() {
       <FormModal
         open={recordModal}
         onClose={closeRecordModal}
-        title={editingRecord ? "Modifier l'entretien" : 'Ajouter un entretien'}
+        title={editingRecord ? "Modifier l'entretien" : 'Enregistrer un entretien'}
         onSubmit={handleSaveRecord}
         saving={savingRecord}
         submitLabel={editingRecord ? 'Mettre à jour' : 'Enregistrer'}
       >
         <div>
           <Label>Véhicule</Label>
-          <Select value={recordForm.vehicle_id} onValueChange={v => setRecordForm(f => ({...f, vehicle_id: v}))}>
+          <Select value={recordForm.vehicle_id} onValueChange={v => setRecordForm(f => ({ ...f, vehicle_id: v }))}>
             <SelectTrigger><SelectValue placeholder="Sélectionner un véhicule" /></SelectTrigger>
             <SelectContent>{vehicles.map(v => <SelectItem key={v.id} value={v.id}>{v.plate_number} — {v.model}</SelectItem>)}</SelectContent>
           </Select>
@@ -489,20 +670,20 @@ export default function Maintenance() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <Label>Date <span className="text-slate-400 font-normal">(optionnel — aujourd'hui par défaut)</span></Label>
-            <Input type="date" value={recordForm.date} onChange={e => setRecordForm(f => ({...f, date: e.target.value}))} />
+            <Input type="date" value={recordForm.date} onChange={e => setRecordForm(f => ({ ...f, date: e.target.value }))} />
           </div>
           <div>
             <Label>Kilométrage (km)</Label>
-            <Input type="number" value={recordForm.mileage} onChange={e => setRecordForm(f => ({...f, mileage: e.target.value}))} placeholder="125000" />
+            <Input type="number" value={recordForm.mileage} onChange={e => setRecordForm(f => ({ ...f, mileage: e.target.value }))} placeholder="125000" />
           </div>
         </div>
         <div>
           <Label>Description</Label>
-          <Textarea value={recordForm.issue_description} onChange={e => setRecordForm(f => ({...f, issue_description: e.target.value}))} placeholder="Décrire l'entretien effectué..." />
+          <Textarea value={recordForm.issue_description} onChange={e => setRecordForm(f => ({ ...f, issue_description: e.target.value }))} placeholder="Décrire l'entretien effectué..." />
         </div>
         <div>
           <Label>Statut</Label>
-          <Select value={recordForm.status} onValueChange={v => setRecordForm(f => ({...f, status: v}))}>
+          <Select value={recordForm.status} onValueChange={v => setRecordForm(f => ({ ...f, status: v }))}>
             <SelectTrigger><SelectValue placeholder="Sélectionner le statut" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="OK">OK</SelectItem>
@@ -523,7 +704,7 @@ export default function Maintenance() {
       >
         <div>
           <Label>Véhicule</Label>
-          <Select value={scheduleForm.vehicle_id} onValueChange={v => setScheduleForm(f => ({...f, vehicle_id: v}))}>
+          <Select value={scheduleForm.vehicle_id} onValueChange={v => setScheduleForm(f => ({ ...f, vehicle_id: v }))}>
             <SelectTrigger><SelectValue placeholder="Sélectionner un véhicule" /></SelectTrigger>
             <SelectContent>{vehicles.map(v => <SelectItem key={v.id} value={v.id}>{v.plate_number} — {v.model}</SelectItem>)}</SelectContent>
           </Select>
@@ -531,16 +712,16 @@ export default function Maintenance() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <Label>Intervalle (mois)</Label>
-            <Input type="number" value={scheduleForm.interval_months} onChange={e => setScheduleForm(f => ({...f, interval_months: e.target.value}))} placeholder="6" />
+            <Input type="number" value={scheduleForm.interval_months} onChange={e => setScheduleForm(f => ({ ...f, interval_months: e.target.value }))} placeholder="6" />
           </div>
           <div>
             <Label>Intervalle (km)</Label>
-            <Input type="number" value={scheduleForm.interval_km} onChange={e => setScheduleForm(f => ({...f, interval_km: e.target.value}))} placeholder="10000" />
+            <Input type="number" value={scheduleForm.interval_km} onChange={e => setScheduleForm(f => ({ ...f, interval_km: e.target.value }))} placeholder="10000" />
           </div>
         </div>
         <div>
           <Label>Notes (facultatif)</Label>
-          <Input value={scheduleForm.notes} onChange={e => setScheduleForm(f => ({...f, notes: e.target.value}))} placeholder="Ex : Vidange + filtre" />
+          <Input value={scheduleForm.notes} onChange={e => setScheduleForm(f => ({ ...f, notes: e.target.value }))} placeholder="Ex : Vidange + filtre" />
         </div>
       </FormModal>
     </div>
