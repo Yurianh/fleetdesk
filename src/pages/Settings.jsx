@@ -155,7 +155,7 @@ export default function Settings() {
                   {isCollaborator ? (
                     <div>
                       <label className="block text-xs font-medium text-zinc-500 mb-1.5">Organisation</label>
-                      <input value={user?.user_metadata?.org_owner_name || ''} disabled
+                      <input value={user?.user_metadata?.org_company || user?.user_metadata?.org_owner_name || ''} disabled
                         className="w-full border border-zinc-100 rounded-lg px-3 py-2 text-sm text-zinc-400 bg-zinc-50 cursor-not-allowed" />
                       <p className="text-[11px] text-zinc-400 mt-1">Géré par le propriétaire de l'organisation.</p>
                     </div>

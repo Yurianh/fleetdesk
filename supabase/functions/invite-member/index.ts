@@ -48,7 +48,8 @@ Deno.serve(async (req) => {
     if (insertErr) throw insertErr
 
     const siteUrl = Deno.env.get('SITE_URL') || 'https://app.fleetdesk.fr'
-    const inviteMeta = { org_id: orgId, role, org_owner_name: orgOwnerName }
+    const orgCompany = user.user_metadata?.company || ''
+    const inviteMeta = { org_id: orgId, role, org_owner_name: orgOwnerName, org_company: orgCompany }
 
     // Try to send invite email
     const { error: inviteErr } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
