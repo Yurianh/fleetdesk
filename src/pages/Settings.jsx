@@ -193,6 +193,26 @@ export default function Settings() {
                     <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${planInfo.color}`}>{planInfo.label}</span>
                     <span className="text-sm text-zinc-500">{t('settings.activePlan')}</span>
                   </div>
+                  {!isCollaborator && plan !== 'starter' && (
+                    <button
+                      onClick={async () => {
+                        setSaving(true)
+                        try {
+                          const { data, error } = await supabase.functions.invoke('create-portal-session', {
+                            body: { return_url: window.location.origin + '/Settings' },
+                          })
+                          if (error) throw error
+                          window.location.href = data.url
+                        } catch (e) { toast.error(e.message) }
+                        finally { setSaving(false) }
+                      }}
+                      disabled={saving}
+                      className="flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-800 border border-zinc-200 hover:border-zinc-300 rounded-lg px-3 py-1.5 transition-colors"
+                    >
+                      {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />}
+                      Gérer l'abonnement
+                    </button>
+                  )}
                 </div>
                 {isCollaborator && (
                   <p className="text-xs text-zinc-400 mb-4">
@@ -227,6 +247,47 @@ export default function Settings() {
                   </div>
                 </div>
               </div>
+
+              {/* Billing portal — subscribed non-collaborator */}
+              {!isCollaborator && plan !== 'starter' && (
+                <div className="bg-white border border-zinc-200 rounded-xl p-5">
+                  <h2 className="text-sm font-semibold text-zinc-900 mb-1">Facturation & paiement</h2>
+                  <p className="text-xs text-zinc-400 mb-4">Gérez votre moyen de paiement, consultez vos factures ou annulez votre abonnement.</p>
+                  <div className="space-y-2">
+                    {[
+                      { label: 'Mettre à jour le moyen de paiement', desc: 'Changer votre carte bancaire ou IBAN' },
+                      { label: 'Télécharger les factures', desc: 'Accédez à l'historique de vos paiements' },
+                      { label: 'Annuler ou changer de formule', desc: 'Résiliez ou passez à un autre plan' },
+                    ].map(item => (
+                      <div key={item.label} className="flex items-center justify-between py-2.5 border-b border-zinc-100 last:border-0">
+                        <div>
+                          <p className="text-sm text-zinc-700 font-medium">{item.label}</p>
+                          <p className="text-xs text-zinc-400">{item.desc}</p>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-zinc-300 flex-shrink-0" />
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={async () => {
+                      setSaving(true)
+                      try {
+                        const { data, error } = await supabase.functions.invoke('create-portal-session', {
+                          body: { return_url: window.location.origin + '/Settings' },
+                        })
+                        if (error) throw error
+                        window.location.href = data.url
+                      } catch (e) { toast.error(e.message) }
+                      finally { setSaving(false) }
+                    }}
+                    disabled={saving}
+                    className="mt-4 w-full flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] disabled:opacity-50 text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
+                  >
+                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
+                    Ouvrir le portail de facturation
+                  </button>
+                </div>
+              )}
 
               {/* Upgrade options */}
               {plan !== 'enterprise' && !isCollaborator && (

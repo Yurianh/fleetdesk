@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
     }
 
     const { error: updateErr } = await supabaseAdmin.auth.admin.updateUserById(user_id, {
-      user_metadata: { ...existing.user_metadata, plan, onboarding_complete: true },
+      user_metadata: { ...existing.user_metadata, plan, onboarding_complete: true, stripe_customer_id: session.customer as string },
     })
     if (updateErr) throw updateErr
 
