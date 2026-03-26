@@ -198,7 +198,9 @@ export default function Settings() {
                       onClick={async () => {
                         setSaving(true)
                         try {
+                          const { data: { session } } = await supabase.auth.getSession()
                           const { data, error } = await supabase.functions.invoke('create-portal-session', {
+                            headers: { Authorization: `Bearer ${session?.access_token}` },
                             body: { return_url: window.location.origin + '/Settings' },
                           })
                           if (error) throw error
@@ -272,7 +274,9 @@ export default function Settings() {
                     onClick={async () => {
                       setSaving(true)
                       try {
+                        const { data: { session } } = await supabase.auth.getSession()
                         const { data, error } = await supabase.functions.invoke('create-portal-session', {
+                          headers: { Authorization: `Bearer ${session?.access_token}` },
                           body: { return_url: window.location.origin + '/Settings' },
                         })
                         if (error) throw error
