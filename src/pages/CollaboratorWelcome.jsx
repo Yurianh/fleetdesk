@@ -29,12 +29,12 @@ export default function CollaboratorWelcome() {
 
     setLoading(true)
     try {
-      const updateData: Record<string, unknown> = {
+      const updateData = {
         full_name: name.trim(),
         onboarding_complete: true,
         re_invited: false,
       }
-      const updatePayload: Record<string, unknown> = { data: updateData }
+      const updatePayload = { data: updateData }
       if (!isReInvited) updatePayload.password = password
 
       const { error: updateErr } = await supabase.auth.updateUser(updatePayload)
