@@ -5,7 +5,18 @@ import { supabase } from './supabase'
 async function orgUid() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
-  return user.user_metadata?.org_id || user.id
+  // Fast path: org_id in metadata (set during invite)
+  if (user.user_metadata?.org_id) return user.user_metadata.org_id
+  // Fallback: query org_members in case metadata was lost after session refresh
+  // member_see_own_record policy allows this even without status = 'active'
+  const { data: membership } = await supabase
+    .from('org_members')
+    .select('org_id')
+    .eq('user_id', user.id)
+    .maybeSingle()
+  if (membership?.org_id) return membership.org_id
+  // Owner: no org_members row — use own ID
+  return user.id
 }
 
 // ─── Realtime invalidation ────────────────────────────────────────────

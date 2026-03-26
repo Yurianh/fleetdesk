@@ -30,6 +30,8 @@ export default function CollaboratorWelcome() {
     setLoading(true)
     try {
       const updateData = {
+        // Spread existing metadata first so org_id / role / org_owner_name are never lost
+        ...(user?.user_metadata || {}),
         full_name: name.trim(),
         onboarding_complete: true,
         re_invited: false,
