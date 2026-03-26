@@ -30,15 +30,8 @@ export function AuthProvider({ children }) {
             if (!member) {
               // Row deleted — access revoked
               supabase.auth.signOut()
-            } else if (member.status !== 'active') {
-              // Still pending — activate
-              supabase
-                .from('org_members')
-                .update({ status: 'active', user_id: user.id, full_name: user.user_metadata?.full_name || '' })
-                .eq('email', user.email)
-                .eq('org_id', user.user_metadata.org_id)
-                .then(() => {})
             }
+            // Do NOT auto-activate pending members here — activation only happens via /join
           })
       }
     })
