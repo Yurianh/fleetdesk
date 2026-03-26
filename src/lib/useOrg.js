@@ -1,12 +1,34 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from './supabase'
 
+async function getAuthHeader() {
+  const { data: { session } } = await supabase.auth.getSession()
+  return session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}
+}
+
+async function invokeWithAuth(fnName, body) {
+  const headers = await getAuthHeader()
+  const { data, error } = await supabase.functions.invoke(fnName, { body, headers })
+  if (error) {
+    let detail = error.message
+    try {
+      const b = typeof error.context?.json === 'function'
+        ? await error.context.json()
+        : JSON.parse(error.context)
+      if (b?.error) detail = b.error
+    } catch {}
+    throw new Error(detail)
+  }
+  if (data?.error) throw new Error(data.error)
+  return data
+}
+
 export function useOrgMembers() {
   return useQuery({
     queryKey: ['orgMembers'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user || user.user_metadata?.org_id) return []  // collaborators don't see team
+      if (!user || user.user_metadata?.org_id) return []
       const { data, error } = await supabase
         .from('org_members')
         .select('*')
@@ -40,15 +62,7 @@ export function useActivityLog(limit = 50) {
 export function useInviteMember() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({ email, role }) => {
-      const { data, error } = await supabase.functions.invoke('invite-member', { body: { email, role } })
-      if (error) {
-        let detail = error.message
-        try { const b = await error.context?.json?.(); if (b?.error) detail = b.error } catch {}
-        throw new Error(detail)
-      }
-      return data
-    },
+    mutationFn: ({ email, role }) => invokeWithAuth('invite-member', { email, role }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['orgMembers'] }),
   })
 }
@@ -56,15 +70,7 @@ export function useInviteMember() {
 export function useRemoveMember() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({ memberId }) => {
-      const { data, error } = await supabase.functions.invoke('remove-member', { body: { memberId } })
-      if (error) {
-        let detail = error.message
-        try { const b = await error.context?.json?.(); if (b?.error) detail = b.error } catch {}
-        throw new Error(detail)
-      }
-      return data
-    },
+    mutationFn: ({ memberId }) => invokeWithAuth('remove-member', { memberId }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['orgMembers'] }),
   })
 }
