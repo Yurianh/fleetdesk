@@ -6,16 +6,20 @@ async function orgUid() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
   // Fast path: org_id in metadata (set during invite)
-  if (user.user_metadata?.org_id) return user.user_metadata.org_id
+  if (user.user_metadata?.org_id) {
+    console.log('[orgUid] from metadata:', user.user_metadata.org_id)
+    return user.user_metadata.org_id
+  }
   // Fallback: query org_members by user_id OR email
-  // member_see_own_record covers user_id match; member_see_own_by_email covers NULL user_id rows
-  const { data: membership } = await supabase
+  const { data: membership, error: memberErr } = await supabase
     .from('org_members')
     .select('org_id')
     .or(`user_id.eq.${user.id},email.eq.${user.email}`)
     .maybeSingle()
+  console.log('[orgUid] fallback membership:', membership, 'error:', memberErr?.message, 'user.id:', user.id, 'email:', user.email)
   if (membership?.org_id) return membership.org_id
   // Owner: no org_members row — use own ID
+  console.log('[orgUid] owner path, returning user.id:', user.id)
   return user.id
 }
 
@@ -191,8 +195,10 @@ export async function createDriver(data) {
 }
 
 export async function createAssignment(data) {
-  const label = 'Affectation'
-  const { data: result, error } = await supabase.from('assignments').insert({ ...data, user_id: await orgUid() })
+  const uid = await orgUid()
+  console.log('[createAssignment] inserting with user_id:', uid, 'data:', data)
+  const { data: result, error } = await supabase.from('assignments').insert({ ...data, user_id: uid })
+  console.log('[createAssignment] result:', result, 'error:', error?.message, error?.code)
   if (error) throw error
 }
 
