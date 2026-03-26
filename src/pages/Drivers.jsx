@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, ChevronRight, CreditCard, Users } from 'lucide-react'
+import { Plus, Search, ChevronRight, CreditCard, Users, Trash2, Loader2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -11,7 +11,7 @@ import PageHeader from '@/components/shared/PageHeader'
 import EmptyState from '@/components/shared/EmptyState'
 import {
   useDrivers, useVehicles, useAssignments,
-  createDriver, getLatestAssignments, getVehicleById
+  createDriver, deleteDriver, getLatestAssignments, getVehicleById
 } from '@/lib/useFleetData'
 
 import { usePageTitle } from '@/lib/usePageTitle'
@@ -30,6 +30,7 @@ export default function Drivers() {
   const [showAdd, setShowAdd] = useState(false)
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({ name: '', phone: '', dkv_card: '', highway_badge: '', wash_card: '' })
+  const [deleteTarget, setDeleteTarget] = useState(null)
 
   const latestAssignments = getLatestAssignments(assignments)
   const driverVehicleMap = {}
@@ -47,6 +48,18 @@ export default function Drivers() {
       setForm({ name: '', phone: '', dkv_card: '', highway_badge: '', wash_card: '' })
       toast.success(t('drivers.added'))
     } catch { toast.error(t('drivers.addError')) }
+    finally { setSaving(false) }
+  }
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return
+    setSaving(true)
+    try {
+      await deleteDriver(deleteTarget.id)
+      queryClient.invalidateQueries({ queryKey: ['drivers'] })
+      setDeleteTarget(null)
+      toast.success('Conducteur supprimé.')
+    } catch { toast.error('Erreur lors de la suppression.') }
     finally { setSaving(false) }
   }
 
@@ -108,8 +121,11 @@ export default function Drivers() {
                         <td className="px-5 py-3.5">
                           {d.wash_card ? <span className="text-slate-700">{d.wash_card}</span> : <span className="text-slate-300">—</span>}
                         </td>
-                        <td className="px-5 py-3.5 text-right">
-                          <Link to={`/Drivers/${d.id}`} className="text-slate-400 hover:text-[#1D4ED8]"><ChevronRight className="w-4 h-4 inline" /></Link>
+                        <td className="px-5 py-3.5">
+                          <div className="flex items-center justify-end gap-1">
+                            <button onClick={() => setDeleteTarget(d)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                            <Link to={`/Drivers/${d.id}`} className="p-1.5 text-slate-400 hover:text-[#1D4ED8]"><ChevronRight className="w-4 h-4" /></Link>
+                          </div>
                         </td>
                       </tr>
                     )
@@ -130,7 +146,10 @@ export default function Drivers() {
                       <p className="text-sm text-slate-500">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : 'Non affecté'}</p>
                       {d.phone && <p className="text-xs text-slate-400 mt-0.5">{d.phone}</p>}
                     </div>
-                    <ChevronRight className="w-4 h-4 text-slate-300 flex-shrink-0" />
+                    <div className="flex items-center gap-1">
+                      <button onClick={e => { e.preventDefault(); setDeleteTarget(d) }} className="p-1.5 text-slate-400 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
+                      <ChevronRight className="w-4 h-4 text-slate-300 flex-shrink-0" />
+                    </div>
                   </Link>
                 )
               })}
@@ -167,6 +186,20 @@ export default function Drivers() {
                   Enregistrement...
                 </span>
               ) : 'Enregistrer'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+ 
+      {/* Delete confirm dialog */}
+      <Dialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-sm">
+          <DialogHeader><DialogTitle>Supprimer le conducteur</DialogTitle></DialogHeader>
+          <p className="text-sm text-slate-500 mt-1">Supprimer <span className="font-semibold text-slate-800">{deleteTarget?.name}</span> ? Cette action est irréversible.</p>
+          <div className="flex gap-3 mt-4">
+            <Button variant="outline" className="flex-1" onClick={() => setDeleteTarget(null)}>Annuler</Button>
+            <Button onClick={handleDelete} disabled={saving} className="flex-1 bg-red-500 hover:bg-red-600 text-white">
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Supprimer'}
             </Button>
           </div>
         </DialogContent>

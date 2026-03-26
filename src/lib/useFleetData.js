@@ -234,6 +234,36 @@ export async function updateDriver(id, data) {
   logActivity('updateDriver', 'driver', id, '')
 }
 
+export async function deleteDriver(id) {
+  const { error } = await supabase.from('drivers').delete().eq('id', id)
+  if (error) throw error
+  logActivity('deleteDriver', 'driver', id, '')
+}
+
+export async function updateVehicle(id, data) {
+  const { error } = await supabase.from('vehicles').update(data).eq('id', id)
+  if (error) throw error
+  logActivity('updateVehicle', 'vehicle', id, data.plate_number || '')
+}
+
+export async function deleteVehicle(id) {
+  const { error } = await supabase.from('vehicles').delete().eq('id', id)
+  if (error) throw error
+  logActivity('deleteVehicle', 'vehicle', id, '')
+}
+
+export async function updateMileageEntry(id, data) {
+  const { error } = await supabase.from('mileage_entries').update(data).eq('id', id)
+  if (error) throw error
+  logActivity('updateMileageEntry', 'mileage', id, '')
+}
+
+export async function updateAssignment(id, data) {
+  const { error } = await supabase.from('assignments').update(data).eq('id', id)
+  if (error) throw error
+  logActivity('updateAssignment', 'assignment', id, '')
+}
+
 export async function deleteMileageEntry(id) {
   const { error } = await supabase.from('mileage_entries').delete().eq('id', id)
   if (error) throw error

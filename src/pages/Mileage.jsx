@@ -2,9 +2,10 @@ import React, { useState } from 'react'
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
-import { Plus, Gauge, Trash2, Search } from 'lucide-react'
+import { Plus, Gauge, Trash2, Search, Pencil, Loader2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import { useQueryClient } from '@tanstack/react-query'
@@ -14,7 +15,7 @@ import EmptyState from '@/components/shared/EmptyState'
 import FormModal from '@/components/shared/FormModal'
 import {
   useVehicles, useMileageEntries,
-  createMileageEntry, deleteMileageEntry,
+  createMileageEntry, deleteMileageEntry, updateMileageEntry,
   getLatestMileage, getVehicleById
 } from '@/lib/useFleetData'
 
@@ -33,6 +34,9 @@ export default function Mileage() {
   const [form, setForm]         = useState({ vehicle_id: '', mileage: '', date: today })
   const [saving, setSaving]     = useState(false)
   const [deletingId, setDeletingId] = useState(null)
+  const [editTarget, setEditTarget] = useState(null)
+  const [editForm, setEditForm] = useState({ mileage: '', vehicle_id: '' })
+  const [editSaving, setEditSaving] = useState(false)
   const [search, setSearch]     = useState('')
 
   const selectedCurrent = form.vehicle_id ? (latestMileage[form.vehicle_id]?.mileage ?? null) : null
@@ -59,6 +63,18 @@ export default function Mileage() {
       closeModal()
     } catch { toast.error(t('common.saveError')) }
     finally { setSaving(false) }
+  }
+
+  const handleEdit = async () => {
+    if (!editTarget) return
+    setEditSaving(true)
+    try {
+      await updateMileageEntry(editTarget.id, { mileage: Number(editForm.mileage) })
+      queryClient.invalidateQueries({ queryKey: ['mileageEntries'] })
+      setEditTarget(null)
+      toast.success('Kilométrage mis à jour.')
+    } catch { toast.error('Erreur lors de la mise à jour.') }
+    finally { setEditSaving(false) }
   }
 
   const handleDelete = async (id) => {
@@ -206,6 +222,19 @@ export default function Mileage() {
           <Input type="date" value={form.date} max={today} onChange={e => setForm(f => ({...f, date: e.target.value}))} />
         </div>
       </FormModal>
+ 
+      {/* Edit dialog */}
+      <Dialog open={!!editTarget} onOpenChange={() => setEditTarget(null)}>
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-md">
+          <DialogHeader><DialogTitle>Modifier le relevé</DialogTitle></DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div><Label>Kilométrage (km)</Label><Input type="number" value={editForm.mileage} onChange={e => setEditForm({...editForm, mileage: e.target.value})} /></div>
+            <Button onClick={handleEdit} disabled={editSaving || !editForm.mileage} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8]">
+              {editSaving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Enregistrement...</> : 'Enregistrer'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
