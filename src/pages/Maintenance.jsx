@@ -205,10 +205,10 @@ export default function Maintenance() {
   const closeRecordModal = () => { setRecordModal(false); setEditingRecord(null) }
 
   const handleSaveRecord = async () => {
-    if (!recordForm.vehicle_id || !recordForm.date || !recordForm.mileage || !recordForm.issue_description || !recordForm.status) return
+    if (!recordForm.vehicle_id || !recordForm.mileage || !recordForm.issue_description || !recordForm.status) return
     setSavingRecord(true)
     try {
-      const payload = { ...recordForm, mileage: parseFloat(recordForm.mileage) }
+      const payload = { ...recordForm, mileage: parseFloat(recordForm.mileage), date: recordForm.date || new Date().toISOString().split('T')[0] }
       if (editingRecord) {
         await updateMaintenanceRecord(editingRecord.id, payload)
         toast.success(t('maintenance.updated'))
@@ -488,7 +488,7 @@ export default function Maintenance() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <Label>Date</Label>
+            <Label>Date <span className="text-slate-400 font-normal">(optionnel — aujourd'hui par défaut)</span></Label>
             <Input type="date" value={recordForm.date} onChange={e => setRecordForm(f => ({...f, date: e.target.value}))} />
           </div>
           <div>

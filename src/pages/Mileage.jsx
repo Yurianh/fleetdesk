@@ -31,7 +31,7 @@ export default function Mileage() {
 
   const [modal, setModal]       = useState(false)
   const today                   = new Date().toISOString().split('T')[0]
-  const [form, setForm]         = useState({ vehicle_id: '', mileage: '', date: today })
+  const [form, setForm]         = useState({ vehicle_id: '', mileage: '', date: '' })
   const [saving, setSaving]     = useState(false)
   const [deletingId, setDeletingId] = useState(null)
   const [editTarget, setEditTarget] = useState(null)
@@ -41,7 +41,7 @@ export default function Mileage() {
 
   const selectedCurrent = form.vehicle_id ? (latestMileage[form.vehicle_id]?.mileage ?? null) : null
 
-  const openCreate = () => { setForm({ vehicle_id: '', mileage: '', date: today }); setModal(true) }
+  const openCreate = () => { setForm({ vehicle_id: '', mileage: '', date: '' }); setModal(true) }
   const closeModal = () => setModal(false)
 
   const handleSubmit = async () => {
@@ -56,7 +56,7 @@ export default function Mileage() {
       await createMileageEntry({
         vehicle_id: form.vehicle_id,
         mileage: parseFloat(form.mileage),
-        created_at: new Date(form.date + 'T12:00:00').toISOString(),
+        created_at: form.date ? new Date(form.date + 'T12:00:00').toISOString() : new Date().toISOString(),
       })
       queryClient.invalidateQueries({ queryKey: ['mileageEntries'] })
       toast.success(t('mileage.saved'))
@@ -218,7 +218,7 @@ export default function Mileage() {
           <Input type="number" value={form.mileage} onChange={e => setForm(f => ({...f, mileage: e.target.value}))} placeholder="Ex : 125 000" />
         </div>
         <div>
-          <Label>Date d’effet</Label>
+          <Label>Date d’effet <span className="text-slate-400 font-normal">(optionnel — maintenant par défaut)</span></Label>
           <Input type="date" value={form.date} max={today} onChange={e => setForm(f => ({...f, date: e.target.value}))} />
         </div>
       </FormModal>

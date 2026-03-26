@@ -58,13 +58,14 @@ export default function Inspections() {
     : null
 
   const handleSubmit = async () => {
-    if (!form.vehicle_id || !form.inspection_date) return
+    if (!form.vehicle_id) return
     setSaving(true)
     try {
+      const effectiveDate = form.inspection_date || new Date().toISOString().split('T')[0]
       const payload = {
         vehicle_id: form.vehicle_id,
-        inspection_date: form.inspection_date,
-        expiration_date: format(addYears(new Date(form.inspection_date), 1), 'yyyy-MM-dd'),
+        inspection_date: effectiveDate,
+        expiration_date: format(addYears(new Date(effectiveDate), 1), 'yyyy-MM-dd'),
       }
       if (editing) {
         await updateTechnicalInspection(editing.id, payload)
@@ -193,7 +194,7 @@ export default function Inspections() {
           </Select>
         </div>
         <div>
-          <Label>Date du contrôle</Label>
+          <Label>Date du contrôle <span className="text-slate-400 font-normal">(optionnel — aujourd'hui par défaut)</span></Label>
           <Input type="date" value={form.inspection_date} onChange={e => setForm(f => ({...f, inspection_date: e.target.value}))} />
         </div>
         {expiryPreview && (

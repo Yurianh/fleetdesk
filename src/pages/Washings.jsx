@@ -46,13 +46,13 @@ export default function Washings() {
   }
   const closeModal = () => { setModal(false); setEditing(null) }
 
-  const canSubmit = form.vehicle_id && form.driver_id && form.amount && form.date
+  const canSubmit = form.vehicle_id && form.driver_id && form.amount
 
   const handleSubmit = async () => {
     if (!canSubmit) return
     setSaving(true)
     try {
-      const payload = { ...form, amount: parseFloat(form.amount) }
+      const payload = { ...form, amount: parseFloat(form.amount), date: form.date || new Date().toISOString().split('T')[0] }
       if (editing) {
         await updateWashRecord(editing.id, payload)
         toast.success(t('washings.updated'))
@@ -180,7 +180,7 @@ export default function Washings() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <Label>Date</Label>
+            <Label>Date <span className="text-slate-400 font-normal">(optionnel — aujourd'hui par défaut)</span></Label>
             <Input type="date" value={form.date} onChange={e => setForm(f => ({...f, date: e.target.value}))} />
           </div>
           <div>
