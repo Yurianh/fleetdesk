@@ -62,7 +62,8 @@ export function useVehicles() {
   return useQuery({
     queryKey: ['vehicles'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('vehicles').select('*').order('created_at', { ascending: false })
+      const uid = await orgUid()
+      const { data, error } = await supabase.from('vehicles').select('*').eq('user_id', uid).order('created_at', { ascending: false })
       if (error) throw error
       return data || []
     },
@@ -74,7 +75,8 @@ export function useDrivers() {
   return useQuery({
     queryKey: ['drivers'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('drivers').select('*').order('created_at', { ascending: false })
+      const uid = await orgUid()
+      const { data, error } = await supabase.from('drivers').select('*').eq('user_id', uid).order('created_at', { ascending: false })
       if (error) throw error
       return data || []
     },
@@ -86,7 +88,8 @@ export function useAssignments() {
   return useQuery({
     queryKey: ['assignments'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('assignments').select('*').order('assigned_at', { ascending: false })
+      const uid = await orgUid()
+      const { data, error } = await supabase.from('assignments').select('*').eq('user_id', uid).order('assigned_at', { ascending: false })
       if (error) throw error
       return data || []
     },
@@ -98,7 +101,8 @@ export function useMileageEntries() {
   return useQuery({
     queryKey: ['mileageEntries'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('mileage_entries').select('*').order('created_at', { ascending: false })
+      const uid = await orgUid()
+      const { data, error } = await supabase.from('mileage_entries').select('*').eq('user_id', uid).order('created_at', { ascending: false })
       if (error) throw error
       return data || []
     },
@@ -110,7 +114,8 @@ export function useMaintenanceRecords() {
   return useQuery({
     queryKey: ['maintenanceRecords'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('maintenance_records').select('*').order('date', { ascending: false })
+      const uid = await orgUid()
+      const { data, error } = await supabase.from('maintenance_records').select('*').eq('user_id', uid).order('date', { ascending: false })
       if (error) throw error
       return data || []
     },
@@ -122,7 +127,8 @@ export function useTechnicalInspections() {
   return useQuery({
     queryKey: ['technicalInspections'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('technical_inspections').select('*').order('inspection_date', { ascending: false })
+      const uid = await orgUid()
+      const { data, error } = await supabase.from('technical_inspections').select('*').eq('user_id', uid).order('inspection_date', { ascending: false })
       if (error) throw error
       return data || []
     },
@@ -134,7 +140,8 @@ export function useWashRecords() {
   return useQuery({
     queryKey: ['washRecords'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('wash_records').select('*').order('date', { ascending: false })
+      const uid = await orgUid()
+      const { data, error } = await supabase.from('wash_records').select('*').eq('user_id', uid).order('date', { ascending: false })
       if (error) throw error
       return data || []
     },
@@ -146,9 +153,11 @@ export function useMaintenanceSchedules() {
   return useQuery({
     queryKey: ['maintenanceSchedules'],
     queryFn: async () => {
+      const uid = await orgUid()
       const { data, error } = await supabase
         .from('maintenance_schedules')
         .select('*')
+        .eq('user_id', uid)
         .order('created_at', { ascending: false })
       if (error) throw error
       return data || []
