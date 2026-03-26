@@ -7,12 +7,12 @@ async function orgUid() {
   if (!user) throw new Error('Not authenticated')
   // Fast path: org_id in metadata (set during invite)
   if (user.user_metadata?.org_id) return user.user_metadata.org_id
-  // Fallback: query org_members in case metadata was lost after session refresh
-  // member_see_own_record policy allows this even without status = 'active'
+  // Fallback: query org_members by user_id OR email
+  // member_see_own_record covers user_id match; member_see_own_by_email covers NULL user_id rows
   const { data: membership } = await supabase
     .from('org_members')
     .select('org_id')
-    .eq('user_id', user.id)
+    .or(`user_id.eq.${user.id},email.eq.${user.email}`)
     .maybeSingle()
   if (membership?.org_id) return membership.org_id
   // Owner: no org_members row — use own ID
