@@ -5,8 +5,9 @@ import { supabase } from './supabase'
 async function orgUid() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
-  // Collaborators write under org owner's user_id for unified data scoping
-  return user.user_metadata?.org_id || user.id
+  const uid = user.user_metadata?.org_id || user.id
+  console.log('[orgUid] org_id:', user.user_metadata?.org_id, 'self:', user.id, 'using:', uid)
+  return uid
 }
 
 // ─── Realtime invalidation ────────────────────────────────────────────

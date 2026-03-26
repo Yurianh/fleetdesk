@@ -45,7 +45,7 @@ export default function Assignments() {
       queryClient.invalidateQueries({ queryKey: ['assignments'] })
       toast.success(t('assignments.saved'))
       closeModal()
-    } catch { toast.error(t('assignments.saveError')) }
+    } catch (e) { toast.error(e?.message || t('assignments.saveError')) }
     finally { setSaving(false) }
   }
 
