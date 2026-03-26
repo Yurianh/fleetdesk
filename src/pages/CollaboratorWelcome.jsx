@@ -40,16 +40,13 @@ export default function CollaboratorWelcome() {
       const { error: updateErr } = await supabase.auth.updateUser(updatePayload)
       if (updateErr) throw updateErr
 
-      await supabase
-        .from('org_members')
-        .update({
-          status: 'active',
-          joined_at: new Date().toISOString(),
-          user_id: user.id,
-          full_name: name.trim(),
-        })
-        .eq('email', user.email)
-        .eq('status', 'pending')
+      // Activate org membership via edge function (service role — bypasses RLS for all clients)
+      const { data: { session } } = await supabase.auth.getSession()
+      const { error: joinErr } = await supabase.functions.invoke('join-org', {
+        body: { full_name: name.trim() },
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      })
+      if (joinErr) throw joinErr
 
       navigate('/Dashboard', { replace: true })
     } catch (e) {

@@ -5,9 +5,7 @@ import { supabase } from './supabase'
 async function orgUid() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
-  const uid = user.user_metadata?.org_id || user.id
-  console.log('[orgUid] org_id:', user.user_metadata?.org_id, 'self:', user.id, 'using:', uid)
-  return uid
+  return user.user_metadata?.org_id || user.id
 }
 
 // ─── Realtime invalidation ────────────────────────────────────────────
