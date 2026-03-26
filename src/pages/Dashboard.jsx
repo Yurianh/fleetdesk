@@ -34,6 +34,7 @@ import { usePageTitle } from '@/lib/usePageTitle'
 import { useTranslation } from 'react-i18next'
 import { usePlanLimits } from '@/lib/usePlanLimits'
 import { useDateLocale } from '@/lib/useDateLocale'
+import { supabase } from '@/lib/supabase'
 
 // ─── Vehicle Usage Analytics ─────────────────────────────────────────
 
@@ -845,18 +846,33 @@ const CHIPS = [
 ]
 
 function SmartNotepad({ userId }) {
-  const storageKey = `fleet_notes_${userId}`
-  const [text, setText] = useState(() => localStorage.getItem(storageKey) || '')
+  const [text, setText] = useState('')
   const [savedAt, setSavedAt] = useState(null)
   const [saving, setSaving] = useState(false)
   const timerRef = useRef(null)
   const { t } = useTranslation()
 
-  const save = useCallback((value) => {
-    localStorage.setItem(storageKey, value)
+  // Load from Supabase on mount
+  useEffect(() => {
+    if (!userId) return
+    supabase
+      .from('user_notes')
+      .select('content')
+      .eq('user_id', userId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.content) setText(data.content)
+      })
+  }, [userId])
+
+  const save = useCallback(async (value) => {
+    if (!userId) return
+    await supabase
+      .from('user_notes')
+      .upsert({ user_id: userId, content: value, updated_at: new Date().toISOString() }, { onConflict: 'user_id' })
     setSaving(false)
     setSavedAt(new Date())
-  }, [storageKey])
+  }, [userId])
 
   function handleChange(e) {
     const val = e.target.value
