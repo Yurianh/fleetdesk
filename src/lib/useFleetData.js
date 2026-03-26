@@ -60,9 +60,7 @@ async function logActivity(action, entityType, entityId, entityLabel) {
       entity_id: entityId || null,
       entity_label: entityLabel || null,
     })
-    if (logErr) console.error('[logActivity] insert error:', logErr)
-    else console.log('[logActivity] ok:', action)
-  } catch (e) { console.error('[logActivity] failed:', e) }
+  } catch { /* silent — logging must never break the main action */ }
 }
 
 // ── Queries ──────────────────────────────────────────────────────
