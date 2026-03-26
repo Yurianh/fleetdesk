@@ -66,7 +66,7 @@ export function useVehicles() {
       if (error) throw error
       return data || []
     },
-    initialData: [],
+    placeholderData: () => [],
   })
 }
 
@@ -78,7 +78,7 @@ export function useDrivers() {
       if (error) throw error
       return data || []
     },
-    initialData: [],
+    placeholderData: () => [],
   })
 }
 
@@ -90,7 +90,7 @@ export function useAssignments() {
       if (error) throw error
       return data || []
     },
-    initialData: [],
+    placeholderData: () => [],
   })
 }
 
@@ -102,7 +102,7 @@ export function useMileageEntries() {
       if (error) throw error
       return data || []
     },
-    initialData: [],
+    placeholderData: () => [],
   })
 }
 
@@ -114,7 +114,7 @@ export function useMaintenanceRecords() {
       if (error) throw error
       return data || []
     },
-    initialData: [],
+    placeholderData: () => [],
   })
 }
 
@@ -126,7 +126,7 @@ export function useTechnicalInspections() {
       if (error) throw error
       return data || []
     },
-    initialData: [],
+    placeholderData: () => [],
   })
 }
 
@@ -138,7 +138,7 @@ export function useWashRecords() {
       if (error) throw error
       return data || []
     },
-    initialData: [],
+    placeholderData: () => [],
   })
 }
 
@@ -153,7 +153,7 @@ export function useMaintenanceSchedules() {
       if (error) throw error
       return data || []
     },
-    initialData: [],
+    placeholderData: () => [],
   })
 }
 
