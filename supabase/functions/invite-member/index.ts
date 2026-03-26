@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
     if (authErr || !user) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders })
 
     if (user.user_metadata?.org_id) {
-      return new Response(JSON.stringify({ error: 'Seuls les propriétaires peuvent inviter des membres.' }), { status: 403, headers: corsHeaders })
+      return new Response(JSON.stringify({ error: 'Seuls les proprietaires peuvent inviter des membres.' }), { status: 403, headers: corsHeaders })
     }
 
     const orgId = user.id
@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
       .maybeSingle()
     if (existing) {
       return new Response(
-        JSON.stringify({ error: 'Cet email est déjà membre de votre organisation.' }),
+        JSON.stringify({ error: "Cet email est deja membre de votre organisation." }),
         { status: 400, headers: corsHeaders }
       )
     }
@@ -51,43 +51,43 @@ Deno.serve(async (req) => {
     const orgCompany = user.user_metadata?.company || ''
     const inviteMeta = { org_id: orgId, role, org_owner_name: orgOwnerName, org_company: orgCompany }
 
-    // Try to send invite email
+    // Try to send invite email (works for brand new Supabase users)
     const { error: inviteErr } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
       data: inviteMeta,
       redirectTo: `${siteUrl}/join`,
     })
 
     if (inviteErr) {
-      // User already has a Supabase account — update their metadata and keep as pending
-      // They will activate when they visit /join
+      // User already has a Supabase account — send them a magic link to /join
       const { data: { users } } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 })
       const existingUser = users.find((u: any) => u.email?.toLowerCase() === email.toLowerCase())
 
       if (existingUser) {
-        // Update metadata so /join page works for them
+        // Update metadata so /join page recognises the re-invite
+        const reInviteMeta = { ...inviteMeta, onboarding_complete: false, re_invited: true }
         await supabaseAdmin.auth.admin.updateUserById(existingUser.id, {
-          user_metadata: { ...existingUser.user_metadata, ...inviteMeta, onboarding_complete: false },
+          user_metadata: { ...existingUser.user_metadata, ...reInviteMeta },
         })
 
-        // Keep as pending — they need to visit /join to activate
+        // Keep as pending until they complete /join
         await supabaseAdmin
           .from('org_members')
           .update({ user_id: existingUser.id, status: 'pending' })
           .eq('org_id', orgId)
           .eq('email', email)
 
-        // Generate a magic link that redirects to /join
-        const { data: linkData } = await supabaseAdmin.auth.admin.generateLink({
+        // Send a magic link redirecting to /join
+        const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
           type: 'magiclink',
           email: email,
-          options: { data: inviteMeta, redirectTo: `${siteUrl}/join` },
+          options: { data: reInviteMeta, redirectTo: `${siteUrl}/join` },
         })
+        if (linkErr) console.error('generateLink error:', linkErr.message)
 
         return new Response(JSON.stringify({
           success: true,
           existing_user: true,
           join_link: linkData?.properties?.action_link ?? `${siteUrl}/join`,
-          message: 'Cet utilisateur possède déjà un compte. Un lien de connexion lui a été envoyé pour rejoindre l'organisation.',
         }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
       } else {
         // Unexpected error — roll back and throw

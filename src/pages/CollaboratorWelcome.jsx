@@ -10,8 +10,9 @@ export default function CollaboratorWelcome() {
 
   const orgOwnerName = user?.user_metadata?.org_owner_name || 'votre organisation'
   const role         = user?.user_metadata?.role || 'member'
+  const isReInvited  = !!user?.user_metadata?.re_invited
 
-  const [name, setName]         = useState('')
+  const [name, setName]         = useState(user?.user_metadata?.full_name || '')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm]   = useState('')
   const [showPass, setShowPass] = useState(false)
@@ -20,21 +21,33 @@ export default function CollaboratorWelcome() {
 
   async function handleJoin() {
     setError('')
-    if (!name.trim())            return setError('Veuillez entrer votre prénom.')
-    if (password.length < 8)     return setError('Le mot de passe doit contenir au moins 8 caractères.')
-    if (password !== confirm)    return setError('Les mots de passe ne correspondent pas.')
+    if (!name.trim()) return setError('Veuillez entrer votre prenom.')
+    if (!isReInvited) {
+      if (password.length < 8)  return setError('Le mot de passe doit contenir au moins 8 caracteres.')
+      if (password !== confirm)  return setError('Les mots de passe ne correspondent pas.')
+    }
 
     setLoading(true)
     try {
-      const { error: updateErr } = await supabase.auth.updateUser({
-        password,
-        data: { full_name: name.trim(), onboarding_complete: true },
-      })
+      const updateData: Record<string, unknown> = {
+        full_name: name.trim(),
+        onboarding_complete: true,
+        re_invited: false,
+      }
+      const updatePayload: Record<string, unknown> = { data: updateData }
+      if (!isReInvited) updatePayload.password = password
+
+      const { error: updateErr } = await supabase.auth.updateUser(updatePayload)
       if (updateErr) throw updateErr
 
       await supabase
         .from('org_members')
-        .update({ status: 'active', joined_at: new Date().toISOString(), user_id: user.id, full_name: user.user_metadata?.full_name || '' })
+        .update({
+          status: 'active',
+          joined_at: new Date().toISOString(),
+          user_id: user.id,
+          full_name: name.trim(),
+        })
         .eq('email', user.email)
         .eq('status', 'pending')
 
@@ -72,11 +85,13 @@ export default function CollaboratorWelcome() {
 
         {/* Heading */}
         <h1 className="text-[17px] font-semibold text-zinc-900 mb-1 text-center">
-          Rejoignez la flotte de
+          {isReInvited ? 'Bienvenue a nouveau dans' : 'Rejoignez la flotte de'}
         </h1>
         <p className="text-base font-semibold text-[#2563EB] text-center mb-1">{orgOwnerName}</p>
         <p className="text-sm text-zinc-400 text-center mb-6">
-          Créez votre accès pour collaborer sur cette flotte.
+          {isReInvited
+            ? 'Confirmez votre nom pour rejoindre cette flotte.'
+            : "Creez votre acces pour collaborer sur cette flotte."}
         </p>
 
         {/* Fields */}
@@ -84,7 +99,7 @@ export default function CollaboratorWelcome() {
 
           {/* Name */}
           <div>
-            <label className="block text-xs font-medium text-zinc-500 mb-1.5">Votre prénom</label>
+            <label className="block text-xs font-medium text-zinc-500 mb-1.5">Votre prenom</label>
             <input
               type="text"
               placeholder="Ex : Marie"
@@ -94,48 +109,51 @@ export default function CollaboratorWelcome() {
             />
           </div>
 
-          {/* Password */}
-          <div>
-            <label className="block text-xs font-medium text-zinc-500 mb-1.5">Mot de passe</label>
-            <div className="relative">
-              <input
-                type={showPass ? 'text' : 'password'}
-                placeholder="8 caractères minimum"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 pr-9 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all duration-150"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPass(v => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors"
-                tabIndex={-1}
-              >
-                {showPass ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-              </button>
-            </div>
-          </div>
+          {/* Password — only for new users */}
+          {!isReInvited && (
+            <>
+              <div>
+                <label className="block text-xs font-medium text-zinc-500 mb-1.5">Mot de passe</label>
+                <div className="relative">
+                  <input
+                    type={showPass ? 'text' : 'password'}
+                    placeholder="8 caracteres minimum"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 pr-9 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all duration-150"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPass(v => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showPass ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              </div>
 
-          {/* Confirm */}
-          <div>
-            <label className="block text-xs font-medium text-zinc-500 mb-1.5">Confirmer le mot de passe</label>
-            <input
-              type={showPass ? 'text' : 'password'}
-              placeholder="Répétez le mot de passe"
-              value={confirm}
-              onChange={e => setConfirm(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleJoin()}
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all duration-150"
-            />
-          </div>
+              <div>
+                <label className="block text-xs font-medium text-zinc-500 mb-1.5">Confirmer le mot de passe</label>
+                <input
+                  type={showPass ? 'text' : 'password'}
+                  placeholder="Repetez le mot de passe"
+                  value={confirm}
+                  onChange={e => setConfirm(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleJoin()}
+                  className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all duration-150"
+                />
+              </div>
+            </>
+          )}
         </div>
 
         {/* What you get */}
         <div className="bg-zinc-50 rounded-xl p-3.5 mb-5 space-y-2">
           {[
-            'Accès complet à la flotte partagée',
-            "Actions tracées dans le journal d'activité",
-            'Connexion avec votre email et ce mot de passe',
+            'Acces complet a la flotte partagee',
+            "Actions tracees dans le journal d'activite",
+            isReInvited ? 'Connexion avec votre email habituel' : 'Connexion avec votre email et ce mot de passe',
           ].map(item => (
             <div key={item} className="flex items-center gap-2">
               <CheckCircle2 className="w-3.5 h-3.5 text-[#2563EB] shrink-0" />
@@ -153,11 +171,11 @@ export default function CollaboratorWelcome() {
           disabled={loading}
           className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
         >
-          {loading ? 'Création en cours...' : 'Créer mon accès et rejoindre'}
+          {loading ? 'En cours...' : isReInvited ? 'Rejoindre' : "Creer mon acces et rejoindre"}
         </button>
 
         <p className="text-center text-xs text-zinc-400 mt-4">
-          Connecté en tant que <span className="font-medium text-zinc-500">{user?.email}</span>
+          Connecte en tant que <span className="font-medium text-zinc-500">{user?.email}</span>
         </p>
       </div>
 
