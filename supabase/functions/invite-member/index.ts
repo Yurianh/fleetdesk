@@ -58,22 +58,39 @@ Deno.serve(async (req) => {
     })
 
     if (inviteErr) {
-      // User already has an account — look them up and activate directly (no email sent)
+      // User already has a Supabase account — update their metadata and keep as pending
+      // They will activate when they visit /join
       const { data: { users } } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 })
       const existingUser = users.find((u: any) => u.email?.toLowerCase() === email.toLowerCase())
 
       if (existingUser) {
+        // Update metadata so /join page works for them
+        await supabaseAdmin.auth.admin.updateUserById(existingUser.id, {
+          user_metadata: { ...existingUser.user_metadata, ...inviteMeta, onboarding_complete: false },
+        })
+
+        // Keep as pending — they need to visit /join to activate
         await supabaseAdmin
           .from('org_members')
-          .update({ user_id: existingUser.id, status: 'active', joined_at: new Date().toISOString() })
+          .update({ user_id: existingUser.id, status: 'pending' })
           .eq('org_id', orgId)
           .eq('email', email)
 
-        await supabaseAdmin.auth.admin.updateUserById(existingUser.id, {
-          user_metadata: { ...existingUser.user_metadata, ...inviteMeta },
+        // Generate a magic link that redirects to /join
+        const { data: linkData } = await supabaseAdmin.auth.admin.generateLink({
+          type: 'magiclink',
+          email: email,
+          options: { data: inviteMeta, redirectTo: `${siteUrl}/join` },
         })
+
+        return new Response(JSON.stringify({
+          success: true,
+          existing_user: true,
+          join_link: linkData?.properties?.action_link ?? `${siteUrl}/join`,
+          message: 'Cet utilisateur possède déjà un compte. Un lien de connexion lui a été envoyé pour rejoindre l'organisation.',
+        }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
       } else {
-        // Unexpected error — roll back the org_members insert and throw
+        // Unexpected error — roll back and throw
         await supabaseAdmin.from('org_members').delete().eq('org_id', orgId).eq('email', email)
         throw inviteErr
       }

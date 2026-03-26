@@ -394,8 +394,12 @@ export default function Settings() {
                         onClick={async () => {
                           if (!inviteEmail) return
                           try {
-                            await inviteMember.mutateAsync({ email: inviteEmail, role: inviteRole })
-                            toast.success('Invitation envoyée.')
+                            const result = await inviteMember.mutateAsync({ email: inviteEmail, role: inviteRole })
+                            if (result?.existing_user) {
+                              toast.success('Lien de connexion envoyé — cet utilisateur a déjà un compte.')
+                            } else {
+                              toast.success('Invitation envoyée.')
+                            }
                             setInviteEmail('')
                           } catch (e) { toast.error(e.message) }
                         }}
