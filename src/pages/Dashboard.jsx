@@ -1196,7 +1196,7 @@ export default function Dashboard() {
             </div>
             <div>
               <p className="text-xs font-medium text-zinc-400">{t('dashboard.fleet')}</p>
-              <p className="text-sm font-bold text-zinc-900 leading-tight">{user?.user_metadata?.company || 'FleetDesk'}</p>
+              <p className="text-sm font-bold text-zinc-900 leading-tight">{user?.user_metadata?.org_company || user?.user_metadata?.company || 'FleetDesk'}</p>
             </div>
           </div>
           <div className="flex items-center justify-between py-3 border-t border-zinc-100">
