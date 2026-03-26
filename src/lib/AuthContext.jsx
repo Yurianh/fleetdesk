@@ -34,7 +34,7 @@ export function AuthProvider({ children }) {
               // Still pending — activate
               supabase
                 .from('org_members')
-                .update({ status: 'active', user_id: user.id })
+                .update({ status: 'active', user_id: user.id, full_name: user.user_metadata?.full_name || '' })
                 .eq('email', user.email)
                 .eq('org_id', user.user_metadata.org_id)
                 .then(() => {})

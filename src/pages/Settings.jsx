@@ -423,10 +423,11 @@ export default function Settings() {
                       <div key={m.id} className="flex items-center justify-between px-5 py-3 gap-3">
                         <div className="flex items-center gap-3 min-w-0">
                           <div className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-xs font-semibold text-zinc-600 flex-shrink-0">
-                            {m.email[0].toUpperCase()}
+                            {(m.full_name || m.email)[0].toUpperCase()}
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-medium text-zinc-800 truncate">{m.email}</p>
+                            <p className="text-sm font-medium text-zinc-800 truncate">{m.full_name || m.email}</p>
+                            {m.full_name && <p className="text-xs text-zinc-400 truncate">{m.email}</p>}
                             <div className="flex items-center gap-1.5 mt-0.5">
                               <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
                                 m.role === 'admin' ? 'bg-violet-50 text-violet-600' : 'bg-zinc-100 text-zinc-500'
