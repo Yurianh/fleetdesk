@@ -47,16 +47,38 @@ Deno.serve(async (req) => {
 
     console.log('[checkout] user:', user.id, 'email:', user.email)
 
-    const session = await stripe.checkout.sessions.create({
+    // If user already has a Stripe customer, reuse it to prevent duplicate customers
+    const existingCustomerId = user.user_metadata?.stripe_customer_id || null
+
+    // Guard: if already subscribed to a paid plan, redirect to portal instead
+    if (existingCustomerId && user.user_metadata?.onboarding_complete && user.user_metadata?.plan !== 'starter') {
+      const portalSession = await stripe.billingPortal.sessions.create({
+        customer: existingCustomerId,
+        return_url: return_url || Deno.env.get('SITE_URL') || 'https://app.fleetdesk.fr',
+      })
+      return new Response(JSON.stringify({ url: portalSession.url }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    const sessionParams: any = {
       mode: 'subscription',
       line_items: [{ price: PRICE_IDS[plan], quantity: 1 }],
       success_url: `${return_url}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${return_url}?cancelled=true`,
-      customer_email: user.email,
       metadata: { user_id: user.id, plan },
       allow_promotion_codes: true,
       locale: 'fr',
-    })
+    }
+
+    // Reuse existing customer or create by email
+    if (existingCustomerId) {
+      sessionParams.customer = existingCustomerId
+    } else {
+      sessionParams.customer_email = user.email
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams)
 
     console.log('[checkout] session created:', session.id)
     return new Response(JSON.stringify({ url: session.url }), {
