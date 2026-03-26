@@ -193,7 +193,7 @@ export default function Settings() {
                     <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${planInfo.color}`}>{planInfo.label}</span>
                     <span className="text-sm text-zinc-500">{t('settings.activePlan')}</span>
                   </div>
-                  {!isCollaborator && plan !== 'starter' && (
+                  {!isCollaborator && (plan !== 'starter' || user?.user_metadata?.stripe_customer_id) && (
                     <button
                       onClick={async () => {
                         setSaving(true)
