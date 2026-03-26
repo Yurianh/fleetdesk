@@ -26,7 +26,6 @@ Deno.serve(async (req) => {
 
     const supabaseAdmin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
 
-    // Fetch member record
     const { data: member, error: fetchErr } = await supabaseAdmin
       .from('org_members')
       .select('id, user_id, org_id, email')
@@ -37,17 +36,28 @@ Deno.serve(async (req) => {
     if (!member) return new Response(JSON.stringify({ error: 'Membre introuvable.' }), { status: 404, headers: corsHeaders })
     if (member.org_id !== user.id) return new Response(JSON.stringify({ error: 'Acces refuse.' }), { status: 403, headers: corsHeaders })
 
-    // Delete from org_members
+    // Delete from org_members first
     const { error: deleteErr } = await supabaseAdmin
       .from('org_members')
       .delete()
       .eq('id', memberId)
     if (deleteErr) throw deleteErr
 
-    // Delete the user account entirely from Supabase auth
-    if (member.user_id) {
-      const { error: deleteUserErr } = await supabaseAdmin.auth.admin.deleteUser(member.user_id)
-      if (deleteUserErr) console.error('deleteUser error (non-fatal):', deleteUserErr.message)
+    // Delete the Supabase auth account
+    // If user_id is set, delete directly. If null (never joined), find by email.
+    try {
+      let authUserId = member.user_id
+      if (!authUserId) {
+        const { data: { users } } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 })
+        const found = users.find((u: any) => u.email?.toLowerCase() === member.email?.toLowerCase())
+        if (found) authUserId = found.id
+      }
+      if (authUserId) {
+        const { error: deleteUserErr } = await supabaseAdmin.auth.admin.deleteUser(authUserId)
+        if (deleteUserErr) console.error('deleteUser error:', deleteUserErr.message)
+      }
+    } catch (e: any) {
+      console.error('auth cleanup error (non-fatal):', e.message)
     }
 
     return new Response(JSON.stringify({ success: true }), {
