@@ -79,8 +79,10 @@ export default function SetupProfile() {
       })
       if (profileErr) throw profileErr
 
+      const { data: { session } } = await supabase.auth.getSession()
       const { data, error: fnErr } = await supabase.functions.invoke('create-checkout-session', {
         body: { plan, return_url: `${window.location.origin}/billing/success` },
+        headers: { Authorization: `Bearer ${session?.access_token}` },
       })
       if (fnErr) {
         let detail = fnErr.message
