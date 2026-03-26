@@ -35,7 +35,9 @@ export default function BillingSuccess() {
           const data = await resp.json()
           if (!resp.ok) throw new Error(data.error || `Erreur ${resp.status}`)
 
-          // Refresh user to get updated metadata
+          // Refresh session so JWT picks up onboarding_complete: true — this triggers
+          // AuthContext to update, allowing App.jsx to route to Dashboard correctly
+          await supabase.auth.refreshSession()
           const { data: { user } } = await supabase.auth.getUser()
           const first = (user?.user_metadata?.full_name || user?.email || '').split(' ')[0]
           setUserName(first)
