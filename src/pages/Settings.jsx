@@ -256,7 +256,7 @@ export default function Settings() {
                   <div className="space-y-2">
                     {[
                       { label: 'Mettre à jour le moyen de paiement', desc: 'Changer votre carte bancaire ou IBAN' },
-                      { label: 'Télécharger les factures', desc: 'Accédez à l'historique de vos paiements' },
+                      { label: "Télécharger les factures", desc: "Accédez à l'historique de vos paiements" },
                       { label: 'Annuler ou changer de formule', desc: 'Résiliez ou passez à un autre plan' },
                     ].map(item => (
                       <div key={item.label} className="flex items-center justify-between py-2.5 border-b border-zinc-100 last:border-0">
