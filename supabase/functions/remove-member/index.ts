@@ -9,10 +9,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
   try {
-    const body = await req.json()
-    const { memberId } = body
-    console.log('remove-member called, memberId:', memberId)
-
+    const { memberId } = await req.json()
     if (!memberId) return new Response(JSON.stringify({ error: 'memberId requis' }), { status: 400, headers: corsHeaders })
 
     const authHeader = req.headers.get('Authorization')
@@ -22,54 +19,37 @@ Deno.serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     })
     const { data: { user }, error: authErr } = await supabaseUser.auth.getUser()
-    console.log('caller user.id:', user?.id, 'authErr:', authErr?.message)
-
-    if (authErr || !user) return new Response(JSON.stringify({ error: 'Non autorise - token invalide' }), { status: 401, headers: corsHeaders })
+    if (authErr || !user) return new Response(JSON.stringify({ error: 'Non autorise' }), { status: 401, headers: corsHeaders })
     if (user.user_metadata?.org_id) {
       return new Response(JSON.stringify({ error: 'Seul le proprietaire peut retirer des membres.' }), { status: 403, headers: corsHeaders })
     }
 
     const supabaseAdmin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
 
-    // Fetch member by id only first, then verify ownership
+    // Fetch member record
     const { data: member, error: fetchErr } = await supabaseAdmin
       .from('org_members')
       .select('id, user_id, org_id, email')
       .eq('id', memberId)
       .maybeSingle()
 
-    console.log('member found:', JSON.stringify(member), 'fetchErr:', fetchErr?.message)
-
     if (fetchErr) throw fetchErr
-    if (!member) return new Response(JSON.stringify({ error: `Membre introuvable (id: ${memberId})` }), { status: 404, headers: corsHeaders })
-    if (member.org_id !== user.id) return new Response(JSON.stringify({ error: `Acces refuse - org_id ne correspond pas` }), { status: 403, headers: corsHeaders })
+    if (!member) return new Response(JSON.stringify({ error: 'Membre introuvable.' }), { status: 404, headers: corsHeaders })
+    if (member.org_id !== user.id) return new Response(JSON.stringify({ error: 'Acces refuse.' }), { status: 403, headers: corsHeaders })
 
+    // Delete from org_members
     const { error: deleteErr } = await supabaseAdmin
       .from('org_members')
       .delete()
       .eq('id', memberId)
     if (deleteErr) throw deleteErr
 
+    // Delete the user account entirely from Supabase auth
     if (member.user_id) {
-      try {
-        const { data: memberData } = await supabaseAdmin.auth.admin.getUserById(member.user_id)
-        const memberUser = memberData?.user
-        if (memberUser) {
-          const cleaned = { ...memberUser.user_metadata }
-          delete cleaned.org_id
-          delete cleaned.role
-          delete cleaned.org_owner_name
-          delete cleaned.org_company
-          delete cleaned.re_invited
-          cleaned.onboarding_complete = false
-          await supabaseAdmin.auth.admin.updateUserById(member.user_id, { user_metadata: cleaned })
-        }
-      } catch (metaErr: any) {
-        console.error('metadata cleanup error (non-fatal):', metaErr.message)
-      }
+      const { error: deleteUserErr } = await supabaseAdmin.auth.admin.deleteUser(member.user_id)
+      if (deleteUserErr) console.error('deleteUser error (non-fatal):', deleteUserErr.message)
     }
 
-    console.log('remove-member success for id:', memberId)
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
