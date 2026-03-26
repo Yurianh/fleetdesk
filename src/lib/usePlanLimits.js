@@ -12,7 +12,8 @@ const LIMITS = {
  */
 export function usePlanLimits(vehicleCount = 0, driverCount = 0) {
   const { user } = useAuth()
-  const plan = user?.user_metadata?.plan ?? 'starter'
+  // Collaborators inherit the org owner's plan (enterprise is the only plan with invites)
+  const plan = user?.user_metadata?.org_id ? 'enterprise' : (user?.user_metadata?.plan ?? 'starter')
   const limits = LIMITS[plan] ?? LIMITS.starter
 
   return {

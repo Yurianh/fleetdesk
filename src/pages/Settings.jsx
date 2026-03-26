@@ -152,11 +152,20 @@ export default function Settings() {
                     <input value={name} onChange={e => setName(e.target.value)}
                       className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30" />
                   </div>
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-500 mb-1.5">{t('settings.company')}</label>
-                    <input value={company} onChange={e => setCompany(e.target.value)}
-                      className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30" />
-                  </div>
+                  {isCollaborator ? (
+                    <div>
+                      <label className="block text-xs font-medium text-zinc-500 mb-1.5">Organisation</label>
+                      <input value={user?.user_metadata?.org_owner_name || ''} disabled
+                        className="w-full border border-zinc-100 rounded-lg px-3 py-2 text-sm text-zinc-400 bg-zinc-50 cursor-not-allowed" />
+                      <p className="text-[11px] text-zinc-400 mt-1">Géré par le propriétaire de l'organisation.</p>
+                    </div>
+                  ) : (
+                    <div>
+                      <label className="block text-xs font-medium text-zinc-500 mb-1.5">{t('settings.company')}</label>
+                      <input value={company} onChange={e => setCompany(e.target.value)}
+                        className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30" />
+                    </div>
+                  )}
                   <div>
                     <label className="block text-xs font-medium text-zinc-500 mb-1.5">{t('settings.email')}</label>
                     <input value={user?.email || ''} disabled
@@ -185,6 +194,11 @@ export default function Settings() {
                     <span className="text-sm text-zinc-500">{t('settings.activePlan')}</span>
                   </div>
                 </div>
+                {isCollaborator && (
+                  <p className="text-xs text-zinc-400 mb-4">
+                    Plan géré par <span className="font-medium text-zinc-600">{user?.user_metadata?.org_owner_name || "l'organisation"}</span>.
+                  </p>
+                )}
                 {/* Usage */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-zinc-50 rounded-lg p-3">
@@ -215,7 +229,7 @@ export default function Settings() {
               </div>
 
               {/* Upgrade options */}
-              {plan !== 'enterprise' && (
+              {plan !== 'enterprise' && !isCollaborator && (
                 <div className="bg-white border border-zinc-200 rounded-xl p-5">
                   <h2 className="text-sm font-semibold text-zinc-900 mb-4">{t('settings.upgradePlan')}</h2>
                   <div className="space-y-3">
