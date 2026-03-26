@@ -1209,8 +1209,8 @@ export default function Dashboard() {
         {/* Fleet summary card */}
         <div className="bg-white border border-zinc-100 rounded-xl p-5">
           <div className="flex items-center gap-2.5 mb-4">
-            <div className="w-8 h-8 bg-[#C2622D]/[0.08] rounded-lg flex items-center justify-center">
-              <Truck className="w-4 h-4 text-[#C2622D]" strokeWidth={1.5} />
+            <div className="w-8 h-8 bg-[#2563EB]/[0.08] rounded-lg flex items-center justify-center">
+              <Truck className="w-4 h-4 text-[#2563EB]" strokeWidth={1.5} />
             </div>
             <div>
               <p className="text-xs font-medium text-zinc-400">{t('dashboard.fleet')}</p>
