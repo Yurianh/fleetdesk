@@ -18,16 +18,28 @@ export function AuthProvider({ children }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const user = session?.user ?? null
       setUser(user)
-      // Auto-activate org membership on every sign-in for collaborators.
-      // Covers cases where the join page was broken, skipped, or the update failed.
       if (user?.user_metadata?.org_id) {
+        // Verify membership still exists — sign out immediately if removed
         supabase
           .from('org_members')
-          .update({ status: 'active', user_id: user.id })
+          .select('id, status')
           .eq('email', user.email)
           .eq('org_id', user.user_metadata.org_id)
-          .neq('status', 'active')
-          .then(() => {})
+          .maybeSingle()
+          .then(({ data: member }) => {
+            if (!member) {
+              // Row deleted — access revoked
+              supabase.auth.signOut()
+            } else if (member.status !== 'active') {
+              // Still pending — activate
+              supabase
+                .from('org_members')
+                .update({ status: 'active', user_id: user.id })
+                .eq('email', user.email)
+                .eq('org_id', user.user_metadata.org_id)
+                .then(() => {})
+            }
+          })
       }
     })
 
