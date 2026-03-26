@@ -28,7 +28,8 @@ import {
   useVehicles, useDrivers, useAssignments, useMileageEntries,
   useTechnicalInspections, useMaintenanceRecords, useWashRecords,
   useMaintenanceSchedules, getLatestAssignments, getDriverById, getVehicleById,
-  createVehicle, createDriver, createMileageEntry
+  createVehicle, createDriver, createMileageEntry,
+  useFleetRealtime
 } from '@/lib/useFleetData'
 import { usePageTitle } from '@/lib/usePageTitle'
 import { useTranslation } from 'react-i18next'
@@ -960,6 +961,7 @@ function SmartNotepad({ userId }) {
 
 // ─── Main Dashboard ───────────────────────────────────────────────
 export default function Dashboard() {
+  useFleetRealtime()
   const { user } = useAuth()
     const { t } = useTranslation()
   const dateLocale = useDateLocale()

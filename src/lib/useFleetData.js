@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { supabase } from './supabase'
 
 async function orgUid() {
@@ -7,6 +8,36 @@ async function orgUid() {
   // Collaborators write under org owner's user_id for unified data scoping
   return user.user_metadata?.org_id || user.id
 }
+
+// ─── Realtime invalidation ────────────────────────────────────────────
+const REALTIME_TABLES = ['vehicles','drivers','assignments','mileage_entries',
+  'maintenance_records','maintenance_schedules','technical_inspections','wash_records']
+
+export function useFleetRealtime() {
+  const qc = useQueryClient()
+  useEffect(() => {
+    const channel = supabase
+      .channel('fleet-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public' }, (payload) => {
+        const table = payload.table
+        const keyMap = {
+          vehicles: 'vehicles',
+          drivers: 'drivers',
+          assignments: 'assignments',
+          mileage_entries: 'mileageEntries',
+          maintenance_records: 'maintenanceRecords',
+          maintenance_schedules: 'maintenanceSchedules',
+          technical_inspections: 'technicalInspections',
+          wash_records: 'washRecords',
+        }
+        const key = keyMap[table]
+        if (key) qc.invalidateQueries({ queryKey: [key] })
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [qc])
+}
+
 
 async function logActivity(action, entityType, entityId, entityLabel) {
   try {
