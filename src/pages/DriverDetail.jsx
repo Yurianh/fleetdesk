@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Users, CreditCard, Car, Droplets, Pencil, Check, X, MapPin, Hash, Truck, ChevronRight, AlertCircle } from 'lucide-react'
+import { ArrowLeft, Users, CreditCard, Car, Droplets, Pencil, Check, X, MapPin, Hash, Truck, ChevronRight, AlertCircle, ArrowLeftRight, UserMinus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
 import { format, differenceInCalendarDays } from 'date-fns'
@@ -12,7 +12,7 @@ import { toast } from 'sonner'
 import EmptyState from '@/components/shared/EmptyState'
 import {
   useDrivers, useVehicles, useAssignments,
-  updateDriver, createAssignment, getVehicleById, getLatestAssignments, getDriverById
+  updateDriver, createAssignment, unassignVehicle, getVehicleById, getLatestAssignments, getDriverById
 } from '@/lib/useFleetData'
 import { usePageTitle } from '@/lib/usePageTitle'
 
@@ -94,7 +94,7 @@ export default function DriverDetail() {
     if (!assignVehicleId) return
     setAssigning(true)
     try {
-      await createAssignment({
+      const { swapped } = await createAssignment({
         vehicle_id: assignVehicleId,
         driver_id: id,
         assigned_at: new Date().toISOString(),
@@ -102,8 +102,19 @@ export default function DriverDetail() {
       queryClient.invalidateQueries({ queryKey: ['assignments'] })
       setAssignOpen(false)
       setAssignVehicleId('')
-      toast.success('Véhicule affecté.')
+      toast.success(swapped ? 'Véhicules échangés.' : 'Véhicule affecté.')
     } catch { toast.error("Erreur lors de l'affectation.") }
+    finally { setAssigning(false) }
+  }
+
+  const handleUnassign = async () => {
+    if (!currentVehicle) return
+    setAssigning(true)
+    try {
+      await unassignVehicle(currentVehicle.id)
+      queryClient.invalidateQueries({ queryKey: ['assignments'] })
+      toast.success('Conducteur désaffecté.')
+    } catch { toast.error('Erreur lors de la désaffectation.') }
     finally { setAssigning(false) }
   }
 
@@ -185,12 +196,23 @@ export default function DriverDetail() {
             </p>
           </div>
           {!assignOpen && (
-            <button
-              onClick={openAssign}
-              className="text-xs font-medium text-[#2563EB] hover:text-[#1D4ED8] bg-[#2563EB]/5 hover:bg-[#2563EB]/10 px-3 py-1.5 rounded-lg transition-colors flex-shrink-0"
-            >
-              {currentVehicle ? 'Changer' : '+ Affecter'}
-            </button>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {currentVehicle && (
+                <button
+                  onClick={handleUnassign}
+                  disabled={assigning}
+                  className="text-xs font-medium text-slate-400 hover:text-red-500 bg-slate-100 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
+                >
+                  <UserMinus className="w-3 h-3" /> Désaffecter
+                </button>
+              )}
+              <button
+                onClick={openAssign}
+                className="text-xs font-medium text-[#2563EB] hover:text-[#1D4ED8] bg-[#2563EB]/5 hover:bg-[#2563EB]/10 px-3 py-1.5 rounded-lg transition-colors"
+              >
+                {currentVehicle ? 'Changer' : '+ Affecter'}
+              </button>
+            </div>
           )}
         </div>
 
@@ -267,6 +289,11 @@ export default function DriverDetail() {
                             <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                               Disponible
+                            </span>
+                          ) : currentVehicle ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">
+                              <ArrowLeftRight className="w-3 h-3" />
+                              Échange avec {occupiedBy?.name || '—'}
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">

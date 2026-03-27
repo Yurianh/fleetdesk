@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, ChevronRight, Loader2, Truck, Pencil, Trash2, User } from 'lucide-react'
+import { Plus, Search, ChevronRight, Loader2, Truck, Pencil, Trash2, User, UserMinus } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -12,7 +12,7 @@ import EmptyState from '@/components/shared/EmptyState'
 import VehicleStatusBadge from '@/components/shared/VehicleStatusBadge'
 import {
   useVehicles, useDrivers, useAssignments, useMileageEntries, useTechnicalInspections,
-  createVehicle, updateVehicle, deleteVehicle, getLatestAssignments, getLatestMileage, getDriverById
+  createVehicle, updateVehicle, deleteVehicle, unassignVehicle, getLatestAssignments, getLatestMileage, getDriverById
 } from '@/lib/useFleetData'
 import { usePageTitle } from '@/lib/usePageTitle'
 import { useTranslation } from 'react-i18next'
@@ -58,6 +58,7 @@ export default function Vehicles() {
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [form, setForm] = useState({ plate_number: '', model: '' })
   const [saving, setSaving] = useState(false)
+  const [unassigningId, setUnassigningId] = useState(null)
 
   const { canAddVehicle, limits } = usePlanLimits(vehicles.length)
   const latestAssignments = getLatestAssignments(assignments)
@@ -100,6 +101,16 @@ export default function Vehicles() {
       toast.success('Véhicule mis à jour.')
     } catch { toast.error('Erreur lors de la mise à jour.') }
     finally { setSaving(false) }
+  }
+
+  const handleUnassign = async (vehicleId) => {
+    setUnassigningId(vehicleId)
+    try {
+      await unassignVehicle(vehicleId)
+      queryClient.invalidateQueries({ queryKey: ['assignments'] })
+      toast.success('Conducteur désaffecté.')
+    } catch { toast.error('Erreur lors de la désaffectation.') }
+    finally { setUnassigningId(null) }
   }
 
   const handleDelete = async () => {
@@ -149,6 +160,16 @@ export default function Vehicles() {
         <td className="px-5 py-3.5"><VehicleStatusBadge vehicleId={v.id} inspections={inspections} /></td>
         <td className="px-5 py-3.5">
           <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            {isAssigned && (
+              <button
+                onClick={() => handleUnassign(v.id)}
+                disabled={unassigningId === v.id}
+                title="Désaffecter le conducteur"
+                className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+              >
+                <UserMinus className="w-3.5 h-3.5" />
+              </button>
+            )}
             <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model }) }} className="p-1.5 text-slate-400 hover:text-[#2563EB] hover:bg-blue-50 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
             <button onClick={() => setDeleteTarget(v)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
             <Link to={`/Vehicles/${v.id}`} className="p-1.5 text-slate-400 hover:text-[#1D4ED8]"><ChevronRight className="w-4 h-4" /></Link>
@@ -177,6 +198,9 @@ export default function Vehicles() {
           </div>
         </Link>
         <div className="flex items-center gap-1">
+          {isAssigned && (
+            <button onClick={() => handleUnassign(v.id)} disabled={unassigningId === v.id} className="p-1.5 text-slate-400 hover:text-amber-600"><UserMinus className="w-3.5 h-3.5" /></button>
+          )}
           <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model }) }} className="p-1.5 text-slate-400 hover:text-[#2563EB]"><Pencil className="w-3.5 h-3.5" /></button>
           <button onClick={() => setDeleteTarget(v)} className="p-1.5 text-slate-400 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
         </div>

@@ -193,25 +193,51 @@ export async function createAssignment(data) {
   const uid = await orgUid()
   const now = new Date().toISOString()
 
-  // Close this driver's current active assignment (move from previous vehicle)
-  await supabase
-    .from('assignments')
-    .update({ ended_at: now })
-    .eq('user_id', uid)
-    .eq('driver_id', data.driver_id)
-    .is('ended_at', null)
+  // Read current state before making any changes
+  const { data: driverActive } = await supabase
+    .from('assignments').select('vehicle_id')
+    .eq('user_id', uid).eq('driver_id', data.driver_id).is('ended_at', null)
+    .maybeSingle()
 
-  // Close this vehicle's current active assignment (previous driver on this vehicle)
-  await supabase
-    .from('assignments')
-    .update({ ended_at: now })
-    .eq('user_id', uid)
-    .eq('vehicle_id', data.vehicle_id)
-    .is('ended_at', null)
+  const { data: vehicleActive } = await supabase
+    .from('assignments').select('driver_id')
+    .eq('user_id', uid).eq('vehicle_id', data.vehicle_id).is('ended_at', null)
+    .maybeSingle()
+
+  const swapped = !!(driverActive?.vehicle_id && vehicleActive?.driver_id
+    && driverActive.vehicle_id !== data.vehicle_id)
+
+  // Close driver's current assignment
+  await supabase.from('assignments').update({ ended_at: now })
+    .eq('user_id', uid).eq('driver_id', data.driver_id).is('ended_at', null)
+
+  // Close vehicle's current assignment
+  await supabase.from('assignments').update({ ended_at: now })
+    .eq('user_id', uid).eq('vehicle_id', data.vehicle_id).is('ended_at', null)
+
+  // If both sides had active assignments → swap: put the displaced driver on the freed vehicle
+  if (swapped) {
+    await supabase.from('assignments').insert({
+      vehicle_id: driverActive.vehicle_id,
+      driver_id: vehicleActive.driver_id,
+      assigned_at: now,
+      user_id: uid,
+    })
+  }
 
   const { error } = await supabase.from('assignments').insert({ ...data, user_id: uid })
   if (error) throw error
   logActivity('createAssignment', 'assignment', '', '')
+  return { swapped }
+}
+
+export async function unassignVehicle(vehicleId) {
+  const uid = await orgUid()
+  const { error } = await supabase.from('assignments')
+    .update({ ended_at: new Date().toISOString() })
+    .eq('user_id', uid).eq('vehicle_id', vehicleId).is('ended_at', null)
+  if (error) throw error
+  logActivity('unassignVehicle', 'assignment', vehicleId, '')
 }
 
 export async function createMileageEntry(data) {
