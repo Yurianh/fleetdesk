@@ -24,10 +24,14 @@ export function computeForecasts({ schedules, vehicles, maintenanceRecords, mile
     let kmUntil = null
 
     if (lastRecord) {
-      nextDate = addMonths(new Date(lastRecord.date), schedule.interval_months)
-      nextKm = lastRecord.mileage + schedule.interval_km
-      daysUntil = differenceInDays(nextDate, today)
-      kmUntil = currentMileage !== null ? nextKm - currentMileage : null
+      if (schedule.interval_months) {
+        nextDate = addMonths(new Date(lastRecord.date), schedule.interval_months)
+        daysUntil = differenceInDays(nextDate, today)
+      }
+      if (schedule.interval_km) {
+        nextKm = lastRecord.mileage + schedule.interval_km
+        kmUntil = currentMileage !== null ? nextKm - currentMileage : null
+      }
     }
 
     // Status: overdue > due_soon (within 5 000 km or 30 days) > ok

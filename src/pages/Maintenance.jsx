@@ -43,7 +43,10 @@ function ForecastCard({ forecast, onLogMaintenance }) {
               <span className="font-normal text-slate-500">{vehicle?.model || ''}</span>
             </p>
             <p className="text-xs text-slate-400 mt-0.5">
-              {schedule.notes || `${schedule.interval_months} mois · ${schedule.interval_km?.toLocaleString('fr-FR')} km`}
+              {schedule.notes || [
+                schedule.interval_months && `${schedule.interval_months} mois`,
+                schedule.interval_km && `${schedule.interval_km.toLocaleString('fr-FR')} km`,
+              ].filter(Boolean).join(' · ')}
             </p>
           </div>
           <span className={`text-xs font-bold px-2.5 py-1 rounded-full shrink-0 ${s.badge}`}>
@@ -183,26 +186,35 @@ function MaintenanceOnboarding({ hasVehicles, hasSchedules, hasRecords, onCreate
 // ── Schedule Row (desktop inline-edit) ────────────────────────────
 function ScheduleRow({ schedule, vehicles, onDelete, onSave }) {
   const [editing, setEditing] = useState(false)
-  const [form, setForm] = useState({ interval_months: schedule.interval_months, interval_km: schedule.interval_km, notes: schedule.notes || '' })
+  const [form, setForm] = useState({ interval_months: schedule.interval_months ?? '', interval_km: schedule.interval_km ?? '', notes: schedule.notes || '' })
   const vehicle = getVehicleById(vehicles, schedule.vehicle_id)
 
   const handleSave = async () => {
-    await onSave(schedule.id, { ...form, interval_months: parseInt(form.interval_months), interval_km: parseInt(form.interval_km) })
+    await onSave(schedule.id, {
+      ...form,
+      interval_months: form.interval_months ? parseInt(form.interval_months) : null,
+      interval_km: form.interval_km ? parseInt(form.interval_km) : null,
+    })
     setEditing(false)
   }
+
+  const intervalLabel = [
+    schedule.interval_months && `${schedule.interval_months} mois`,
+    schedule.interval_km && `${schedule.interval_km.toLocaleString('fr-FR')} km`,
+  ].filter(Boolean).join(' · ') || '—'
 
   return (
     <tr className="hover:bg-slate-50 transition-colors group">
       <td className="px-5 py-3.5 font-medium text-slate-900 text-sm">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</td>
       <td className="px-5 py-3.5">
         {editing
-          ? <Input type="number" value={form.interval_months} onChange={e => setForm({ ...form, interval_months: e.target.value })} className="w-20 h-7 text-sm" />
-          : <span className="text-sm text-slate-700">{schedule.interval_months} mois</span>}
+          ? <Input type="number" value={form.interval_months} onChange={e => setForm({ ...form, interval_months: e.target.value })} className="w-20 h-7 text-sm" placeholder="—" />
+          : <span className="text-sm text-slate-700">{schedule.interval_months ? `${schedule.interval_months} mois` : <span className="text-slate-300">—</span>}</span>}
       </td>
       <td className="px-5 py-3.5">
         {editing
-          ? <Input type="number" value={form.interval_km} onChange={e => setForm({ ...form, interval_km: e.target.value })} className="w-28 h-7 text-sm" />
-          : <span className="text-sm text-slate-700">{schedule.interval_km?.toLocaleString('fr-FR')} km</span>}
+          ? <Input type="number" value={form.interval_km} onChange={e => setForm({ ...form, interval_km: e.target.value })} className="w-28 h-7 text-sm" placeholder="—" />
+          : <span className="text-sm text-slate-700">{schedule.interval_km ? `${schedule.interval_km.toLocaleString('fr-FR')} km` : <span className="text-slate-300">—</span>}</span>}
       </td>
       <td className="px-5 py-3.5">
         {editing
@@ -231,11 +243,15 @@ function ScheduleRow({ schedule, vehicles, onDelete, onSave }) {
 // ── Schedule Card (mobile inline-edit) ────────────────────────────
 function ScheduleCard({ schedule, vehicles, onDelete, onSave }) {
   const [editing, setEditing] = useState(false)
-  const [form, setForm] = useState({ interval_months: schedule.interval_months, interval_km: schedule.interval_km, notes: schedule.notes || '' })
+  const [form, setForm] = useState({ interval_months: schedule.interval_months ?? '', interval_km: schedule.interval_km ?? '', notes: schedule.notes || '' })
   const vehicle = getVehicleById(vehicles, schedule.vehicle_id)
 
   const handleSave = async () => {
-    await onSave(schedule.id, { ...form, interval_months: parseInt(form.interval_months), interval_km: parseInt(form.interval_km) })
+    await onSave(schedule.id, {
+      ...form,
+      interval_months: form.interval_months ? parseInt(form.interval_months) : null,
+      interval_km: form.interval_km ? parseInt(form.interval_km) : null,
+    })
     setEditing(false)
   }
 
@@ -247,14 +263,19 @@ function ScheduleCard({ schedule, vehicles, onDelete, onSave }) {
           {editing ? (
             <div className="mt-2 space-y-2">
               <div className="flex gap-2">
-                <div className="flex-1"><Label className="text-xs">Mois</Label><Input type="number" value={form.interval_months} onChange={e => setForm({ ...form, interval_months: e.target.value })} className="h-8 text-sm" /></div>
-                <div className="flex-1"><Label className="text-xs">Km</Label><Input type="number" value={form.interval_km} onChange={e => setForm({ ...form, interval_km: e.target.value })} className="h-8 text-sm" /></div>
+                <div className="flex-1"><Label className="text-xs">Mois</Label><Input type="number" value={form.interval_months} onChange={e => setForm({ ...form, interval_months: e.target.value })} className="h-8 text-sm" placeholder="—" /></div>
+                <div className="flex-1"><Label className="text-xs">Km</Label><Input type="number" value={form.interval_km} onChange={e => setForm({ ...form, interval_km: e.target.value })} className="h-8 text-sm" placeholder="—" /></div>
               </div>
               <Input value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} className="h-8 text-sm" placeholder="Note" />
             </div>
           ) : (
             <>
-              <p className="text-sm text-slate-500 mt-0.5">{schedule.interval_months} mois · {schedule.interval_km?.toLocaleString('fr-FR')} km</p>
+              <p className="text-sm text-slate-500 mt-0.5">
+                {[
+                  schedule.interval_months && `${schedule.interval_months} mois`,
+                  schedule.interval_km && `${schedule.interval_km.toLocaleString('fr-FR')} km`,
+                ].filter(Boolean).join(' · ') || '—'}
+              </p>
               {schedule.notes && <p className="text-xs text-slate-400">{schedule.notes}</p>}
             </>
           )}
@@ -279,7 +300,7 @@ function ScheduleCard({ schedule, vehicles, onDelete, onSave }) {
 
 // ── Constants ──────────────────────────────────────────────────────
 const EMPTY_RECORD   = { vehicle_id: '', date: '', mileage: '', issue_description: '', status: '' }
-const EMPTY_SCHEDULE = { vehicle_id: '', interval_months: '6', interval_km: '10000', notes: '' }
+const EMPTY_SCHEDULE = { vehicle_id: '', interval_months: '', interval_km: '', notes: '' }
 
 // ── Main ───────────────────────────────────────────────────────────
 export default function Maintenance() {
@@ -356,13 +377,13 @@ export default function Maintenance() {
   }
 
   const handleSaveSchedule = async () => {
-    if (!scheduleForm.vehicle_id) return
+    if (!scheduleForm.vehicle_id || (!scheduleForm.interval_months && !scheduleForm.interval_km)) return
     setSavingSchedule(true)
     try {
       await createMaintenanceSchedule({
         vehicle_id: scheduleForm.vehicle_id,
-        interval_months: parseInt(scheduleForm.interval_months),
-        interval_km: parseInt(scheduleForm.interval_km),
+        interval_months: scheduleForm.interval_months ? parseInt(scheduleForm.interval_months) : null,
+        interval_km: scheduleForm.interval_km ? parseInt(scheduleForm.interval_km) : null,
         notes: scheduleForm.notes,
       })
       queryClient.invalidateQueries({ queryKey: ['maintenanceSchedules'] })
@@ -709,14 +730,17 @@ export default function Maintenance() {
             <SelectContent>{vehicles.map(v => <SelectItem key={v.id} value={v.id}>{v.plate_number} — {v.model}</SelectItem>)}</SelectContent>
           </Select>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <Label>Intervalle (mois)</Label>
-            <Input type="number" value={scheduleForm.interval_months} onChange={e => setScheduleForm(f => ({ ...f, interval_months: e.target.value }))} placeholder="6" />
-          </div>
-          <div>
-            <Label>Intervalle (km)</Label>
-            <Input type="number" value={scheduleForm.interval_km} onChange={e => setScheduleForm(f => ({ ...f, interval_km: e.target.value }))} placeholder="10000" />
+        <div className="space-y-3">
+          <p className="text-xs text-slate-400">Renseignez au moins un intervalle — les deux peuvent être combinés pour des alertes plus précises.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <Label>Intervalle <span className="font-normal text-slate-400">(mois)</span></Label>
+              <Input type="number" value={scheduleForm.interval_months} onChange={e => setScheduleForm(f => ({ ...f, interval_months: e.target.value }))} placeholder="Ex : 6" />
+            </div>
+            <div>
+              <Label>Intervalle <span className="font-normal text-slate-400">(km)</span></Label>
+              <Input type="number" value={scheduleForm.interval_km} onChange={e => setScheduleForm(f => ({ ...f, interval_km: e.target.value }))} placeholder="Ex : 10000" />
+            </div>
           </div>
         </div>
         <div>
