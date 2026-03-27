@@ -328,13 +328,31 @@ export async function deleteMaintenanceRecord(id) {
 // ── Helpers ───────────────────────────────────────────────────────
 
 export function getLatestAssignments(assignments) {
-  const map = {}
+  // Step 1 — latest assignment record per vehicle
+  const byVehicle = {}
   for (const a of assignments) {
-    if (!map[a.vehicle_id] || new Date(a.assigned_at) > new Date(map[a.vehicle_id].assigned_at)) {
-      map[a.vehicle_id] = a
+    if (!byVehicle[a.vehicle_id] || new Date(a.assigned_at) > new Date(byVehicle[a.vehicle_id].assigned_at)) {
+      byVehicle[a.vehicle_id] = a
     }
   }
-  return map
+  // Step 2 — latest assignment record per driver
+  const byDriver = {}
+  for (const a of assignments) {
+    if (!byDriver[a.driver_id] || new Date(a.assigned_at) > new Date(byDriver[a.driver_id].assigned_at)) {
+      byDriver[a.driver_id] = a
+    }
+  }
+  // Step 3 — a vehicle is "currently assigned to driver D" only if D's most recent
+  // assignment also points back to that vehicle. This prevents ghost assignments when
+  // a driver moves from Vehicle A to Vehicle B (A would otherwise still show D).
+  const result = {}
+  for (const [vehicleId, assignment] of Object.entries(byVehicle)) {
+    const driverLatest = byDriver[assignment.driver_id]
+    if (driverLatest && driverLatest.vehicle_id === vehicleId) {
+      result[vehicleId] = assignment
+    }
+  }
+  return result
 }
 
 export function getLatestMileage(entries) {
