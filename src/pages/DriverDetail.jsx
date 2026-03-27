@@ -322,7 +322,7 @@ export default function DriverDetail() {
                 disabled={!assignVehicleId || assigning}
                 className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-40"
               >
-                {assigning ? 'Affectation...' : 'Confirmer l\'affectation'}
+                {assigning ? 'Affectation...' : "Confirmer l'affectation"}
               </Button>
             </div>
           </div>
