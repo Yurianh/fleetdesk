@@ -12,7 +12,6 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import PageHeader from '@/components/shared/PageHeader'
 import FormModal from '@/components/shared/FormModal'
 import {
   useVehicles, useMaintenanceRecords, useMaintenanceSchedules, useMileageEntries,
@@ -32,10 +31,10 @@ function ForecastCard({ forecast, onMarkDone, onLogMaintenance }) {
     schedule.interval_km && `${schedule.interval_km.toLocaleString('fr-FR')} km`,
   ].filter(Boolean).join(' · ')
 
-  // ── No record variant: planning exists but no maintenance logged yet
+  // ── No record variant ──────────────────────────────────────────────
   if (status === 'no_record') {
     return (
-      <div className="relative bg-white rounded-2xl border border-slate-200 overflow-hidden transition-shadow hover:shadow-sm">
+      <div className="relative bg-white rounded-2xl border border-slate-200 overflow-hidden transition-all duration-150 hover:shadow-md">
         <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-300" />
         <div className="pl-5 pr-4 pt-4 pb-4">
           <div className="flex items-start justify-between gap-3 mb-3">
@@ -55,7 +54,7 @@ function ForecastCard({ forecast, onMarkDone, onLogMaintenance }) {
           </p>
           <button
             onClick={() => onLogMaintenance(schedule.vehicle_id)}
-            className="w-full py-2 rounded-xl text-sm font-semibold transition-all active:scale-[0.98] bg-slate-900 hover:bg-slate-700 text-white"
+            className="w-full py-2 rounded-xl text-sm font-semibold transition-all duration-150 active:scale-[0.98] bg-slate-900 hover:bg-slate-700 text-white"
           >
             Enregistrer le premier entretien
           </button>
@@ -64,15 +63,33 @@ function ForecastCard({ forecast, onMarkDone, onLogMaintenance }) {
     )
   }
 
+  // ── Overdue / due soon variant ─────────────────────────────────────
   const isOverdue = status === 'overdue'
   const s = isOverdue
-    ? { border: 'border-red-200', accent: 'bg-red-500', badge: 'bg-red-50 text-red-700', primary: 'bg-red-600 hover:bg-red-700 text-white', label: 'de retard' }
-    : { border: 'border-amber-200', accent: 'bg-amber-400', badge: 'bg-amber-50 text-amber-700', primary: 'bg-amber-500 hover:bg-amber-600 text-white', label: 'restants' }
+    ? {
+        border: 'border-red-200',
+        accent: 'bg-red-500',
+        badge: 'bg-red-100 text-red-600',
+        primary: 'bg-red-600 hover:bg-red-700 text-white',
+        secondary: 'text-red-500 hover:bg-red-50',
+        label: 'de retard',
+        shadow: 'shadow-sm',
+      }
+    : {
+        border: 'border-amber-200',
+        accent: 'bg-amber-400',
+        badge: 'bg-yellow-100 text-yellow-600',
+        primary: 'bg-amber-500 hover:bg-amber-600 text-white',
+        secondary: 'text-amber-600 hover:bg-amber-50',
+        label: 'restants',
+        shadow: '',
+      }
 
   return (
-    <div className={`relative bg-white rounded-2xl border ${s.border} overflow-hidden transition-shadow hover:shadow-sm`}>
-      <div className={`absolute left-0 top-0 bottom-0 w-1 ${s.accent}`} />
+    <div className={`relative bg-white rounded-2xl border ${s.border} overflow-hidden transition-all duration-150 ${s.shadow} hover:shadow-md`}>
+      <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${s.accent}`} />
       <div className="pl-5 pr-4 pt-4 pb-4">
+        {/* Vehicle + badge */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <div>
             <p className="font-semibold text-slate-900 text-sm">
@@ -83,15 +100,16 @@ function ForecastCard({ forecast, onMarkDone, onLogMaintenance }) {
               {schedule.notes || intervalLabel}
             </p>
           </div>
-          <span className={`text-xs font-bold px-2.5 py-1 rounded-full shrink-0 ${s.badge}`}>
+          <span className={`text-xs font-bold px-2.5 py-1 rounded-full shrink-0 whitespace-nowrap ${s.badge}`}>
             {Math.abs(daysUntil ?? 0)} j {s.label}
           </span>
         </div>
 
+        {/* KPI chips */}
         <div className="grid grid-cols-3 gap-2 mb-4">
           <div className="bg-slate-50 rounded-xl px-3 py-2">
             <p className="text-[10px] text-slate-400 mb-0.5">Km restants</p>
-            <p className={`text-sm font-bold ${kmUntil !== null && kmUntil <= 0 ? 'text-red-600' : 'text-slate-900'}`}>
+            <p className={`text-sm font-bold tabular-nums ${kmUntil !== null && kmUntil <= 0 ? 'text-red-600' : 'text-slate-900'}`}>
               {kmUntil !== null
                 ? `${kmUntil <= 0 ? '−' : ''}${Math.abs(kmUntil).toLocaleString('fr-FR')}`
                 : '—'}
@@ -109,11 +127,18 @@ function ForecastCard({ forecast, onMarkDone, onLogMaintenance }) {
           </div>
         </div>
 
+        {/* CTAs */}
         <button
           onClick={() => onMarkDone(schedule.vehicle_id, currentMileage)}
-          className={`w-full py-2 rounded-xl text-sm font-semibold transition-all active:scale-[0.98] ${s.primary}`}
+          className={`w-full py-2 rounded-xl text-sm font-semibold transition-all duration-150 active:scale-[0.98] ${s.primary}`}
         >
           Marquer comme effectué
+        </button>
+        <button
+          onClick={() => onLogMaintenance(schedule.vehicle_id)}
+          className={`w-full py-1.5 rounded-xl text-xs font-medium mt-2 transition-colors ${s.secondary}`}
+        >
+          Ajouter un entretien
         </button>
       </div>
     </div>
@@ -373,6 +398,7 @@ export default function Maintenance() {
   const trueOkForecasts   = forecasts.filter(f => f.status === 'ok')
   const overdueCount      = overdueForecasts.length
   const dueSoonCount      = dueSoonForecasts.length
+  const okCount           = trueOkForecasts.length
 
   // Filtered records for the Entretiens tab
   const filteredRecords = records.filter(r => {
@@ -382,7 +408,6 @@ export default function Maintenance() {
   })
 
   // ── Open record modal with smart prefill ─────────────────────────
-  // prefill can override date, mileage, status, issue_description
   const openRecordModal = (vehicleId = '', prefill = {}) => {
     setEditingRecord(null)
     setRecordForm({
@@ -394,7 +419,7 @@ export default function Maintenance() {
     setRecordModal(true)
   }
 
-  // "Marquer comme effectué" — today's date + current km + status OK pre-filled
+  // "Marquer comme effectué" — prefills today + current km + status OK
   const handleMarkDone = (vehicleId, currentMileage) => {
     openRecordModal(vehicleId, {
       mileage: currentMileage ? String(Math.round(currentMileage)) : '',
@@ -475,24 +500,59 @@ export default function Maintenance() {
 
   return (
     <div className="p-5 sm:p-8">
-      <PageHeader title="Maintenance" description="Suivi des entretiens et prévisions par véhicule">
-        <div className="flex items-center gap-2">
-          {overdueCount > 0 && (
-            <span className="text-xs font-semibold bg-red-100 text-red-600 px-3 py-1.5 rounded-full">
-              {overdueCount} en retard
-            </span>
-          )}
-          {dueSoonCount > 0 && (
-            <span className="text-xs font-semibold bg-amber-100 text-amber-700 px-3 py-1.5 rounded-full">
-              {dueSoonCount} bientôt
-            </span>
-          )}
+
+      {/* ── Structured header ───────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 tracking-tight">Maintenance</h1>
+          <p className="text-sm text-zinc-400 mt-1">Suivi des entretiens et prévisions par véhicule</p>
         </div>
-      </PageHeader>
+
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          {/* KPI pills */}
+          {schedules.length > 0 && (
+            <div className="flex items-center gap-2 flex-wrap">
+              {overdueCount > 0 && (
+                <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold bg-red-100 text-red-600">
+                  {overdueCount} en retard
+                </span>
+              )}
+              {dueSoonCount > 0 && (
+                <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold bg-yellow-100 text-yellow-600">
+                  {dueSoonCount} bientôt
+                </span>
+              )}
+              {okCount > 0 && (
+                <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold bg-green-100 text-green-600">
+                  {okCount} OK
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Action buttons */}
+          <div className="flex items-center gap-2 shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setScheduleModal(true)}
+            >
+              <Plus className="w-4 h-4 mr-1.5" /> Nouveau planning
+            </Button>
+            <Button
+              size="sm"
+              className="bg-[#2563EB] hover:bg-[#1D4ED8]"
+              onClick={() => openRecordModal()}
+            >
+              <Plus className="w-4 h-4 mr-1.5" /> Ajouter un entretien
+            </Button>
+          </div>
+        </div>
+      </div>
 
       <Tabs defaultValue="forecasts">
         <div className="overflow-x-auto">
-          <TabsList className="mb-6 bg-white border border-slate-200 p-1 rounded-xl h-auto min-w-max">
+          <TabsList className="mb-4 bg-white border border-slate-200 p-1 rounded-xl h-auto min-w-max">
             <TabsTrigger value="forecasts" className="rounded-lg data-[state=active]:bg-slate-900 data-[state=active]:text-white text-sm">
               Prévisions
               {(overdueCount + dueSoonCount) > 0 && (
@@ -514,6 +574,15 @@ export default function Maintenance() {
 
         {/* ── PRÉVISIONS ─────────────────────────────────────────── */}
         <TabsContent value="forecasts">
+
+          {/* Context bar */}
+          {schedules.length > 0 && (
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 mb-6 text-sm text-slate-500">
+              <Info className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+              Les prévisions sont calculées automatiquement à partir des plannings et des entretiens enregistrés.
+            </div>
+          )}
+
           {forecasts.length === 0 && schedules.length === 0 ? (
             <MaintenanceOnboarding
               hasVehicles={vehicles.length > 0}
@@ -563,7 +632,7 @@ export default function Maintenance() {
                 </div>
               )}
 
-              {/* ── Non calibrés: planning exists but no first maintenance logged ── */}
+              {/* ── Non calibrés ── */}
               {noRecordForecasts.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 mb-3">
@@ -578,7 +647,7 @@ export default function Maintenance() {
                 </div>
               )}
 
-              {/* ── À jour — collapsible compact list ── */}
+              {/* ── À jour — collapsible ── */}
               {trueOkForecasts.length > 0 && (
                 <div>
                   <button
@@ -604,13 +673,6 @@ export default function Maintenance() {
                 </div>
               )}
             </div>
-          )}
-
-          {forecasts.length > 0 && (
-            <p className="text-xs text-slate-400 mt-6 flex items-center gap-1.5">
-              <Info className="w-3.5 h-3.5 shrink-0" />
-              Prévisions calculées automatiquement à partir de vos plannings et de l'historique d'entretiens.
-            </p>
           )}
         </TabsContent>
 
