@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { format } from 'date-fns'
+import { format, differenceInCalendarDays } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
 import { Plus, ArrowLeftRight, Trash2 } from 'lucide-react'
@@ -89,31 +89,31 @@ export default function Assignments() {
                   <tr className="bg-white border-b border-slate-200">
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Véhicule</th>
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Conducteur</th>
-                    <th className="text-left px-5 py-3 font-medium text-slate-500">Affecté le</th>
-                    <th className="text-left px-5 py-3 font-medium text-slate-500">Statut</th>
+                    <th className="text-left px-5 py-3 font-medium text-slate-500">Période</th>
+                    <th className="text-left px-5 py-3 font-medium text-slate-500">Durée</th>
                     <th className="px-5 py-3 w-16"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {assignments.map(a => {
-                    const vehicle = getVehicleById(vehicles, a.vehicle_id)
-                    const driver  = getDriverById(drivers, a.driver_id)
-                    const isCurrent = currentAssignmentIds.has(a.id)
+                    const vehicle   = getVehicleById(vehicles, a.vehicle_id)
+                    const driver    = getDriverById(drivers, a.driver_id)
+                    const isCurrent = !a.ended_at
+                    const endDate   = a.ended_at ? new Date(a.ended_at) : new Date()
+                    const days      = differenceInCalendarDays(endDate, new Date(a.assigned_at))
                     return (
-                      <tr key={a.id} className="hover:bg-white transition-colors group">
+                      <tr key={a.id} className={`transition-colors group ${isCurrent ? 'bg-emerald-50/30 hover:bg-emerald-50/50' : 'hover:bg-slate-50'}`}>
                         <td className="px-5 py-3.5 font-medium text-slate-900">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</td>
                         <td className="px-5 py-3.5 text-slate-700">{driver?.name || '—'}</td>
-                        <td className="px-5 py-3.5 text-slate-500">{format(new Date(a.assigned_at), 'd MMM yyyy, HH:mm', { locale: dateLocale })}</td>
-                        <td className="px-5 py-3.5">
-                          {isCurrent ? (
-                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                              Actuelle
-                            </span>
-                          ) : (
-                            <span className="text-xs text-slate-400">Historique</span>
-                          )}
+                        <td className="px-5 py-3.5 text-slate-500 text-xs">
+                          <span>{format(new Date(a.assigned_at), 'd MMM yyyy', { locale: dateLocale })}</span>
+                          <span className="mx-1.5 text-slate-300">→</span>
+                          {isCurrent
+                            ? <span className="inline-flex items-center gap-1 font-semibold text-emerald-600"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />Aujourd'hui</span>
+                            : <span>{format(new Date(a.ended_at), 'd MMM yyyy', { locale: dateLocale })}</span>
+                          }
                         </td>
+                        <td className="px-5 py-3.5 text-xs text-slate-400 tabular-nums">{days}j</td>
                         <td className="px-5 py-3.5">
                           <div className="flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity">
                             <button onClick={() => handleDelete(a.id)} disabled={deletingId === a.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors">
@@ -131,30 +131,30 @@ export default function Assignments() {
             {/* Mobile cards */}
             <div className="sm:hidden divide-y divide-slate-100">
               {assignments.map(a => {
-                const vehicle = getVehicleById(vehicles, a.vehicle_id)
-                const driver  = getDriverById(drivers, a.driver_id)
-                const isCurrent = currentAssignmentIds.has(a.id)
+                const vehicle   = getVehicleById(vehicles, a.vehicle_id)
+                const driver    = getDriverById(drivers, a.driver_id)
+                const isCurrent = !a.ended_at
+                const endDate   = a.ended_at ? new Date(a.ended_at) : new Date()
+                const days      = differenceInCalendarDays(endDate, new Date(a.assigned_at))
                 return (
-                  <div key={a.id} className="p-4">
+                  <div key={a.id} className={`p-4 ${isCurrent ? 'bg-emerald-50/30' : ''}`}>
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-slate-900 truncate">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</p>
                         <p className="text-sm text-slate-600">{driver?.name || '—'}</p>
-                        <p className="text-xs text-slate-400 mt-0.5">{format(new Date(a.assigned_at), 'd MMM yyyy', { locale: dateLocale })}</p>
+                        <p className="text-xs text-slate-400 mt-0.5">
+                          {format(new Date(a.assigned_at), 'd MMM yyyy', { locale: dateLocale })}
+                          <span className="mx-1">→</span>
+                          {isCurrent
+                            ? <span className="text-emerald-600 font-medium">Aujourd'hui</span>
+                            : format(new Date(a.ended_at), 'd MMM yyyy', { locale: dateLocale })
+                          }
+                          <span className="ml-1.5 text-slate-300">· {days}j</span>
+                        </p>
                       </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        {isCurrent ? (
-                          <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                            Actuelle
-                          </span>
-                        ) : (
-                          <span className="text-xs text-slate-400">Historique</span>
-                        )}
-                        <button onClick={() => handleDelete(a.id)} disabled={deletingId === a.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors">
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+                      <button onClick={() => handleDelete(a.id)} disabled={deletingId === a.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors flex-shrink-0">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
                 )

@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, Users, CreditCard, Car, Droplets, Pencil, Check, X, MapPin, Hash, Truck, ChevronRight, AlertCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
-import { format } from 'date-fns'
+import { format, differenceInCalendarDays } from 'date-fns'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -314,23 +314,34 @@ export default function DriverDetail() {
                 <thead>
                   <tr className="bg-white border-b border-slate-100">
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Véhicule</th>
-                    <th className="text-left px-5 py-3 font-medium text-slate-500">Affecté le</th>
+                    <th className="text-left px-5 py-3 font-medium text-slate-500">Période</th>
+                    <th className="text-left px-5 py-3 font-medium text-slate-500">Durée</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {driverAssignments.map(a => {
-                    const vehicle = getVehicleById(vehicles, a.vehicle_id)
-                    const isCurrent = currentVehicle?.id === a.vehicle_id
+                    const vehicle   = getVehicleById(vehicles, a.vehicle_id)
+                    const isCurrent = !a.ended_at
+                    const endDate   = a.ended_at ? new Date(a.ended_at) : new Date()
+                    const days      = differenceInCalendarDays(endDate, new Date(a.assigned_at))
                     return (
-                      <tr key={a.id} className={isCurrent ? 'bg-emerald-50/40' : ''}>
-                        <td className="px-5 py-3 font-medium text-slate-900 flex items-center gap-2">
-                          {isCurrent && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />}
-                          {vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}
-                          {isCurrent && <span className="text-[10px] text-emerald-600 font-semibold bg-emerald-100 px-1.5 py-0.5 rounded-full">Actuel</span>}
+                      <tr key={a.id} className={isCurrent ? 'bg-emerald-50/40' : 'hover:bg-slate-50'}>
+                        <td className="px-5 py-3.5 font-medium text-slate-900">
+                          <div className="flex items-center gap-2">
+                            {isCurrent && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />}
+                            {vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}
+                            {isCurrent && <span className="text-[10px] text-emerald-600 font-semibold bg-emerald-100 px-1.5 py-0.5 rounded-full">Actuel</span>}
+                          </div>
                         </td>
-                        <td className="px-5 py-3 text-slate-500">
-                          {format(new Date(a.assigned_at), 'd MMM yyyy, HH:mm', { locale: dateLocale })}
+                        <td className="px-5 py-3.5 text-xs text-slate-500">
+                          {format(new Date(a.assigned_at), 'd MMM yyyy', { locale: dateLocale })}
+                          <span className="mx-1.5 text-slate-300">→</span>
+                          {isCurrent
+                            ? <span className="font-semibold text-emerald-600">Aujourd'hui</span>
+                            : format(new Date(a.ended_at), 'd MMM yyyy', { locale: dateLocale })
+                          }
                         </td>
+                        <td className="px-5 py-3.5 text-xs text-slate-400 tabular-nums">{days}j</td>
                       </tr>
                     )
                   })}
@@ -339,20 +350,29 @@ export default function DriverDetail() {
             </div>
             <div className="sm:hidden divide-y divide-slate-100">
               {driverAssignments.map(a => {
-                const vehicle = getVehicleById(vehicles, a.vehicle_id)
-                const isCurrent = currentVehicle?.id === a.vehicle_id
+                const vehicle   = getVehicleById(vehicles, a.vehicle_id)
+                const isCurrent = !a.ended_at
+                const endDate   = a.ended_at ? new Date(a.ended_at) : new Date()
+                const days      = differenceInCalendarDays(endDate, new Date(a.assigned_at))
                 return (
                   <div key={a.id} className={`px-4 py-3 ${isCurrent ? 'bg-emerald-50/40' : ''}`}>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 mb-0.5">
                       {isCurrent && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />}
                       <p className="font-medium text-slate-900">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</p>
                       {isCurrent && <span className="text-[10px] text-emerald-600 font-semibold bg-emerald-100 px-1.5 py-0.5 rounded-full">Actuel</span>}
                     </div>
-                    <p className="text-xs text-slate-400 mt-0.5">{format(new Date(a.assigned_at), 'd MMM yyyy', { locale: dateLocale })}</p>
+                    <p className="text-xs text-slate-400">
+                      {format(new Date(a.assigned_at), 'd MMM yyyy', { locale: dateLocale })}
+                      <span className="mx-1">→</span>
+                      {isCurrent
+                        ? <span className="text-emerald-600 font-medium">Aujourd'hui</span>
+                        : format(new Date(a.ended_at), 'd MMM yyyy', { locale: dateLocale })
+                      }
+                      <span className="ml-1.5 text-slate-300">· {days}j</span>
+                    </p>
                   </div>
                 )
               })}
-            </div>
           </>
         ) : (
           <EmptyState title="Aucune affectation" description="Ce conducteur n'a pas encore été affecté à un véhicule." />

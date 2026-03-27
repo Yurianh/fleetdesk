@@ -190,7 +190,26 @@ export async function createDriver(data) {
 }
 
 export async function createAssignment(data) {
-  const { error } = await supabase.from('assignments').insert({ ...data, user_id: await orgUid() })
+  const uid = await orgUid()
+  const now = new Date().toISOString()
+
+  // Close this driver's current active assignment (move from previous vehicle)
+  await supabase
+    .from('assignments')
+    .update({ ended_at: now })
+    .eq('user_id', uid)
+    .eq('driver_id', data.driver_id)
+    .is('ended_at', null)
+
+  // Close this vehicle's current active assignment (previous driver on this vehicle)
+  await supabase
+    .from('assignments')
+    .update({ ended_at: now })
+    .eq('user_id', uid)
+    .eq('vehicle_id', data.vehicle_id)
+    .is('ended_at', null)
+
+  const { error } = await supabase.from('assignments').insert({ ...data, user_id: uid })
   if (error) throw error
   logActivity('createAssignment', 'assignment', '', '')
 }
@@ -328,23 +347,22 @@ export async function deleteMaintenanceRecord(id) {
 // ── Helpers ───────────────────────────────────────────────────────
 
 export function getLatestAssignments(assignments) {
-  // Step 1 — latest assignment record per vehicle
+  // Primary: active assignments are those with ended_at IS NULL.
+  // Cross-check by driver handles any legacy records that predate the ended_at column.
+  const active = assignments.filter(a => !a.ended_at)
+
   const byVehicle = {}
-  for (const a of assignments) {
+  for (const a of active) {
     if (!byVehicle[a.vehicle_id] || new Date(a.assigned_at) > new Date(byVehicle[a.vehicle_id].assigned_at)) {
       byVehicle[a.vehicle_id] = a
     }
   }
-  // Step 2 — latest assignment record per driver
   const byDriver = {}
-  for (const a of assignments) {
+  for (const a of active) {
     if (!byDriver[a.driver_id] || new Date(a.assigned_at) > new Date(byDriver[a.driver_id].assigned_at)) {
       byDriver[a.driver_id] = a
     }
   }
-  // Step 3 — a vehicle is "currently assigned to driver D" only if D's most recent
-  // assignment also points back to that vehicle. This prevents ghost assignments when
-  // a driver moves from Vehicle A to Vehicle B (A would otherwise still show D).
   const result = {}
   for (const [vehicleId, assignment] of Object.entries(byVehicle)) {
     const driverLatest = byDriver[assignment.driver_id]
