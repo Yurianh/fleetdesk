@@ -1,23 +1,20 @@
-import React, { useState } from 'react'
-import { format, differenceInCalendarDays } from 'date-fns'
+import React from 'react'
+import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
-import { Plus, ArrowLeftRight, Trash2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Label } from '@/components/ui/label'
+import { ArrowLeftRight, User, Truck, UserMinus } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import PageHeader from '@/components/shared/PageHeader'
 import EmptyState from '@/components/shared/EmptyState'
-import FormModal from '@/components/shared/FormModal'
+import { Link } from 'react-router-dom'
 import {
   useVehicles, useDrivers, useAssignments,
-  createAssignment, deleteAssignment,
-  getDriverById, getVehicleById, getLatestAssignments
+  unassignVehicle, getDriverById, getVehicleById, getLatestAssignments
 } from '@/lib/useFleetData'
-
 import { usePageTitle } from '@/lib/usePageTitle'
+import { useState } from 'react'
+
 export default function Assignments() {
   usePageTitle('Affectations')
   const { t } = useTranslation()
@@ -27,97 +24,87 @@ export default function Assignments() {
   const { data: assignments } = useAssignments()
   const queryClient = useQueryClient()
 
-  const [modal, setModal]     = useState(false)
-  const [form, setForm]       = useState({ vehicle_id: '', driver_id: '' })
-  const [saving, setSaving]   = useState(false)
-  const [deletingId, setDeletingId] = useState(null)
+  const [unassigningId, setUnassigningId] = useState(null)
 
   const latestAssignments = getLatestAssignments(assignments)
+  const activeList = Object.values(latestAssignments)
+  const unassignedVehicles = vehicles.filter(v => !latestAssignments[v.id])
 
-  const openCreate = () => { setForm({ vehicle_id: '', driver_id: '' }); setModal(true) }
-  const closeModal = () => setModal(false)
-
-  const handleSubmit = async () => {
-    if (!form.vehicle_id || !form.driver_id) return
-    setSaving(true)
+  const handleUnassign = async (vehicleId) => {
+    setUnassigningId(vehicleId)
     try {
-      await createAssignment({ vehicle_id: form.vehicle_id, driver_id: form.driver_id, assigned_at: new Date().toISOString() })
+      await unassignVehicle(vehicleId)
       queryClient.invalidateQueries({ queryKey: ['assignments'] })
-      toast.success(t('assignments.saved'))
-      closeModal()
-    } catch (e) { toast.error(e?.message || t('assignments.saveError')) }
-    finally { setSaving(false) }
+      toast.success('Conducteur désaffecté.')
+    } catch { toast.error('Erreur lors de la désaffectation.') }
+    finally { setUnassigningId(null) }
   }
-
-  const handleDelete = async (id) => {
-    setDeletingId(id)
-    try {
-      await deleteAssignment(id)
-      queryClient.invalidateQueries({ queryKey: ['assignments'] })
-      toast.success(t('assignments.deleted'))
-    } catch { toast.error(t('assignments.deleteError')) }
-    finally { setDeletingId(null) }
-  }
-
-  const currentAssignmentIds = new Set(Object.values(latestAssignments).map(a => a.id))
 
   return (
     <div className="p-5 sm:p-8">
       <PageHeader
         title={t('assignments.title')}
-        description={`${Object.keys(latestAssignments).length} ${t('assignments.vehicle').toLowerCase()}${Object.keys(latestAssignments).length !== 1 ? 's' : ''} · ${assignments.length} ${t('common.total')}`}
-      >
-        <Button onClick={openCreate} className="bg-[#2563EB] hover:bg-[#1D4ED8]">
-          <Plus className="w-4 h-4 mr-2" /> {t('assignments.newAssignment')}
-        </Button>
-      </PageHeader>
+        description={`${activeList.length} affectation${activeList.length !== 1 ? 's' : ''} active${activeList.length !== 1 ? 's' : ''} · ${unassignedVehicles.length} véhicule${unassignedVehicles.length !== 1 ? 's' : ''} libre${unassignedVehicles.length !== 1 ? 's' : ''}`}
+      />
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        {assignments.length === 0 ? (
+      {/* ── Active assignments ── */}
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden mb-6">
+        {activeList.length === 0 ? (
           <EmptyState
             icon={ArrowLeftRight}
-            title="Aucune affectation"
-            description="Associez un conducteur à un véhicule pour commencer."
-            action={{ label: 'Créer une affectation', onClick: openCreate }}
+            title="Aucune affectation active"
+            description="Affectez un véhicule à un conducteur depuis sa fiche."
           />
         ) : (
           <>
-            {/* Desktop table */}
+            {/* Desktop */}
             <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-white border-b border-slate-200">
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Véhicule</th>
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Conducteur</th>
-                    <th className="text-left px-5 py-3 font-medium text-slate-500">Période</th>
-                    <th className="text-left px-5 py-3 font-medium text-slate-500">Durée</th>
-                    <th className="px-5 py-3 w-16"></th>
+                    <th className="text-left px-5 py-3 font-medium text-slate-500">Depuis</th>
+                    <th className="px-5 py-3 w-16" />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {assignments.map(a => {
-                    const vehicle   = getVehicleById(vehicles, a.vehicle_id)
-                    const driver    = getDriverById(drivers, a.driver_id)
-                    const isCurrent = !a.ended_at
-                    const endDate   = a.ended_at ? new Date(a.ended_at) : new Date()
-                    const days      = differenceInCalendarDays(endDate, new Date(a.assigned_at))
+                  {activeList.map(a => {
+                    const vehicle = getVehicleById(vehicles, a.vehicle_id)
+                    const driver  = getDriverById(drivers, a.driver_id)
                     return (
-                      <tr key={a.id} className={`transition-colors group ${isCurrent ? 'bg-emerald-50/30 hover:bg-emerald-50/50' : 'hover:bg-slate-50'}`}>
-                        <td className="px-5 py-3.5 font-medium text-slate-900">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</td>
-                        <td className="px-5 py-3.5 text-slate-700">{driver?.name || '—'}</td>
-                        <td className="px-5 py-3.5 text-slate-500 text-xs">
-                          <span>{format(new Date(a.assigned_at), 'd MMM yyyy', { locale: dateLocale })}</span>
-                          <span className="mx-1.5 text-slate-300">→</span>
-                          {isCurrent
-                            ? <span className="inline-flex items-center gap-1 font-semibold text-emerald-600"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />Aujourd'hui</span>
-                            : <span>{format(new Date(a.ended_at), 'd MMM yyyy', { locale: dateLocale })}</span>
-                          }
-                        </td>
-                        <td className="px-5 py-3.5 text-xs text-slate-400 tabular-nums">{days}j</td>
+                      <tr key={a.id} className="hover:bg-emerald-50/30 transition-colors group">
                         <td className="px-5 py-3.5">
-                          <div className="flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => handleDelete(a.id)} disabled={deletingId === a.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors">
-                              <Trash2 className="w-3.5 h-3.5" />
+                          <Link to={`/Vehicles/${a.vehicle_id}`} className="flex items-center gap-2.5 group/link">
+                            <div className="w-7 h-7 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                              <Truck className="w-3.5 h-3.5 text-emerald-600" />
+                            </div>
+                            <div>
+                              <p className="font-semibold text-slate-900 group-hover/link:text-[#1D4ED8]">{vehicle?.plate_number || '—'}</p>
+                              <p className="text-xs text-slate-400">{vehicle?.model || ''}</p>
+                            </div>
+                          </Link>
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <Link to={`/Drivers/${a.driver_id}`} className="flex items-center gap-2.5 group/link">
+                            <div className="w-7 h-7 bg-slate-100 rounded-full flex items-center justify-center flex-shrink-0">
+                              <User className="w-3.5 h-3.5 text-slate-500" />
+                            </div>
+                            <p className="font-medium text-slate-700 group-hover/link:text-[#1D4ED8]">{driver?.name || '—'}</p>
+                          </Link>
+                        </td>
+                        <td className="px-5 py-3.5 text-sm text-slate-400">
+                          {format(new Date(a.assigned_at), 'd MMM yyyy', { locale: dateLocale })}
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <div className="flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                              onClick={() => handleUnassign(a.vehicle_id)}
+                              disabled={unassigningId === a.vehicle_id}
+                              title="Désaffecter"
+                              className="p-1.5 rounded-lg hover:bg-amber-50 text-slate-400 hover:text-amber-600 transition-colors"
+                            >
+                              <UserMinus className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         </td>
@@ -128,32 +115,31 @@ export default function Assignments() {
               </table>
             </div>
 
-            {/* Mobile cards */}
+            {/* Mobile */}
             <div className="sm:hidden divide-y divide-slate-100">
-              {assignments.map(a => {
-                const vehicle   = getVehicleById(vehicles, a.vehicle_id)
-                const driver    = getDriverById(drivers, a.driver_id)
-                const isCurrent = !a.ended_at
-                const endDate   = a.ended_at ? new Date(a.ended_at) : new Date()
-                const days      = differenceInCalendarDays(endDate, new Date(a.assigned_at))
+              {activeList.map(a => {
+                const vehicle = getVehicleById(vehicles, a.vehicle_id)
+                const driver  = getDriverById(drivers, a.driver_id)
                 return (
-                  <div key={a.id} className={`p-4 ${isCurrent ? 'bg-emerald-50/30' : ''}`}>
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-slate-900 truncate">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</p>
-                        <p className="text-sm text-slate-600">{driver?.name || '—'}</p>
-                        <p className="text-xs text-slate-400 mt-0.5">
-                          {format(new Date(a.assigned_at), 'd MMM yyyy', { locale: dateLocale })}
-                          <span className="mx-1">→</span>
-                          {isCurrent
-                            ? <span className="text-emerald-600 font-medium">Aujourd'hui</span>
-                            : format(new Date(a.ended_at), 'd MMM yyyy', { locale: dateLocale })
-                          }
-                          <span className="ml-1.5 text-slate-300">· {days}j</span>
-                        </p>
-                      </div>
-                      <button onClick={() => handleDelete(a.id)} disabled={deletingId === a.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors flex-shrink-0">
-                        <Trash2 className="w-3.5 h-3.5" />
+                  <div key={a.id} className="p-4 flex items-center gap-3">
+                    <div className="w-9 h-9 bg-emerald-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Truck className="w-4 h-4 text-emerald-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <Link to={`/Vehicles/${a.vehicle_id}`} className="font-semibold text-slate-900 truncate block">{vehicle?.plate_number || '—'}</Link>
+                      <p className="text-xs text-slate-400 truncate">{vehicle?.model}</p>
+                      <Link to={`/Drivers/${a.driver_id}`} className="inline-flex items-center gap-1 text-xs text-slate-600 mt-1">
+                        <User className="w-3 h-3" />{driver?.name || '—'}
+                      </Link>
+                    </div>
+                    <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                      <span className="text-xs text-slate-400">{format(new Date(a.assigned_at), 'd MMM', { locale: dateLocale })}</span>
+                      <button
+                        onClick={() => handleUnassign(a.vehicle_id)}
+                        disabled={unassigningId === a.vehicle_id}
+                        className="p-1.5 rounded-lg hover:bg-amber-50 text-slate-400 hover:text-amber-600 transition-colors"
+                      >
+                        <UserMinus className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
@@ -164,29 +150,53 @@ export default function Assignments() {
         )}
       </div>
 
-      <FormModal
-        open={modal}
-        onClose={closeModal}
-        title="Nouvelle affectation"
-        onSubmit={handleSubmit}
-        saving={saving}
-        submitLabel="Affecter"
-      >
-        <div>
-          <Label>Véhicule</Label>
-          <Select value={form.vehicle_id} onValueChange={v => setForm(f => ({...f, vehicle_id: v}))}>
-            <SelectTrigger><SelectValue placeholder="Sélectionner un véhicule" /></SelectTrigger>
-            <SelectContent>{vehicles.map(v => <SelectItem key={v.id} value={v.id}>{v.plate_number} — {v.model}</SelectItem>)}</SelectContent>
-          </Select>
+      {/* ── Unassigned vehicles ── */}
+      {unassignedVehicles.length > 0 && (
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-slate-300" />
+            <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wide">Véhicules sans conducteur</h2>
+            <span className="text-xs text-slate-400 ml-0.5">{unassignedVehicles.length}</span>
+          </div>
+          <div className="hidden sm:block overflow-x-auto">
+            <table className="w-full text-sm">
+              <tbody className="divide-y divide-slate-100">
+                {unassignedVehicles.map(v => (
+                  <tr key={v.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-5 py-3.5">
+                      <Link to={`/Vehicles/${v.id}`} className="flex items-center gap-2.5 group/link">
+                        <div className="w-7 h-7 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Truck className="w-3.5 h-3.5 text-slate-400" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-slate-500 group-hover/link:text-[#1D4ED8]">{v.plate_number}</p>
+                          <p className="text-xs text-slate-400">{v.model}</p>
+                        </div>
+                      </Link>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <span className="text-xs text-slate-300">Non affecté</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="sm:hidden divide-y divide-slate-100">
+            {unassignedVehicles.map(v => (
+              <Link key={v.id} to={`/Vehicles/${v.id}`} className="flex items-center gap-3 p-4">
+                <div className="w-9 h-9 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Truck className="w-4 h-4 text-slate-400" />
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-500">{v.plate_number}</p>
+                  <p className="text-xs text-slate-400">{v.model}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
-        <div>
-          <Label>Conducteur</Label>
-          <Select value={form.driver_id} onValueChange={v => setForm(f => ({...f, driver_id: v}))}>
-            <SelectTrigger><SelectValue placeholder="Sélectionner un conducteur" /></SelectTrigger>
-            <SelectContent>{drivers.map(d => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}</SelectContent>
-          </Select>
-        </div>
-      </FormModal>
+      )}
     </div>
   )
 }
