@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Users, CreditCard, Car, Droplets, Pencil, Check, X, MapPin, Hash } from 'lucide-react'
+import { ArrowLeft, Users, CreditCard, Car, Droplets, Pencil, Check, X, MapPin, Hash, Truck, ChevronRight, AlertCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
 import { format } from 'date-fns'
-import { fr } from 'date-fns/locale'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -13,10 +12,10 @@ import { toast } from 'sonner'
 import EmptyState from '@/components/shared/EmptyState'
 import {
   useDrivers, useVehicles, useAssignments,
-  updateDriver, getVehicleById, getLatestAssignments
+  updateDriver, createAssignment, getVehicleById, getLatestAssignments, getDriverById
 } from '@/lib/useFleetData'
-
 import { usePageTitle } from '@/lib/usePageTitle'
+
 function CardBadge({ icon: Icon, label, value, color }) {
   return (
     <div className={`flex items-center gap-3 rounded-xl px-4 py-3 ${color}`}>
@@ -34,24 +33,44 @@ export default function DriverDetail() {
   const dateLocale = useDateLocale()
   usePageTitle('Conducteur')
   const { id } = useParams()
-  const { data: drivers } = useDrivers()
-  const { data: vehicles } = useVehicles()
+  const { data: drivers }     = useDrivers()
+  const { data: vehicles }    = useVehicles()
   const { data: assignments } = useAssignments()
   const queryClient = useQueryClient()
 
-  const [editing, setEditing] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [form, setForm] = useState(null)
+  const [editing, setEditing]             = useState(false)
+  const [saving, setSaving]               = useState(false)
+  const [form, setForm]                   = useState(null)
+  const [assignOpen, setAssignOpen]       = useState(false)
+  const [assignVehicleId, setAssignVehicleId] = useState('')
+  const [assigning, setAssigning]         = useState(false)
 
   const driver = drivers.find(d => d.id === id)
   if (!driver) return <div className="p-8 text-center text-slate-400">Conducteur introuvable</div>
 
+  const latestAssignments = getLatestAssignments(assignments)
   const driverAssignments = assignments.filter(a => a.driver_id === id)
-  const latestAssignment = driverAssignments[0]
-  const currentVehicle = latestAssignment ? getVehicleById(vehicles, latestAssignment.vehicle_id) : null
+
+  // Ground truth: vehicle whose *latest* assignment points to this driver
+  const currentVehicle = vehicles.find(v => latestAssignments[v.id]?.driver_id === id) || null
+
+  // Vehicles available in the picker — exclude current, sort free ones first
+  const otherVehicles = vehicles.filter(v => !currentVehicle || v.id !== currentVehicle.id)
+  const pickableVehicles = [
+    ...otherVehicles.filter(v => !latestAssignments[v.id]),
+    ...otherVehicles.filter(v => !!latestAssignments[v.id]),
+  ]
 
   const startEdit = () => {
-    setForm({ name: driver.name, phone: driver.phone || '', employee_id: driver.employee_id || '', address: driver.address || '', dkv_card: driver.dkv_card || '', highway_badge: driver.highway_badge || '', wash_card: driver.wash_card || '' })
+    setForm({
+      name: driver.name,
+      phone: driver.phone || '',
+      employee_id: driver.employee_id || '',
+      address: driver.address || '',
+      dkv_card: driver.dkv_card || '',
+      highway_badge: driver.highway_badge || '',
+      wash_card: driver.wash_card || '',
+    })
     setEditing(true)
   }
 
@@ -66,13 +85,36 @@ export default function DriverDetail() {
     finally { setSaving(false) }
   }
 
+  const openAssign = () => {
+    setAssignVehicleId('')
+    setAssignOpen(true)
+  }
+
+  const handleAssign = async () => {
+    if (!assignVehicleId) return
+    setAssigning(true)
+    try {
+      await createAssignment({
+        vehicle_id: assignVehicleId,
+        driver_id: id,
+        assigned_at: new Date().toISOString(),
+      })
+      queryClient.invalidateQueries({ queryKey: ['assignments'] })
+      setAssignOpen(false)
+      setAssignVehicleId('')
+      toast.success('Véhicule affecté.')
+    } catch { toast.error("Erreur lors de l'affectation.") }
+    finally { setAssigning(false) }
+  }
+
   return (
-    <div className="p-4 lg:p-8 max-w-5xl mx-auto">
+    <div className="p-4 lg:p-8 max-w-3xl mx-auto">
       <Link to="/Drivers" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-[#1D4ED8] mb-6">
         <ArrowLeft className="w-4 h-4" /> Retour aux conducteurs
       </Link>
 
-      <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 mb-6">
+      {/* ── Driver info card ── */}
+      <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 mb-4">
         {editing ? (
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -98,13 +140,13 @@ export default function DriverDetail() {
           </div>
         ) : (
           <div>
-            <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
+            <div className="flex items-start justify-between gap-4 mb-5">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 bg-emerald-50 rounded-xl flex items-center justify-center flex-shrink-0">
                   <Users className="w-6 h-6 text-emerald-600" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <h1 className="text-xl font-bold text-slate-900">{driver.name}</h1>
                     {driver.employee_id && (
                       <span className="inline-flex items-center gap-1 text-xs font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
@@ -112,47 +154,165 @@ export default function DriverDetail() {
                       </span>
                     )}
                   </div>
-                  {driver.phone && <p className="text-slate-500 text-sm">{driver.phone}</p>}
-                  {driver.address && <p className="text-slate-400 text-xs flex items-center gap-1 mt-0.5"><MapPin className="w-3 h-3" />{driver.address}</p>}
+                  {driver.phone && <p className="text-slate-500 text-sm mt-0.5">{driver.phone}</p>}
+                  {driver.address && (
+                    <p className="text-slate-400 text-xs flex items-center gap-1 mt-0.5">
+                      <MapPin className="w-3 h-3" />{driver.address}
+                    </p>
+                  )}
                 </div>
               </div>
-              <div className="flex items-center gap-4">
-                <div>
-                  <p className="text-xs text-slate-400">Véhicule actuel</p>
-                  <p className="font-semibold text-slate-900 text-sm">
-                    {currentVehicle ? `${currentVehicle.plate_number} — ${currentVehicle.model}` : '—'}
-                  </p>
-                </div>
-                <button onClick={startEdit} className="p-2 rounded-lg border border-slate-200 hover:bg-white text-slate-500">
-                  <Pencil className="w-4 h-4" />
-                </button>
-              </div>
+              <button onClick={startEdit} className="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-colors flex-shrink-0">
+                <Pencil className="w-4 h-4" />
+              </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <CardBadge icon={CreditCard} label="Carte DKV" value={driver.dkv_card} color="bg-blue-50" />
-              <CardBadge icon={Car} label="Badge autoroute" value={driver.highway_badge} color="bg-white" />
-              <CardBadge icon={Droplets} label="Carte lavage" value={driver.wash_card} color="bg-cyan-50" />
+              <CardBadge icon={CreditCard} label="Carte DKV"      value={driver.dkv_card}      color="bg-blue-50" />
+              <CardBadge icon={Car}        label="Badge autoroute" value={driver.highway_badge} color="bg-white border border-slate-100" />
+              <CardBadge icon={Droplets}   label="Carte lavage"    value={driver.wash_card}     color="bg-cyan-50" />
             </div>
-            {driver.address && (
-              <div className="mt-3 flex items-start gap-2 text-sm text-slate-500 bg-slate-50 rounded-xl px-4 py-3">
-                <MapPin className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
-                <span>{driver.address}</span>
-              </div>
-            )}
           </div>
         )}
       </div>
 
+      {/* ── Assignment section ── */}
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden mb-4">
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+          <div>
+            <h2 className="font-semibold text-slate-900 text-sm">Véhicule actuel</h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              {currentVehicle ? 'Ce conducteur est actuellement affecté à ce véhicule.' : 'Aucun véhicule affecté pour le moment.'}
+            </p>
+          </div>
+          {!assignOpen && (
+            <button
+              onClick={openAssign}
+              className="text-xs font-medium text-[#2563EB] hover:text-[#1D4ED8] bg-[#2563EB]/5 hover:bg-[#2563EB]/10 px-3 py-1.5 rounded-lg transition-colors flex-shrink-0"
+            >
+              {currentVehicle ? 'Changer' : '+ Affecter'}
+            </button>
+          )}
+        </div>
+
+        {/* Current vehicle display */}
+        {!assignOpen && (
+          <div className="px-5 py-4">
+            {currentVehicle ? (
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Truck className="w-4 h-4 text-emerald-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-slate-900 text-sm">{currentVehicle.plate_number}</p>
+                  <p className="text-xs text-slate-400">{currentVehicle.model}</p>
+                </div>
+                <Link to={`/Vehicles/${currentVehicle.id}`} className="text-xs text-slate-400 hover:text-[#1D4ED8] flex items-center gap-1 transition-colors">
+                  Voir <ChevronRight className="w-3 h-3" />
+                </Link>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 py-2">
+                <div className="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Truck className="w-4 h-4 text-slate-300" />
+                </div>
+                <p className="text-sm text-slate-400">Non affecté</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Vehicle picker */}
+        {assignOpen && (
+          <div className="p-5">
+            {vehicles.length === 0 ? (
+              <p className="text-sm text-slate-400 text-center py-4">Aucun véhicule dans la flotte.</p>
+            ) : pickableVehicles.length === 0 ? (
+              <p className="text-sm text-slate-400 text-center py-4">Tous les véhicules sont déjà attribués.</p>
+            ) : (
+              <div className="space-y-2 mb-4 max-h-72 overflow-y-auto pr-1">
+                {pickableVehicles.map(v => {
+                  const occupiedBy = latestAssignments[v.id]
+                    ? getDriverById(drivers, latestAssignments[v.id].driver_id)
+                    : null
+                  const isFree     = !occupiedBy
+                  const isSelected = assignVehicleId === v.id
+
+                  return (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => setAssignVehicleId(v.id)}
+                      className={`w-full text-left rounded-xl border px-4 py-3 transition-all duration-150 ${
+                        isSelected
+                          ? 'border-[#2563EB] bg-[#2563EB]/5 ring-1 ring-[#2563EB]/20'
+                          : isFree
+                          ? 'border-slate-200 hover:border-slate-300 bg-white'
+                          : 'border-slate-100 bg-slate-50/50 hover:border-slate-200'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${isSelected ? 'bg-[#2563EB]' : isFree ? 'bg-emerald-50' : 'bg-slate-100'}`}>
+                            <Truck className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : isFree ? 'text-emerald-600' : 'text-slate-400'}`} />
+                          </div>
+                          <div className="min-w-0">
+                            <p className={`font-semibold text-sm truncate ${isSelected ? 'text-slate-900' : isFree ? 'text-slate-900' : 'text-slate-500'}`}>
+                              {v.plate_number}
+                            </p>
+                            <p className="text-xs text-slate-400 truncate">{v.model}</p>
+                          </div>
+                        </div>
+                        <div className="flex-shrink-0 text-right">
+                          {isFree ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                              Disponible
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
+                              <AlertCircle className="w-3 h-3" />
+                              {occupiedBy?.name || 'Affecté'}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+
+            <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+              <Button
+                variant="outline"
+                onClick={() => { setAssignOpen(false); setAssignVehicleId('') }}
+                className="flex-shrink-0"
+              >
+                Annuler
+              </Button>
+              <Button
+                onClick={handleAssign}
+                disabled={!assignVehicleId || assigning}
+                className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-40"
+              >
+                {assigning ? 'Affectation...' : 'Confirmer l\'affectation'}
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── Assignment history ── */}
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div className="px-5 py-4 border-b border-slate-100">
-          <h2 className="font-semibold text-slate-900">Historique des affectations</h2>
+          <h2 className="font-semibold text-slate-900 text-sm">Historique des affectations</h2>
         </div>
         {driverAssignments.length > 0 ? (
           <>
             <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-white border-b">
+                  <tr className="bg-white border-b border-slate-100">
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Véhicule</th>
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Affecté le</th>
                   </tr>
@@ -160,10 +320,17 @@ export default function DriverDetail() {
                 <tbody className="divide-y divide-slate-100">
                   {driverAssignments.map(a => {
                     const vehicle = getVehicleById(vehicles, a.vehicle_id)
+                    const isCurrent = currentVehicle?.id === a.vehicle_id
                     return (
-                      <tr key={a.id}>
-                        <td className="px-5 py-3 font-medium">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</td>
-                        <td className="px-5 py-3 text-slate-500">{format(new Date(a.assigned_at), 'd MMM yyyy, HH:mm', { locale: dateLocale })}</td>
+                      <tr key={a.id} className={isCurrent ? 'bg-emerald-50/40' : ''}>
+                        <td className="px-5 py-3 font-medium text-slate-900 flex items-center gap-2">
+                          {isCurrent && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />}
+                          {vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}
+                          {isCurrent && <span className="text-[10px] text-emerald-600 font-semibold bg-emerald-100 px-1.5 py-0.5 rounded-full">Actuel</span>}
+                        </td>
+                        <td className="px-5 py-3 text-slate-500">
+                          {format(new Date(a.assigned_at), 'd MMM yyyy, HH:mm', { locale: dateLocale })}
+                        </td>
                       </tr>
                     )
                   })}
@@ -173,10 +340,15 @@ export default function DriverDetail() {
             <div className="sm:hidden divide-y divide-slate-100">
               {driverAssignments.map(a => {
                 const vehicle = getVehicleById(vehicles, a.vehicle_id)
+                const isCurrent = currentVehicle?.id === a.vehicle_id
                 return (
-                  <div key={a.id} className="px-4 py-3">
-                    <p className="font-medium text-slate-900">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</p>
-                    <p className="text-xs text-slate-400">{format(new Date(a.assigned_at), 'd MMM yyyy', { locale: dateLocale })}</p>
+                  <div key={a.id} className={`px-4 py-3 ${isCurrent ? 'bg-emerald-50/40' : ''}`}>
+                    <div className="flex items-center gap-2">
+                      {isCurrent && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />}
+                      <p className="font-medium text-slate-900">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</p>
+                      {isCurrent && <span className="text-[10px] text-emerald-600 font-semibold bg-emerald-100 px-1.5 py-0.5 rounded-full">Actuel</span>}
+                    </div>
+                    <p className="text-xs text-slate-400 mt-0.5">{format(new Date(a.assigned_at), 'd MMM yyyy', { locale: dateLocale })}</p>
                   </div>
                 )
               })}
