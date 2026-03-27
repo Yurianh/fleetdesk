@@ -400,6 +400,7 @@ export default function DriverDetail() {
                   </div>
                 )
               })}
+            </div>
           </>
         ) : (
           <EmptyState title="Aucune affectation" description="Ce conducteur n'a pas encore été affecté à un véhicule." />
