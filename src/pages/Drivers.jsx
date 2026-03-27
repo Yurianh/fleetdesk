@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, ChevronRight, CreditCard, Users, Trash2, Loader2 } from 'lucide-react'
+import { Plus, Search, ChevronRight, CreditCard, Users, Trash2, Loader2, MapPin } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -29,7 +29,7 @@ export default function Drivers() {
   const [search, setSearch] = useState('')
   const [showAdd, setShowAdd] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [form, setForm] = useState({ name: '', phone: '', dkv_card: '', highway_badge: '', wash_card: '' })
+  const [form, setForm] = useState({ name: '', phone: '', employee_id: '', address: '', dkv_card: '', highway_badge: '', wash_card: '' })
   const [deleteTarget, setDeleteTarget] = useState(null)
 
   const latestAssignments = getLatestAssignments(assignments)
@@ -45,7 +45,7 @@ export default function Drivers() {
       await createDriver(form)
       queryClient.invalidateQueries({ queryKey: ['drivers'] })
       setShowAdd(false)
-      setForm({ name: '', phone: '', dkv_card: '', highway_badge: '', wash_card: '' })
+      setForm({ name: '', phone: '', employee_id: '', address: '', dkv_card: '', highway_badge: '', wash_card: '' })
       toast.success(t('drivers.added'))
     } catch { toast.error(t('drivers.addError')) }
     finally { setSaving(false) }
@@ -93,6 +93,7 @@ export default function Drivers() {
                 <thead>
                   <tr className="bg-white border-b border-slate-200">
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Nom</th>
+                    <th className="text-left px-5 py-3 font-medium text-slate-500">ID</th>
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Téléphone</th>
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Véhicule actuel</th>
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Carte DKV</th>
@@ -109,7 +110,9 @@ export default function Drivers() {
                       <tr key={d.id} className="hover:bg-white transition-colors">
                         <td className="px-5 py-3.5">
                           <Link to={`/Drivers/${d.id}`} className="font-semibold text-slate-900 hover:text-[#1D4ED8]">{d.name}</Link>
+                          {d.address && <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5"><MapPin className="w-3 h-3" />{d.address}</p>}
                         </td>
+                        <td className="px-5 py-3.5 text-slate-500 font-mono text-xs">{d.employee_id || <span className="text-slate-300">—</span>}</td>
                         <td className="px-5 py-3.5 text-slate-600">{d.phone || '—'}</td>
                         <td className="px-5 py-3.5 text-slate-600">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</td>
                         <td className="px-5 py-3.5">
@@ -169,8 +172,12 @@ export default function Drivers() {
         <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Ajouter un conducteur</DialogTitle></DialogHeader>
           <div className="space-y-4 mt-2">
-            <div><Label>Nom complet *</Label><Input value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Jean Dupont" /></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><Label>Nom complet *</Label><Input value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Jean Dupont" /></div>
+              <div><Label>ID conducteur</Label><Input value={form.employee_id} onChange={e => setForm({...form, employee_id: e.target.value})} placeholder="Ex : C-042" /></div>
+            </div>
             <div><Label>Téléphone</Label><Input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} placeholder="+33 6 00 00 00 00" /></div>
+            <div><Label>Adresse</Label><Input value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="12 rue de la Paix, 75001 Paris" /></div>
             <div className="border-t border-slate-100 pt-4">
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Cartes & badges</p>
               <div className="space-y-3">

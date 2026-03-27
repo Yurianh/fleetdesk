@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Users, CreditCard, Car, Droplets, Pencil, Check, X } from 'lucide-react'
+import { ArrowLeft, Users, CreditCard, Car, Droplets, Pencil, Check, X, MapPin, Hash } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
 import { format } from 'date-fns'
@@ -51,7 +51,7 @@ export default function DriverDetail() {
   const currentVehicle = latestAssignment ? getVehicleById(vehicles, latestAssignment.vehicle_id) : null
 
   const startEdit = () => {
-    setForm({ name: driver.name, phone: driver.phone || '', dkv_card: driver.dkv_card || '', highway_badge: driver.highway_badge || '', wash_card: driver.wash_card || '' })
+    setForm({ name: driver.name, phone: driver.phone || '', employee_id: driver.employee_id || '', address: driver.address || '', dkv_card: driver.dkv_card || '', highway_badge: driver.highway_badge || '', wash_card: driver.wash_card || '' })
     setEditing(true)
   }
 
@@ -77,7 +77,9 @@ export default function DriverDetail() {
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div><Label>Nom</Label><Input value={form.name} onChange={e => setForm({...form, name: e.target.value})} /></div>
+              <div><Label>ID conducteur</Label><Input value={form.employee_id} onChange={e => setForm({...form, employee_id: e.target.value})} placeholder="Ex : C-042" /></div>
               <div><Label>Téléphone</Label><Input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} /></div>
+              <div><Label>Adresse</Label><Input value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="12 rue de la Paix, 75001 Paris" /></div>
             </div>
             <div className="border-t border-slate-100 pt-4">
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Cartes & badges</p>
@@ -102,8 +104,16 @@ export default function DriverDetail() {
                   <Users className="w-6 h-6 text-emerald-600" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-slate-900">{driver.name}</h1>
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-xl font-bold text-slate-900">{driver.name}</h1>
+                    {driver.employee_id && (
+                      <span className="inline-flex items-center gap-1 text-xs font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                        <Hash className="w-3 h-3" />{driver.employee_id}
+                      </span>
+                    )}
+                  </div>
                   {driver.phone && <p className="text-slate-500 text-sm">{driver.phone}</p>}
+                  {driver.address && <p className="text-slate-400 text-xs flex items-center gap-1 mt-0.5"><MapPin className="w-3 h-3" />{driver.address}</p>}
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -123,6 +133,12 @@ export default function DriverDetail() {
               <CardBadge icon={Car} label="Badge autoroute" value={driver.highway_badge} color="bg-white" />
               <CardBadge icon={Droplets} label="Carte lavage" value={driver.wash_card} color="bg-cyan-50" />
             </div>
+            {driver.address && (
+              <div className="mt-3 flex items-start gap-2 text-sm text-slate-500 bg-slate-50 rounded-xl px-4 py-3">
+                <MapPin className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                <span>{driver.address}</span>
+              </div>
+            )}
           </div>
         )}
       </div>

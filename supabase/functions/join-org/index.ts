@@ -51,6 +51,12 @@ Deno.serve(async (req) => {
 
     if (updateErr) throw updateErr
 
+    // Stamp org_id in user metadata via service role to guarantee orgUid() fast-path always works,
+    // even if the invite email metadata didn't propagate correctly (existing-user magic link edge case)
+    await supabaseAdmin.auth.admin.updateUserById(user.id, {
+      user_metadata: { org_id: orgId },
+    })
+
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
