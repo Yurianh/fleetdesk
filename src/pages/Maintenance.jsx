@@ -23,17 +23,54 @@ import {
 import { computeForecasts } from '@/lib/maintenanceForecast'
 import { usePageTitle } from '@/lib/usePageTitle'
 
-// ── Forecast Card (overdue / due_soon) ────────────────────────────
-function ForecastCard({ forecast, onLogMaintenance }) {
-  const { vehicle, lastRecord, nextDate, daysUntil, kmUntil, status, schedule } = forecast
-  const isOverdue = status === 'overdue'
+// ── Forecast Card (overdue / due_soon / no_record) ─────────────────
+function ForecastCard({ forecast, onMarkDone, onLogMaintenance }) {
+  const { vehicle, lastRecord, nextDate, daysUntil, kmUntil, status, schedule, currentMileage } = forecast
 
+  const intervalLabel = [
+    schedule.interval_months && `${schedule.interval_months} mois`,
+    schedule.interval_km && `${schedule.interval_km.toLocaleString('fr-FR')} km`,
+  ].filter(Boolean).join(' · ')
+
+  // ── No record variant: planning exists but no maintenance logged yet
+  if (status === 'no_record') {
+    return (
+      <div className="relative bg-white rounded-2xl border border-slate-200 overflow-hidden transition-shadow hover:shadow-sm">
+        <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-300" />
+        <div className="pl-5 pr-4 pt-4 pb-4">
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <div>
+              <p className="font-semibold text-slate-900 text-sm">
+                {vehicle?.plate_number || '—'}{' '}
+                <span className="font-normal text-slate-500">{vehicle?.model || ''}</span>
+              </p>
+              <p className="text-xs text-slate-400 mt-0.5">{schedule.notes || intervalLabel || '—'}</p>
+            </div>
+            <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-100 text-slate-500 shrink-0 whitespace-nowrap">
+              Non calibré
+            </span>
+          </div>
+          <p className="text-xs text-slate-400 mb-3 leading-relaxed">
+            Aucun entretien enregistré. Ajoutez le dernier entretien effectué pour activer les prévisions automatiques.
+          </p>
+          <button
+            onClick={() => onLogMaintenance(schedule.vehicle_id)}
+            className="w-full py-2 rounded-xl text-sm font-semibold transition-all active:scale-[0.98] bg-slate-900 hover:bg-slate-700 text-white"
+          >
+            Enregistrer le premier entretien
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const isOverdue = status === 'overdue'
   const s = isOverdue
-    ? { border: 'border-red-200', accent: 'bg-red-500', badge: 'bg-red-50 text-red-700', cta: 'bg-red-600 hover:bg-red-700 text-white', label: 'de retard' }
-    : { border: 'border-amber-200', accent: 'bg-amber-400', badge: 'bg-amber-50 text-amber-700', cta: 'bg-amber-500 hover:bg-amber-600 text-white', label: 'restants' }
+    ? { border: 'border-red-200', accent: 'bg-red-500', badge: 'bg-red-50 text-red-700', primary: 'bg-red-600 hover:bg-red-700 text-white', label: 'de retard' }
+    : { border: 'border-amber-200', accent: 'bg-amber-400', badge: 'bg-amber-50 text-amber-700', primary: 'bg-amber-500 hover:bg-amber-600 text-white', label: 'restants' }
 
   return (
-    <div className={`relative bg-white rounded-2xl border ${s.border} overflow-hidden`}>
+    <div className={`relative bg-white rounded-2xl border ${s.border} overflow-hidden transition-shadow hover:shadow-sm`}>
       <div className={`absolute left-0 top-0 bottom-0 w-1 ${s.accent}`} />
       <div className="pl-5 pr-4 pt-4 pb-4">
         <div className="flex items-start justify-between gap-3 mb-3">
@@ -43,10 +80,7 @@ function ForecastCard({ forecast, onLogMaintenance }) {
               <span className="font-normal text-slate-500">{vehicle?.model || ''}</span>
             </p>
             <p className="text-xs text-slate-400 mt-0.5">
-              {schedule.notes || [
-                schedule.interval_months && `${schedule.interval_months} mois`,
-                schedule.interval_km && `${schedule.interval_km.toLocaleString('fr-FR')} km`,
-              ].filter(Boolean).join(' · ')}
+              {schedule.notes || intervalLabel}
             </p>
           </div>
           <span className={`text-xs font-bold px-2.5 py-1 rounded-full shrink-0 ${s.badge}`}>
@@ -76,10 +110,10 @@ function ForecastCard({ forecast, onLogMaintenance }) {
         </div>
 
         <button
-          onClick={() => onLogMaintenance(schedule.vehicle_id)}
-          className={`w-full py-2 rounded-xl text-sm font-semibold transition-colors ${s.cta}`}
+          onClick={() => onMarkDone(schedule.vehicle_id, currentMileage)}
+          className={`w-full py-2 rounded-xl text-sm font-semibold transition-all active:scale-[0.98] ${s.primary}`}
         >
-          {isOverdue ? "Enregistrer l'entretien maintenant" : "Enregistrer l'entretien"}
+          Marquer comme effectué
         </button>
       </div>
     </div>
@@ -87,8 +121,8 @@ function ForecastCard({ forecast, onLogMaintenance }) {
 }
 
 // ── Forecast Row (ok — compact) ────────────────────────────────────
-function ForecastRow({ forecast, onLogMaintenance }) {
-  const { vehicle, nextDate, daysUntil, schedule } = forecast
+function ForecastRow({ forecast, onMarkDone }) {
+  const { vehicle, nextDate, daysUntil, kmUntil, schedule, currentMileage } = forecast
   return (
     <div className="flex items-center gap-3 py-3 px-4 hover:bg-slate-50 transition-colors group border-b border-slate-100 last:border-0">
       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
@@ -96,17 +130,22 @@ function ForecastRow({ forecast, onLogMaintenance }) {
         <span className="text-sm font-medium text-slate-800">{vehicle?.plate_number || '—'}</span>
         <span className="text-sm text-slate-400"> · {vehicle?.model || ''}</span>
       </div>
+      {kmUntil !== null && (
+        <span className="text-xs text-slate-400 shrink-0 hidden sm:block tabular-nums">
+          {kmUntil.toLocaleString('fr-FR')} km
+        </span>
+      )}
       <span className="text-xs text-slate-400 shrink-0 hidden sm:block">
-        {daysUntil !== null ? `${daysUntil} j` : '—'}
+        {daysUntil !== null ? `dans ${daysUntil} j` : '—'}
       </span>
       <span className="text-xs text-slate-400 shrink-0 hidden sm:block">
         {nextDate ? format(nextDate, 'dd/MM/yy') : '—'}
       </span>
       <button
-        onClick={() => onLogMaintenance(schedule.vehicle_id)}
-        className="opacity-0 group-hover:opacity-100 transition-opacity text-xs font-medium text-slate-500 hover:text-slate-800 shrink-0 px-2 py-1 rounded-lg hover:bg-slate-100"
+        onClick={() => onMarkDone(schedule.vehicle_id, currentMileage)}
+        className="opacity-0 group-hover:opacity-100 transition-opacity text-xs font-medium text-slate-500 hover:text-slate-800 shrink-0 px-2.5 py-1 rounded-lg hover:bg-slate-100"
       >
-        Enregistrer
+        Effectué
       </button>
     </div>
   )
@@ -144,7 +183,7 @@ function MaintenanceOnboarding({ hasVehicles, hasSchedules, hasRecords, onCreate
         <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
           <Wrench className="w-5 h-5 text-slate-500" />
         </div>
-        <h3 className="font-semibold text-slate-900 text-base mb-2">Configurez le suivi maintenance</h3>
+        <h3 className="font-semibold text-slate-900 text-base mb-2">Commencez à suivre la maintenance de votre flotte</h3>
         <p className="text-sm text-slate-500">
           Les prévisions sont calculées automatiquement à partir de vos plannings et de l'historique d'entretiens.
         </p>
@@ -197,11 +236,6 @@ function ScheduleRow({ schedule, vehicles, onDelete, onSave }) {
     })
     setEditing(false)
   }
-
-  const intervalLabel = [
-    schedule.interval_months && `${schedule.interval_months} mois`,
-    schedule.interval_km && `${schedule.interval_km.toLocaleString('fr-FR')} km`,
-  ].filter(Boolean).join(' · ') || '—'
 
   return (
     <tr className="hover:bg-slate-50 transition-colors group">
@@ -324,23 +358,50 @@ export default function Maintenance() {
   const [scheduleForm, setScheduleForm]   = useState(EMPTY_SCHEDULE)
   const [savingSchedule, setSavingSchedule] = useState(false)
 
+  // Entretiens filters
+  const [filterVehicle, setFilterVehicle] = useState('all')
+  const [filterStatus, setFilterStatus]   = useState('all')
+
   const forecasts = useMemo(
     () => computeForecasts({ schedules, vehicles, maintenanceRecords: records, mileageEntries }),
     [schedules, vehicles, records, mileageEntries]
   )
 
-  const overdueForecasts = forecasts.filter(f => f.status === 'overdue')
-  const dueSoonForecasts = forecasts.filter(f => f.status === 'due_soon')
-  const okForecasts      = forecasts.filter(f => f.status !== 'overdue' && f.status !== 'due_soon')
-  const overdueCount     = overdueForecasts.length
-  const dueSoonCount     = dueSoonForecasts.length
+  const overdueForecasts  = forecasts.filter(f => f.status === 'overdue')
+  const dueSoonForecasts  = forecasts.filter(f => f.status === 'due_soon')
+  const noRecordForecasts = forecasts.filter(f => f.status === 'no_record')
+  const trueOkForecasts   = forecasts.filter(f => f.status === 'ok')
+  const overdueCount      = overdueForecasts.length
+  const dueSoonCount      = dueSoonForecasts.length
 
-  // Open record modal, optionally pre-filled with a vehicle
-  const openRecordModal = (vehicleId = '') => {
+  // Filtered records for the Entretiens tab
+  const filteredRecords = records.filter(r => {
+    if (filterVehicle !== 'all' && r.vehicle_id !== filterVehicle) return false
+    if (filterStatus !== 'all' && r.status !== filterStatus) return false
+    return true
+  })
+
+  // ── Open record modal with smart prefill ─────────────────────────
+  // prefill can override date, mileage, status, issue_description
+  const openRecordModal = (vehicleId = '', prefill = {}) => {
     setEditingRecord(null)
-    setRecordForm({ ...EMPTY_RECORD, vehicle_id: vehicleId })
+    setRecordForm({
+      ...EMPTY_RECORD,
+      vehicle_id: vehicleId,
+      date: new Date().toISOString().split('T')[0],
+      ...prefill,
+    })
     setRecordModal(true)
   }
+
+  // "Marquer comme effectué" — today's date + current km + status OK pre-filled
+  const handleMarkDone = (vehicleId, currentMileage) => {
+    openRecordModal(vehicleId, {
+      mileage: currentMileage ? String(Math.round(currentMileage)) : '',
+      status: 'OK',
+    })
+  }
+
   const openEditRecord = (r) => {
     setEditingRecord(r)
     setRecordForm({ vehicle_id: r.vehicle_id, date: r.date, mileage: String(r.mileage), issue_description: r.issue_description, status: r.status })
@@ -471,7 +532,8 @@ export default function Maintenance() {
             </div>
           ) : (
             <div className="space-y-6">
-              {/* Overdue */}
+
+              {/* ── En retard ── */}
               {overdueForecasts.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 mb-3">
@@ -480,13 +542,13 @@ export default function Maintenance() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
                     {overdueForecasts.map(f => (
-                      <ForecastCard key={f.schedule.id} forecast={f} onLogMaintenance={openRecordModal} />
+                      <ForecastCard key={f.schedule.id} forecast={f} onMarkDone={handleMarkDone} onLogMaintenance={openRecordModal} />
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Due soon */}
+              {/* ── Bientôt ── */}
               {dueSoonForecasts.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 mb-3">
@@ -495,14 +557,29 @@ export default function Maintenance() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
                     {dueSoonForecasts.map(f => (
-                      <ForecastCard key={f.schedule.id} forecast={f} onLogMaintenance={openRecordModal} />
+                      <ForecastCard key={f.schedule.id} forecast={f} onMarkDone={handleMarkDone} onLogMaintenance={openRecordModal} />
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* OK — collapsible compact list */}
-              {okForecasts.length > 0 && (
+              {/* ── Non calibrés: planning exists but no first maintenance logged ── */}
+              {noRecordForecasts.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="w-2 h-2 rounded-full bg-slate-300" />
+                    <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Non calibrés · {noRecordForecasts.length}</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                    {noRecordForecasts.map(f => (
+                      <ForecastCard key={f.schedule.id} forecast={f} onMarkDone={handleMarkDone} onLogMaintenance={openRecordModal} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ── À jour — collapsible compact list ── */}
+              {trueOkForecasts.length > 0 && (
                 <div>
                   <button
                     onClick={() => setOkCollapsed(v => !v)}
@@ -510,7 +587,7 @@ export default function Maintenance() {
                   >
                     <span className="w-2 h-2 rounded-full bg-emerald-400" />
                     <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider group-hover:text-slate-600 transition-colors">
-                      À jour · {okForecasts.length}
+                      À jour · {trueOkForecasts.length}
                     </h3>
                     {okCollapsed
                       ? <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
@@ -519,8 +596,8 @@ export default function Maintenance() {
                   </button>
                   {!okCollapsed && (
                     <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-                      {okForecasts.map(f => (
-                        <ForecastRow key={f.schedule.id} forecast={f} onLogMaintenance={openRecordModal} />
+                      {trueOkForecasts.map(f => (
+                        <ForecastRow key={f.schedule.id} forecast={f} onMarkDone={handleMarkDone} />
                       ))}
                     </div>
                   )}
@@ -539,9 +616,39 @@ export default function Maintenance() {
 
         {/* ── ENTRETIENS ─────────────────────────────────────────── */}
         <TabsContent value="records">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-slate-500">{records.length} entretien{records.length !== 1 ? 's' : ''} enregistré{records.length !== 1 ? 's' : ''}</p>
-            <Button onClick={() => openRecordModal()} className="bg-[#2563EB] hover:bg-[#1D4ED8]" size="sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Select value={filterVehicle} onValueChange={setFilterVehicle}>
+                <SelectTrigger className="h-8 text-xs w-auto min-w-[150px]">
+                  <SelectValue placeholder="Tous les véhicules" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les véhicules</SelectItem>
+                  {vehicles.map(v => (
+                    <SelectItem key={v.id} value={v.id}>{v.plate_number} — {v.model}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <SelectTrigger className="h-8 text-xs w-auto min-w-[120px]">
+                  <SelectValue placeholder="Tous statuts" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous statuts</SelectItem>
+                  <SelectItem value="OK">OK</SelectItem>
+                  <SelectItem value="PROBLEM">Problème</SelectItem>
+                </SelectContent>
+              </Select>
+              {(filterVehicle !== 'all' || filterStatus !== 'all') && (
+                <button
+                  onClick={() => { setFilterVehicle('all'); setFilterStatus('all') }}
+                  className="text-xs text-slate-400 hover:text-slate-700 px-2 py-1 rounded-lg hover:bg-slate-100 transition-colors"
+                >
+                  Effacer
+                </button>
+              )}
+            </div>
+            <Button onClick={() => openRecordModal()} className="bg-[#2563EB] hover:bg-[#1D4ED8] shrink-0" size="sm">
               <Plus className="w-4 h-4 mr-2" /> Ajouter un entretien
             </Button>
           </div>
@@ -555,6 +662,16 @@ export default function Maintenance() {
                 <Button onClick={() => openRecordModal()} size="sm" className="bg-[#2563EB] hover:bg-[#1D4ED8]">
                   <Plus className="w-4 h-4 mr-1.5" /> Ajouter un entretien
                 </Button>
+              </div>
+            ) : filteredRecords.length === 0 ? (
+              <div className="p-8 text-center">
+                <p className="text-sm text-slate-400 mb-2">Aucun entretien ne correspond aux filtres sélectionnés.</p>
+                <button
+                  onClick={() => { setFilterVehicle('all'); setFilterStatus('all') }}
+                  className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Effacer les filtres
+                </button>
               </div>
             ) : (
               <>
@@ -571,13 +688,13 @@ export default function Maintenance() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {records.map(r => {
+                      {filteredRecords.map(r => {
                         const vehicle = getVehicleById(vehicles, r.vehicle_id)
                         return (
                           <tr key={r.id} className="hover:bg-slate-50 transition-colors group">
                             <td className="px-5 py-3 font-medium text-slate-900">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</td>
                             <td className="px-5 py-3 text-slate-500">{format(new Date(r.date), 'd MMM yyyy', { locale: dateLocale })}</td>
-                            <td className="px-5 py-3 text-slate-700">{r.mileage?.toLocaleString('fr-FR') ?? '—'} km</td>
+                            <td className="px-5 py-3 text-slate-700 tabular-nums">{r.mileage?.toLocaleString('fr-FR') ?? '—'} km</td>
                             <td className="px-5 py-3 max-w-xs truncate text-slate-600">{r.issue_description}</td>
                             <td className="px-5 py-3">
                               <Badge variant={r.status === 'OK' ? 'default' : 'destructive'}>{r.status === 'OK' ? 'OK' : 'Problème'}</Badge>
@@ -595,7 +712,7 @@ export default function Maintenance() {
                   </table>
                 </div>
                 <div className="sm:hidden divide-y divide-slate-100">
-                  {records.map(r => {
+                  {filteredRecords.map(r => {
                     const vehicle = getVehicleById(vehicles, r.vehicle_id)
                     return (
                       <div key={r.id} className="p-4">
@@ -672,7 +789,7 @@ export default function Maintenance() {
         </TabsContent>
       </Tabs>
 
-      {/* Record modal */}
+      {/* ── Record modal ─────────────────────────────────────────── */}
       <FormModal
         open={recordModal}
         onClose={closeRecordModal}
@@ -714,7 +831,7 @@ export default function Maintenance() {
         </div>
       </FormModal>
 
-      {/* Schedule modal */}
+      {/* ── Schedule modal ───────────────────────────────────────── */}
       <FormModal
         open={scheduleModal}
         onClose={() => setScheduleModal(false)}
