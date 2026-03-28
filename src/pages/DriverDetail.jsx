@@ -54,11 +54,11 @@ export default function DriverDetail() {
   // Ground truth: vehicle whose *latest* assignment points to this driver
   const currentVehicle = vehicles.find(v => latestAssignments[v.id]?.driver_id === id) || null
 
-  // Vehicles available in the picker — exclude current, sort free ones first
-  const otherVehicles = vehicles.filter(v => !currentVehicle || v.id !== currentVehicle.id)
+  // All vehicles in picker: free first, then current (marked), then others' vehicles
   const pickableVehicles = [
-    ...otherVehicles.filter(v => !latestAssignments[v.id]),
-    ...otherVehicles.filter(v => !!latestAssignments[v.id]),
+    ...vehicles.filter(v => !latestAssignments[v.id] && v.id !== currentVehicle?.id),
+    ...vehicles.filter(v => !!latestAssignments[v.id] && v.id !== currentVehicle?.id),
+    ...(currentVehicle ? [currentVehicle] : []),
   ]
 
   const startEdit = () => {
@@ -263,9 +263,11 @@ export default function DriverDetail() {
                     <button
                       key={v.id}
                       type="button"
-                      onClick={() => setAssignVehicleId(v.id)}
+                      onClick={() => v.id !== currentVehicle?.id && setAssignVehicleId(v.id)}
                       className={`w-full text-left rounded-xl border px-4 py-3 transition-all duration-150 ${
-                        isSelected
+                        v.id === currentVehicle?.id
+                          ? 'border-slate-100 bg-slate-50 cursor-default opacity-60'
+                          : isSelected
                           ? 'border-[#2563EB] bg-[#2563EB]/5 ring-1 ring-[#2563EB]/20'
                           : isFree
                           ? 'border-slate-200 hover:border-slate-300 bg-white'
@@ -285,20 +287,19 @@ export default function DriverDetail() {
                           </div>
                         </div>
                         <div className="flex-shrink-0 text-right">
-                          {isFree ? (
+                          {v.id === currentVehicle?.id ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                              Véhicule actuel
+                            </span>
+                          ) : isFree ? (
                             <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                               Disponible
                             </span>
-                          ) : currentVehicle ? (
+                          ) : (
                             <span className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">
                               <ArrowLeftRight className="w-3 h-3" />
                               Échange avec {occupiedBy?.name || '—'}
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
-                              <AlertCircle className="w-3 h-3" />
-                              {occupiedBy?.name || 'Affecté'}
                             </span>
                           )}
                         </div>
