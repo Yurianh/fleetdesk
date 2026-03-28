@@ -1043,7 +1043,7 @@ export default function Dashboard() {
   const statCards = [
     { label: t('dashboard.statVehicles'),    sub: t('dashboard.statVehiclesSub'),    value: vehicles.length,    icon: Truck },
     { label: t('dashboard.statDrivers'),     sub: t('dashboard.statDriversSub'),     value: drivers.length,     icon: Users },
-    { label: t('dashboard.statAssignments'), sub: t('dashboard.statAssignmentsSub'), value: assignments.length, icon: ArrowLeftRight },
+    { label: t('dashboard.statAssignments'), sub: t('dashboard.statAssignmentsSub'), value: Object.keys(latestAssignments).length, icon: ArrowLeftRight },
     { label: t('dashboard.statIssues'),      sub: t('dashboard.statIssuesSub'),      value: openIssues,         icon: AlertTriangle },
   ]
 
