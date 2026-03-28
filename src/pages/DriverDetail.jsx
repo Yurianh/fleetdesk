@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Users, CreditCard, Car, Droplets, Pencil, Check, X, MapPin, Hash, Truck, ChevronRight, AlertCircle, ArrowLeftRight, UserMinus } from 'lucide-react'
+import { ArrowLeft, Users, CreditCard, Car, Droplets, Pencil, Check, X, MapPin, Hash, Truck, ChevronRight, ArrowLeftRight, UserMinus, Search } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
 import { format, differenceInCalendarDays } from 'date-fns'
@@ -44,6 +44,8 @@ export default function DriverDetail() {
   const [assignOpen, setAssignOpen]       = useState(false)
   const [assignVehicleId, setAssignVehicleId] = useState('')
   const [assigning, setAssigning]         = useState(false)
+  const [vehicleSearch, setVehicleSearch] = useState('')
+  const searchRef = useRef(null)
 
   const driver = drivers.find(d => d.id === id)
   if (!driver) return <div className="p-8 text-center text-slate-400">Conducteur introuvable</div>
@@ -54,12 +56,18 @@ export default function DriverDetail() {
   // Ground truth: vehicle whose *latest* assignment points to this driver
   const currentVehicle = vehicles.find(v => latestAssignments[v.id]?.driver_id === id) || null
 
-  // All vehicles in picker: free first, then current (marked), then others' vehicles
-  const pickableVehicles = [
+  // All vehicles: free first, then assigned to others, current vehicle last
+  const allPickableVehicles = [
     ...vehicles.filter(v => !latestAssignments[v.id] && v.id !== currentVehicle?.id),
     ...vehicles.filter(v => !!latestAssignments[v.id] && v.id !== currentVehicle?.id),
     ...(currentVehicle ? [currentVehicle] : []),
   ]
+  const pickableVehicles = vehicleSearch.trim()
+    ? allPickableVehicles.filter(v =>
+        v.plate_number.toLowerCase().includes(vehicleSearch.toLowerCase()) ||
+        v.model.toLowerCase().includes(vehicleSearch.toLowerCase())
+      )
+    : allPickableVehicles
 
   const startEdit = () => {
     setForm({
@@ -87,7 +95,9 @@ export default function DriverDetail() {
 
   const openAssign = () => {
     setAssignVehicleId('')
+    setVehicleSearch('')
     setAssignOpen(true)
+    setTimeout(() => searchRef.current?.focus(), 50)
   }
 
   const handleAssign = async () => {
@@ -248,72 +258,86 @@ export default function DriverDetail() {
           <div className="p-5">
             {vehicles.length === 0 ? (
               <p className="text-sm text-slate-400 text-center py-4">Aucun véhicule dans la flotte.</p>
-            ) : pickableVehicles.length === 0 ? (
-              <p className="text-sm text-slate-400 text-center py-4">Tous les véhicules sont déjà attribués.</p>
             ) : (
-              <div className="space-y-2 mb-4 max-h-72 overflow-y-auto pr-1">
-                {pickableVehicles.map(v => {
-                  const occupiedBy = latestAssignments[v.id]
-                    ? getDriverById(drivers, latestAssignments[v.id].driver_id)
-                    : null
-                  const isFree     = !occupiedBy
-                  const isSelected = assignVehicleId === v.id
+              <>
+                <div className="relative mb-3">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <input
+                    ref={searchRef}
+                    type="text"
+                    value={vehicleSearch}
+                    onChange={e => setVehicleSearch(e.target.value)}
+                    placeholder="Rechercher par plaque ou modèle..."
+                    className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                  />
+                </div>
+                {pickableVehicles.length === 0 ? (
+                  <p className="text-sm text-slate-400 text-center py-4">Aucun véhicule ne correspond à "{vehicleSearch}".</p>
+                ) : (
+                  <div className="space-y-2 mb-4 max-h-64 overflow-y-auto pr-1">
+                    {pickableVehicles.map(v => {
+                      const occupiedBy = latestAssignments[v.id]
+                        ? getDriverById(drivers, latestAssignments[v.id].driver_id)
+                        : null
+                      const isFree     = !latestAssignments[v.id]
+                      const isCurrent  = v.id === currentVehicle?.id
+                      const isSelected = assignVehicleId === v.id
 
-                  return (
-                    <button
-                      key={v.id}
-                      type="button"
-                      onClick={() => v.id !== currentVehicle?.id && setAssignVehicleId(v.id)}
-                      className={`w-full text-left rounded-xl border px-4 py-3 transition-all duration-150 ${
-                        v.id === currentVehicle?.id
-                          ? 'border-slate-100 bg-slate-50 cursor-default opacity-60'
-                          : isSelected
-                          ? 'border-[#2563EB] bg-[#2563EB]/5 ring-1 ring-[#2563EB]/20'
-                          : isFree
-                          ? 'border-slate-200 hover:border-slate-300 bg-white'
-                          : 'border-slate-100 bg-slate-50/50 hover:border-slate-200'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${isSelected ? 'bg-[#2563EB]' : isFree ? 'bg-emerald-50' : 'bg-slate-100'}`}>
-                            <Truck className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : isFree ? 'text-emerald-600' : 'text-slate-400'}`} />
+                      return (
+                        <button
+                          key={v.id}
+                          type="button"
+                          onClick={() => setAssignVehicleId(v.id)}
+                          className={`w-full text-left rounded-xl border px-4 py-3 transition-all duration-150 ${
+                            isSelected
+                              ? 'border-[#2563EB] bg-[#2563EB]/5 ring-1 ring-[#2563EB]/20'
+                              : isCurrent
+                              ? 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                              : isFree
+                              ? 'border-slate-200 hover:border-slate-300 bg-white'
+                              : 'border-slate-100 bg-slate-50/50 hover:border-slate-200'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${isSelected ? 'bg-[#2563EB]' : isFree ? 'bg-emerald-50' : 'bg-slate-100'}`}>
+                                <Truck className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : isFree ? 'text-emerald-600' : 'text-slate-400'}`} />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-semibold text-sm text-slate-900 truncate">{v.plate_number}</p>
+                                <p className="text-xs text-slate-400 truncate">{v.model}</p>
+                              </div>
+                            </div>
+                            <div className="flex-shrink-0 text-right">
+                              {isCurrent ? (
+                                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                                  Actuel
+                                </span>
+                              ) : isFree ? (
+                                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                  Disponible
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">
+                                  <ArrowLeftRight className="w-3 h-3" />
+                                  Échange avec {occupiedBy?.name || '—'}
+                                </span>
+                              )}
+                            </div>
                           </div>
-                          <div className="min-w-0">
-                            <p className={`font-semibold text-sm truncate ${isSelected ? 'text-slate-900' : isFree ? 'text-slate-900' : 'text-slate-500'}`}>
-                              {v.plate_number}
-                            </p>
-                            <p className="text-xs text-slate-400 truncate">{v.model}</p>
-                          </div>
-                        </div>
-                        <div className="flex-shrink-0 text-right">
-                          {v.id === currentVehicle?.id ? (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                              Véhicule actuel
-                            </span>
-                          ) : isFree ? (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                              Disponible
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">
-                              <ArrowLeftRight className="w-3 h-3" />
-                              Échange avec {occupiedBy?.name || '—'}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </button>
-                  )
-                })}
-              </div>
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
+              </>
             )}
 
             <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
               <Button
                 variant="outline"
-                onClick={() => { setAssignOpen(false); setAssignVehicleId('') }}
+                onClick={() => { setAssignOpen(false); setAssignVehicleId(''); setVehicleSearch('') }}
                 className="flex-shrink-0"
               >
                 Annuler
