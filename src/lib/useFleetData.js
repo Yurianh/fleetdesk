@@ -204,6 +204,9 @@ export async function createAssignment(data) {
     .eq('user_id', uid).eq('vehicle_id', data.vehicle_id).is('ended_at', null)
     .maybeSingle()
 
+  // Already the exact same active pair — nothing to do
+  if (driverActive?.vehicle_id === data.vehicle_id) return { swapped: false }
+
   const swapped = !!(driverActive?.vehicle_id && vehicleActive?.driver_id
     && driverActive.vehicle_id !== data.vehicle_id)
 
