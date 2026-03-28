@@ -5,7 +5,7 @@ import { useDateLocale } from '@/lib/useDateLocale'
 import { Plus, Droplets, Pencil, Trash2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { Label } from '@/components/ui/label'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -166,17 +166,21 @@ export default function Washings() {
       >
         <div>
           <Label>Véhicule</Label>
-          <Select value={form.vehicle_id} onValueChange={v => setForm(f => ({...f, vehicle_id: v}))}>
-            <SelectTrigger><SelectValue placeholder="Sélectionner un véhicule" /></SelectTrigger>
-            <SelectContent>{vehicles.map(v => <SelectItem key={v.id} value={v.id}>{v.plate_number} — {v.model}</SelectItem>)}</SelectContent>
-          </Select>
+          <SearchableSelect
+            value={form.vehicle_id}
+            onValueChange={v => setForm(f => ({...f, vehicle_id: v}))}
+            placeholder="Sélectionner un véhicule"
+            options={vehicles.map(v => ({ value: v.id, label: `${v.plate_number} — ${v.model}` }))}
+          />
         </div>
         <div>
           <Label>Conducteur</Label>
-          <Select value={form.driver_id} onValueChange={v => setForm(f => ({...f, driver_id: v}))}>
-            <SelectTrigger><SelectValue placeholder="Sélectionner un conducteur" /></SelectTrigger>
-            <SelectContent>{drivers.map(d => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}</SelectContent>
-          </Select>
+          <SearchableSelect
+            value={form.driver_id}
+            onValueChange={v => setForm(f => ({...f, driver_id: v}))}
+            placeholder="Sélectionner un conducteur"
+            options={drivers.map(d => ({ value: d.id, label: d.name }))}
+          />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>

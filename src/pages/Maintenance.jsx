@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -862,10 +863,12 @@ export default function Maintenance() {
       >
         <div>
           <Label>Véhicule</Label>
-          <Select value={recordForm.vehicle_id} onValueChange={v => setRecordForm(f => ({ ...f, vehicle_id: v }))}>
-            <SelectTrigger><SelectValue placeholder="Sélectionner un véhicule" /></SelectTrigger>
-            <SelectContent>{vehicles.map(v => <SelectItem key={v.id} value={v.id}>{v.plate_number} — {v.model}</SelectItem>)}</SelectContent>
-          </Select>
+          <SearchableSelect
+            value={recordForm.vehicle_id}
+            onValueChange={v => setRecordForm(f => ({ ...f, vehicle_id: v }))}
+            placeholder="Sélectionner un véhicule"
+            options={vehicles.map(v => ({ value: v.id, label: `${v.plate_number} — ${v.model}` }))}
+          />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
@@ -904,10 +907,12 @@ export default function Maintenance() {
       >
         <div>
           <Label>Véhicule</Label>
-          <Select value={scheduleForm.vehicle_id} onValueChange={v => setScheduleForm(f => ({ ...f, vehicle_id: v }))}>
-            <SelectTrigger><SelectValue placeholder="Sélectionner un véhicule" /></SelectTrigger>
-            <SelectContent>{vehicles.map(v => <SelectItem key={v.id} value={v.id}>{v.plate_number} — {v.model}</SelectItem>)}</SelectContent>
-          </Select>
+          <SearchableSelect
+            value={scheduleForm.vehicle_id}
+            onValueChange={v => setScheduleForm(f => ({ ...f, vehicle_id: v }))}
+            placeholder="Sélectionner un véhicule"
+            options={vehicles.map(v => ({ value: v.id, label: `${v.plate_number} — ${v.model}` }))}
+          />
         </div>
         <div className="space-y-3">
           <p className="text-xs text-slate-400">Renseignez au moins un intervalle — les deux peuvent être combinés pour des alertes plus précises.</p>

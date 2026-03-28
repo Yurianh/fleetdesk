@@ -6,7 +6,7 @@ import { Plus, Gauge, Trash2, Search, Pencil, Loader2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { Label } from '@/components/ui/label'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -196,17 +196,15 @@ export default function Mileage() {
       >
         <div>
           <Label>Véhicule</Label>
-          <Select value={form.vehicle_id} onValueChange={v => setForm(f => ({...f, vehicle_id: v}))}>
-            <SelectTrigger><SelectValue placeholder="Sélectionner un véhicule" /></SelectTrigger>
-            <SelectContent>
-              {vehicles.map(v => (
-                <SelectItem key={v.id} value={v.id}>
-                  {v.plate_number} — {v.model}
-                  {latestMileage[v.id] ? ` (${latestMileage[v.id].mileage?.toLocaleString('fr-FR') ?? '—'} km)` : ''}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            value={form.vehicle_id}
+            onValueChange={v => setForm(f => ({...f, vehicle_id: v}))}
+            placeholder="Sélectionner un véhicule"
+            options={vehicles.map(v => ({
+              value: v.id,
+              label: `${v.plate_number} — ${v.model}${latestMileage[v.id] ? ` (${latestMileage[v.id].mileage?.toLocaleString('fr-FR') ?? '—'} km)` : ''}`,
+            }))}
+          />
         </div>
         {selectedCurrent != null && (
           <p className="text-sm text-slate-500 -mt-1">

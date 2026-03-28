@@ -5,7 +5,7 @@ import { useDateLocale } from '@/lib/useDateLocale'
 import { Plus, ClipboardCheck, Pencil, Trash2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { useQueryClient } from '@tanstack/react-query'
@@ -188,10 +188,12 @@ export default function Inspections() {
       >
         <div>
           <Label>Véhicule</Label>
-          <Select value={form.vehicle_id} onValueChange={v => setForm(f => ({...f, vehicle_id: v}))}>
-            <SelectTrigger><SelectValue placeholder="Sélectionner un véhicule" /></SelectTrigger>
-            <SelectContent>{vehicles.map(v => <SelectItem key={v.id} value={v.id}>{v.plate_number} — {v.model}</SelectItem>)}</SelectContent>
-          </Select>
+          <SearchableSelect
+            value={form.vehicle_id}
+            onValueChange={v => setForm(f => ({...f, vehicle_id: v}))}
+            placeholder="Sélectionner un véhicule"
+            options={vehicles.map(v => ({ value: v.id, label: `${v.plate_number} — ${v.model}` }))}
+          />
         </div>
         <div>
           <Label>Date du contrôle <span className="text-slate-400 font-normal">(optionnel — aujourd'hui par défaut)</span></Label>
