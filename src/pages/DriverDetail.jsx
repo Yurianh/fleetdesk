@@ -56,11 +56,11 @@ export default function DriverDetail() {
   // Ground truth: vehicle whose *latest* assignment points to this driver
   const currentVehicle = vehicles.find(v => latestAssignments[v.id]?.driver_id === id) || null
 
-  // All vehicles: free first, then assigned to others, current vehicle last
+  // Current vehicle first, then free, then assigned to others
   const allPickableVehicles = [
+    ...(currentVehicle ? [currentVehicle] : []),
     ...vehicles.filter(v => !latestAssignments[v.id] && v.id !== currentVehicle?.id),
     ...vehicles.filter(v => !!latestAssignments[v.id] && v.id !== currentVehicle?.id),
-    ...(currentVehicle ? [currentVehicle] : []),
   ]
   const pickableVehicles = vehicleSearch.trim()
     ? allPickableVehicles.filter(v =>
@@ -292,16 +292,20 @@ export default function DriverDetail() {
                             isSelected
                               ? 'border-[#2563EB] bg-[#2563EB]/5 ring-1 ring-[#2563EB]/20'
                               : isCurrent
-                              ? 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                              ? 'border-emerald-200 bg-emerald-50/60 hover:border-emerald-300'
                               : isFree
-                              ? 'border-slate-200 hover:border-slate-300 bg-white'
+                              ? 'border-slate-200 bg-white hover:border-slate-300'
                               : 'border-slate-100 bg-slate-50/50 hover:border-slate-200'
                           }`}
                         >
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3 min-w-0">
-                              <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${isSelected ? 'bg-[#2563EB]' : isFree ? 'bg-emerald-50' : 'bg-slate-100'}`}>
-                                <Truck className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : isFree ? 'text-emerald-600' : 'text-slate-400'}`} />
+                              <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                                isSelected ? 'bg-[#2563EB]' : isCurrent ? 'bg-emerald-100' : 'bg-slate-100'
+                              }`}>
+                                <Truck className={`w-3.5 h-3.5 ${
+                                  isSelected ? 'text-white' : isCurrent ? 'text-emerald-600' : 'text-slate-400'
+                                }`} />
                               </div>
                               <div className="min-w-0">
                                 <p className="font-semibold text-sm text-slate-900 truncate">{v.plate_number}</p>
@@ -310,14 +314,12 @@ export default function DriverDetail() {
                             </div>
                             <div className="flex-shrink-0 text-right">
                               {isCurrent ? (
-                                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                                   Actuel
                                 </span>
                               ) : isFree ? (
-                                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                  Disponible
-                                </span>
+                                <span className="text-[11px] font-medium text-slate-400">Disponible</span>
                               ) : (
                                 <span className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">
                                   <ArrowLeftRight className="w-3 h-3" />
