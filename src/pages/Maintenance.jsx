@@ -156,15 +156,10 @@ function ForecastRow({ forecast, onMarkDone }) {
         <span className="text-sm font-medium text-slate-800">{vehicle?.plate_number || '—'}</span>
         <span className="text-sm text-slate-400"> · {vehicle?.model || ''}</span>
       </div>
-      {kmUntil !== null && (
-        <span className="text-xs text-slate-400 shrink-0 hidden sm:block tabular-nums">
-          {kmUntil.toLocaleString('fr-FR')} km
-        </span>
-      )}
-      <span className="text-xs text-slate-400 shrink-0 hidden sm:block">
-        {daysUntil !== null ? `dans ${daysUntil} j` : '—'}
+      <span className="text-xs text-slate-400 shrink-0 hidden sm:block tabular-nums w-24 text-right">
+        {daysUntil !== null ? `dans ${daysUntil} j` : kmUntil !== null ? `${kmUntil.toLocaleString('fr-FR')} km` : '—'}
       </span>
-      <span className="text-xs text-slate-400 shrink-0 hidden sm:block">
+      <span className="text-xs text-slate-400 shrink-0 hidden sm:block w-20 text-right">
         {nextDate ? format(nextDate, 'dd/MM/yy') : '—'}
       </span>
       <button
@@ -378,7 +373,7 @@ export default function Maintenance() {
   const [recordForm, setRecordForm]       = useState(EMPTY_RECORD)
   const [savingRecord, setSavingRecord]   = useState(false)
   const [deletingRecordId, setDeletingRecordId] = useState(null)
-  const [okCollapsed, setOkCollapsed]     = useState(true)
+  const [okCollapsed, setOkCollapsed]     = useState(false)
 
   const [scheduleModal, setScheduleModal] = useState(false)
   const [scheduleForm, setScheduleForm]   = useState(EMPTY_SCHEDULE)
@@ -525,7 +520,7 @@ export default function Maintenance() {
               )}
               {okCount > 0 && (
                 <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold bg-green-100 text-green-600">
-                  {okCount} OK
+                  {okCount} à jour
                 </span>
               )}
             </div>
@@ -562,13 +557,13 @@ export default function Maintenance() {
                 </span>
               )}
             </TabsTrigger>
-            <TabsTrigger value="records" className="rounded-lg data-[state=active]:bg-slate-900 data-[state=active]:text-white text-sm">
-              Entretiens
-              {records.length > 0 && <span className="ml-1.5 text-xs opacity-60">{records.length}</span>}
-            </TabsTrigger>
             <TabsTrigger value="schedules" className="rounded-lg data-[state=active]:bg-slate-900 data-[state=active]:text-white text-sm">
               Plannings
               {schedules.length > 0 && <span className="ml-1.5 text-xs opacity-60">{schedules.length}</span>}
+            </TabsTrigger>
+            <TabsTrigger value="records" className="rounded-lg data-[state=active]:bg-slate-900 data-[state=active]:text-white text-sm">
+              Entretiens
+              {records.length > 0 && <span className="ml-1.5 text-xs opacity-60">{records.length}</span>}
             </TabsTrigger>
           </TabsList>
         </div>
@@ -633,12 +628,12 @@ export default function Maintenance() {
                 </div>
               )}
 
-              {/* ── Non calibrés ── */}
+              {/* ── Premier entretien requis ── */}
               {noRecordForecasts.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <span className="w-2 h-2 rounded-full bg-slate-300" />
-                    <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Non calibrés · {noRecordForecasts.length}</h3>
+                    <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Premier entretien requis · {noRecordForecasts.length}</h3>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
                     {noRecordForecasts.map(f => (
@@ -666,6 +661,13 @@ export default function Maintenance() {
                   </button>
                   {!okCollapsed && (
                     <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                      <div className="hidden sm:flex items-center gap-3 px-4 py-2 border-b border-slate-100 bg-slate-50">
+                        <span className="w-1.5 shrink-0" />
+                        <span className="flex-1 text-[11px] font-medium text-slate-400 uppercase tracking-wide">Véhicule</span>
+                        <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wide w-24 text-right">Dans</span>
+                        <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wide w-20 text-right">Prochain</span>
+                        <span className="w-16 shrink-0" />
+                      </div>
                       {trueOkForecasts.map(f => (
                         <ForecastRow key={f.schedule.id} forecast={f} onMarkDone={handleMarkDone} />
                       ))}
