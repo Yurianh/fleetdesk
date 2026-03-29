@@ -905,6 +905,10 @@ export default function Maintenance() {
         saving={savingSchedule}
         submitLabel="Créer le planning"
       >
+        <div className="flex gap-2.5 rounded-lg bg-blue-50 border border-blue-100 px-3.5 py-3 text-sm text-blue-700">
+          <span className="mt-0.5 flex-shrink-0">ℹ️</span>
+          <p>Après avoir créé le planning, pensez à <span className="font-semibold">enregistrer le dernier entretien effectué</span> — sans ce point de départ, les prévisions ne peuvent pas être calculées.</p>
+        </div>
         <div>
           <Label>Véhicule</Label>
           <SearchableSelect
