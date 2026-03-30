@@ -40,37 +40,22 @@ import { supabase } from '@/lib/supabase'
 
 const CHART_COLORS = ['#1D4ED8', '#10b981', '#f59e0b', '#ef4444', '#64748b', '#06b6d4']
 
-function fmtDelta(curr, prev) {
-  if (curr == null || prev == null || prev === 0) return null
-  const pct = Math.round(((curr - prev) / prev) * 100)
-  return { pct, label: (pct > 0 ? '+' : '') + pct + '%' }
-}
-
 function UsageTooltip({ active, payload, vehicles }) {
   if (!active || !payload?.length) return null
-  const point  = payload[0]?.payload
-  const rows   = payload.filter(p => p.value != null).sort((a, b) => (b.value ?? 0) - (a.value ?? 0))
+  const point = payload[0]?.payload
+  const rows  = payload.filter(p => p.value != null).sort((a, b) => (b.value ?? 0) - (a.value ?? 0))
   return (
-    <div className="bg-[#0f172a] text-white text-xs rounded-xl px-3 py-2.5 shadow-2xl border border-white/10 min-w-[190px]">
-      <p className="text-zinc-400 font-medium mb-2.5 capitalize">{point?.month}</p>
+    <div className="bg-[#0f172a] text-white text-xs rounded-xl px-3 py-2.5 shadow-2xl border border-white/10 min-w-[160px]">
+      <p className="text-zinc-400 font-medium mb-2 capitalize">{point?.month}</p>
       {rows.map(p => {
-        const v     = vehicles.find(v => v.id === p.dataKey)
-        const prev  = point?.[p.dataKey + '_prev']
-        const delta = fmtDelta(p.value, prev)
+        const v = vehicles.find(v => v.id === p.dataKey)
         return (
-          <div key={p.dataKey} className="flex items-center justify-between gap-4 mb-1.5 last:mb-0">
+          <div key={p.dataKey} className="flex items-center justify-between gap-4 mb-1 last:mb-0">
             <div className="flex items-center gap-1.5 min-w-0">
               <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
-              <span className="text-zinc-300 truncate">{v?.plate_number ?? p.name}</span>
+              <span className="text-zinc-300 truncate">{v?.plate_number ?? p.dataKey}</span>
             </div>
-            <div className="flex items-center gap-1.5 flex-shrink-0">
-              <span className="font-semibold">{p.value.toLocaleString()} km</span>
-              {delta && (
-                <span className={'text-[10px] font-bold ' + (delta.pct >= 0 ? 'text-emerald-400' : 'text-red-400')}>
-                  {delta.label}
-                </span>
-              )}
-            </div>
+            <span className="font-semibold flex-shrink-0">{p.value.toLocaleString()} km</span>
           </div>
         )
       })}
@@ -79,21 +64,15 @@ function UsageTooltip({ active, payload, vehicles }) {
 }
 
 function VehicleUsageAnalytics({ vehicles, mileageEntries }) {
-  const [timeRange, setTimeRange] = useState(12)   // 3 | 6 | 12
-  const [viewMode,  setViewMode]  = useState('top3') // 'top3' | 'all' | vehicleId
-  const { t } = useTranslation()
+  const [timeRange, setTimeRange] = useState(3)
   const dateLocale = useDateLocale()
 
-  // All 12 months — full window for delta computation
   const allMonths = useMemo(
     () => eachMonthOfInterval({ start: subMonths(new Date(), 11), end: new Date() }),
     []
   )
-
-  // Displayed months (sliced by timeRange)
   const months = useMemo(() => allMonths.slice(-timeRange), [allMonths, timeRange])
 
-  // Per-vehicle monthly km driven (delta between consecutive odometer readings)
   const vehicleMonthlyKm = useMemo(() => {
     const byVehicle = {}
     for (const e of mileageEntries) {
@@ -113,7 +92,6 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries }) {
         const mStart   = new Date(month.getFullYear(), month.getMonth(), 1)
         const curr     = entries.filter(e => e._date <= mEnd).pop()
         const prevMonth = entries.filter(e => e._date < mStart).pop()
-        // Fallback: if no prior-month baseline, use first reading of this month
         const baseline = prevMonth ?? entries.filter(e => e._date >= mStart && e._date <= mEnd)[0]
         result[v.id][monthKey] =
           curr && baseline && curr.mileage > baseline.mileage
@@ -123,127 +101,32 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries }) {
     return result
   }, [vehicles, mileageEntries, allMonths])
 
-  // Per-vehicle stats over displayed months — sorted by total km desc
-  const stats = useMemo(() =>
-    vehicles.map(v => {
-      const vals  = months.map(m => vehicleMonthlyKm[v.id]?.[format(m, 'yyyy-MM')] ?? null).filter(x => x != null)
-      const total = vals.reduce((s, x) => s + x, 0)
-      const avg   = vals.length ? Math.round(total / vals.length) : 0
-      return { v, total, avg, count: vals.length }
-    }).filter(s => s.count > 0).sort((a, b) => b.total - a.total),
-    [vehicles, vehicleMonthlyKm, months]
-  )
-
-  // Stable color map (rank by total km in current window)
   const colorMap = useMemo(() => {
     const m = {}
-    stats.forEach((s, i) => { m[s.v.id] = CHART_COLORS[i % CHART_COLORS.length] })
+    vehicles.forEach((v, i) => { m[v.id] = CHART_COLORS[i % CHART_COLORS.length] })
     return m
-  }, [stats])
+  }, [vehicles])
 
-  const top3Ids      = useMemo(() => new Set(stats.slice(0, 3).map(s => s.v.id)), [stats])
-  const isSingle     = viewMode !== 'top3' && viewMode !== 'all'
-  const selectedId   = isSingle ? viewMode : null
-
-  // Chart data with prev-month keys for tooltip delta
   const chartData = useMemo(() =>
     months.map(month => {
       const monthKey = format(month, 'yyyy-MM')
-      const allIdx   = allMonths.findIndex(m => format(m, 'yyyy-MM') === monthKey)
-      const prevKey  = allIdx > 0 ? format(allMonths[allIdx - 1], 'yyyy-MM') : null
-      const row      = { month: format(month, 'MMM', { locale: dateLocale }), monthKey }
+      const row = { month: format(month, 'MMM', { locale: dateLocale }), monthKey }
       for (const v of vehicles) {
-        row[v.id]            = vehicleMonthlyKm[v.id]?.[monthKey] ?? null
-        row[v.id + '_prev']  = prevKey ? (vehicleMonthlyKm[v.id]?.[prevKey] ?? null) : null
+        row[v.id] = vehicleMonthlyKm[v.id]?.[monthKey] ?? null
       }
       return row
     }),
-    [months, allMonths, vehicles, vehicleMonthlyKm, dateLocale]
+    [months, vehicles, vehicleMonthlyKm, dateLocale]
   )
-
-  // KPIs
-  const kpis = useMemo(() => {
-    if (!stats.length) return null
-    const fleetTotal = stats.reduce((s, x) => s + x.total, 0)
-    const fleetCount = stats.reduce((s, x) => s + x.count, 0)
-    const fleetAvg   = fleetCount ? Math.round(fleetTotal / fleetCount) : 0
-
-    // Current-month vs prev-month fleet avg (for % change badge)
-    const currKey = format(months[months.length - 1], 'yyyy-MM')
-    const allIdx  = allMonths.findIndex(m => format(m, 'yyyy-MM') === currKey)
-    const prevKey = allIdx > 0 ? format(allMonths[allIdx - 1], 'yyyy-MM') : null
-    const curr    = stats.map(s => vehicleMonthlyKm[s.v.id]?.[currKey] ?? null).filter(x => x != null)
-    const prev    = prevKey ? stats.map(s => vehicleMonthlyKm[s.v.id]?.[prevKey] ?? null).filter(x => x != null) : []
-    const currAvg = curr.length ? Math.round(curr.reduce((s, x) => s + x, 0) / curr.length) : null
-    const prevAvg = prev.length ? Math.round(prev.reduce((s, x) => s + x, 0) / prev.length) : null
-    const fleetDelta = fmtDelta(currAvg, prevAvg)
-
-    if (isSingle) {
-      const single = stats.find(s => s.v.id === selectedId)
-      if (single) {
-        const sCurr  = vehicleMonthlyKm[selectedId]?.[currKey] ?? null
-        const sPrev  = prevKey ? vehicleMonthlyKm[selectedId]?.[prevKey] ?? null : null
-        const sDelta = fmtDelta(sCurr, sPrev)
-        const vals   = months.map(m => vehicleMonthlyKm[selectedId]?.[format(m, 'yyyy-MM')] ?? null).filter(x => x != null)
-        const anomHigh = vals.filter(k => k > single.avg * 1.7).length
-        const anomLow  = vals.filter(k => k > 0 && k < single.avg * 0.5).length
-        return { mode: 'single', single, sDelta, anomHigh, anomLow, fleetAvg }
-      }
-    }
-
-    return { mode: 'fleet', fleetAvg, fleetDelta, mostUsed: stats[0], leastUsed: stats[stats.length - 1] }
-  }, [stats, months, allMonths, vehicleMonthlyKm, isSingle, selectedId])
-
-  // Auto-insights (max 2)
-  const insights = useMemo(() => {
-    if (!stats.length || !kpis) return []
-    const fleetAvg = kpis.fleetAvg ?? 0
-    const msgs = []
-
-    // Top vehicle significantly above average
-    const top = stats[0]
-    if (top && fleetAvg > 0) {
-      const pct = Math.round(((top.avg - fleetAvg) / fleetAvg) * 100)
-      if (pct >= 25)
-        msgs.push({ icon: '\u2191', text: t('dashboard.insightAboveAvg', { plate: top.v.plate_number, pct }), tone: 'brand' })
-    }
-
-    // Vehicles with no data in last 2 months (inactive)
-    const last2 = months.slice(-2).map(m => format(m, 'yyyy-MM'))
-    const inactive = vehicles.filter(v => last2.every(mk => vehicleMonthlyKm[v.id]?.[mk] == null))
-    if (inactive.length) {
-      const plates = inactive.map(v => v.plate_number).join(', ')
-      msgs.push({ icon: '\u25cb', text: t('dashboard.insightInactive', { plates }), tone: 'amber' })
-    }
-
-    // Bottom vehicle significantly below (if not already flagged as inactive)
-    if (msgs.length < 2 && stats.length >= 3) {
-      const bottom = stats[stats.length - 1]
-      if (bottom && fleetAvg > 0 && bottom.avg < fleetAvg * 0.5) {
-        if (!inactive.find(v => v.id === bottom.v.id))
-          msgs.push({ icon: '\u2193', text: t('dashboard.insightUnderused', { plate: bottom.v.plate_number }), tone: 'slate' })
-      }
-    }
-
-    return msgs.slice(0, 2)
-  }, [stats, kpis, months, vehicleMonthlyKm, vehicles, t])
-
-  const toneClasses = {
-    brand: { bg: 'bg-blue-50', dot: 'bg-[#2563EB]', text: 'text-[#1D4ED8]' },
-    amber:  { bg: 'bg-amber-50',  dot: 'bg-amber-400',  text: 'text-amber-700'  },
-    slate:  { bg: 'bg-zinc-50',  dot: 'bg-zinc-400',  text: 'text-zinc-600'  },
-  }
 
   const hasData = mileageEntries.length >= 2
 
   return (
     <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm mb-8">
-
-      {/* ── Header + time range ────────────────────────────────── */}
-      <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
         <div>
-          <h2 className="text-base font-bold text-zinc-900">{t('dashboard.vehicleUsage')}</h2>
-          <p className="text-sm text-zinc-400 mt-0.5">{t('dashboard.monthlyKm')}</p>
+          <h2 className="text-base font-bold text-zinc-900">Utilisation des véhicules</h2>
+          <p className="text-sm text-zinc-400 mt-0.5">Kilométrage mensuel parcouru</p>
         </div>
         <div className="flex items-center gap-1 bg-zinc-100 rounded-lg p-[3px]">
           {[3, 6, 12].map(n => (
@@ -251,9 +134,7 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries }) {
               key={n}
               onClick={() => setTimeRange(n)}
               className={'px-3 py-1 text-xs font-semibold rounded-md transition-all duration-150 ' + (
-                timeRange === n
-                  ? 'bg-slate-900 text-white'
-                  : 'text-zinc-500 hover:text-zinc-700'
+                timeRange === n ? 'bg-slate-900 text-white' : 'text-zinc-500 hover:text-zinc-700'
               )}
             >
               {n}M
@@ -262,116 +143,12 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries }) {
         </div>
       </div>
 
-      {/* ── View mode + vehicle picker ───────────────────────── */}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
-        <div className="flex items-center gap-1 bg-zinc-100 rounded-lg p-[3px]">
-          {[{ id: 'top3', label: 'Top 3' }, { id: 'all', label: t('dashboard.allViewMode') }].map(opt => (
-            <button
-              key={opt.id}
-              onClick={() => setViewMode(opt.id)}
-              className={'px-3 py-1 text-xs font-semibold rounded-md transition-all duration-150 ' + (
-                viewMode === opt.id
-                  ? 'bg-slate-900 text-white'
-                  : 'text-zinc-500 hover:text-zinc-700'
-              )}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-        <select
-          value={isSingle ? viewMode : ''}
-          onChange={e => { if (e.target.value) setViewMode(e.target.value) }}
-          className={'text-xs font-medium border rounded-lg px-3 py-1.5 outline-none transition-colors cursor-pointer ' + (
-            isSingle
-              ? 'bg-blue-50 border-blue-200 text-[#1D4ED8]'
-              : 'bg-zinc-100 border-transparent text-zinc-500 hover:bg-zinc-200'
-          )}
-        >
-          <option value="">{t('dashboard.vehicle')}{'\u2026'}</option>
-          {stats.map(s => (
-            <option key={s.v.id} value={s.v.id}>{s.v.plate_number} — {s.v.model}</option>
-          ))}
-        </select>
-      </div>
-
-      {/* ── KPI strip ────────────────────────────────────────── */}
-      {kpis && (
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          {kpis.mode === 'fleet' ? (
-            <>
-              <div className="bg-zinc-50 rounded-xl p-3">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">{t('dashboard.avgFleetMonth')}</p>
-                <p className="text-xl font-bold text-zinc-900">{kpis.fleetAvg.toLocaleString()}</p>
-                {kpis.fleetDelta ? (
-                  <p className={'text-[11px] font-semibold mt-0.5 ' + (kpis.fleetDelta.pct >= 0 ? 'text-emerald-600' : 'text-red-500')}>
-                    {kpis.fleetDelta.label} {t('dashboard.vsPrev')}
-                  </p>
-                ) : <p className="text-xs text-zinc-400 mt-0.5">km</p>}
-              </div>
-              <div className="bg-emerald-50 rounded-xl p-3">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">{t('dashboard.mostActive')}</p>
-                <p className="text-sm font-bold text-zinc-900 truncate">{kpis.mostUsed.v.plate_number}</p>
-                <p className="text-xs text-emerald-600 font-semibold mt-0.5">{kpis.mostUsed.avg.toLocaleString()} km/m</p>
-              </div>
-              <div className="bg-zinc-50 rounded-xl p-3">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">{t('dashboard.leastActive')}</p>
-                <p className="text-sm font-bold text-zinc-900 truncate">{kpis.leastUsed.v.plate_number}</p>
-                <p className="text-xs text-zinc-500 mt-0.5">{kpis.leastUsed.avg.toLocaleString()} km/m</p>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="bg-zinc-50 rounded-xl p-3">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">{t('dashboard.avgMonth')}</p>
-                <p className="text-xl font-bold text-zinc-900">{kpis.single.avg.toLocaleString()}</p>
-                {kpis.sDelta ? (
-                  <p className={'text-[11px] font-semibold mt-0.5 ' + (kpis.sDelta.pct >= 0 ? 'text-emerald-600' : 'text-red-500')}>
-                    {kpis.sDelta.label} {t('dashboard.vsPrev')}
-                  </p>
-                ) : <p className="text-xs text-zinc-400 mt-0.5">km</p>}
-              </div>
-              <div className="bg-zinc-50 rounded-xl p-3">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">{t('dashboard.totalPeriod')}</p>
-                <p className="text-xl font-bold text-zinc-900">{kpis.single.total.toLocaleString()}</p>
-                <p className="text-xs text-zinc-400 mt-0.5">km</p>
-              </div>
-              <div className={'rounded-xl p-3 ' + ((kpis.anomHigh + kpis.anomLow) > 0 ? 'bg-amber-50' : 'bg-emerald-50')}>
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">{t('dashboard.anomalies')}</p>
-                <p className={'text-xl font-bold ' + ((kpis.anomHigh + kpis.anomLow) > 0 ? 'text-amber-600' : 'text-emerald-600')}>
-                  {kpis.anomHigh + kpis.anomLow}
-                </p>
-                <p className="text-xs text-zinc-400 mt-0.5">
-                  {(kpis.anomHigh + kpis.anomLow) === 0 ? t('dashboard.stableUsage') : t('dashboard.unusualMonths')}
-                </p>
-              </div>
-            </>
-          )}
-        </div>
-      )}
-
-      {/* ── Auto-insights ──────────────────────────────────── */}
-      {insights.length > 0 && (
-        <div className="flex flex-col gap-1.5 mb-4">
-          {insights.map((ins, i) => {
-            const tone = toneClasses[ins.tone]
-            return (
-              <div key={i} className={'flex items-center gap-2 px-3 py-2 rounded-lg ' + tone.bg}>
-                <span className={'w-1.5 h-1.5 rounded-full flex-shrink-0 ' + tone.dot} />
-                <p className={'text-xs font-medium ' + tone.text}>{ins.text}</p>
-              </div>
-            )
-          })}
-        </div>
-      )}
-
-      {/* ── Chart ─────────────────────────────────────────────── */}
       {!hasData ? (
         <div className="h-52 flex items-center justify-center">
           <div className="text-center">
             <Gauge className="w-8 h-8 text-zinc-200 mx-auto mb-2" />
-            <p className="text-sm text-zinc-400">{t('dashboard.insufficientData')}</p>
-            <p className="text-xs text-zinc-300 mt-0.5">{t('dashboard.insufficientDataSub')}</p>
+            <p className="text-sm text-zinc-400">Pas encore assez de données</p>
+            <p className="text-xs text-zinc-300 mt-0.5">Enregistrez au moins 2 kilométrages pour voir le graphique</p>
           </div>
         </div>
       ) : (
@@ -380,107 +157,34 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries }) {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="0" stroke="#f1f5f9" vertical={false} />
-                <XAxis
-                  dataKey="month"
-                  axisLine={false} tickLine={false}
-                  tick={{ fill: '#94a3b8', fontSize: 11 }}
-                />
-                <YAxis
-                  axisLine={false} tickLine={false}
-                  tick={{ fill: '#94a3b8', fontSize: 11 }}
-                  tickFormatter={v => v >= 1000 ? Math.round(v / 1000) + 'k' : v}
-                />
-                <Tooltip
-                  content={<UsageTooltip vehicles={vehicles} />}
-                  cursor={{ stroke: '#e2e8f0', strokeWidth: 1 }}
-                />
-                {stats.map(s => {
-                  const v       = s.v
-                  const color   = colorMap[v.id] ?? '#94a3b8'
-                  const inTop3  = top3Ids.has(v.id)
-
-                  // Visibility + style per mode
-                  const visible =
-                    viewMode === 'top3' ? inTop3 :
-                    viewMode === 'all'  ? true   :
-                    v.id === selectedId
-
-                  if (!visible) return null
-
-                  // In 'all' mode, non-top3 lines are secondary (thinner + 40% opacity)
-                  const isSecondary = viewMode === 'all' && !inTop3
-                  const strokeW     = isSingle ? 2.5 : (isSecondary ? 1.2 : 2)
-                  const strokeOp    = isSecondary ? 0.4 : 1
-                  const vAvg        = isSingle && kpis?.single?.avg ? kpis.single.avg : 0
-
-                  return (
-                    <Line
-                      key={v.id}
-                      type="monotone"
-                      dataKey={v.id}
-                      stroke={color}
-                      strokeWidth={strokeW}
-                      strokeOpacity={strokeOp}
-                      dot={isSingle
-                        ? props => {
-                            const { cx, cy, payload } = props
-                            const val = payload[v.id]
-                            if (!val || !vAvg) return <g key={cx + '' + cy} />
-                            const isAnom = val > vAvg * 1.7 || (val < vAvg * 0.5)
-                            if (!isAnom) return <g key={cx + '' + cy} />
-                            return <circle key={cx + '' + cy} cx={cx} cy={cy} r={5} fill="#f59e0b" stroke="white" strokeWidth={2} />
-                          }
-                        : false
-                      }
-                      activeDot={{ r: 4, strokeWidth: 0 }}
-                      connectNulls={false}
-                    />
-                  )
-                })}
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }}
+                  tickFormatter={v => v >= 1000 ? Math.round(v / 1000) + 'k' : v} />
+                <Tooltip content={<UsageTooltip vehicles={vehicles} />} cursor={{ stroke: '#e2e8f0', strokeWidth: 1 }} />
+                {vehicles.map(v => (
+                  <Line
+                    key={v.id}
+                    type="monotone"
+                    dataKey={v.id}
+                    stroke={colorMap[v.id]}
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 4, strokeWidth: 0 }}
+                    connectNulls={false}
+                  />
+                ))}
               </LineChart>
             </ResponsiveContainer>
           </div>
 
-          {/* Legend — clickable to drill into single-vehicle mode */}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3 pt-3 border-t border-zinc-100">
-            {stats.map(s => {
-              const color    = colorMap[s.v.id] ?? '#94a3b8'
-              const inTop3   = top3Ids.has(s.v.id)
-              const isActive =
-                viewMode === 'all'  ? true   :
-                viewMode === 'top3' ? inTop3 :
-                s.v.id === selectedId
-              return (
-                <button
-                  key={s.v.id}
-                  onClick={() => setViewMode(s.v.id)}
-                  title={s.v.model}
-                  className={'flex items-center gap-1.5 text-xs transition-colors ' + (
-                    isActive ? 'text-zinc-700 font-medium' : 'text-zinc-400'
-                  ) + ' hover:text-zinc-900'}
-                >
-                  <span className="w-4 h-[2px] rounded-full" style={{ backgroundColor: color, opacity: isActive ? 1 : 0.35 }} />
-                  {s.v.plate_number}
-                </button>
-              )
-            })}
-            {(isSingle || viewMode === 'top3') && (
-              <button
-                onClick={() => setViewMode('top3')}
-                className="text-xs text-zinc-400 hover:text-zinc-600 transition-colors ml-auto"
-              >
-                {t('dashboard.resetChart')}
-              </button>
-            )}
+            {vehicles.map(v => (
+              <div key={v.id} className="flex items-center gap-1.5 text-xs text-zinc-600">
+                <span className="w-3 h-[2px] rounded-full" style={{ backgroundColor: colorMap[v.id] }} />
+                {v.plate_number}
+              </div>
+            ))}
           </div>
-
-          {/* Anomaly note — single-vehicle mode only */}
-          {isSingle && kpis?.mode === 'single' && (kpis.anomHigh + kpis.anomLow) > 0 && (
-            <div className="flex items-center gap-2 mt-2 pt-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-400 flex-shrink-0" />
-              <p className="text-xs text-zinc-400">{t('dashboard.deviationNote')}</p>
-            </div>
-          )}
         </>
       )}
     </div>
