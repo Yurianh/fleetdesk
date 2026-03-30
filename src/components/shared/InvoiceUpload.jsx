@@ -19,35 +19,42 @@ export function InvoiceUpload({ file, existingUrl, amount, onFileChange, onAmoun
         Facture <span className="font-normal normal-case text-slate-300">— optionnel</span>
       </p>
 
-      {!hasFile ? (
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          className="w-full border-2 border-dashed border-slate-200 rounded-xl py-4 px-4 text-center hover:border-[#2563EB]/40 hover:bg-blue-50/30 transition-colors group"
-        >
-          <Paperclip className="w-4 h-4 text-slate-300 group-hover:text-[#2563EB]/50 mx-auto mb-1.5 transition-colors" />
-          <p className="text-sm text-slate-400 group-hover:text-slate-500 transition-colors">Joindre une facture</p>
-          <p className="text-xs text-slate-300 mt-0.5">JPG, PNG ou PDF · max 10 Mo</p>
-        </button>
-      ) : (
-        <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50">
-          <div className="w-8 h-8 bg-white rounded-lg border border-slate-200 flex items-center justify-center shrink-0">
-            {isImage(file || existingUrl)
+      <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50">
+        <div className="w-8 h-8 bg-white rounded-lg border border-slate-200 flex items-center justify-center shrink-0">
+          {hasFile
+            ? isImage(file || existingUrl)
               ? <ImageIcon className="w-4 h-4 text-slate-400" />
               : <FileText className="w-4 h-4 text-slate-400" />
-            }
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm text-slate-700 truncate">
-              {file ? file.name : 'Facture enregistrée'}
-            </p>
-            {existingUrl && !file && (
-              <a href={existingUrl} target="_blank" rel="noopener noreferrer"
-                className="text-xs text-[#2563EB] hover:underline">
-                Voir la facture →
-              </a>
-            )}
-          </div>
+            : <Paperclip className="w-4 h-4 text-slate-300" />
+          }
+        </div>
+
+        <div className="flex-1 min-w-0">
+          {hasFile ? (
+            <>
+              <p className="text-sm text-slate-700 truncate">
+                {file ? file.name : 'Facture enregistrée'}
+              </p>
+              {existingUrl && !file && (
+                <a href={existingUrl} target="_blank" rel="noopener noreferrer"
+                  className="text-xs text-[#2563EB] hover:underline">
+                  Voir la facture →
+                </a>
+              )}
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="text-sm text-slate-400 hover:text-slate-600 transition-colors text-left"
+            >
+              Joindre une facture
+              <span className="block text-xs text-slate-300 mt-0.5">JPG, PNG ou PDF · max 10 Mo</span>
+            </button>
+          )}
+        </div>
+
+        {hasFile ? (
           <button
             type="button"
             onClick={() => { onFileChange(null); if (inputRef.current) inputRef.current.value = '' }}
@@ -55,8 +62,16 @@ export function InvoiceUpload({ file, existingUrl, amount, onFileChange, onAmoun
           >
             <X className="w-3.5 h-3.5" />
           </button>
-        </div>
-      )}
+        ) : (
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors shrink-0"
+          >
+            <Paperclip className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
 
       <input
         ref={inputRef}
