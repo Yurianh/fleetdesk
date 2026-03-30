@@ -48,7 +48,7 @@ export default function VehicleDetail() {
 
       <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 mb-6">
         <div className="flex flex-wrap items-center gap-4">
-          <div className="w-14 h-14 bg-orange-50 rounded-xl flex items-center justify-center flex-shrink-0">
+          <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
             <Truck className="w-6 h-6 text-[#1D4ED8]" />
           </div>
           <div className="flex-1 min-w-0">
@@ -116,7 +116,10 @@ export default function VehicleDetail() {
                             <td className="px-5 py-3 text-slate-500">{format(new Date(m.date), 'd MMM yyyy', { locale: dateLocale })}</td>
                             <td className="px-5 py-3">{m.mileage?.toLocaleString('fr-FR') ?? '—'} km</td>
                             <td className="px-5 py-3">{m.issue_description}</td>
-                            <td className="px-5 py-3"><Badge variant={m.status === 'OK' ? 'default' : 'destructive'}>{m.status === 'OK' ? 'OK' : 'Problème'}</Badge></td>
+                            <td className="px-5 py-3">{m.status === 'OK'
+  ? <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />OK</span>
+  : <span className="inline-flex items-center gap-1 text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-full"><span className="w-1.5 h-1.5 rounded-full bg-red-500" />Problème</span>
+}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -127,7 +130,10 @@ export default function VehicleDetail() {
                       <div key={m.id} className="px-4 py-3">
                         <div className="flex items-center justify-between mb-1">
                           <p className="text-xs text-slate-400">{format(new Date(m.date), 'd MMM yyyy', { locale: dateLocale })} · {m.mileage?.toLocaleString('fr-FR') ?? '—'} km</p>
-                          <Badge variant={m.status === 'OK' ? 'default' : 'destructive'}>{m.status === 'OK' ? 'OK' : 'Problème'}</Badge>
+                          {m.status === 'OK'
+  ? <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />OK</span>
+  : <span className="inline-flex items-center gap-1 text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-full"><span className="w-1.5 h-1.5 rounded-full bg-red-500" />Problème</span>
+}
                         </div>
                         <p className="text-sm text-slate-700">{m.issue_description}</p>
                       </div>
