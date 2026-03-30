@@ -55,10 +55,6 @@ export default function Navbar({ currentPath = '/' }) {
         <div className="hidden md:flex items-center gap-3">
           {loggedIn ? (
             <>
-              <a href={`${APP_URL}/logout`}
-                className="text-sm text-zinc-500 hover:text-zinc-700 font-medium transition-colors">
-                Déconnexion
-              </a>
               <a href={APP_URL}
                 className="text-sm bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium px-4 py-2 rounded-lg transition-colors">
                 Accéder au dashboard →
@@ -110,10 +106,6 @@ export default function Navbar({ currentPath = '/' }) {
                 <a href={APP_URL} onClick={() => setOpen(false)}
                   className="block text-center text-sm bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium px-4 py-2.5 rounded-lg transition-colors">
                   Accéder au dashboard →
-                </a>
-                <a href={`${APP_URL}/logout`} onClick={() => setOpen(false)}
-                  className="block text-center text-sm text-zinc-500 font-medium py-2 hover:text-zinc-700">
-                  Déconnexion
                 </a>
               </>
             ) : (
