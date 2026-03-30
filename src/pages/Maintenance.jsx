@@ -431,7 +431,7 @@ export default function Maintenance() {
   const closeRecordModal = () => { setRecordModal(false); setEditingRecord(null) }
 
   const handleSaveRecord = async () => {
-    if (!recordForm.vehicle_id || !recordForm.mileage || !recordForm.issue_description || !recordForm.status) return
+    if (!recordForm.vehicle_id || !recordForm.mileage || !recordForm.status) return
     setSavingRecord(true)
     try {
       const payload = { ...recordForm, mileage: parseFloat(recordForm.mileage), date: recordForm.date || new Date().toISOString().split('T')[0] }
@@ -883,19 +883,27 @@ export default function Maintenance() {
           </div>
         </div>
         <div>
-          <Label>Description</Label>
-          <Textarea value={recordForm.issue_description} onChange={e => setRecordForm(f => ({ ...f, issue_description: e.target.value }))} placeholder="Décrire l'entretien effectué..." />
-        </div>
-        <div>
-          <Label>Statut</Label>
-          <Select value={recordForm.status} onValueChange={v => setRecordForm(f => ({ ...f, status: v }))}>
-            <SelectTrigger><SelectValue placeholder="Sélectionner le statut" /></SelectTrigger>
+          <Label>Résultat</Label>
+          <Select value={recordForm.status} onValueChange={v => setRecordForm(f => ({ ...f, status: v, issue_description: v === 'OK' ? '' : f.issue_description }))}>
+            <SelectTrigger><SelectValue placeholder="Sélectionner le résultat" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="OK">OK</SelectItem>
-              <SelectItem value="PROBLEM">Problème</SelectItem>
+              <SelectItem value="OK">Entretien effectué — tout est OK</SelectItem>
+              <SelectItem value="PROBLEM">Entretien effectué — problème détecté</SelectItem>
             </SelectContent>
           </Select>
         </div>
+        {recordForm.status === 'PROBLEM' && (
+          <div>
+            <Label>Description du problème</Label>
+            <Textarea value={recordForm.issue_description} onChange={e => setRecordForm(f => ({ ...f, issue_description: e.target.value }))} placeholder="Ex : usure des plaquettes de frein, fuite détectée..." />
+          </div>
+        )}
+        {recordForm.status === 'OK' && (
+          <div>
+            <Label>Notes <span className="text-slate-400 font-normal">(optionnel)</span></Label>
+            <Textarea value={recordForm.issue_description} onChange={e => setRecordForm(f => ({ ...f, issue_description: e.target.value }))} placeholder="Ex : vidange + filtre à huile..." rows={2} />
+          </div>
+        )}
       </FormModal>
 
       {/* ── Schedule modal ───────────────────────────────────────── */}
