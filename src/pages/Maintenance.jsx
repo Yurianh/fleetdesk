@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react'
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
-import { Plus, Wrench, Trash2, Pencil, Check, X, ChevronDown, ChevronRight, Info } from 'lucide-react'
+import { Plus, Wrench, Trash2, Pencil, Check, X, ChevronDown, ChevronRight, Info, Paperclip } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -14,6 +14,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import FormModal from '@/components/shared/FormModal'
+import { InvoiceUpload } from '@/components/shared/InvoiceUpload'
+import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import {
   useVehicles, useMaintenanceRecords, useMaintenanceSchedules, useMileageEntries,
   createMaintenanceRecord, updateMaintenanceRecord, deleteMaintenanceRecord,
@@ -374,6 +376,9 @@ export default function Maintenance() {
   const [savingRecord, setSavingRecord]   = useState(false)
   const [deletingRecordId, setDeletingRecordId] = useState(null)
   const [okCollapsed, setOkCollapsed]     = useState(false)
+  const [invoiceFile, setInvoiceFile]     = useState(null)
+  const [invoiceExistingUrl, setInvoiceExistingUrl] = useState('')
+  const [invoiceAmount, setInvoiceAmount] = useState('')
 
   const [scheduleModal, setScheduleModal] = useState(false)
   const [scheduleForm, setScheduleForm]   = useState(EMPTY_SCHEDULE)
@@ -412,6 +417,9 @@ export default function Maintenance() {
       date: new Date().toISOString().split('T')[0],
       ...prefill,
     })
+    setInvoiceFile(null)
+    setInvoiceExistingUrl('')
+    setInvoiceAmount('')
     setRecordModal(true)
   }
 
@@ -426,15 +434,39 @@ export default function Maintenance() {
   const openEditRecord = (r) => {
     setEditingRecord(r)
     setRecordForm({ vehicle_id: r.vehicle_id, date: r.date, mileage: String(r.mileage), issue_description: r.issue_description, status: r.status })
+    setInvoiceFile(null)
+    setInvoiceExistingUrl(r.invoice_url || '')
+    setInvoiceAmount(r.invoice_amount ? String(r.invoice_amount) : '')
     setRecordModal(true)
   }
-  const closeRecordModal = () => { setRecordModal(false); setEditingRecord(null) }
+  const closeRecordModal = () => {
+    setRecordModal(false)
+    setEditingRecord(null)
+    setInvoiceFile(null)
+    setInvoiceExistingUrl('')
+    setInvoiceAmount('')
+  }
 
   const handleSaveRecord = async () => {
     if (!recordForm.vehicle_id || !recordForm.mileage || !recordForm.status) return
     setSavingRecord(true)
     try {
-      const payload = { ...recordForm, mileage: parseFloat(recordForm.mileage), date: recordForm.date || new Date().toISOString().split('T')[0] }
+      let finalInvoiceUrl = invoiceExistingUrl
+      if (invoiceFile) {
+        if (editingRecord?.invoice_url) await deleteInvoice(editingRecord.invoice_url)
+        finalInvoiceUrl = await uploadInvoice(invoiceFile, 'maintenance')
+      } else if (!invoiceExistingUrl && editingRecord?.invoice_url) {
+        await deleteInvoice(editingRecord.invoice_url)
+        finalInvoiceUrl = null
+      }
+
+      const payload = {
+        ...recordForm,
+        mileage: parseFloat(recordForm.mileage),
+        date: recordForm.date || new Date().toISOString().split('T')[0],
+        invoice_url: finalInvoiceUrl || null,
+        invoice_amount: invoiceAmount ? parseFloat(invoiceAmount) : null,
+      }
       if (editingRecord) {
         await updateMaintenanceRecord(editingRecord.id, payload)
         toast.success(t('maintenance.updated'))
@@ -451,6 +483,8 @@ export default function Maintenance() {
   const handleDeleteRecord = async (id) => {
     setDeletingRecordId(id)
     try {
+      const record = records.find(r => r.id === id)
+      if (record?.invoice_url) await deleteInvoice(record.invoice_url)
       await deleteMaintenanceRecord(id)
       queryClient.invalidateQueries({ queryKey: ['maintenanceRecords'] })
       toast.success(t('maintenance.deleted'))
@@ -769,6 +803,12 @@ export default function Maintenance() {
                             </td>
                             <td className="px-5 py-3">
                               <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                {r.invoice_url && (
+                                  <a href={r.invoice_url} target="_blank" rel="noopener noreferrer"
+                                    className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors" title="Voir la facture">
+                                    <Paperclip className="w-3.5 h-3.5" />
+                                  </a>
+                                )}
                                 <button onClick={() => openEditRecord(r)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
                                 <button onClick={() => handleDeleteRecord(r.id)} disabled={deletingRecordId === r.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                               </div>
@@ -910,6 +950,14 @@ export default function Maintenance() {
             <Textarea value={recordForm.issue_description} onChange={e => setRecordForm(f => ({ ...f, issue_description: e.target.value }))} placeholder="Ex : vidange + filtre à huile..." rows={2} />
           </div>
         )}
+        <InvoiceUpload
+          file={invoiceFile}
+          existingUrl={invoiceExistingUrl}
+          amount={invoiceAmount}
+          onFileChange={f => { setInvoiceFile(f); if (!f) setInvoiceExistingUrl('') }}
+          onAmountChange={setInvoiceAmount}
+          showAmount={true}
+        />
       </FormModal>
 
       {/* ── Schedule modal ───────────────────────────────────────── */}

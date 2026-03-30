@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { format, addYears, differenceInDays } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
-import { Plus, ClipboardCheck, Pencil, Trash2 } from 'lucide-react'
+import { Plus, ClipboardCheck, Pencil, Trash2, Paperclip } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { SearchableSelect } from '@/components/ui/searchable-select'
@@ -13,6 +13,8 @@ import { toast } from 'sonner'
 import PageHeader from '@/components/shared/PageHeader'
 import EmptyState from '@/components/shared/EmptyState'
 import FormModal from '@/components/shared/FormModal'
+import { InvoiceUpload } from '@/components/shared/InvoiceUpload'
+import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import {
   useVehicles, useTechnicalInspections,
   createTechnicalInspection, updateTechnicalInspection, deleteTechnicalInspection,
@@ -44,14 +46,33 @@ export default function Inspections() {
   const [form, setForm]       = useState(EMPTY_FORM)
   const [saving, setSaving]   = useState(false)
   const [deletingId, setDeletingId] = useState(null)
+  const [invoiceFile, setInvoiceFile] = useState(null)
+  const [invoiceExistingUrl, setInvoiceExistingUrl] = useState('')
+  const [invoiceAmount, setInvoiceAmount] = useState('')
 
-  const openCreate = () => { setEditing(null); setForm(EMPTY_FORM); setModal(true) }
-  const openEdit   = (ins) => {
-    setEditing(ins)
-    setForm({ vehicle_id: ins.vehicle_id, inspection_date: ins.inspection_date })
+  const openCreate = () => {
+    setEditing(null)
+    setForm(EMPTY_FORM)
+    setInvoiceFile(null)
+    setInvoiceExistingUrl('')
+    setInvoiceAmount('')
     setModal(true)
   }
-  const closeModal = () => { setModal(false); setEditing(null) }
+  const openEdit = (ins) => {
+    setEditing(ins)
+    setForm({ vehicle_id: ins.vehicle_id, inspection_date: ins.inspection_date })
+    setInvoiceFile(null)
+    setInvoiceExistingUrl(ins.invoice_url || '')
+    setInvoiceAmount(ins.invoice_amount ? String(ins.invoice_amount) : '')
+    setModal(true)
+  }
+  const closeModal = () => {
+    setModal(false)
+    setEditing(null)
+    setInvoiceFile(null)
+    setInvoiceExistingUrl('')
+    setInvoiceAmount('')
+  }
 
   const expiryPreview = form.inspection_date
     ? format(addYears(new Date(form.inspection_date), 1), 'd MMMM yyyy', { locale: dateLocale })
@@ -61,11 +82,22 @@ export default function Inspections() {
     if (!form.vehicle_id) return
     setSaving(true)
     try {
+      let finalInvoiceUrl = invoiceExistingUrl
+      if (invoiceFile) {
+        if (editing?.invoice_url) await deleteInvoice(editing.invoice_url)
+        finalInvoiceUrl = await uploadInvoice(invoiceFile, 'inspection')
+      } else if (!invoiceExistingUrl && editing?.invoice_url) {
+        await deleteInvoice(editing.invoice_url)
+        finalInvoiceUrl = null
+      }
+
       const effectiveDate = form.inspection_date || new Date().toISOString().split('T')[0]
       const payload = {
         vehicle_id: form.vehicle_id,
         inspection_date: effectiveDate,
         expiration_date: format(addYears(new Date(effectiveDate), 1), 'yyyy-MM-dd'),
+        invoice_url: finalInvoiceUrl || null,
+        invoice_amount: invoiceAmount ? parseFloat(invoiceAmount) : null,
       }
       if (editing) {
         await updateTechnicalInspection(editing.id, payload)
@@ -83,6 +115,8 @@ export default function Inspections() {
   const handleDelete = async (id) => {
     setDeletingId(id)
     try {
+      const record = inspections.find(i => i.id === id)
+      if (record?.invoice_url) await deleteInvoice(record.invoice_url)
       await deleteTechnicalInspection(id)
       queryClient.invalidateQueries({ queryKey: ['technicalInspections'] })
       toast.success(t('inspections.deleted'))
@@ -128,20 +162,27 @@ export default function Inspections() {
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Date du contrôle</th>
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Expiration</th>
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Statut</th>
-                    <th className="px-5 py-3 w-24"></th>
+                    <th className="px-5 py-3 w-28"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {inspections.map(ins => {
                     const vehicle = getVehicleById(vehicles, ins.vehicle_id)
                     return (
-                      <tr key={ins.id} className="hover:bg-white transition-colors group">
+                      <tr key={ins.id} className="hover:bg-slate-50 transition-colors group">
                         <td className="px-5 py-3.5 font-medium text-slate-900">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</td>
                         <td className="px-5 py-3.5 text-slate-500">{format(new Date(ins.inspection_date), 'd MMM yyyy', { locale: dateLocale })}</td>
                         <td className="px-5 py-3.5 text-slate-500">{format(new Date(ins.expiration_date), 'd MMM yyyy', { locale: dateLocale })}</td>
                         <td className="px-5 py-3.5"><StatusBadge expirationDate={ins.expiration_date} /></td>
                         <td className="px-5 py-3.5">
                           <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {ins.invoice_url && (
+                              <a href={ins.invoice_url} target="_blank" rel="noopener noreferrer"
+                                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
+                                title="Voir la facture">
+                                <Paperclip className="w-3.5 h-3.5" />
+                              </a>
+                            )}
                             <button onClick={() => openEdit(ins)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
                             <button onClick={() => handleDelete(ins.id)} disabled={deletingId === ins.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                           </div>
@@ -163,9 +204,18 @@ export default function Inspections() {
                         <p className="font-semibold text-slate-900 truncate">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</p>
                         <p className="text-xs text-slate-400 mt-0.5">Contrôle : {format(new Date(ins.inspection_date), 'd MMM yyyy', { locale: dateLocale })}</p>
                         <p className="text-xs text-slate-400">Expire : {format(new Date(ins.expiration_date), 'd MMM yyyy', { locale: dateLocale })}</p>
-                        <div className="mt-1.5"><StatusBadge expirationDate={ins.expiration_date} /></div>
+                        <div className="mt-1.5 flex items-center gap-2">
+                          <StatusBadge expirationDate={ins.expiration_date} />
+                          {ins.invoice_url && <Paperclip className="w-3.5 h-3.5 text-[#2563EB]" />}
+                        </div>
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0">
+                        {ins.invoice_url && (
+                          <a href={ins.invoice_url} target="_blank" rel="noopener noreferrer"
+                            className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700">
+                            <Paperclip className="w-4 h-4" />
+                          </a>
+                        )}
                         <button onClick={() => openEdit(ins)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700"><Pencil className="w-4 h-4" /></button>
                         <button onClick={() => handleDelete(ins.id)} disabled={deletingId === ins.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
                       </div>
@@ -204,6 +254,14 @@ export default function Inspections() {
             Expire le : <span className="font-semibold text-slate-700">{expiryPreview}</span>
           </p>
         )}
+        <InvoiceUpload
+          file={invoiceFile}
+          existingUrl={invoiceExistingUrl}
+          amount={invoiceAmount}
+          onFileChange={f => { setInvoiceFile(f); if (!f) setInvoiceExistingUrl('') }}
+          onAmountChange={setInvoiceAmount}
+          showAmount={true}
+        />
       </FormModal>
     </div>
   )

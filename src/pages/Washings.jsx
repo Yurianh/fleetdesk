@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
-import { Plus, Droplets, Pencil, Trash2 } from 'lucide-react'
+import { Plus, Droplets, Pencil, Trash2, Paperclip } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { SearchableSelect } from '@/components/ui/searchable-select'
@@ -12,6 +12,8 @@ import { toast } from 'sonner'
 import PageHeader from '@/components/shared/PageHeader'
 import EmptyState from '@/components/shared/EmptyState'
 import FormModal from '@/components/shared/FormModal'
+import { InvoiceUpload } from '@/components/shared/InvoiceUpload'
+import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import {
   useVehicles, useDrivers, useWashRecords,
   createWashRecord, updateWashRecord, deleteWashRecord,
@@ -35,16 +37,31 @@ export default function Washings() {
   const [form, setForm]     = useState(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
+  const [invoiceFile, setInvoiceFile] = useState(null)
+  const [invoiceExistingUrl, setInvoiceExistingUrl] = useState('')
 
   const totalAmount = washRecords.reduce((s, w) => s + (Number(w.amount) || 0), 0)
 
-  const openCreate = () => { setEditing(null); setForm(EMPTY_FORM); setModal(true) }
-  const openEdit   = (w)  => {
-    setEditing(w)
-    setForm({ vehicle_id: w.vehicle_id, driver_id: w.driver_id, amount: String(w.amount), date: w.date })
+  const openCreate = () => {
+    setEditing(null)
+    setForm(EMPTY_FORM)
+    setInvoiceFile(null)
+    setInvoiceExistingUrl('')
     setModal(true)
   }
-  const closeModal = () => { setModal(false); setEditing(null) }
+  const openEdit = (w) => {
+    setEditing(w)
+    setForm({ vehicle_id: w.vehicle_id, driver_id: w.driver_id, amount: String(w.amount), date: w.date })
+    setInvoiceFile(null)
+    setInvoiceExistingUrl(w.invoice_url || '')
+    setModal(true)
+  }
+  const closeModal = () => {
+    setModal(false)
+    setEditing(null)
+    setInvoiceFile(null)
+    setInvoiceExistingUrl('')
+  }
 
   const canSubmit = form.vehicle_id && form.driver_id && form.amount
 
@@ -52,7 +69,21 @@ export default function Washings() {
     if (!canSubmit) return
     setSaving(true)
     try {
-      const payload = { ...form, amount: parseFloat(form.amount), date: form.date || new Date().toISOString().split('T')[0] }
+      let finalInvoiceUrl = invoiceExistingUrl
+      if (invoiceFile) {
+        if (editing?.invoice_url) await deleteInvoice(editing.invoice_url)
+        finalInvoiceUrl = await uploadInvoice(invoiceFile, 'wash')
+      } else if (!invoiceExistingUrl && editing?.invoice_url) {
+        await deleteInvoice(editing.invoice_url)
+        finalInvoiceUrl = null
+      }
+
+      const payload = {
+        ...form,
+        amount: parseFloat(form.amount),
+        date: form.date || new Date().toISOString().split('T')[0],
+        invoice_url: finalInvoiceUrl || null,
+      }
       if (editing) {
         await updateWashRecord(editing.id, payload)
         toast.success(t('washings.updated'))
@@ -69,6 +100,8 @@ export default function Washings() {
   const handleDelete = async (id) => {
     setDeletingId(id)
     try {
+      const record = washRecords.find(w => w.id === id)
+      if (record?.invoice_url) await deleteInvoice(record.invoice_url)
       await deleteWashRecord(id)
       queryClient.invalidateQueries({ queryKey: ['washRecords'] })
       toast.success(t('washings.deleted'))
@@ -105,7 +138,7 @@ export default function Washings() {
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Conducteur</th>
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Date</th>
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Montant</th>
-                    <th className="px-5 py-3 w-24"></th>
+                    <th className="px-5 py-3 w-28"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -113,13 +146,20 @@ export default function Washings() {
                     const vehicle = getVehicleById(vehicles, w.vehicle_id)
                     const driver  = getDriverById(drivers, w.driver_id)
                     return (
-                      <tr key={w.id} className="hover:bg-white transition-colors group">
+                      <tr key={w.id} className="hover:bg-slate-50 transition-colors group">
                         <td className="px-5 py-3.5 font-medium text-slate-900">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</td>
                         <td className="px-5 py-3.5 text-slate-600">{driver?.name || '—'}</td>
                         <td className="px-5 py-3.5 text-slate-500">{format(new Date(w.date), 'd MMM yyyy', { locale: dateLocale })}</td>
                         <td className="px-5 py-3.5 font-semibold text-slate-800">{Number(w.amount).toFixed(2)} €</td>
                         <td className="px-5 py-3.5">
                           <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {w.invoice_url && (
+                              <a href={w.invoice_url} target="_blank" rel="noopener noreferrer"
+                                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
+                                title="Voir la facture">
+                                <Paperclip className="w-3.5 h-3.5" />
+                              </a>
+                            )}
                             <button onClick={() => openEdit(w)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
                             <button onClick={() => handleDelete(w.id)} disabled={deletingId === w.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                           </div>
@@ -141,9 +181,18 @@ export default function Washings() {
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-slate-900 truncate">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</p>
                         <p className="text-sm text-slate-600">{driver?.name || '—'}</p>
-                        <p className="text-xs text-slate-400 mt-0.5">{format(new Date(w.date), 'd MMM yyyy', { locale: dateLocale })} · <span className="font-semibold text-slate-700">{Number(w.amount).toFixed(2)} €</span></p>
+                        <p className="text-xs text-slate-400 mt-0.5">
+                          {format(new Date(w.date), 'd MMM yyyy', { locale: dateLocale })} · <span className="font-semibold text-slate-700">{Number(w.amount).toFixed(2)} €</span>
+                          {w.invoice_url && <span className="ml-1.5 inline-flex items-center gap-0.5 text-[#2563EB]"><Paperclip className="w-3 h-3" /></span>}
+                        </p>
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0">
+                        {w.invoice_url && (
+                          <a href={w.invoice_url} target="_blank" rel="noopener noreferrer"
+                            className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700">
+                            <Paperclip className="w-4 h-4" />
+                          </a>
+                        )}
                         <button onClick={() => openEdit(w)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700"><Pencil className="w-4 h-4" /></button>
                         <button onClick={() => handleDelete(w.id)} disabled={deletingId === w.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
                       </div>
@@ -192,6 +241,14 @@ export default function Washings() {
             <Input type="number" step="0.01" value={form.amount} onChange={e => setForm(f => ({...f, amount: e.target.value}))} placeholder="0.00" />
           </div>
         </div>
+        <InvoiceUpload
+          file={invoiceFile}
+          existingUrl={invoiceExistingUrl}
+          amount=""
+          onFileChange={f => { setInvoiceFile(f); if (!f) setInvoiceExistingUrl('') }}
+          onAmountChange={() => {}}
+          showAmount={false}
+        />
       </FormModal>
     </div>
   )
