@@ -112,10 +112,12 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries }) {
         const mEnd     = endOfMonth(month)
         const mStart   = new Date(month.getFullYear(), month.getMonth(), 1)
         const curr     = entries.filter(e => e._date <= mEnd).pop()
-        const prev     = entries.filter(e => e._date < mStart).pop()
+        const prevMonth = entries.filter(e => e._date < mStart).pop()
+        // Fallback: if no prior-month baseline, use first reading of this month
+        const baseline = prevMonth ?? entries.filter(e => e._date >= mStart && e._date <= mEnd)[0]
         result[v.id][monthKey] =
-          curr && prev && curr.mileage > prev.mileage
-            ? curr.mileage - prev.mileage : null
+          curr && baseline && curr.mileage > baseline.mileage
+            ? curr.mileage - baseline.mileage : null
       }
     }
     return result
