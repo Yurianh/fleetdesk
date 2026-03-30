@@ -18,6 +18,12 @@ export function AuthProvider({ children }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const user = session?.user ?? null
       setUser(user)
+      // Sync a cross-subdomain cookie so the marketing site can detect auth state
+      if (user) {
+        document.cookie = 'fd_auth=1; domain=.fleetdesk.fr; path=/; max-age=604800; SameSite=Lax'
+      } else {
+        document.cookie = 'fd_auth=; domain=.fleetdesk.fr; path=/; max-age=0'
+      }
       if (user?.user_metadata?.org_id) {
         // Verify membership still exists — sign out immediately if removed
         supabase

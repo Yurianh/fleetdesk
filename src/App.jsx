@@ -33,6 +33,14 @@ function ExternalRedirect({ to }) {
   return null
 }
 
+function LogoutAndRedirect() {
+  const { signOut } = useAuth()
+  useEffect(() => {
+    signOut().finally(() => { window.location.replace(MARKETING_URL) })
+  }, [])
+  return null
+}
+
 function AppRoutes() {
   const { user, loading } = useAuth()
   if (loading) return null
@@ -43,6 +51,7 @@ function AppRoutes() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/join" element={<Login />} />
+        <Route path="/logout" element={<LogoutAndRedirect />} />
         <Route path="/billing/success" element={<BillingSuccess />} />
         <Route path="*" element={<ExternalRedirect to={MARKETING_URL} />} />
       </Routes>
@@ -56,6 +65,7 @@ function AppRoutes() {
       <Routes>
         <Route path="/join" element={<CollaboratorWelcome />} />
         <Route path="/setup-profile" element={<SetupProfile />} />
+        <Route path="/logout" element={<LogoutAndRedirect />} />
         <Route path="/billing/success" element={<BillingSuccess />} />
         <Route
           path="*"
@@ -71,6 +81,7 @@ function AppRoutes() {
       <Route path="/login" element={<Navigate to="/Dashboard" replace />} />
       <Route path="/join" element={<Navigate to="/Dashboard" replace />} />
       <Route path="/setup-profile" element={<Navigate to="/Dashboard" replace />} />
+      <Route path="/logout" element={<LogoutAndRedirect />} />
       <Route path="/billing/success" element={<BillingSuccess />} />
       <Route element={<AppLayout />}>
         <Route path="/" element={<Navigate to="/Dashboard" replace />} />

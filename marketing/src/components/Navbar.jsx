@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const LINKS = [
   { label: 'Fonctionnalités', href: '/features' },
@@ -8,8 +8,18 @@ const LINKS = [
 
 const APP_URL = 'https://app.fleetdesk.fr'
 
+function isLoggedIn() {
+  if (typeof document === 'undefined') return false
+  return document.cookie.split(';').some(c => c.trim().startsWith('fd_auth=1'))
+}
+
 export default function Navbar({ currentPath = '/' }) {
-  const [open, setOpen] = useState(false)
+  const [open,       setOpen]       = useState(false)
+  const [loggedIn,   setLoggedIn]   = useState(false)
+
+  useEffect(() => {
+    setLoggedIn(isLoggedIn())
+  }, [])
 
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-zinc-200/80">
@@ -43,14 +53,29 @@ export default function Navbar({ currentPath = '/' }) {
 
         {/* Desktop CTAs */}
         <div className="hidden md:flex items-center gap-3">
-          <a href={`${APP_URL}/login`}
-            className="text-sm text-zinc-600 hover:text-zinc-900 font-medium transition-colors">
-            Se connecter
-          </a>
-          <a href="/pricing#plans"
-            className="text-sm bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium px-4 py-2 rounded-lg transition-colors">
-            Commencer
-          </a>
+          {loggedIn ? (
+            <>
+              <a href={`${APP_URL}/logout`}
+                className="text-sm text-zinc-500 hover:text-zinc-700 font-medium transition-colors">
+                Déconnexion
+              </a>
+              <a href={APP_URL}
+                className="text-sm bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium px-4 py-2 rounded-lg transition-colors">
+                Accéder au dashboard →
+              </a>
+            </>
+          ) : (
+            <>
+              <a href={`${APP_URL}/login`}
+                className="text-sm text-zinc-600 hover:text-zinc-900 font-medium transition-colors">
+                Se connecter
+              </a>
+              <a href="/pricing#plans"
+                className="text-sm bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium px-4 py-2 rounded-lg transition-colors">
+                Commencer
+              </a>
+            </>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -80,14 +105,29 @@ export default function Navbar({ currentPath = '/' }) {
             </a>
           ))}
           <div className="pt-2 border-t border-zinc-100 flex flex-col gap-2">
-            <a href={`${APP_URL}/login`} onClick={() => setOpen(false)}
-              className="block text-center text-sm text-zinc-600 font-medium py-2 hover:text-zinc-900">
-              Se connecter
-            </a>
-            <a href="/pricing#plans" onClick={() => setOpen(false)}
-              className="block text-center text-sm bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium px-4 py-2.5 rounded-lg transition-colors">
-              Commencer
-            </a>
+            {loggedIn ? (
+              <>
+                <a href={APP_URL} onClick={() => setOpen(false)}
+                  className="block text-center text-sm bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium px-4 py-2.5 rounded-lg transition-colors">
+                  Accéder au dashboard →
+                </a>
+                <a href={`${APP_URL}/logout`} onClick={() => setOpen(false)}
+                  className="block text-center text-sm text-zinc-500 font-medium py-2 hover:text-zinc-700">
+                  Déconnexion
+                </a>
+              </>
+            ) : (
+              <>
+                <a href={`${APP_URL}/login`} onClick={() => setOpen(false)}
+                  className="block text-center text-sm text-zinc-600 font-medium py-2 hover:text-zinc-900">
+                  Se connecter
+                </a>
+                <a href="/pricing#plans" onClick={() => setOpen(false)}
+                  className="block text-center text-sm bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium px-4 py-2.5 rounded-lg transition-colors">
+                  Commencer
+                </a>
+              </>
+            )}
           </div>
         </div>
       )}
