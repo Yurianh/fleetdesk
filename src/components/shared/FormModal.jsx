@@ -23,7 +23,7 @@ export default function FormModal({
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 mt-1 min-w-0 overflow-hidden">
+        <div className="space-y-4 mt-1 min-w-0">
           {children}
         </div>
 
