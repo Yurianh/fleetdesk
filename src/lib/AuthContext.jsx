@@ -32,9 +32,10 @@ export function AuthProvider({ children }) {
           .eq('email', user.email)
           .eq('org_id', user.user_metadata.org_id)
           .maybeSingle()
-          .then(({ data: member }) => {
-            if (!member) {
-              // Row deleted — access revoked
+          .then(({ data: member, error }) => {
+            // Only revoke if the query succeeded AND definitively returned no row.
+            // If there's an RLS/network error, give the benefit of the doubt — do not sign out.
+            if (!error && member === null) {
               supabase.auth.signOut()
             }
             // Do NOT auto-activate pending members here — activation only happens via /join
