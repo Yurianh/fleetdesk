@@ -19,7 +19,7 @@ export function InvoiceUpload({ file, existingUrl, amount, onFileChange, onAmoun
         Facture <span className="font-normal normal-case text-slate-300">— optionnel</span>
       </p>
 
-      <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50">
+      <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden">
         <div className="w-8 h-8 bg-white rounded-lg border border-slate-200 flex items-center justify-center shrink-0">
           {hasFile
             ? isImage(file || existingUrl)
