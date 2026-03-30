@@ -783,6 +783,7 @@ export default function Maintenance() {
                         <th className="text-left px-5 py-3 font-medium text-slate-500">Kilométrage</th>
                         <th className="text-left px-5 py-3 font-medium text-slate-500">Notes</th>
                         <th className="text-left px-5 py-3 font-medium text-slate-500">Résultat</th>
+                        <th className="text-left px-5 py-3 font-medium text-slate-500">Montant</th>
                         <th className="px-5 py-3 w-24" />
                       </tr>
                     </thead>
@@ -800,6 +801,9 @@ export default function Maintenance() {
   ? <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />OK</span>
   : <span className="inline-flex items-center gap-1 text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-full"><span className="w-1.5 h-1.5 rounded-full bg-red-500" />Problème</span>
 }
+                            </td>
+                            <td className="px-5 py-3 text-slate-700 tabular-nums font-medium">
+                              {r.invoice_amount ? `${Number(r.invoice_amount).toFixed(2)} €` : <span className="text-slate-300">—</span>}
                             </td>
                             <td className="px-5 py-3">
                               <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -828,7 +832,10 @@ export default function Maintenance() {
                           <div className="flex-1 min-w-0">
                             <p className="font-semibold text-slate-900 truncate">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</p>
                             <p className="text-sm text-slate-600 mt-0.5 truncate">{r.issue_description}</p>
-                            <p className="text-xs text-slate-400 mt-0.5">{format(new Date(r.date), 'd MMM yyyy', { locale: dateLocale })} · {r.mileage?.toLocaleString('fr-FR') ?? '—'} km</p>
+                            <p className="text-xs text-slate-400 mt-0.5">
+                              {format(new Date(r.date), 'd MMM yyyy', { locale: dateLocale })} · {r.mileage?.toLocaleString('fr-FR') ?? '—'} km
+                              {r.invoice_amount ? <span className="font-semibold text-slate-600"> · {Number(r.invoice_amount).toFixed(2)} €</span> : null}
+                            </p>
                             <div className="mt-1.5">{r.status === 'OK'
   ? <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />OK</span>
   : <span className="inline-flex items-center gap-1 text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-full"><span className="w-1.5 h-1.5 rounded-full bg-red-500" />Problème</span>
