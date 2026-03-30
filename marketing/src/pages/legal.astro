@@ -1,0 +1,289 @@
+---
+import Layout from '../layouts/Layout.astro'
+import Navbar from '../components/Navbar.jsx'
+import Footer from '../components/Footer.astro'
+
+const sections = [
+  { id: 'mentions',      label: 'Mentions légales'     },
+  { id: 'cgu',           label: 'CGU'                  },
+  { id: 'confidential',  label: 'Confidentialité'      },
+  { id: 'rgpd',          label: 'RGPD'                 },
+  { id: 'cookies',       label: 'Cookies'              },
+]
+
+const updated = '30 mars 2026'
+---
+
+<Layout
+  title="Mentions légales & Confidentialité"
+  description="Conditions générales d'utilisation, politique de confidentialité, RGPD et mentions légales de FleetDesk."
+>
+  <Navbar client:load currentPath="/legal" />
+
+  <main class="max-w-3xl mx-auto px-4 sm:px-6 py-16">
+
+    <!-- Header -->
+    <div class="mb-10">
+      <p class="text-xs font-semibold uppercase tracking-widest text-[#2563EB] mb-3">Informations légales</p>
+      <h1 class="text-3xl font-bold text-zinc-900 mb-3">Conditions, confidentialité & RGPD</h1>
+      <p class="text-zinc-500 text-sm">Dernière mise à jour : {updated}</p>
+    </div>
+
+    <!-- Tab anchors -->
+    <nav class="flex flex-wrap gap-2 mb-12 pb-6 border-b border-zinc-100">
+      {sections.map(s => (
+        <a
+          href={`#${s.id}`}
+          class="text-sm font-medium px-3.5 py-1.5 rounded-lg text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
+        >
+          {s.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="space-y-16 text-sm text-zinc-600 leading-relaxed">
+
+      <!-- ── Mentions légales ──────────────────────────────────── -->
+      <section id="mentions">
+        <h2 class="text-xl font-bold text-zinc-900 mb-6">Mentions légales</h2>
+
+        <div class="space-y-5">
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">Éditeur du site</h3>
+            <p>FleetDesk — logiciel de gestion de flotte en mode SaaS.<br/>
+            Site web : <span class="text-[#2563EB]">https://fleetdesk.fr</span><br/>
+            Application : <span class="text-[#2563EB]">https://app.fleetdesk.fr</span><br/>
+            Contact : <a href="mailto:contact@fleetdesk.fr" class="text-[#2563EB] hover:underline">contact@fleetdesk.fr</a></p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">Hébergement</h3>
+            <p>L'application FleetDesk est hébergée sur des infrastructures cloud tierces (Vercel Inc., Supabase Inc.) situées en Europe et aux États-Unis. Les données sont stockées sur des serveurs conformes aux normes de sécurité internationales (ISO 27001, SOC 2).</p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">Propriété intellectuelle</h3>
+            <p>L'ensemble des contenus présents sur le site fleetdesk.fr (textes, graphismes, logos, icônes, images, code source) est la propriété exclusive de FleetDesk et est protégé par les lois françaises et internationales relatives à la propriété intellectuelle. Toute reproduction, même partielle, est interdite sans autorisation préalable écrite.</p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">Responsabilité</h3>
+            <p>FleetDesk ne saurait être tenu responsable des dommages directs ou indirects causés au matériel de l'utilisateur lors de l'accès au site, résultant soit de l'utilisation d'un matériel ne répondant pas aux spécifications, soit de l'apparition d'un bug ou d'une incompatibilité.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="border-zinc-100" />
+
+      <!-- ── CGU ────────────────────────────────────────────────── -->
+      <section id="cgu">
+        <h2 class="text-xl font-bold text-zinc-900 mb-6">Conditions Générales d'Utilisation</h2>
+
+        <div class="space-y-5">
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">1. Objet</h3>
+            <p>Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de la plateforme FleetDesk, logiciel de gestion de flotte accessible en ligne à l'adresse <span class="text-[#2563EB]">app.fleetdesk.fr</span>. En créant un compte, l'utilisateur accepte sans réserve les présentes CGU.</p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">2. Accès au service</h3>
+            <p>FleetDesk est accessible à toute personne physique ou morale disposant d'un accès internet. L'accès aux fonctionnalités complètes nécessite la création d'un compte et la souscription à un abonnement. Un plan gratuit est disponible avec des fonctionnalités limitées.</p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">3. Compte utilisateur</h3>
+            <p>L'utilisateur s'engage à fournir des informations exactes lors de la création de son compte et à les maintenir à jour. Il est seul responsable de la confidentialité de ses identifiants de connexion. Tout accès au service via son compte est réputé effectué par l'utilisateur. En cas de perte ou de compromission, l'utilisateur doit en informer FleetDesk sans délai.</p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">4. Utilisation acceptable</h3>
+            <p>L'utilisateur s'engage à utiliser FleetDesk conformément à sa destination — la gestion de flottes de véhicules — et à ne pas :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1 ml-2">
+              <li>utiliser le service à des fins illicites ou frauduleuses ;</li>
+              <li>tenter d'accéder sans autorisation aux systèmes informatiques de FleetDesk ;</li>
+              <li>introduire des virus ou tout code malveillant ;</li>
+              <li>revendre ou céder l'accès à des tiers sans accord écrit préalable.</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">5. Abonnements et facturation</h3>
+            <p>Les tarifs sont consultables à l'adresse <a href="/pricing" class="text-[#2563EB] hover:underline">fleetdesk.fr/pricing</a>. Les abonnements sont souscrits pour une durée mensuelle ou annuelle, renouvelables tacitement. Tout mois commencé est dû. FleetDesk se réserve le droit de modifier ses tarifs avec un préavis de 30 jours. La résiliation prend effet à la fin de la période en cours.</p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">6. Disponibilité du service</h3>
+            <p>FleetDesk s'efforce d'assurer la disponibilité du service 24h/24 et 7j/7. Des interruptions pour maintenance peuvent survenir, de préférence en dehors des heures ouvrées. FleetDesk ne garantit pas une disponibilité ininterrompue et ne saurait être tenu responsable des interruptions indépendantes de sa volonté.</p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">7. Résiliation</h3>
+            <p>L'utilisateur peut résilier son compte à tout moment depuis les paramètres de l'application. En cas de violation des présentes CGU, FleetDesk se réserve le droit de suspendre ou supprimer un compte sans préavis ni remboursement.</p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">8. Droit applicable</h3>
+            <p>Les présentes CGU sont régies par le droit français. Tout litige sera soumis à la compétence exclusive des tribunaux compétents.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="border-zinc-100" />
+
+      <!-- ── Confidentialité ────────────────────────────────────── -->
+      <section id="confidential">
+        <h2 class="text-xl font-bold text-zinc-900 mb-6">Politique de Confidentialité</h2>
+
+        <div class="space-y-5">
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">Données collectées</h3>
+            <p>FleetDesk collecte les données nécessaires au fonctionnement du service :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1 ml-2">
+              <li><strong>Données de compte :</strong> adresse e-mail, nom d'affichage, organisation ;</li>
+              <li><strong>Données de flotte :</strong> véhicules, conducteurs, kilométrages, entretiens, contrôles techniques, lavages, affectations ;</li>
+              <li><strong>Données techniques :</strong> adresse IP, type de navigateur, logs d'accès ;</li>
+              <li><strong>Données de facturation :</strong> gérées par notre prestataire de paiement sécurisé (Stripe). FleetDesk ne stocke jamais les coordonnées bancaires.</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">Finalités du traitement</h3>
+            <p>Les données sont utilisées pour :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1 ml-2">
+              <li>fournir et améliorer le service FleetDesk ;</li>
+              <li>gérer les comptes utilisateurs et la facturation ;</li>
+              <li>envoyer des notifications liées au service (alertes, renouvellements) ;</li>
+              <li>respecter les obligations légales applicables.</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">Partage des données</h3>
+            <p>FleetDesk ne vend ni ne loue les données personnelles. Elles peuvent être partagées uniquement avec des sous-traitants techniques strictement nécessaires à la fourniture du service (infrastructure cloud, paiement, e-mail transactionnel), tous soumis à des obligations contractuelles de confidentialité.</p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">Conservation des données</h3>
+            <p>Les données sont conservées pendant toute la durée du contrat, puis pendant une durée maximale de 3 ans après la résiliation, sauf obligation légale contraire. Les données de facturation sont conservées 10 ans conformément aux obligations comptables françaises.</p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">Sécurité</h3>
+            <p>FleetDesk met en œuvre des mesures techniques et organisationnelles appropriées pour protéger les données contre tout accès non autorisé, perte, destruction ou altération : chiffrement en transit (TLS), chiffrement au repos, contrôle d'accès, authentification sécurisée.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="border-zinc-100" />
+
+      <!-- ── RGPD ───────────────────────────────────────────────── -->
+      <section id="rgpd">
+        <h2 class="text-xl font-bold text-zinc-900 mb-6">RGPD — Vos droits</h2>
+
+        <div class="space-y-5">
+          <p>Conformément au Règlement Général sur la Protection des Données (RGPD — Règlement UE 2016/679) et à la loi Informatique et Libertés, vous disposez des droits suivants sur vos données personnelles :</p>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            {[
+              { title: 'Droit d\'accès', desc: 'Obtenir une copie des données personnelles que nous détenons sur vous.' },
+              { title: 'Droit de rectification', desc: 'Corriger des données inexactes ou incomplètes vous concernant.' },
+              { title: 'Droit à l\'effacement', desc: 'Demander la suppression de vos données dans les cas prévus par la loi.' },
+              { title: 'Droit à la portabilité', desc: 'Recevoir vos données dans un format structuré et lisible par machine.' },
+              { title: 'Droit d\'opposition', desc: 'Vous opposer au traitement de vos données pour des motifs légitimes.' },
+              { title: 'Droit à la limitation', desc: 'Demander la suspension temporaire du traitement de vos données.' },
+            ].map(r => (
+              <div class="bg-zinc-50 rounded-xl p-4">
+                <p class="font-semibold text-zinc-800 text-xs uppercase tracking-wide mb-1">{r.title}</p>
+                <p class="text-zinc-500 text-sm">{r.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">Exercer vos droits</h3>
+            <p>Pour exercer l'un de ces droits, adressez une demande écrite à : <a href="mailto:privacy@fleetdesk.fr" class="text-[#2563EB] hover:underline">privacy@fleetdesk.fr</a>. Nous nous engageons à répondre dans un délai d'un mois. En cas de non-satisfaction, vous pouvez introduire une réclamation auprès de la <strong>CNIL</strong> (Commission Nationale de l'Informatique et des Libertés) — <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" class="text-[#2563EB] hover:underline">www.cnil.fr</a>.</p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">Base légale du traitement</h3>
+            <p>Le traitement de vos données repose sur :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1 ml-2">
+              <li>l'exécution du contrat (fourniture du service) ;</li>
+              <li>l'obligation légale (conservation comptable) ;</li>
+              <li>le consentement (communications marketing, le cas échéant) ;</li>
+              <li>l'intérêt légitime (sécurité, prévention des fraudes).</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">Transferts hors UE</h3>
+            <p>Certains de nos sous-traitants (Supabase, Vercel) peuvent traiter des données en dehors de l'Union européenne. Ces transferts sont encadrés par des garanties appropriées (Clauses Contractuelles Types de la Commission européenne ou décision d'adéquation).</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="border-zinc-100" />
+
+      <!-- ── Cookies ─────────────────────────────────────────────── -->
+      <section id="cookies">
+        <h2 class="text-xl font-bold text-zinc-900 mb-6">Politique de Cookies</h2>
+
+        <div class="space-y-5">
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">Qu'est-ce qu'un cookie ?</h3>
+            <p>Un cookie est un petit fichier texte déposé sur votre terminal lors de la visite d'un site web. Il permet de mémoriser des informations relatives à votre navigation.</p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">Cookies utilisés par FleetDesk</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm mt-2 border border-zinc-100 rounded-xl overflow-hidden">
+                <thead>
+                  <tr class="bg-zinc-50 text-left">
+                    <th class="px-4 py-3 font-medium text-zinc-700">Nom</th>
+                    <th class="px-4 py-3 font-medium text-zinc-700">Finalité</th>
+                    <th class="px-4 py-3 font-medium text-zinc-700">Durée</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-100">
+                  <tr>
+                    <td class="px-4 py-3 font-mono text-xs text-zinc-600">sb-*-auth-token</td>
+                    <td class="px-4 py-3 text-zinc-500">Session d'authentification Supabase</td>
+                    <td class="px-4 py-3 text-zinc-500">Session / 7 jours</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 font-mono text-xs text-zinc-600">fd_auth</td>
+                    <td class="px-4 py-3 text-zinc-500">Détection de connexion sur le site marketing</td>
+                    <td class="px-4 py-3 text-zinc-500">7 jours</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">Cookies tiers</h3>
+            <p>FleetDesk n'utilise pas de cookies publicitaires ou de traçage tiers. Aucune donnée n'est partagée avec des régies publicitaires.</p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-zinc-800 mb-1">Gestion des cookies</h3>
+            <p>Vous pouvez configurer votre navigateur pour refuser ou supprimer les cookies. Notez que la désactivation des cookies d'authentification empêchera l'accès à l'application. Pour gérer vos préférences : consultez l'aide de votre navigateur (Chrome, Firefox, Safari, Edge).</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact block -->
+      <div class="bg-blue-50 rounded-2xl p-6 text-center">
+        <p class="font-semibold text-zinc-900 mb-1">Une question sur vos données ?</p>
+        <p class="text-zinc-500 mb-4">Notre équipe répond sous 48 heures ouvrées.</p>
+        <a href="mailto:privacy@fleetdesk.fr" class="inline-flex items-center gap-2 text-sm font-medium text-[#2563EB] hover:text-[#1D4ED8] transition-colors">
+          privacy@fleetdesk.fr →
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

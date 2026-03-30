@@ -17,6 +17,15 @@ const nav = [
     ],
   },
   {
+    title: 'Légal',
+    links: [
+      { label: 'Mentions légales',  href: '/legal#mentions'        },
+      { label: 'CGU',               href: '/legal#cgu'             },
+      { label: 'Confidentialité',   href: '/legal#confidentialite' },
+      { label: 'RGPD',              href: '/legal#rgpd'            },
+    ],
+  },
+  {
     title: 'Compte',
     links: [
       { label: 'Se connecter', href: `${APP_URL}/login`            },
@@ -27,10 +36,10 @@ const nav = [
 ---
 <footer class="border-t border-zinc-100 bg-white">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-10">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-10">
 
       <!-- Brand -->
-      <div class="col-span-2 md:col-span-1">
+      <div class="col-span-2 md:col-span-1 md:col-start-1">
         <a href="/" class="flex items-center gap-2.5 mb-4">
           <div class="w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -65,7 +74,11 @@ const nav = [
 
     <div class="mt-10 pt-6 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-3">
       <p class="text-xs text-zinc-400">© {year} FleetDesk. Tous droits réservés.</p>
-      <p class="text-xs text-zinc-400">Conçu pour les opérations de flotte modernes.</p>
+      <div class="flex items-center gap-4">
+        <a href="/legal#confidentialite" class="text-xs text-zinc-400 hover:text-zinc-600 transition-colors">Confidentialité</a>
+        <a href="/legal#cgu" class="text-xs text-zinc-400 hover:text-zinc-600 transition-colors">CGU</a>
+        <a href="/legal#rgpd" class="text-xs text-zinc-400 hover:text-zinc-600 transition-colors">RGPD</a>
+      </div>
     </div>
   </div>
 </footer>
