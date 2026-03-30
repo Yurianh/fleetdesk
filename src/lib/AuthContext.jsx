@@ -24,23 +24,6 @@ export function AuthProvider({ children }) {
       } else {
         document.cookie = 'fd_auth=; domain=.fleetdesk.fr; path=/; max-age=0'
       }
-      if (user?.user_metadata?.org_id) {
-        // Verify membership still exists — sign out immediately if removed
-        supabase
-          .from('org_members')
-          .select('id, status')
-          .eq('email', user.email)
-          .eq('org_id', user.user_metadata.org_id)
-          .maybeSingle()
-          .then(({ data: member, error }) => {
-            // Only revoke if the query succeeded AND definitively returned no row.
-            // If there's an RLS/network error, give the benefit of the doubt — do not sign out.
-            if (!error && member === null) {
-              supabase.auth.signOut()
-            }
-            // Do NOT auto-activate pending members here — activation only happens via /join
-          })
-      }
     })
 
     return () => subscription.unsubscribe()
