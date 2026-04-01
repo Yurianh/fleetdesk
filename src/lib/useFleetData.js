@@ -5,11 +5,15 @@ import { supabase } from './supabase'
 async function orgUid() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
+  // Collaborators have org_id stamped directly in metadata by join-org — fast path
   if (user.user_metadata?.org_id) return user.user_metadata.org_id
+  // Fallback: look up by user_id only (never by email — email lookup returns wrong
+  // org_id for admin accounts that also appear in org_members as a stale/test invite)
   const { data: membership } = await supabase
     .from('org_members')
     .select('org_id')
-    .or(`user_id.eq.${user.id},email.eq.${user.email}`)
+    .eq('user_id', user.id)
+    .eq('status', 'active')
     .maybeSingle()
   if (membership?.org_id) return membership.org_id
   return user.id
