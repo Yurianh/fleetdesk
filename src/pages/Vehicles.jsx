@@ -87,8 +87,10 @@ export default function Vehicles() {
       setShowAdd(false)
       setForm({ plate_number: '', model: '' })
       toast.success(t('vehicles.added'))
-    } catch { toast.error(t('vehicles.addError')) }
-    finally { setSaving(false) }
+    } catch (e) {
+      console.error('[createVehicle]', e)
+      toast.error(e?.message || t('vehicles.addError'))
+    } finally { setSaving(false) }
   }
 
   const handleEdit = async () => {
