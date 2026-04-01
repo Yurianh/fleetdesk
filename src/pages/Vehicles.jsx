@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, ChevronRight, Loader2, Truck, Pencil, Trash2, User, UserMinus } from 'lucide-react'
+import { Plus, Search, ChevronRight, Loader2, Truck, Pencil, Trash2, User, UserMinus, Paperclip, FileText, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -14,9 +14,54 @@ import {
   useVehicles, useDrivers, useAssignments, useMileageEntries, useTechnicalInspections,
   createVehicle, updateVehicle, deleteVehicle, unassignVehicle, getLatestAssignments, getLatestMileage, getDriverById
 } from '@/lib/useFleetData'
+import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import { usePageTitle } from '@/lib/usePageTitle'
 import { useTranslation } from 'react-i18next'
 import { usePlanLimits } from '@/lib/usePlanLimits'
+
+function RegistrationUpload({ file, existingUrl, inputRef, onFileChange, onClear }) {
+  const hasFile = file || existingUrl
+  return (
+    <div>
+      <Label>Carte grise <span className="text-slate-400 font-normal">(optionnel)</span></Label>
+      <div className="flex items-center gap-2 mt-1.5 p-2.5 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden">
+        <div className="w-7 h-7 bg-white rounded-lg border border-slate-200 flex items-center justify-center shrink-0">
+          <FileText className={`w-3.5 h-3.5 ${hasFile ? 'text-slate-400' : 'text-slate-300'}`} />
+        </div>
+        <div className="flex-1 min-w-0 text-sm">
+          {file ? (
+            <span className="text-slate-700 truncate block">{file.name}</span>
+          ) : existingUrl ? (
+            <a href={existingUrl} target="_blank" rel="noopener noreferrer" className="text-[#2563EB] hover:underline text-sm">
+              Voir la carte grise →
+            </a>
+          ) : (
+            <button type="button" onClick={() => inputRef.current?.click()} className="text-slate-400 hover:text-slate-600 transition-colors text-left">
+              Joindre la carte grise
+              <span className="block text-xs text-slate-300 mt-0.5">JPG, PNG ou PDF · max 10 Mo</span>
+            </button>
+          )}
+        </div>
+        {hasFile ? (
+          <button type="button" onClick={onClear} className="p-1 rounded hover:bg-slate-200 text-slate-400 hover:text-slate-700 transition-colors shrink-0">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        ) : (
+          <button type="button" onClick={() => inputRef.current?.click()} className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors shrink-0">
+            <Paperclip className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
+      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden"
+        onChange={e => {
+          const f = e.target.files?.[0] || null
+          if (f && f.size > 10 * 1024 * 1024) { toast.error('Fichier trop volumineux (max 10 Mo)'); e.target.value = ''; return }
+          onFileChange(f)
+        }}
+      />
+    </div>
+  )
+}
 
 function SectionHeader({ color, label, count }) {
   return (
@@ -56,7 +101,10 @@ export default function Vehicles() {
   const [showAdd, setShowAdd] = useState(false)
   const [editTarget, setEditTarget] = useState(null)
   const [deleteTarget, setDeleteTarget] = useState(null)
-  const [form, setForm] = useState({ plate_number: '', model: '' })
+  const [form, setForm] = useState({ plate_number: '', model: '', mec_date: '' })
+  const [registrationFile, setRegistrationFile] = useState(null)
+  const [registrationUrl, setRegistrationUrl] = useState('')
+  const registrationInputRef = useRef(null)
   const [saving, setSaving] = useState(false)
   const [unassigningId, setUnassigningId] = useState(null)
 
@@ -82,10 +130,13 @@ export default function Vehicles() {
     if (!form.plate_number || !form.model) return
     setSaving(true)
     try {
-      await createVehicle(form)
+      let registration_card_url = null
+      if (registrationFile) registration_card_url = await uploadInvoice(registrationFile, 'registration')
+      await createVehicle({ ...form, mec_date: form.mec_date || null, registration_card_url })
       queryClient.invalidateQueries({ queryKey: ['vehicles'] })
       setShowAdd(false)
-      setForm({ plate_number: '', model: '' })
+      setForm({ plate_number: '', model: '', mec_date: '' })
+      setRegistrationFile(null)
       toast.success(t('vehicles.added'))
     } catch (e) {
       console.error('[createVehicle]', e)
@@ -97,9 +148,21 @@ export default function Vehicles() {
     if (!editTarget || !form.plate_number || !form.model) return
     setSaving(true)
     try {
-      await updateVehicle(editTarget.id, { plate_number: form.plate_number, model: form.model })
+      let registration_card_url = registrationUrl || null
+      if (registrationFile) {
+        if (registrationUrl) await deleteInvoice(registrationUrl)
+        registration_card_url = await uploadInvoice(registrationFile, 'registration')
+      }
+      await updateVehicle(editTarget.id, {
+        plate_number: form.plate_number,
+        model: form.model,
+        mec_date: form.mec_date || null,
+        registration_card_url,
+      })
       queryClient.invalidateQueries({ queryKey: ['vehicles'] })
       setEditTarget(null)
+      setRegistrationFile(null)
+      setRegistrationUrl('')
       toast.success('Véhicule mis à jour.')
     } catch { toast.error('Erreur lors de la mise à jour.') }
     finally { setSaving(false) }
@@ -172,7 +235,7 @@ export default function Vehicles() {
                 <UserMinus className="w-3.5 h-3.5" />
               </button>
             )}
-            <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model }) }} className="p-1.5 text-slate-400 hover:text-[#2563EB] hover:bg-blue-50 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+            <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model, mec_date: v.mec_date || '' }); setRegistrationFile(null); setRegistrationUrl(v.registration_card_url || '') }} className="p-1.5 text-slate-400 hover:text-[#2563EB] hover:bg-blue-50 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
             <button onClick={() => setDeleteTarget(v)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
             <Link to={`/Vehicles/${v.id}`} className="p-1.5 text-slate-400 hover:text-[#1D4ED8]"><ChevronRight className="w-4 h-4" /></Link>
           </div>
@@ -203,7 +266,7 @@ export default function Vehicles() {
           {isAssigned && (
             <button onClick={() => handleUnassign(v.id)} disabled={unassigningId === v.id} className="p-1.5 text-slate-400 hover:text-amber-600"><UserMinus className="w-3.5 h-3.5" /></button>
           )}
-          <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model }) }} className="p-1.5 text-slate-400 hover:text-[#2563EB]"><Pencil className="w-3.5 h-3.5" /></button>
+          <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model, mec_date: v.mec_date || '' }); setRegistrationFile(null); setRegistrationUrl(v.registration_card_url || '') }} className="p-1.5 text-slate-400 hover:text-[#2563EB]"><Pencil className="w-3.5 h-3.5" /></button>
           <button onClick={() => setDeleteTarget(v)} className="p-1.5 text-slate-400 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
         </div>
       </div>
@@ -287,12 +350,15 @@ export default function Vehicles() {
       </div>
 
       {/* Add dialog */}
-      <Dialog open={showAdd} onOpenChange={setShowAdd}>
-        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-md">
+      <Dialog open={showAdd} onOpenChange={open => { setShowAdd(open); if (!open) { setRegistrationFile(null); setRegistrationUrl('') } }}>
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Ajouter un véhicule</DialogTitle></DialogHeader>
-          <div className="space-y-4 mt-2">
+          <div className="space-y-4 mt-2 min-w-0">
             <div><Label>Plaque d&apos;immatriculation</Label><Input value={form.plate_number} onChange={e => setForm({...form, plate_number: e.target.value})} placeholder="AB-123-CD" /></div>
             <div><Label>Modèle</Label><Input value={form.model} onChange={e => setForm({...form, model: e.target.value})} placeholder="Renault Trafic" /></div>
+            <div><Label>Date de mise en circulation <span className="text-slate-400 font-normal">(optionnel)</span></Label><Input type="date" value={form.mec_date} onChange={e => setForm({...form, mec_date: e.target.value})} /></div>
+            <RegistrationUpload file={registrationFile} existingUrl={registrationUrl} inputRef={registrationInputRef}
+              onFileChange={setRegistrationFile} onClear={() => { setRegistrationFile(null); setRegistrationUrl('') }} />
             <Button onClick={handleCreate} disabled={saving || !form.plate_number || !form.model} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8]">
               {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Enregistrement...</> : 'Enregistrer'}
             </Button>
@@ -301,12 +367,15 @@ export default function Vehicles() {
       </Dialog>
 
       {/* Edit dialog */}
-      <Dialog open={!!editTarget} onOpenChange={() => setEditTarget(null)}>
-        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-md">
+      <Dialog open={!!editTarget} onOpenChange={open => { if (!open) { setEditTarget(null); setRegistrationFile(null); setRegistrationUrl('') } }}>
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Modifier le véhicule</DialogTitle></DialogHeader>
-          <div className="space-y-4 mt-2">
+          <div className="space-y-4 mt-2 min-w-0">
             <div><Label>Plaque d&apos;immatriculation</Label><Input value={form.plate_number} onChange={e => setForm({...form, plate_number: e.target.value})} /></div>
             <div><Label>Modèle</Label><Input value={form.model} onChange={e => setForm({...form, model: e.target.value})} /></div>
+            <div><Label>Date de mise en circulation <span className="text-slate-400 font-normal">(optionnel)</span></Label><Input type="date" value={form.mec_date} onChange={e => setForm({...form, mec_date: e.target.value})} /></div>
+            <RegistrationUpload file={registrationFile} existingUrl={registrationUrl} inputRef={registrationInputRef}
+              onFileChange={setRegistrationFile} onClear={() => { setRegistrationFile(null); setRegistrationUrl('') }} />
             <Button onClick={handleEdit} disabled={saving || !form.plate_number || !form.model} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8]">
               {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Enregistrement...</> : 'Enregistrer'}
             </Button>

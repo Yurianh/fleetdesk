@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Truck, Plus } from 'lucide-react'
+import { ArrowLeft, Truck, Plus, FileText } from 'lucide-react'
 import { format, addYears } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
@@ -164,7 +164,7 @@ export default function VehicleDetail() {
             <h1 className="text-xl font-bold text-slate-900">{vehicle.plate_number}</h1>
             <p className="text-slate-500">{vehicle.model}</p>
           </div>
-          <div className="flex gap-6 sm:gap-8 mt-1 sm:mt-0">
+          <div className="flex flex-wrap gap-6 sm:gap-8 mt-1 sm:mt-0">
             <div>
               <p className="text-sm text-slate-500">{t('assignments.driver')}</p>
               <p className="font-semibold text-slate-900">{currentDriver?.name || '—'}</p>
@@ -173,6 +173,21 @@ export default function VehicleDetail() {
               <p className="text-sm text-slate-500">{t('mileage.title')}</p>
               <p className="font-semibold text-slate-900">{latestMileage ? `${latestMileage.mileage?.toLocaleString('fr-FR') ?? '—'} km` : '—'}</p>
             </div>
+            {vehicle.mec_date && (
+              <div>
+                <p className="text-sm text-slate-500">Mise en circulation</p>
+                <p className="font-semibold text-slate-900">{format(new Date(vehicle.mec_date), 'd MMM yyyy', { locale: dateLocale })}</p>
+              </div>
+            )}
+            {vehicle.registration_card_url && (
+              <div>
+                <p className="text-sm text-slate-500">Carte grise</p>
+                <a href={vehicle.registration_card_url} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sm font-semibold text-[#2563EB] hover:text-[#1D4ED8] transition-colors">
+                  <FileText className="w-3.5 h-3.5" /> Voir →
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>
