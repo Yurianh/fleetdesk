@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { Paperclip, X, FileText, ImageIcon } from 'lucide-react'
+import { Paperclip, X, FileText, ImageIcon, Camera } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
@@ -10,8 +10,25 @@ function isImage(fileOrUrl) {
 }
 
 export function InvoiceUpload({ file, existingUrl, amount, onFileChange, onAmountChange, showAmount = true }) {
-  const inputRef = useRef(null)
-  const hasFile = file || existingUrl
+  const fileRef   = useRef(null)
+  const cameraRef = useRef(null)
+  const hasFile   = file || existingUrl
+
+  function handleChange(e) {
+    const f = e.target.files?.[0] || null
+    if (f && f.size > 10 * 1024 * 1024) {
+      toast.error('Fichier trop volumineux (max 10 Mo)')
+      e.target.value = ''
+      return
+    }
+    onFileChange(f)
+  }
+
+  function clearFile() {
+    onFileChange(null)
+    if (fileRef.current)   fileRef.current.value   = ''
+    if (cameraRef.current) cameraRef.current.value = ''
+  }
 
   return (
     <div className="space-y-3 border-t border-slate-100 pt-4">
@@ -43,51 +60,36 @@ export function InvoiceUpload({ file, existingUrl, amount, onFileChange, onAmoun
               )}
             </>
           ) : (
-            <button
-              type="button"
-              onClick={() => inputRef.current?.click()}
-              className="text-sm text-slate-400 hover:text-slate-600 transition-colors text-left"
-            >
+            <span className="text-sm text-slate-400">
               Joindre une facture
               <span className="block text-xs text-slate-300 mt-0.5">JPG, PNG ou PDF · max 10 Mo</span>
-            </button>
+            </span>
           )}
         </div>
 
         {hasFile ? (
-          <button
-            type="button"
-            onClick={() => { onFileChange(null); if (inputRef.current) inputRef.current.value = '' }}
-            className="p-1 rounded hover:bg-slate-200 text-slate-400 hover:text-slate-700 transition-colors shrink-0"
-          >
+          <button type="button" onClick={clearFile}
+            className="p-1 rounded hover:bg-slate-200 text-slate-400 hover:text-slate-700 transition-colors shrink-0">
             <X className="w-3.5 h-3.5" />
           </button>
         ) : (
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors shrink-0"
-          >
-            <Paperclip className="w-3.5 h-3.5" />
-          </button>
+          <div className="flex items-center gap-1 shrink-0">
+            <button type="button" onClick={() => fileRef.current?.click()}
+              title="Choisir un fichier"
+              className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
+              <Paperclip className="w-3.5 h-3.5" />
+            </button>
+            <button type="button" onClick={() => cameraRef.current?.click()}
+              title="Prendre une photo"
+              className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
+              <Camera className="w-3.5 h-3.5" />
+            </button>
+          </div>
         )}
       </div>
 
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp,application/pdf"
-        className="hidden"
-        onChange={e => {
-          const f = e.target.files?.[0] || null
-          if (f && f.size > 10 * 1024 * 1024) {
-            toast.error('Fichier trop volumineux (max 10 Mo)')
-            e.target.value = ''
-            return
-          }
-          onFileChange(f)
-        }}
-      />
+      <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden" onChange={handleChange} />
+      <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleChange} />
 
       {showAmount && (
         <div>

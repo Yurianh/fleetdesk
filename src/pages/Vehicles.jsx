@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, ChevronRight, Loader2, Truck, Pencil, Trash2, User, UserMinus, Paperclip, FileText, X } from 'lucide-react'
+import { Plus, Search, ChevronRight, Loader2, Truck, Pencil, Trash2, User, UserMinus, Paperclip, FileText, X, Camera } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -19,8 +19,17 @@ import { usePageTitle } from '@/lib/usePageTitle'
 import { useTranslation } from 'react-i18next'
 import { usePlanLimits } from '@/lib/usePlanLimits'
 
-function RegistrationUpload({ file, existingUrl, inputRef, onFileChange, onClear }) {
-  const hasFile = file || existingUrl
+function RegistrationUpload({ file, existingUrl, onFileChange, onClear }) {
+  const fileRef   = useRef(null)
+  const cameraRef = useRef(null)
+  const hasFile   = file || existingUrl
+
+  function handleChange(e) {
+    const f = e.target.files?.[0] || null
+    if (f && f.size > 10 * 1024 * 1024) { toast.error('Fichier trop volumineux (max 10 Mo)'); e.target.value = ''; return }
+    onFileChange(f)
+  }
+
   return (
     <div>
       <Label>Carte grise <span className="text-slate-400 font-normal">(optionnel)</span></Label>
@@ -36,10 +45,10 @@ function RegistrationUpload({ file, existingUrl, inputRef, onFileChange, onClear
               Voir la carte grise →
             </a>
           ) : (
-            <button type="button" onClick={() => inputRef.current?.click()} className="text-slate-400 hover:text-slate-600 transition-colors text-left">
+            <span className="text-slate-400">
               Joindre la carte grise
               <span className="block text-xs text-slate-300 mt-0.5">JPG, PNG ou PDF · max 10 Mo</span>
-            </button>
+            </span>
           )}
         </div>
         {hasFile ? (
@@ -47,18 +56,20 @@ function RegistrationUpload({ file, existingUrl, inputRef, onFileChange, onClear
             <X className="w-3.5 h-3.5" />
           </button>
         ) : (
-          <button type="button" onClick={() => inputRef.current?.click()} className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors shrink-0">
-            <Paperclip className="w-3.5 h-3.5" />
-          </button>
+          <div className="flex items-center gap-1 shrink-0">
+            <button type="button" onClick={() => fileRef.current?.click()} title="Choisir un fichier"
+              className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
+              <Paperclip className="w-3.5 h-3.5" />
+            </button>
+            <button type="button" onClick={() => cameraRef.current?.click()} title="Prendre une photo"
+              className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
+              <Camera className="w-3.5 h-3.5" />
+            </button>
+          </div>
         )}
       </div>
-      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden"
-        onChange={e => {
-          const f = e.target.files?.[0] || null
-          if (f && f.size > 10 * 1024 * 1024) { toast.error('Fichier trop volumineux (max 10 Mo)'); e.target.value = ''; return }
-          onFileChange(f)
-        }}
-      />
+      <input ref={fileRef}   type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden" onChange={handleChange} />
+      <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleChange} />
     </div>
   )
 }
@@ -104,7 +115,6 @@ export default function Vehicles() {
   const [form, setForm] = useState({ plate_number: '', model: '', mec_date: '' })
   const [registrationFile, setRegistrationFile] = useState(null)
   const [registrationUrl, setRegistrationUrl] = useState('')
-  const registrationInputRef = useRef(null)
   const [saving, setSaving] = useState(false)
   const [unassigningId, setUnassigningId] = useState(null)
 
@@ -357,7 +367,7 @@ export default function Vehicles() {
             <div><Label>Plaque d&apos;immatriculation</Label><Input value={form.plate_number} onChange={e => setForm({...form, plate_number: e.target.value})} placeholder="AB-123-CD" /></div>
             <div><Label>Modèle</Label><Input value={form.model} onChange={e => setForm({...form, model: e.target.value})} placeholder="Renault Trafic" /></div>
             <div><Label>Date de mise en circulation <span className="text-slate-400 font-normal">(optionnel)</span></Label><Input type="date" value={form.mec_date} onChange={e => setForm({...form, mec_date: e.target.value})} /></div>
-            <RegistrationUpload file={registrationFile} existingUrl={registrationUrl} inputRef={registrationInputRef}
+            <RegistrationUpload file={registrationFile} existingUrl={registrationUrl}
               onFileChange={setRegistrationFile} onClear={() => { setRegistrationFile(null); setRegistrationUrl('') }} />
             <Button onClick={handleCreate} disabled={saving || !form.plate_number || !form.model} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8]">
               {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Enregistrement...</> : 'Enregistrer'}
@@ -374,7 +384,7 @@ export default function Vehicles() {
             <div><Label>Plaque d&apos;immatriculation</Label><Input value={form.plate_number} onChange={e => setForm({...form, plate_number: e.target.value})} /></div>
             <div><Label>Modèle</Label><Input value={form.model} onChange={e => setForm({...form, model: e.target.value})} /></div>
             <div><Label>Date de mise en circulation <span className="text-slate-400 font-normal">(optionnel)</span></Label><Input type="date" value={form.mec_date} onChange={e => setForm({...form, mec_date: e.target.value})} /></div>
-            <RegistrationUpload file={registrationFile} existingUrl={registrationUrl} inputRef={registrationInputRef}
+            <RegistrationUpload file={registrationFile} existingUrl={registrationUrl}
               onFileChange={setRegistrationFile} onClear={() => { setRegistrationFile(null); setRegistrationUrl('') }} />
             <Button onClick={handleEdit} disabled={saving || !form.plate_number || !form.model} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8]">
               {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Enregistrement...</> : 'Enregistrer'}
