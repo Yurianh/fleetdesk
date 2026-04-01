@@ -69,7 +69,11 @@ export default function VehicleDetail() {
     if (!mileageForm.mileage) return
     setSaving(true)
     try {
-      await createMileageEntry({ vehicle_id: id, mileage: parseFloat(mileageForm.mileage), date: mileageForm.date || undefined })
+      await createMileageEntry({
+        vehicle_id: id,
+        mileage: parseFloat(mileageForm.mileage),
+        ...(mileageForm.date && { created_at: new Date(mileageForm.date + 'T12:00:00').toISOString() }),
+      })
       queryClient.invalidateQueries({ queryKey: ['mileageEntries'] })
       toast.success('Kilométrage enregistré')
       setMileageModal(false)

@@ -28,7 +28,7 @@ import {
   useVehicles, useDrivers, useAssignments, useMileageEntries,
   useTechnicalInspections, useMaintenanceRecords, useWashRecords,
   useMaintenanceSchedules, getLatestAssignments, getDriverById, getVehicleById,
-  createVehicle, createDriver, createMileageEntry
+  createVehicle, createDriver, createMileageEntry, createWashRecord
 } from '@/lib/useFleetData'
 import { usePageTitle } from '@/lib/usePageTitle'
 import { useTranslation } from 'react-i18next'
@@ -307,6 +307,74 @@ function RecordMileageModal({ open, onClose, vehicles }) {
           </div>
           <Button onClick={handle} disabled={saving || !vehicleId || !mileage || !date} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8]">
             {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('common.saving')}</> : t('common.save')}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function AddWashModal({ open, onClose, vehicles, drivers }) {
+  const today = new Date().toISOString().split('T')[0]
+  const [vehicleId, setVehicleId] = useState('')
+  const [driverId,  setDriverId]  = useState('')
+  const [amount,    setAmount]    = useState('')
+  const [date,      setDate]      = useState(today)
+  const [saving,    setSaving]    = useState(false)
+  const queryClient = useQueryClient()
+
+  const reset = () => { setVehicleId(''); setDriverId(''); setAmount(''); setDate(today) }
+
+  const handle = async () => {
+    if (!vehicleId || !date) return
+    setSaving(true)
+    try {
+      await createWashRecord({
+        vehicle_id: vehicleId,
+        driver_id: driverId || null,
+        amount: amount ? parseFloat(amount) : null,
+        date,
+      })
+      queryClient.invalidateQueries({ queryKey: ['washRecords'] })
+      toast.success('Lavage enregistré')
+      reset()
+      onClose()
+    } catch { toast.error('Erreur lors de l\'enregistrement') }
+    finally { setSaving(false) }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={() => { reset(); onClose() }}>
+      <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-md">
+        <DialogHeader><DialogTitle>Ajouter un lavage</DialogTitle></DialogHeader>
+        <div className="space-y-4 mt-2">
+          <div>
+            <Label>Véhicule</Label>
+            <Select value={vehicleId} onValueChange={setVehicleId}>
+              <SelectTrigger><SelectValue placeholder="Sélectionner un véhicule" /></SelectTrigger>
+              <SelectContent>{vehicles.map(v => <SelectItem key={v.id} value={v.id}>{v.plate_number} — {v.model}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Conducteur <span className="text-slate-400 font-normal">(optionnel)</span></Label>
+            <Select value={driverId} onValueChange={setDriverId}>
+              <SelectTrigger><SelectValue placeholder="Sélectionner un conducteur" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">— Aucun</SelectItem>
+                {drivers.map(d => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Montant (€) <span className="text-slate-400 font-normal">(optionnel)</span></Label>
+            <Input type="number" step="0.01" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0.00" />
+          </div>
+          <div>
+            <Label>Date</Label>
+            <Input type="date" value={date} max={today} onChange={e => setDate(e.target.value)} />
+          </div>
+          <Button onClick={handle} disabled={saving || !vehicleId || !date} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8]">
+            {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Enregistrement...</> : 'Enregistrer'}
           </Button>
         </div>
       </DialogContent>
@@ -685,6 +753,7 @@ export default function Dashboard() {
   const [showAddVehicle, setShowAddVehicle] = useState(false)
   const [showAddDriver,  setShowAddDriver]  = useState(false)
   const [showMileage,    setShowMileage]    = useState(false)
+  const [showWash,       setShowWash]       = useState(false)
 
   const today = new Date()
   const latestAssignments = getLatestAssignments(assignments)
@@ -810,6 +879,7 @@ export default function Dashboard() {
       <AddVehicleModal open={showAddVehicle} onClose={() => setShowAddVehicle(false)} />
       <AddDriverModal  open={showAddDriver}  onClose={() => setShowAddDriver(false)} />
       <RecordMileageModal open={showMileage} onClose={() => setShowMileage(false)} vehicles={vehicles} />
+      <AddWashModal open={showWash} onClose={() => setShowWash(false)} vehicles={vehicles} drivers={drivers} />
 
       {/* ── Main content ─────────────────────────────────────────── */}
       <div className="flex-1 p-5 sm:p-8 min-w-0">
@@ -840,9 +910,10 @@ export default function Dashboard() {
         {/* ── Quick actions ─────────────────────────────────────── */}
         <div className="flex flex-wrap items-center gap-2 mb-7">
           {[
-            { label: t('dashboard.addVehicle'), icon: Truck,  onClick: () => canAddVehicle ? setShowAddVehicle(true) : toast.error(t('plan.vehicleLimitReached') + ' ' + t('plan.upgradeHint')) },
-            { label: t('dashboard.addDriver'),  icon: Users,  onClick: () => canAddDriver  ? setShowAddDriver(true)  : toast.error(t('plan.driverLimitReached')  + ' ' + t('plan.upgradeHint'))  },
-            { label: t('dashboard.logMileage'), icon: Gauge,  onClick: () => setShowMileage(true)    },
+            { label: t('dashboard.addVehicle'), icon: Truck,     onClick: () => canAddVehicle ? setShowAddVehicle(true) : toast.error(t('plan.vehicleLimitReached') + ' ' + t('plan.upgradeHint')) },
+            { label: t('dashboard.addDriver'),  icon: Users,     onClick: () => canAddDriver  ? setShowAddDriver(true)  : toast.error(t('plan.driverLimitReached')  + ' ' + t('plan.upgradeHint'))  },
+            { label: t('dashboard.logMileage'), icon: Gauge,     onClick: () => setShowMileage(true) },
+            { label: 'Ajouter lavage',          icon: Droplets,  onClick: () => setShowWash(true)    },
           ].map(({ label, icon: Icon, onClick }) => (
             <button
               key={label}
