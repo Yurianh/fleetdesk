@@ -331,7 +331,7 @@ function AddWashModal({ open, onClose, vehicles, drivers }) {
     try {
       await createWashRecord({
         vehicle_id: vehicleId,
-        driver_id: driverId || null,
+        driver_id: (driverId && driverId !== 'none') ? driverId : null,
         amount: amount ? parseFloat(amount) : null,
         date,
       })
@@ -360,7 +360,7 @@ function AddWashModal({ open, onClose, vehicles, drivers }) {
             <Select value={driverId} onValueChange={setDriverId}>
               <SelectTrigger><SelectValue placeholder="Sélectionner un conducteur" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="">— Aucun</SelectItem>
+                <SelectItem value="none">— Aucun</SelectItem>
                 {drivers.map(d => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
               </SelectContent>
             </Select>
