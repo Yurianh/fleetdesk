@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, ChevronRight, CreditCard, Users, Trash2, Loader2, MapPin } from 'lucide-react'
+import { Plus, Search, ChevronRight, CreditCard, Users, Trash2, Loader2, MapPin, AlertTriangle, Clock } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -9,8 +9,9 @@ import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import PageHeader from '@/components/shared/PageHeader'
 import EmptyState from '@/components/shared/EmptyState'
+import { differenceInDays } from 'date-fns'
 import {
-  useDrivers, useVehicles, useAssignments,
+  useDrivers, useVehicles, useAssignments, useAllDriverDocuments,
   createDriver, deleteDriver, getLatestAssignments, getVehicleById
 } from '@/lib/useFleetData'
 
@@ -23,7 +24,22 @@ export default function Drivers() {
   const { data: drivers } = useDrivers()
   const { data: vehicles } = useVehicles()
   const { data: assignments } = useAssignments()
+  const { data: allDocs = [] } = useAllDriverDocuments()
   const { canAddDriver, limits } = usePlanLimits(0, drivers.length)
+
+  const driverDocStatus = useMemo(() => {
+    const map = {}
+    for (const doc of allDocs) {
+      if (!doc.expiry_date) continue
+      const days = differenceInDays(new Date(doc.expiry_date), new Date())
+      const current = map[doc.driver_id]
+      const status = days < 0 ? 'expired' : days <= 30 ? 'expiring' : 'ok'
+      if (!current || status === 'expired' || (status === 'expiring' && current === 'ok')) {
+        map[doc.driver_id] = status
+      }
+    }
+    return map
+  }, [allDocs])
   const queryClient = useQueryClient()
 
   const [search, setSearch] = useState('')
@@ -109,7 +125,15 @@ export default function Drivers() {
                     return (
                       <tr key={d.id} className="hover:bg-white transition-colors">
                         <td className="px-5 py-3.5">
-                          <Link to={`/Drivers/${d.id}`} className="font-semibold text-slate-900 hover:text-[#1D4ED8]">{d.name}</Link>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Link to={`/Drivers/${d.id}`} className="font-semibold text-slate-900 hover:text-[#1D4ED8]">{d.name}</Link>
+                            {driverDocStatus[d.id] === 'expired' && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-red-700 bg-red-100 px-1.5 py-0.5 rounded-full"><AlertTriangle className="w-2.5 h-2.5" />Doc. expiré</span>
+                            )}
+                            {driverDocStatus[d.id] === 'expiring' && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded-full"><Clock className="w-2.5 h-2.5" />Expire bientôt</span>
+                            )}
+                          </div>
                           {d.address && <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5"><MapPin className="w-3 h-3" />{d.address}</p>}
                         </td>
                         <td className="px-5 py-3.5 text-slate-500 font-mono text-xs">{d.employee_id || <span className="text-slate-300">—</span>}</td>
@@ -145,7 +169,15 @@ export default function Drivers() {
                 return (
                   <Link key={d.id} to={`/Drivers/${d.id}`} className="flex items-center justify-between p-4 hover:bg-white transition-colors">
                     <div className="flex-1 min-w-0 mr-3">
-                      <p className="font-semibold text-slate-900">{d.name}</p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-semibold text-slate-900">{d.name}</p>
+                        {driverDocStatus[d.id] === 'expired' && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-red-700 bg-red-100 px-1.5 py-0.5 rounded-full"><AlertTriangle className="w-2.5 h-2.5" />Doc. expiré</span>
+                        )}
+                        {driverDocStatus[d.id] === 'expiring' && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded-full"><Clock className="w-2.5 h-2.5" />Expire bientôt</span>
+                        )}
+                      </div>
                       <p className="text-sm text-slate-500">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : 'Non affecté'}</p>
                       {d.phone && <p className="text-xs text-slate-400 mt-0.5">{d.phone}</p>}
                     </div>

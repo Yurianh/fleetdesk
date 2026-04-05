@@ -21,7 +21,8 @@ async function orgUid() {
 
 // ─── Realtime invalidation ────────────────────────────────────────────
 const REALTIME_TABLES = ['vehicles','drivers','assignments','mileage_entries',
-  'maintenance_records','maintenance_schedules','technical_inspections','wash_records']
+  'maintenance_records','maintenance_schedules','technical_inspections','wash_records',
+  'driver_documents']
 
 export function useFleetRealtime() {
   const qc = useQueryClient()
@@ -40,6 +41,7 @@ export function useFleetRealtime() {
           technical_inspections: 'technicalInspections',
           wash_records: 'washRecords',
           activity_log: 'activityLog',
+          driver_documents: 'allDriverDocuments',
         }
         const key = keyMap[table]
         if (key) qc.invalidateQueries({ queryKey: [key] })
@@ -375,6 +377,63 @@ export async function deleteMaintenanceRecord(id) {
   const { error } = await supabase.from('maintenance_records').delete().eq('id', id)
   if (error) throw error
   logActivity('deleteMaintenanceRecord', 'maintenance_records', id, '')
+}
+
+// ── Driver Documents ──────────────────────────────────────────────
+
+export function useDriverDocuments(driverId) {
+  return useQuery({
+    queryKey: ['driverDocuments', driverId],
+    queryFn: async () => {
+      if (!driverId) return []
+      const { data, error } = await supabase
+        .from('driver_documents')
+        .select('*')
+        .eq('driver_id', driverId)
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      return data || []
+    },
+    enabled: !!driverId,
+    placeholderData: () => [],
+  })
+}
+
+export function useAllDriverDocuments() {
+  return useQuery({
+    queryKey: ['allDriverDocuments'],
+    queryFn: async () => {
+      const uid = await orgUid()
+      const { data, error } = await supabase
+        .from('driver_documents')
+        .select('*')
+        .eq('org_id', uid)
+      if (error) throw error
+      return data || []
+    },
+    placeholderData: () => [],
+  })
+}
+
+export async function createDriverDocument(data) {
+  const uid = await orgUid()
+  const { error } = await supabase.from('driver_documents').insert({ ...data, org_id: uid })
+  if (error) throw error
+  logActivity('createDriverDocument', 'driver_document', data.driver_id, data.type || '')
+}
+
+export async function updateDriverDocument(id, data) {
+  const { error } = await supabase.from('driver_documents')
+    .update({ ...data, updated_at: new Date().toISOString() })
+    .eq('id', id)
+  if (error) throw error
+  logActivity('updateDriverDocument', 'driver_document', id, data.type || '')
+}
+
+export async function deleteDriverDocument(id) {
+  const { error } = await supabase.from('driver_documents').delete().eq('id', id)
+  if (error) throw error
+  logActivity('deleteDriverDocument', 'driver_document', id, '')
 }
 
 // ── Helpers ───────────────────────────────────────────────────────

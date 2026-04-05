@@ -27,9 +27,11 @@ import { computeForecasts, statusColors } from '@/lib/maintenanceForecast'
 import {
   useVehicles, useDrivers, useAssignments, useMileageEntries,
   useTechnicalInspections, useMaintenanceRecords, useWashRecords,
-  useMaintenanceSchedules, getLatestAssignments, getDriverById, getVehicleById,
+  useMaintenanceSchedules, useAllDriverDocuments,
+  getLatestAssignments, getDriverById, getVehicleById,
   createVehicle, createDriver, createMileageEntry, createWashRecord
 } from '@/lib/useFleetData'
+import { DOC_TYPE_CONFIG } from '@/components/shared/DriverDocuments'
 import { usePageTitle } from '@/lib/usePageTitle'
 import { useTranslation } from 'react-i18next'
 import { usePlanLimits } from '@/lib/usePlanLimits'
@@ -384,10 +386,10 @@ function AddWashModal({ open, onClose, vehicles, drivers }) {
 
 // ─── Alert Center ─────────────────────────────────────────────────
 // Groups all time-sensitive alerts (inspections + maintenance) by priority
-function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, vehicles }) {
+function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, vehicles, urgentDocAlerts = [], warningDocAlerts = [] }) {
   const { t } = useTranslation()
-  const totalUrgent = urgentInspections.length + urgentForecasts.filter(f => f.status === 'overdue').length
-  const totalWarning = warningInspections.length + urgentForecasts.filter(f => f.status === 'due_soon').length
+  const totalUrgent = urgentInspections.length + urgentForecasts.filter(f => f.status === 'overdue').length + urgentDocAlerts.length
+  const totalWarning = warningInspections.length + urgentForecasts.filter(f => f.status === 'due_soon').length + warningDocAlerts.length
   const allClear = totalUrgent === 0 && totalWarning === 0
 
   return (
@@ -450,6 +452,17 @@ function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, v
                     <ChevronRight className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
                   </Link>
                 ))}
+                {urgentDocAlerts.map(({ doc, driver, days }) => (
+                  <Link key={doc.id} to={`/Drivers/${driver.id}`} className="flex items-center justify-between px-3 py-1.5 hover:bg-red-100/50 transition-colors">
+                    <div>
+                      <p className="text-xs font-semibold text-zinc-800">{driver.name}</p>
+                      <p className="text-xs text-red-600">
+                        {DOC_TYPE_CONFIG[doc.type]?.label || doc.type} — {days < 0 ? `expiré il y a ${Math.abs(days)}j` : `expire dans ${days}j`}
+                      </p>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
+                  </Link>
+                ))}
               </div>
             </div>
           )}
@@ -485,6 +498,17 @@ function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, v
                         {f.kmUntil !== null
                           ? t('alerts.serviceInKm', { km: f.kmUntil.toLocaleString() })
                           : t('alerts.serviceInDays', { count: f.daysUntil })}
+                      </p>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+                  </Link>
+                ))}
+                {warningDocAlerts.map(({ doc, driver, days }) => (
+                  <Link key={doc.id} to={`/Drivers/${driver.id}`} className="flex items-center justify-between px-3 py-1.5 hover:bg-amber-100/50 transition-colors">
+                    <div>
+                      <p className="text-xs font-semibold text-zinc-800">{driver.name}</p>
+                      <p className="text-xs text-amber-600">
+                        {DOC_TYPE_CONFIG[doc.type]?.label || doc.type} — expire dans {days}j
                       </p>
                     </div>
                     <ChevronRight className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
@@ -747,6 +771,7 @@ export default function Dashboard() {
   const { data: maintenanceRecords } = useMaintenanceRecords()
   const { data: washRecords }        = useWashRecords()
   const { data: schedules }          = useMaintenanceSchedules()
+  const { data: allDriverDocuments } = useAllDriverDocuments()
 
   const { canAddVehicle, canAddDriver } = usePlanLimits(vehicles.length, drivers.length)
 
@@ -773,6 +798,21 @@ export default function Dashboard() {
     const d = differenceInDays(new Date(i.expiration_date), today)
     return d >= 7 && d < 30
   })
+
+  const { urgentDocAlerts, warningDocAlerts } = useMemo(() => {
+    const urgent = []
+    const warning = []
+    for (const doc of (allDriverDocuments || [])) {
+      if (!doc.expiry_date) continue
+      const days = differenceInDays(new Date(doc.expiry_date), today)
+      const driver = drivers.find(d => d.id === doc.driver_id)
+      if (!driver) continue
+      const item = { doc, driver, days }
+      if (days < 0) urgent.push(item)
+      else if (days <= 30) warning.push(item)
+    }
+    return { urgentDocAlerts: urgent, warningDocAlerts: warning }
+  }, [allDriverDocuments, drivers, today])
 
   const totalAlerts = urgentInspections.length + urgentForecasts.length
   const openIssues  = maintenanceRecords.filter(m => m.status === 'PROBLEM').length
@@ -1010,6 +1050,8 @@ export default function Dashboard() {
           warningInspections={warningInspections}
           urgentForecasts={urgentForecasts}
           vehicles={vehicles}
+          urgentDocAlerts={urgentDocAlerts}
+          warningDocAlerts={warningDocAlerts}
         />
 
         {/* Fleet Insights */}
