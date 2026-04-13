@@ -3,16 +3,29 @@ import { Outlet } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import Sidebar from './Sidebar'
 import AppLoader from './AppLoader'
-import { useFleetRealtime, useVehicles, useDrivers } from '@/lib/useFleetData'
+import {
+  useFleetRealtime,
+  useVehicles, useDrivers, useAssignments,
+  useMileageEntries, useMaintenanceRecords, useMaintenanceSchedules,
+  useTechnicalInspections, useWashRecords, useAllDriverDocuments,
+} from '@/lib/useFleetData'
 
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   useFleetRealtime()
 
-  const { isLoading: loadingVehicles } = useVehicles()
-  const { isLoading: loadingDrivers } = useDrivers()
+  // Prefetch all core data so every page gets cache hits on mount
+  const { isLoading: l1 } = useVehicles()
+  const { isLoading: l2 } = useDrivers()
+  const { isLoading: l3 } = useAssignments()
+  const { isLoading: l4 } = useMileageEntries()
+  const { isLoading: l5 } = useMaintenanceRecords()
+  const { isLoading: l6 } = useMaintenanceSchedules()
+  const { isLoading: l7 } = useTechnicalInspections()
+  const { isLoading: l8 } = useWashRecords()
+  const { isLoading: l9 } = useAllDriverDocuments()
 
-  if (loadingVehicles || loadingDrivers) return <AppLoader />
+  if (l1 || l2 || l3 || l4 || l5 || l6 || l7 || l8 || l9) return <AppLoader />
 
   return (
     <div className="flex h-dvh bg-background overflow-hidden">
