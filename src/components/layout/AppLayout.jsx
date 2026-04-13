@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import Sidebar from './Sidebar'
@@ -12,8 +12,8 @@ import {
 
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  // Starts false on every mount (login + refresh) — guarantees loader always shows
   const [appReady, setAppReady] = useState(false)
+  const mountedAt = useRef(Date.now())
   useFleetRealtime()
 
   const { isSuccess: s1, isError: e1 } = useVehicles()
@@ -30,7 +30,13 @@ export default function AppLayout() {
                   && (s6||e6) && (s7||e7) && (s8||e8) && (s9||e9)
 
   useEffect(() => {
-    if (allSettled) setAppReady(true)
+    if (!allSettled) return
+    // Guarantee the loader is visible for at least 600ms.
+    // React 18 can batch renders so fast that the loader never paints
+    // if queries resolve from Supabase's internal cache near-instantly.
+    const remaining = Math.max(0, 600 - (Date.now() - mountedAt.current))
+    const t = setTimeout(() => setAppReady(true), remaining)
+    return () => clearTimeout(t)
   }, [allSettled])
 
   if (!appReady) return <AppLoader />
