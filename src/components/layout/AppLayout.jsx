@@ -12,7 +12,8 @@ import {
 
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [appReady, setAppReady] = useState(false)
+  const [loaderFading, setLoaderFading] = useState(false)
+  const [loaderGone, setLoaderGone] = useState(false)
   const mountedAt = useRef(Date.now())
   useFleetRealtime()
 
@@ -31,36 +32,51 @@ export default function AppLayout() {
 
   useEffect(() => {
     if (!allSettled) return
-    // Guarantee the loader is visible for at least 600ms.
-    // React 18 can batch renders so fast that the loader never paints
-    // if queries resolve from Supabase's internal cache near-instantly.
     const remaining = Math.max(0, 600 - (Date.now() - mountedAt.current))
-    const t = setTimeout(() => setAppReady(true), remaining)
+    const t = setTimeout(() => {
+      setLoaderFading(true)
+      setTimeout(() => setLoaderGone(true), 350)
+    }, remaining)
     return () => clearTimeout(t)
   }, [allSettled])
 
-  if (!appReady) return <AppLoader />
-
   return (
-    <div className="flex h-dvh bg-background overflow-hidden">
-      <Sidebar open={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
-      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+    <>
+      {/* App always renders behind the loader — no zero-flash when overlay lifts */}
+      <div className="flex h-dvh bg-background overflow-hidden">
+        <Sidebar open={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
 
-        {/* Mobile top bar */}
-        <header className="lg:hidden flex items-center h-14 px-4 bg-background border-b border-zinc-100">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 -ml-2 text-zinc-500 hover:text-zinc-900"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
-          <span className="ml-3 font-semibold text-zinc-900">FleetDesk</span>
-        </header>
+          {/* Mobile top bar */}
+          <header className="lg:hidden flex items-center h-14 px-4 bg-background border-b border-zinc-100">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 -ml-2 text-zinc-500 hover:text-zinc-900"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <span className="ml-3 font-semibold text-zinc-900">FleetDesk</span>
+          </header>
 
-        <main className="flex-1 overflow-y-auto bg-background">
-          <Outlet />
-        </main>
+          <main className="flex-1 overflow-y-auto bg-background">
+            <Outlet />
+          </main>
+        </div>
       </div>
-    </div>
+
+      {/* Loader overlay — fades out once data is ready, then unmounts */}
+      {!loaderGone && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 50,
+            opacity: loaderFading ? 0 : 1,
+            transition: 'opacity 350ms ease',
+            pointerEvents: loaderFading ? 'none' : 'all',
+          }}
+        >
+          <AppLoader />
+        </div>
+      )}
+    </>
   )
 }
