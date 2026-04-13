@@ -14,20 +14,23 @@ export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   useFleetRealtime()
 
-  // Prefetch all core data so every page gets cache hits on mount.
-  // isPending (not isLoading) catches the state where no cached data exists yet,
-  // even before the fetch has started — preventing any zero-flash on refresh.
-  const { isPending: p1 } = useVehicles()
-  const { isPending: p2 } = useDrivers()
-  const { isPending: p3 } = useAssignments()
-  const { isPending: p4 } = useMileageEntries()
-  const { isPending: p5 } = useMaintenanceRecords()
-  const { isPending: p6 } = useMaintenanceSchedules()
-  const { isPending: p7 } = useTechnicalInspections()
-  const { isPending: p8 } = useWashRecords()
-  const { isPending: p9 } = useAllDriverDocuments()
+  // Prefetch all core data before rendering any page.
+  // Wait for isSuccess OR isError on every query so the loader never
+  // blocks forever on a network failure, and never flashes on refresh.
+  const { isSuccess: s1, isError: e1 } = useVehicles()
+  const { isSuccess: s2, isError: e2 } = useDrivers()
+  const { isSuccess: s3, isError: e3 } = useAssignments()
+  const { isSuccess: s4, isError: e4 } = useMileageEntries()
+  const { isSuccess: s5, isError: e5 } = useMaintenanceRecords()
+  const { isSuccess: s6, isError: e6 } = useMaintenanceSchedules()
+  const { isSuccess: s7, isError: e7 } = useTechnicalInspections()
+  const { isSuccess: s8, isError: e8 } = useWashRecords()
+  const { isSuccess: s9, isError: e9 } = useAllDriverDocuments()
 
-  if (p1 || p2 || p3 || p4 || p5 || p6 || p7 || p8 || p9) return <AppLoader />
+  const appReady = (s1||e1) && (s2||e2) && (s3||e3) && (s4||e4) && (s5||e5)
+                && (s6||e6) && (s7||e7) && (s8||e8) && (s9||e9)
+
+  if (!appReady) return <AppLoader />
 
   return (
     <div className="flex h-dvh bg-background overflow-hidden">
