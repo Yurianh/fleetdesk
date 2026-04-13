@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import Sidebar from './Sidebar'
@@ -12,11 +12,10 @@ import {
 
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  // Starts false on every mount (login + refresh) — guarantees loader always shows
+  const [appReady, setAppReady] = useState(false)
   useFleetRealtime()
 
-  // Prefetch all core data before rendering any page.
-  // Wait for isSuccess OR isError on every query so the loader never
-  // blocks forever on a network failure, and never flashes on refresh.
   const { isSuccess: s1, isError: e1 } = useVehicles()
   const { isSuccess: s2, isError: e2 } = useDrivers()
   const { isSuccess: s3, isError: e3 } = useAssignments()
@@ -27,8 +26,12 @@ export default function AppLayout() {
   const { isSuccess: s8, isError: e8 } = useWashRecords()
   const { isSuccess: s9, isError: e9 } = useAllDriverDocuments()
 
-  const appReady = (s1||e1) && (s2||e2) && (s3||e3) && (s4||e4) && (s5||e5)
-                && (s6||e6) && (s7||e7) && (s8||e8) && (s9||e9)
+  const allSettled = (s1||e1) && (s2||e2) && (s3||e3) && (s4||e4) && (s5||e5)
+                  && (s6||e6) && (s7||e7) && (s8||e8) && (s9||e9)
+
+  useEffect(() => {
+    if (allSettled) setAppReady(true)
+  }, [allSettled])
 
   if (!appReady) return <AppLoader />
 
