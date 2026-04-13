@@ -14,18 +14,20 @@ export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   useFleetRealtime()
 
-  // Prefetch all core data so every page gets cache hits on mount
-  const { isLoading: l1 } = useVehicles()
-  const { isLoading: l2 } = useDrivers()
-  const { isLoading: l3 } = useAssignments()
-  const { isLoading: l4 } = useMileageEntries()
-  const { isLoading: l5 } = useMaintenanceRecords()
-  const { isLoading: l6 } = useMaintenanceSchedules()
-  const { isLoading: l7 } = useTechnicalInspections()
-  const { isLoading: l8 } = useWashRecords()
-  const { isLoading: l9 } = useAllDriverDocuments()
+  // Prefetch all core data so every page gets cache hits on mount.
+  // isPending (not isLoading) catches the state where no cached data exists yet,
+  // even before the fetch has started — preventing any zero-flash on refresh.
+  const { isPending: p1 } = useVehicles()
+  const { isPending: p2 } = useDrivers()
+  const { isPending: p3 } = useAssignments()
+  const { isPending: p4 } = useMileageEntries()
+  const { isPending: p5 } = useMaintenanceRecords()
+  const { isPending: p6 } = useMaintenanceSchedules()
+  const { isPending: p7 } = useTechnicalInspections()
+  const { isPending: p8 } = useWashRecords()
+  const { isPending: p9 } = useAllDriverDocuments()
 
-  if (l1 || l2 || l3 || l4 || l5 || l6 || l7 || l8 || l9) return <AppLoader />
+  if (p1 || p2 || p3 || p4 || p5 || p6 || p7 || p8 || p9) return <AppLoader />
 
   return (
     <div className="flex h-dvh bg-background overflow-hidden">
