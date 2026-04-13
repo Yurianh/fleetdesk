@@ -9,6 +9,7 @@ import { ThemeProvider } from '@/lib/ThemeContext'
 // App
 import PageNotFound from './lib/PageNotFound'
 import AppLayout from '@/components/layout/AppLayout'
+import AppLoader from '@/components/layout/AppLoader'
 import Login from '@/pages/Login'
 import SetupProfile from '@/pages/SetupProfile'
 import CollaboratorWelcome from '@/pages/CollaboratorWelcome'
@@ -43,7 +44,7 @@ function LogoutAndRedirect() {
 
 function AppRoutes() {
   const { user, loading } = useAuth()
-  if (loading) return null
+  if (loading) return <AppLoader message="Connexion en cours..." />
 
   // Not signed in
   if (!user) {

@@ -2,11 +2,17 @@ import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import Sidebar from './Sidebar'
-import { useFleetRealtime } from '@/lib/useFleetData'
+import AppLoader from './AppLoader'
+import { useFleetRealtime, useVehicles, useDrivers } from '@/lib/useFleetData'
 
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   useFleetRealtime()
+
+  const { isLoading: loadingVehicles } = useVehicles()
+  const { isLoading: loadingDrivers } = useDrivers()
+
+  if (loadingVehicles || loadingDrivers) return <AppLoader />
 
   return (
     <div className="flex h-dvh bg-background overflow-hidden">
