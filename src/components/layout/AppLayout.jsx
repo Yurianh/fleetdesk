@@ -32,7 +32,7 @@ export default function AppLayout() {
 
   useEffect(() => {
     if (!allSettled) return
-    const remaining = Math.max(0, 600 - (Date.now() - mountedAt.current))
+    const remaining = Math.max(0, 2000 - (Date.now() - mountedAt.current))
     const t = setTimeout(() => {
       setLoaderFading(true)
       setTimeout(() => setLoaderGone(true), 350)
