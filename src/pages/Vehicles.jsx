@@ -1,18 +1,25 @@
 import React, { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, ChevronRight, Loader2, Truck, Pencil, Trash2, User, UserMinus, Paperclip, FileText, X, Camera } from 'lucide-react'
+import { Plus, Search, ChevronRight, Loader2, Truck, Pencil, Trash2, User, UserMinus, Paperclip, FileText, X, Camera, Wrench, ClipboardCheck, Droplets } from 'lucide-react'
+import { format, addYears } from 'date-fns'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import PageHeader from '@/components/shared/PageHeader'
 import EmptyState from '@/components/shared/EmptyState'
+import FormModal from '@/components/shared/FormModal'
+import { InvoiceUpload } from '@/components/shared/InvoiceUpload'
 import VehicleStatusBadge from '@/components/shared/VehicleStatusBadge'
 import {
   useVehicles, useDrivers, useAssignments, useMileageEntries, useTechnicalInspections,
-  createVehicle, updateVehicle, deleteVehicle, unassignVehicle, getLatestAssignments, getLatestMileage, getDriverById
+  createVehicle, updateVehicle, deleteVehicle, unassignVehicle, getLatestAssignments, getLatestMileage, getDriverById,
+  createMaintenanceRecord, createTechnicalInspection, createWashRecord,
 } from '@/lib/useFleetData'
 import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import { usePageTitle } from '@/lib/usePageTitle'
@@ -118,6 +125,29 @@ export default function Vehicles() {
   const [saving, setSaving] = useState(false)
   const [unassigningId, setUnassigningId] = useState(null)
 
+  // ── Maintenance quick-add ──
+  const [maintModal, setMaintModal] = useState(false)
+  const [maintVehicleId, setMaintVehicleId] = useState('')
+  const [maintForm, setMaintForm] = useState({ date: '', mileage: '', status: 'ok', description: '' })
+  const [maintInvoiceFile, setMaintInvoiceFile] = useState(null)
+  const [maintInvoiceAmount, setMaintInvoiceAmount] = useState('')
+  const [savingMaint, setSavingMaint] = useState(false)
+
+  // ── Inspection quick-add ──
+  const [inspModal, setInspModal] = useState(false)
+  const [inspVehicleId, setInspVehicleId] = useState('')
+  const [inspForm, setInspForm] = useState({ date: '' })
+  const [inspInvoiceFile, setInspInvoiceFile] = useState(null)
+  const [inspInvoiceAmount, setInspInvoiceAmount] = useState('')
+  const [savingInsp, setSavingInsp] = useState(false)
+
+  // ── Washing quick-add ──
+  const [washModal, setWashModal] = useState(false)
+  const [washVehicleId, setWashVehicleId] = useState('')
+  const [washForm, setWashForm] = useState({ driver_id: '', date: '', amount: '' })
+  const [washInvoiceFile, setWashInvoiceFile] = useState(null)
+  const [savingWash, setSavingWash] = useState(false)
+
   const { canAddVehicle, limits } = usePlanLimits(vehicles.length)
   const latestAssignments = getLatestAssignments(assignments)
   const latestMileage = getLatestMileage(mileageEntries)
@@ -188,6 +218,91 @@ export default function Vehicles() {
     finally { setUnassigningId(null) }
   }
 
+  const openMaint = (vehicleId) => {
+    setMaintVehicleId(vehicleId)
+    setMaintForm({ date: '', mileage: latestMileage[vehicleId]?.mileage?.toString() || '', status: 'ok', description: '' })
+    setMaintInvoiceFile(null)
+    setMaintInvoiceAmount('')
+    setMaintModal(true)
+  }
+  const handleSaveMaint = async () => {
+    if (!maintVehicleId || !maintForm.mileage) return
+    setSavingMaint(true)
+    try {
+      let invoiceUrl = null
+      if (maintInvoiceFile) invoiceUrl = await uploadInvoice(maintInvoiceFile, 'maintenance')
+      await createMaintenanceRecord({
+        vehicle_id: maintVehicleId,
+        date: maintForm.date || new Date().toISOString().split('T')[0],
+        mileage: parseFloat(maintForm.mileage),
+        status: maintForm.status,
+        description: maintForm.description || null,
+        invoice_url: invoiceUrl,
+        invoice_amount: maintInvoiceAmount ? parseFloat(maintInvoiceAmount) : null,
+      })
+      queryClient.invalidateQueries({ queryKey: ['maintenanceRecords'] })
+      setMaintModal(false)
+      toast.success('Entretien enregistré.')
+    } catch { toast.error("Erreur lors de l'enregistrement") }
+    finally { setSavingMaint(false) }
+  }
+
+  const openInsp = (vehicleId) => {
+    setInspVehicleId(vehicleId)
+    setInspForm({ date: '' })
+    setInspInvoiceFile(null)
+    setInspInvoiceAmount('')
+    setInspModal(true)
+  }
+  const handleSaveInsp = async () => {
+    if (!inspVehicleId) return
+    setSavingInsp(true)
+    try {
+      let invoiceUrl = null
+      if (inspInvoiceFile) invoiceUrl = await uploadInvoice(inspInvoiceFile, 'inspection')
+      const effectiveDate = inspForm.date || new Date().toISOString().split('T')[0]
+      await createTechnicalInspection({
+        vehicle_id: inspVehicleId,
+        inspection_date: effectiveDate,
+        expiration_date: format(addYears(new Date(effectiveDate), 1), 'yyyy-MM-dd'),
+        invoice_url: invoiceUrl,
+        invoice_amount: inspInvoiceAmount ? parseFloat(inspInvoiceAmount) : null,
+      })
+      queryClient.invalidateQueries({ queryKey: ['technicalInspections'] })
+      setInspModal(false)
+      toast.success('Contrôle technique enregistré.')
+    } catch { toast.error("Erreur lors de l'enregistrement") }
+    finally { setSavingInsp(false) }
+  }
+
+  const openWash = (vehicleId) => {
+    setWashVehicleId(vehicleId)
+    const a = latestAssignments[vehicleId]
+    const driver = a ? getDriverById(drivers, a.driver_id) : null
+    setWashForm({ driver_id: driver?.id || '', date: '', amount: '' })
+    setWashInvoiceFile(null)
+    setWashModal(true)
+  }
+  const handleSaveWash = async () => {
+    if (!washVehicleId || !washForm.driver_id || !washForm.amount) return
+    setSavingWash(true)
+    try {
+      let invoiceUrl = null
+      if (washInvoiceFile) invoiceUrl = await uploadInvoice(washInvoiceFile, 'wash')
+      await createWashRecord({
+        vehicle_id: washVehicleId,
+        driver_id: washForm.driver_id,
+        date: washForm.date || new Date().toISOString().split('T')[0],
+        amount: parseFloat(washForm.amount),
+        invoice_url: invoiceUrl,
+      })
+      queryClient.invalidateQueries({ queryKey: ['washRecords'] })
+      setWashModal(false)
+      toast.success('Lavage enregistré.')
+    } catch { toast.error("Erreur lors de l'enregistrement") }
+    finally { setSavingWash(false) }
+  }
+
   const handleDelete = async () => {
     if (!deleteTarget) return
     setSaving(true)
@@ -245,6 +360,9 @@ export default function Vehicles() {
                 <UserMinus className="w-3.5 h-3.5" />
               </button>
             )}
+            <button onClick={() => openMaint(v.id)} title="Ajouter un entretien" className="p-1.5 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors"><Wrench className="w-3.5 h-3.5" /></button>
+            <button onClick={() => openInsp(v.id)} title="Ajouter un contrôle technique" className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"><ClipboardCheck className="w-3.5 h-3.5" /></button>
+            <button onClick={() => openWash(v.id)} title="Ajouter un lavage" className="p-1.5 text-slate-400 hover:text-sky-500 hover:bg-sky-50 rounded-lg transition-colors"><Droplets className="w-3.5 h-3.5" /></button>
             <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model, mec_date: v.mec_date || '' }); setRegistrationFile(null); setRegistrationUrl(v.registration_card_url || '') }} className="p-1.5 text-slate-400 hover:text-[#2563EB] hover:bg-blue-50 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
             <button onClick={() => setDeleteTarget(v)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
             <Link to={`/Vehicles/${v.id}`} className="p-1.5 text-slate-400 hover:text-[#1D4ED8]"><ChevronRight className="w-4 h-4" /></Link>
@@ -276,6 +394,9 @@ export default function Vehicles() {
           {isAssigned && (
             <button onClick={() => handleUnassign(v.id)} disabled={unassigningId === v.id} className="p-1.5 text-slate-400 hover:text-amber-600"><UserMinus className="w-3.5 h-3.5" /></button>
           )}
+          <button onClick={() => openMaint(v.id)} title="Entretien" className="p-1.5 text-slate-400 hover:text-orange-500"><Wrench className="w-3.5 h-3.5" /></button>
+          <button onClick={() => openInsp(v.id)} title="Contrôle technique" className="p-1.5 text-slate-400 hover:text-emerald-600"><ClipboardCheck className="w-3.5 h-3.5" /></button>
+          <button onClick={() => openWash(v.id)} title="Lavage" className="p-1.5 text-slate-400 hover:text-sky-500"><Droplets className="w-3.5 h-3.5" /></button>
           <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model, mec_date: v.mec_date || '' }); setRegistrationFile(null); setRegistrationUrl(v.registration_card_url || '') }} className="p-1.5 text-slate-400 hover:text-[#2563EB]"><Pencil className="w-3.5 h-3.5" /></button>
           <button onClick={() => setDeleteTarget(v)} className="p-1.5 text-slate-400 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
         </div>
@@ -406,6 +527,111 @@ export default function Vehicles() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* ── Maintenance quick-add modal ── */}
+      <FormModal
+        open={maintModal}
+        onClose={() => setMaintModal(false)}
+        title="Ajouter un entretien"
+        onSubmit={handleSaveMaint}
+        saving={savingMaint}
+        submitLabel="Enregistrer"
+      >
+        <div>
+          <Label>Date <span className="text-slate-400 font-normal">(optionnel — aujourd&apos;hui par défaut)</span></Label>
+          <Input type="date" value={maintForm.date} onChange={e => setMaintForm(f => ({ ...f, date: e.target.value }))} />
+        </div>
+        <div>
+          <Label>Kilométrage</Label>
+          <Input type="number" value={maintForm.mileage} onChange={e => setMaintForm(f => ({ ...f, mileage: e.target.value }))} placeholder="ex : 45000" />
+        </div>
+        <div>
+          <Label>Résultat</Label>
+          <Select value={maintForm.status} onValueChange={v => setMaintForm(f => ({ ...f, status: v }))}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ok">OK</SelectItem>
+              <SelectItem value="problem">Problème</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        {maintForm.status === 'problem' && (
+          <div>
+            <Label>Description du problème</Label>
+            <Textarea value={maintForm.description} onChange={e => setMaintForm(f => ({ ...f, description: e.target.value }))} placeholder="Décrivez le problème constaté..." rows={3} />
+          </div>
+        )}
+        <InvoiceUpload
+          file={maintInvoiceFile}
+          existingUrl=""
+          amount={maintInvoiceAmount}
+          onFileChange={setMaintInvoiceFile}
+          onAmountChange={setMaintInvoiceAmount}
+          showAmount
+        />
+      </FormModal>
+
+      {/* ── Inspection quick-add modal ── */}
+      <FormModal
+        open={inspModal}
+        onClose={() => setInspModal(false)}
+        title="Ajouter un contrôle technique"
+        onSubmit={handleSaveInsp}
+        saving={savingInsp}
+        submitLabel="Enregistrer"
+      >
+        <div>
+          <Label>Date du contrôle <span className="text-slate-400 font-normal">(optionnel — aujourd&apos;hui par défaut)</span></Label>
+          <Input type="date" value={inspForm.date} onChange={e => setInspForm(f => ({ ...f, date: e.target.value }))} />
+        </div>
+        {inspForm.date && (
+          <p className="text-xs text-slate-400">
+            Expiration prévue : <span className="font-medium text-slate-600">{format(addYears(new Date(inspForm.date), 1), 'dd/MM/yyyy')}</span>
+          </p>
+        )}
+        <InvoiceUpload
+          file={inspInvoiceFile}
+          existingUrl=""
+          amount={inspInvoiceAmount}
+          onFileChange={setInspInvoiceFile}
+          onAmountChange={setInspInvoiceAmount}
+          showAmount
+        />
+      </FormModal>
+
+      {/* ── Washing quick-add modal ── */}
+      <FormModal
+        open={washModal}
+        onClose={() => setWashModal(false)}
+        title="Ajouter un lavage"
+        onSubmit={handleSaveWash}
+        saving={savingWash}
+        submitLabel="Enregistrer"
+      >
+        <div>
+          <Label>Conducteur</Label>
+          <SearchableSelect
+            value={washForm.driver_id}
+            onValueChange={v => setWashForm(f => ({ ...f, driver_id: v }))}
+            placeholder="Sélectionner un conducteur"
+            options={drivers.map(d => ({ value: d.id, label: d.name }))}
+          />
+        </div>
+        <div>
+          <Label>Date <span className="text-slate-400 font-normal">(optionnel — aujourd&apos;hui par défaut)</span></Label>
+          <Input type="date" value={washForm.date} onChange={e => setWashForm(f => ({ ...f, date: e.target.value }))} />
+        </div>
+        <div>
+          <Label>Montant (€)</Label>
+          <Input type="number" step="0.01" value={washForm.amount} onChange={e => setWashForm(f => ({ ...f, amount: e.target.value }))} placeholder="0.00" />
+        </div>
+        <InvoiceUpload
+          file={washInvoiceFile}
+          existingUrl=""
+          onFileChange={setWashInvoiceFile}
+          showAmount={false}
+        />
+      </FormModal>
     </div>
   )
 }
