@@ -54,7 +54,10 @@ export default function VehicleDetail() {
   const [maintInvoiceFile,   setMaintInvoiceFile]   = useState(null)
   const [maintInvoiceAmount, setMaintInvoiceAmount] = useState('')
   const [inspectionForm,  setInspectionForm]  = useState({ inspection_date: '' })
+  const [inspInvoiceFile,   setInspInvoiceFile]   = useState(null)
+  const [inspInvoiceAmount, setInspInvoiceAmount] = useState('')
   const [washForm,        setWashForm]        = useState({ driver_id: '', amount: '', date: '' })
+  const [washInvoiceFile,   setWashInvoiceFile]   = useState(null)
 
   if (!vehicle) return <div className="p-8 text-center text-slate-400">{t('vehicles.noResults')}</div>
 
@@ -114,16 +117,22 @@ export default function VehicleDetail() {
   const handleInspection = async () => {
     setSaving(true)
     try {
+      let invoiceUrl = null
+      if (inspInvoiceFile) invoiceUrl = await uploadInvoice(inspInvoiceFile, 'inspection')
       const effectiveDate = inspectionForm.inspection_date || new Date().toISOString().split('T')[0]
       await createTechnicalInspection({
         vehicle_id: id,
         inspection_date: effectiveDate,
         expiration_date: format(addYears(new Date(effectiveDate), 1), 'yyyy-MM-dd'),
+        invoice_url: invoiceUrl,
+        invoice_amount: inspInvoiceAmount ? parseFloat(inspInvoiceAmount) : null,
       })
       queryClient.invalidateQueries({ queryKey: ['technicalInspections'] })
       toast.success('Contrôle enregistré')
       setInspectionModal(false)
       setInspectionForm({ inspection_date: '' })
+      setInspInvoiceFile(null)
+      setInspInvoiceAmount('')
     } catch { toast.error("Erreur lors de l'enregistrement") }
     finally { setSaving(false) }
   }
@@ -132,16 +141,20 @@ export default function VehicleDetail() {
     if (!washForm.driver_id || !washForm.amount) return
     setSaving(true)
     try {
+      let invoiceUrl = null
+      if (washInvoiceFile) invoiceUrl = await uploadInvoice(washInvoiceFile, 'wash')
       await createWashRecord({
         vehicle_id: id,
         driver_id: washForm.driver_id,
         amount: parseFloat(washForm.amount),
         date: washForm.date || new Date().toISOString().split('T')[0],
+        invoice_url: invoiceUrl,
       })
       queryClient.invalidateQueries({ queryKey: ['washRecords'] })
       toast.success('Lavage enregistré')
       setWashModal(false)
       setWashForm({ driver_id: '', amount: '', date: '' })
+      setWashInvoiceFile(null)
     } catch { toast.error("Erreur lors de l'enregistrement") }
     finally { setSaving(false) }
   }
@@ -451,7 +464,7 @@ export default function VehicleDetail() {
       </FormModal>
 
       {/* Contrôle technique */}
-      <FormModal open={inspectionModal} onClose={() => setInspectionModal(false)} title="Ajouter un contrôle technique"
+      <FormModal open={inspectionModal} onClose={() => { setInspectionModal(false); setInspInvoiceFile(null); setInspInvoiceAmount('') }} title="Ajouter un contrôle technique"
         onSubmit={handleInspection} saving={saving} submitLabel="Enregistrer">
         <div>
           <Label>Date du contrôle <span className="text-slate-400 font-normal">(optionnel — aujourd'hui par défaut)</span></Label>
@@ -462,10 +475,18 @@ export default function VehicleDetail() {
             Expire le : <span className="font-semibold text-slate-700">{format(addYears(new Date(inspectionForm.inspection_date), 1), 'd MMMM yyyy', { locale: dateLocale })}</span>
           </p>
         )}
+        <InvoiceUpload
+          file={inspInvoiceFile}
+          existingUrl=""
+          amount={inspInvoiceAmount}
+          onFileChange={setInspInvoiceFile}
+          onAmountChange={setInspInvoiceAmount}
+          showAmount
+        />
       </FormModal>
 
       {/* Lavage */}
-      <FormModal open={washModal} onClose={() => setWashModal(false)} title="Ajouter un lavage"
+      <FormModal open={washModal} onClose={() => { setWashModal(false); setWashInvoiceFile(null) }} title="Ajouter un lavage"
         onSubmit={handleWash} saving={saving} submitLabel="Enregistrer">
         <div>
           <Label>Conducteur</Label>
@@ -482,6 +503,12 @@ export default function VehicleDetail() {
             <Input type="number" step="0.01" value={washForm.amount} onChange={e => setWashForm(f => ({ ...f, amount: e.target.value }))} placeholder="0.00" />
           </div>
         </div>
+        <InvoiceUpload
+          file={washInvoiceFile}
+          existingUrl=""
+          onFileChange={setWashInvoiceFile}
+          showAmount={false}
+        />
       </FormModal>
     </div>
   )
