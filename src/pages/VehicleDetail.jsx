@@ -12,7 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { SearchableSelect } from '@/components/ui/searchable-select'
 import FormModal from '@/components/shared/FormModal'
+import { InvoiceUpload } from '@/components/shared/InvoiceUpload'
 import EmptyState from '@/components/shared/EmptyState'
+import { uploadInvoice } from '@/lib/invoiceStorage'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
@@ -49,6 +51,8 @@ export default function VehicleDetail() {
 
   const [mileageForm,     setMileageForm]     = useState({ mileage: '', date: '' })
   const [maintenanceForm, setMaintenanceForm] = useState({ date: '', mileage: '', status: 'OK', issue_description: '' })
+  const [maintInvoiceFile,   setMaintInvoiceFile]   = useState(null)
+  const [maintInvoiceAmount, setMaintInvoiceAmount] = useState('')
   const [inspectionForm,  setInspectionForm]  = useState({ inspection_date: '' })
   const [washForm,        setWashForm]        = useState({ driver_id: '', amount: '', date: '' })
 
@@ -86,17 +90,23 @@ export default function VehicleDetail() {
     if (!maintenanceForm.status) return
     setSaving(true)
     try {
+      let invoiceUrl = null
+      if (maintInvoiceFile) invoiceUrl = await uploadInvoice(maintInvoiceFile, 'maintenance')
       await createMaintenanceRecord({
         vehicle_id: id,
         date: maintenanceForm.date || new Date().toISOString().split('T')[0],
         mileage: maintenanceForm.mileage ? parseFloat(maintenanceForm.mileage) : null,
         status: maintenanceForm.status,
         issue_description: maintenanceForm.issue_description || null,
+        invoice_url: invoiceUrl,
+        invoice_amount: maintInvoiceAmount ? parseFloat(maintInvoiceAmount) : null,
       })
       queryClient.invalidateQueries({ queryKey: ['maintenanceRecords'] })
       toast.success('Entretien enregistré')
       setMaintenanceModal(false)
       setMaintenanceForm({ date: '', mileage: '', status: 'OK', issue_description: '' })
+      setMaintInvoiceFile(null)
+      setMaintInvoiceAmount('')
     } catch { toast.error("Erreur lors de l'enregistrement") }
     finally { setSaving(false) }
   }
@@ -396,7 +406,7 @@ export default function VehicleDetail() {
       </FormModal>
 
       {/* Maintenance */}
-      <FormModal open={maintenanceModal} onClose={() => setMaintenanceModal(false)} title="Enregistrer un entretien"
+      <FormModal open={maintenanceModal} onClose={() => { setMaintenanceModal(false); setMaintInvoiceFile(null); setMaintInvoiceAmount('') }} title="Enregistrer un entretien"
         onSubmit={handleMaintenance} saving={saving} submitLabel="Enregistrer">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
@@ -430,6 +440,14 @@ export default function VehicleDetail() {
             <Textarea value={maintenanceForm.issue_description} onChange={e => setMaintenanceForm(f => ({ ...f, issue_description: e.target.value }))} placeholder="Ex : vidange + filtre à huile..." rows={2} />
           </div>
         )}
+        <InvoiceUpload
+          file={maintInvoiceFile}
+          existingUrl=""
+          amount={maintInvoiceAmount}
+          onFileChange={setMaintInvoiceFile}
+          onAmountChange={setMaintInvoiceAmount}
+          showAmount
+        />
       </FormModal>
 
       {/* Contrôle technique */}
