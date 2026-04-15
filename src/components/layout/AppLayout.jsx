@@ -17,22 +17,24 @@ export default function AppLayout() {
   const mountedAt = useRef(Date.now())
   useFleetRealtime()
 
-  const { isSuccess: s1, isError: e1 } = useVehicles()
-  const { isSuccess: s2, isError: e2 } = useDrivers()
-  const { isSuccess: s3, isError: e3 } = useAssignments()
-  const { isSuccess: s4, isError: e4 } = useMileageEntries()
-  const { isSuccess: s5, isError: e5 } = useMaintenanceRecords()
-  const { isSuccess: s6, isError: e6 } = useMaintenanceSchedules()
-  const { isSuccess: s7, isError: e7 } = useTechnicalInspections()
-  const { isSuccess: s8, isError: e8 } = useWashRecords()
-  const { isSuccess: s9, isError: e9 } = useAllDriverDocuments()
+  const { isSuccess: s1, isError: e1, isPlaceholderData: p1 } = useVehicles()
+  const { isSuccess: s2, isError: e2, isPlaceholderData: p2 } = useDrivers()
+  const { isSuccess: s3, isError: e3, isPlaceholderData: p3 } = useAssignments()
+  const { isSuccess: s4, isError: e4, isPlaceholderData: p4 } = useMileageEntries()
+  const { isSuccess: s5, isError: e5, isPlaceholderData: p5 } = useMaintenanceRecords()
+  const { isSuccess: s6, isError: e6, isPlaceholderData: p6 } = useMaintenanceSchedules()
+  const { isSuccess: s7, isError: e7, isPlaceholderData: p7 } = useTechnicalInspections()
+  const { isSuccess: s8, isError: e8, isPlaceholderData: p8 } = useWashRecords()
+  const { isSuccess: s9, isError: e9, isPlaceholderData: p9 } = useAllDriverDocuments()
 
-  const allSettled = (s1||e1) && (s2||e2) && (s3||e3) && (s4||e4) && (s5||e5)
-                  && (s6||e6) && (s7||e7) && (s8||e8) && (s9||e9)
+  // True only when each query has real network data (not placeholderData) or has errored
+  const allSettled = ((s1&&!p1)||e1) && ((s2&&!p2)||e2) && ((s3&&!p3)||e3)
+                  && ((s4&&!p4)||e4) && ((s5&&!p5)||e5) && ((s6&&!p6)||e6)
+                  && ((s7&&!p7)||e7) && ((s8&&!p8)||e8) && ((s9&&!p9)||e9)
 
   useEffect(() => {
     if (!allSettled) return
-    const remaining = Math.max(0, 2000 - (Date.now() - mountedAt.current))
+    const remaining = Math.max(0, 600 - (Date.now() - mountedAt.current))
     const t = setTimeout(() => {
       setLoaderFading(true)
       setTimeout(() => setLoaderGone(true), 350)
