@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Truck, Plus, FileText } from 'lucide-react'
+import { ArrowLeft, Truck, Plus, FileText, Paperclip, Camera, X } from 'lucide-react'
 import { format, addYears } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
@@ -14,14 +14,15 @@ import { SearchableSelect } from '@/components/ui/searchable-select'
 import FormModal from '@/components/shared/FormModal'
 import { InvoiceUpload } from '@/components/shared/InvoiceUpload'
 import EmptyState from '@/components/shared/EmptyState'
-import { uploadInvoice } from '@/lib/invoiceStorage'
+import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
   useVehicles, useDrivers, useAssignments, useMileageEntries,
   useMaintenanceRecords, useTechnicalInspections, useWashRecords,
   getDriverById, getLatestAssignments, getLatestMileage,
-  createMileageEntry, createMaintenanceRecord, createTechnicalInspection, createWashRecord
+  createMileageEntry, createMaintenanceRecord, createTechnicalInspection, createWashRecord,
+  updateVehicle
 } from '@/lib/useFleetData'
 import { usePageTitle } from '@/lib/usePageTitle'
 
@@ -58,6 +59,14 @@ export default function VehicleDetail() {
   const [inspInvoiceAmount, setInspInvoiceAmount] = useState('')
   const [washForm,        setWashForm]        = useState({ driver_id: '', amount: '', date: '' })
   const [washInvoiceFile,   setWashInvoiceFile]   = useState(null)
+
+  // ── Vehicle info quick-edit ──
+  const [vehicleInfoModal, setVehicleInfoModal] = useState(false)
+  const [vehicleInfoForm,  setVehicleInfoForm]  = useState({ mec_date: '' })
+  const [regFile,          setRegFile]          = useState(null)
+  const [savingVehicleInfo, setSavingVehicleInfo] = useState(false)
+  const regFileRef   = useRef(null)
+  const regCameraRef = useRef(null)
 
   if (!vehicle) return <div className="p-8 text-center text-slate-400">{t('vehicles.noResults')}</div>
 
@@ -159,6 +168,33 @@ export default function VehicleDetail() {
     finally { setSaving(false) }
   }
 
+  const openVehicleInfo = () => {
+    setVehicleInfoForm({ mec_date: vehicle.mec_date || '' })
+    setRegFile(null)
+    setVehicleInfoModal(true)
+  }
+  const handleSaveVehicleInfo = async () => {
+    setSavingVehicleInfo(true)
+    try {
+      let registration_card_url = vehicle.registration_card_url || null
+      if (regFile) {
+        if (vehicle.registration_card_url) await deleteInvoice(vehicle.registration_card_url)
+        registration_card_url = await uploadInvoice(regFile, 'registration')
+      }
+      await updateVehicle(id, {
+        plate_number: vehicle.plate_number,
+        model: vehicle.model,
+        mec_date: vehicleInfoForm.mec_date || null,
+        registration_card_url,
+      })
+      queryClient.invalidateQueries({ queryKey: ['vehicles'] })
+      toast.success('Informations mises à jour.')
+      setVehicleInfoModal(false)
+      setRegFile(null)
+    } catch { toast.error('Erreur lors de la mise à jour.') }
+    finally { setSavingVehicleInfo(false) }
+  }
+
   // ── Tab header helper ─────────────────────────────────────────────
   const TabHeader = ({ label, onAdd }) => (
     <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100">
@@ -200,21 +236,23 @@ export default function VehicleDetail() {
               <p className="text-sm text-slate-500">{t('mileage.title')}</p>
               <p className="font-semibold text-slate-900">{latestMileage ? `${latestMileage.mileage?.toLocaleString('fr-FR') ?? '—'} km` : '—'}</p>
             </div>
-            {vehicle.mec_date && (
-              <div>
-                <p className="text-sm text-slate-500">Mise en circulation</p>
-                <p className="font-semibold text-slate-900">{format(new Date(vehicle.mec_date), 'd MMM yyyy', { locale: dateLocale })}</p>
-              </div>
-            )}
-            {vehicle.registration_card_url && (
-              <div>
-                <p className="text-sm text-slate-500">Carte grise</p>
-                <a href={vehicle.registration_card_url} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm font-semibold text-[#2563EB] hover:text-[#1D4ED8] transition-colors">
-                  <FileText className="w-3.5 h-3.5" /> Voir →
-                </a>
-              </div>
-            )}
+            <div>
+              <p className="text-sm text-slate-500">Mise en circulation</p>
+              {vehicle.mec_date
+                ? <p className="font-semibold text-slate-900">{format(new Date(vehicle.mec_date), 'd MMM yyyy', { locale: dateLocale })}</p>
+                : <button onClick={openVehicleInfo} className="text-sm font-medium text-slate-300 hover:text-[#2563EB] transition-colors">Ajouter →</button>
+              }
+            </div>
+            <div>
+              <p className="text-sm text-slate-500">Carte grise</p>
+              {vehicle.registration_card_url
+                ? <a href={vehicle.registration_card_url} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm font-semibold text-[#2563EB] hover:text-[#1D4ED8] transition-colors">
+                    <FileText className="w-3.5 h-3.5" /> Voir →
+                  </a>
+                : <button onClick={openVehicleInfo} className="text-sm font-medium text-slate-300 hover:text-[#2563EB] transition-colors">Ajouter →</button>
+              }
+            </div>
           </div>
         </div>
       </div>
@@ -415,6 +453,53 @@ export default function VehicleDetail() {
         <div>
           <Label>Date <span className="text-slate-400 font-normal">(optionnel — aujourd'hui par défaut)</span></Label>
           <Input type="date" value={mileageForm.date} onChange={e => setMileageForm(f => ({ ...f, date: e.target.value }))} />
+        </div>
+      </FormModal>
+
+      {/* Vehicle info quick-edit */}
+      <FormModal open={vehicleInfoModal} onClose={() => { setVehicleInfoModal(false); setRegFile(null) }}
+        title="Informations du véhicule" onSubmit={handleSaveVehicleInfo} saving={savingVehicleInfo} submitLabel="Enregistrer">
+        <div>
+          <Label>Date de mise en circulation <span className="text-slate-400 font-normal">(optionnel)</span></Label>
+          <Input type="date" value={vehicleInfoForm.mec_date} onChange={e => setVehicleInfoForm(f => ({ ...f, mec_date: e.target.value }))} />
+        </div>
+        <div>
+          <Label>Carte grise <span className="text-slate-400 font-normal">(optionnel)</span></Label>
+          <div className="flex items-center gap-2 mt-1.5 p-2.5 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden">
+            <div className="w-7 h-7 bg-white rounded-lg border border-slate-200 flex items-center justify-center shrink-0">
+              <FileText className={`w-3.5 h-3.5 ${regFile || vehicle.registration_card_url ? 'text-slate-400' : 'text-slate-300'}`} />
+            </div>
+            <div className="flex-1 min-w-0 text-sm">
+              {regFile ? (
+                <span className="text-slate-700 truncate block">{regFile.name}</span>
+              ) : vehicle.registration_card_url ? (
+                <a href={vehicle.registration_card_url} target="_blank" rel="noopener noreferrer" className="text-[#2563EB] hover:underline text-sm">Voir la carte grise →</a>
+              ) : (
+                <span className="text-slate-400">Joindre la carte grise<span className="block text-xs text-slate-300 mt-0.5">JPG, PNG ou PDF · max 10 Mo</span></span>
+              )}
+            </div>
+            {regFile ? (
+              <button type="button" onClick={() => { setRegFile(null); if (regFileRef.current) regFileRef.current.value = '' }}
+                className="p-1 rounded hover:bg-slate-200 text-slate-400 hover:text-slate-700 transition-colors shrink-0">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            ) : (
+              <div className="flex items-center gap-1 shrink-0">
+                <button type="button" onClick={() => regFileRef.current?.click()} title="Choisir un fichier"
+                  className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
+                  <Paperclip className="w-3.5 h-3.5" />
+                </button>
+                <button type="button" onClick={() => regCameraRef.current?.click()} title="Prendre une photo"
+                  className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
+                  <Camera className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+          </div>
+          <input ref={regFileRef} type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden"
+            onChange={e => { const f = e.target.files?.[0]; if (f && f.size > 10*1024*1024) { toast.error('Fichier trop volumineux (max 10 Mo)'); return } setRegFile(f || null) }} />
+          <input ref={regCameraRef} type="file" accept="image/*" capture="environment" className="hidden"
+            onChange={e => { const f = e.target.files?.[0]; if (f && f.size > 10*1024*1024) { toast.error('Fichier trop volumineux (max 10 Mo)'); return } setRegFile(f || null) }} />
         </div>
       </FormModal>
 
