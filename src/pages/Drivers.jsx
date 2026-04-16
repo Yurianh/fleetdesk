@@ -58,7 +58,7 @@ export default function Drivers() {
     if (!form.name) return
     setSaving(true)
     try {
-      await createDriver(form)
+      await createDriver({ ...form, date_of_birth: form.date_of_birth || null, email: form.email || null })
       queryClient.invalidateQueries({ queryKey: ['drivers'] })
       setShowAdd(false)
       setForm({ name: '', phone: '', email: '', employee_id: '', date_of_birth: '', address: '', dkv_card: '', highway_badge: '', wash_card: '' })

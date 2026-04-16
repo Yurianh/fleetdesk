@@ -88,7 +88,11 @@ export default function DriverDetail() {
   const handleSave = async () => {
     setSaving(true)
     try {
-      await updateDriver(id, form)
+      await updateDriver(id, {
+        ...form,
+        date_of_birth: form.date_of_birth || null,
+        email: form.email || null,
+      })
       queryClient.invalidateQueries({ queryKey: ['drivers'] })
       toast.success('Conducteur mis à jour')
       setEditing(false)
