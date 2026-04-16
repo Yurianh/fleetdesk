@@ -96,7 +96,7 @@ export default function DriverDetail() {
       queryClient.invalidateQueries({ queryKey: ['drivers'] })
       toast.success('Conducteur mis à jour')
       setEditing(false)
-    } catch { toast.error('Erreur lors de la mise à jour') }
+    } catch (err) { console.error('updateDriver error:', err); toast.error(err?.message || 'Erreur lors de la mise à jour') }
     finally { setSaving(false) }
   }
 
