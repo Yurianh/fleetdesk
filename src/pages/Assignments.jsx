@@ -80,8 +80,8 @@ export default function Assignments() {
                               <Truck className="w-3.5 h-3.5 text-emerald-600" />
                             </div>
                             <div>
-                              <p className="font-semibold text-slate-900 group-hover/link:text-[#1D4ED8]">{vehicle?.plate_number || '—'}</p>
-                              <p className="text-xs text-slate-400">{vehicle?.model || ''}</p>
+                              <p className="font-semibold text-slate-900 group-hover/link:text-[#1D4ED8]">{vehicle?.model || '—'}</p>
+                              <p className="text-xs text-slate-400 font-mono">{vehicle?.plate_number || ''}</p>
                             </div>
                           </Link>
                         </td>
@@ -126,8 +126,8 @@ export default function Assignments() {
                       <Truck className="w-4 h-4 text-emerald-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <Link to={`/Vehicles/${a.vehicle_id}`} className="font-semibold text-slate-900 truncate block">{vehicle?.plate_number || '—'}</Link>
-                      <p className="text-xs text-slate-400 truncate">{vehicle?.model}</p>
+                      <Link to={`/Vehicles/${a.vehicle_id}`} className="font-semibold text-slate-900 truncate block">{vehicle?.model || '—'}</Link>
+                      <p className="text-xs text-slate-400 font-mono truncate">{vehicle?.plate_number}</p>
                       <Link to={`/Drivers/${a.driver_id}`} className="inline-flex items-center gap-1 text-xs text-slate-600 mt-1">
                         <User className="w-3 h-3" />{driver?.name || '—'}
                       </Link>
@@ -169,8 +169,8 @@ export default function Assignments() {
                           <Truck className="w-3.5 h-3.5 text-slate-400" />
                         </div>
                         <div>
-                          <p className="font-semibold text-slate-500 group-hover/link:text-[#1D4ED8]">{v.plate_number}</p>
-                          <p className="text-xs text-slate-400">{v.model}</p>
+                          <p className="font-semibold text-slate-500 group-hover/link:text-[#1D4ED8]">{v.model}</p>
+                          <p className="text-xs text-slate-400 font-mono">{v.plate_number}</p>
                         </div>
                       </Link>
                     </td>
@@ -189,8 +189,8 @@ export default function Assignments() {
                   <Truck className="w-4 h-4 text-slate-400" />
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-500">{v.plate_number}</p>
-                  <p className="text-xs text-slate-400">{v.model}</p>
+                  <p className="font-semibold text-slate-500">{v.model}</p>
+                  <p className="text-xs text-slate-400 font-mono">{v.plate_number}</p>
                 </div>
               </Link>
             ))}
