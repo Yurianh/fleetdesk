@@ -328,10 +328,10 @@ export default function Vehicles() {
         <td className={`w-0.5 p-0 ${isAssigned ? 'bg-emerald-400' : 'bg-transparent'}`} />
         <td className="px-5 py-3.5">
           <Link to={`/Vehicles/${v.id}`} className={`font-semibold hover:text-[#1D4ED8] ${isAssigned ? 'text-slate-900' : 'text-slate-400'}`}>
-            {v.plate_number}
+            {v.model}
           </Link>
         </td>
-        <td className={`px-5 py-3.5 ${isAssigned ? 'text-slate-600' : 'text-slate-400'}`}>{v.model}</td>
+        <td className={`px-5 py-3.5 font-mono text-sm ${isAssigned ? 'text-slate-600' : 'text-slate-400'}`}>{v.plate_number}</td>
         <td className="px-5 py-3.5">
           {driver ? (
             <span className="inline-flex items-center gap-1.5 text-sm text-slate-700">
@@ -379,8 +379,8 @@ export default function Vehicles() {
     return (
       <div key={v.id} className={`flex items-center justify-between p-4 border-b border-slate-100 last:border-0 ${isAssigned ? 'border-l-2 border-l-emerald-400' : ''}`}>
         <Link to={`/Vehicles/${v.id}`} className="flex-1 min-w-0 mr-3">
-          <p className={`font-semibold ${isAssigned ? 'text-slate-900' : 'text-slate-400'}`}>{v.plate_number}</p>
-          <p className={`text-sm truncate ${isAssigned ? 'text-slate-500' : 'text-slate-400'}`}>{v.model}</p>
+          <p className={`font-semibold ${isAssigned ? 'text-slate-900' : 'text-slate-400'}`}>{v.model}</p>
+          <p className={`text-sm font-mono truncate ${isAssigned ? 'text-slate-500' : 'text-slate-400'}`}>{v.plate_number}</p>
           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
             <VehicleStatusBadge vehicleId={v.id} inspections={inspections} />
             {mileage && <span className="text-xs text-slate-400">{mileage.mileage.toLocaleString('fr-FR')} km</span>}
@@ -434,8 +434,8 @@ export default function Vehicles() {
                 <thead>
                   <tr className="bg-white border-b border-slate-200">
                     <th className="w-0.5 p-0" />
-                    <th className="text-left px-5 py-3 font-medium text-slate-500">Plaque</th>
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Modèle</th>
+                    <th className="text-left px-5 py-3 font-medium text-slate-500">Plaque</th>
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Conducteur</th>
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Kilométrage</th>
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Statut</th>
