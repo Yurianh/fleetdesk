@@ -45,7 +45,7 @@ export default function Drivers() {
   const [search, setSearch] = useState('')
   const [showAdd, setShowAdd] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [form, setForm] = useState({ name: '', phone: '', employee_id: '', address: '', dkv_card: '', highway_badge: '', wash_card: '' })
+  const [form, setForm] = useState({ name: '', phone: '', email: '', employee_id: '', date_of_birth: '', address: '', dkv_card: '', highway_badge: '', wash_card: '' })
   const [deleteTarget, setDeleteTarget] = useState(null)
 
   const latestAssignments = getLatestAssignments(assignments)
@@ -61,7 +61,7 @@ export default function Drivers() {
       await createDriver(form)
       queryClient.invalidateQueries({ queryKey: ['drivers'] })
       setShowAdd(false)
-      setForm({ name: '', phone: '', employee_id: '', address: '', dkv_card: '', highway_badge: '', wash_card: '' })
+      setForm({ name: '', phone: '', email: '', employee_id: '', date_of_birth: '', address: '', dkv_card: '', highway_badge: '', wash_card: '' })
       toast.success(t('drivers.added'))
     } catch { toast.error(t('drivers.addError')) }
     finally { setSaving(false) }
@@ -208,8 +208,14 @@ export default function Drivers() {
               <div><Label>Nom complet *</Label><Input value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Jean Dupont" /></div>
               <div><Label>ID conducteur</Label><Input value={form.employee_id} onChange={e => setForm({...form, employee_id: e.target.value})} placeholder="Ex : C-042" /></div>
             </div>
-            <div><Label>Téléphone</Label><Input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} placeholder="+33 6 00 00 00 00" /></div>
-            <div><Label>Adresse</Label><Input value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="12 rue de la Paix, 75001 Paris" /></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><Label>Téléphone</Label><Input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} placeholder="+33 6 00 00 00 00" /></div>
+              <div><Label>Email</Label><Input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="jean.dupont@email.com" /></div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><Label>Date de naissance</Label><Input type="date" value={form.date_of_birth} onChange={e => setForm({...form, date_of_birth: e.target.value})} /></div>
+              <div><Label>Adresse domicile</Label><Input value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="12 rue de la Paix, 75001 Paris" /></div>
+            </div>
             <div className="border-t border-slate-100 pt-4">
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Cartes & badges</p>
               <div className="space-y-3">

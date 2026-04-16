@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Users, CreditCard, Car, Droplets, Pencil, Check, X, MapPin, Hash, Truck, ChevronRight, ArrowLeftRight, UserMinus, Search } from 'lucide-react'
+import { ArrowLeft, Users, CreditCard, Car, Droplets, Pencil, Check, X, MapPin, Hash, Truck, ChevronRight, ArrowLeftRight, UserMinus, Search, Mail, Cake } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
 import { format, differenceInCalendarDays } from 'date-fns'
@@ -74,12 +74,13 @@ export default function DriverDetail() {
     setForm({
       name: driver.name,
       phone: driver.phone || '',
+      email: driver.email || '',
       employee_id: driver.employee_id || '',
       address: driver.address || '',
+      date_of_birth: driver.date_of_birth || '',
       dkv_card: driver.dkv_card || '',
       highway_badge: driver.highway_badge || '',
       wash_card: driver.wash_card || '',
-      date_of_birth: driver.date_of_birth || '',
     })
     setEditing(true)
   }
@@ -143,9 +144,10 @@ export default function DriverDetail() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div><Label>Nom</Label><Input value={form.name} onChange={e => setForm({...form, name: e.target.value})} /></div>
               <div><Label>ID conducteur</Label><Input value={form.employee_id} onChange={e => setForm({...form, employee_id: e.target.value})} placeholder="Ex : C-042" /></div>
-              <div><Label>Téléphone</Label><Input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} /></div>
-              <div><Label>Adresse</Label><Input value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="12 rue de la Paix, 75001 Paris" /></div>
+              <div><Label>Téléphone</Label><Input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} placeholder="+33 6 00 00 00 00" /></div>
+              <div><Label>Email</Label><Input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="jean.dupont@email.com" /></div>
               <div><Label>Date de naissance</Label><Input type="date" value={form.date_of_birth} onChange={e => setForm({...form, date_of_birth: e.target.value})} /></div>
+              <div><Label>Adresse domicile</Label><Input value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="12 rue de la Paix, 75001 Paris" /></div>
             </div>
             <div className="border-t border-slate-100 pt-4">
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Cartes & badges</p>
@@ -179,6 +181,16 @@ export default function DriverDetail() {
                     )}
                   </div>
                   {driver.phone && <p className="text-slate-500 text-sm mt-0.5">{driver.phone}</p>}
+                  {driver.email && (
+                    <p className="text-slate-400 text-xs flex items-center gap-1 mt-0.5">
+                      <Mail className="w-3 h-3" />{driver.email}
+                    </p>
+                  )}
+                  {driver.date_of_birth && (
+                    <p className="text-slate-400 text-xs flex items-center gap-1 mt-0.5">
+                      <Cake className="w-3 h-3" />{format(new Date(driver.date_of_birth), 'd MMM yyyy', { locale: dateLocale })}
+                    </p>
+                  )}
                   {driver.address && (
                     <p className="text-slate-400 text-xs flex items-center gap-1 mt-0.5">
                       <MapPin className="w-3 h-3" />{driver.address}
