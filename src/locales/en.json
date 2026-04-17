@@ -98,6 +98,8 @@
     "starterFeatures": [
       "5 vehicles",
       "3 drivers",
+      "Complete driver profiles",
+      "Regulatory documents (6 types)",
       "Mileage tracking",
       "Maintenance records"
     ],
@@ -106,6 +108,7 @@
       "Unlimited drivers",
       "Technical inspections",
       "Maintenance forecasting",
+      "Expired document alerts",
       "Analytics"
     ],
     "enterpriseFeatures": [

@@ -17,10 +17,17 @@ const categories = [
       },
       {
         title: 'Profils conducteurs',
-        desc: 'Stockez les informations des conducteurs, permis et coordonnées. Sachez toujours qui est responsable de quel véhicule.',
-        details: ["Dates d'expiration de permis avec alertes", 'Coordonnées et informations de contact centralisées', 'Historique des affectations par conducteur'],
+        desc: 'Fiche complète par conducteur — coordonnées, date de naissance, adresse domicile, ID unique. Tout ce qu\'il faut pour gérer votre équipe.',
+        details: ['Téléphone, email, date de naissance et adresse domicile', 'ID conducteur unique avec validation anti-doublon', 'Historique des affectations par conducteur'],
         icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
         bg: 'bg-violet-50', color: 'text-violet-600', accentBg: 'bg-violet-600',
+      },
+      {
+        title: 'Documents réglementaires',
+        desc: 'Suivez les 6 documents obligatoires par conducteur — aptitude à la conduite, casier judiciaire, formations SST/PSC1, TPMR, visite médicale et éco-conduite.',
+        details: ['Barre de progression et statut global par conducteur', 'Alertes segmentées : expirés, à renouveler bientôt, manquants', 'Calcul automatique des dates d\'expiration selon la réglementation'],
+        icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>',
+        bg: 'bg-rose-50', color: 'text-rose-600', accentBg: 'bg-rose-600',
       },
       {
         title: 'Affectations',
@@ -82,9 +89,9 @@ const categories = [
         bg: 'bg-violet-50', color: 'text-violet-600', accentBg: 'bg-violet-600',
       },
       {
-        title: 'Vue conformité',
-        desc: "Une vue claire des véhicules à contrôler ou en retard de service — soyez toujours prêt pour un audit.",
-        details: ['Code couleur : conforme, à surveiller, en retard', 'Export de la liste pour vos rapports internes', 'Alertes push avant les dates critiques'],
+        title: 'Alertes & conformité',
+        desc: "Tableau de bord d'alertes séparé entre véhicules et conducteurs — identifiez en un coup d'œil ce qui nécessite une action immédiate.",
+        details: ['Deux sections distinctes : alertes véhicules et alertes conducteurs', 'Code couleur : action immédiate (rouge) ou à surveiller (orange)', 'Alertes documents expirés et contrôles techniques dépassés'],
         icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
         bg: 'bg-amber-50', color: 'text-amber-600', accentBg: 'bg-amber-600',
       },

@@ -98,6 +98,8 @@
     "starterFeatures": [
       "5 véhicules",
       "3 conducteurs",
+      "Fiches conducteurs complètes",
+      "Documents réglementaires (6 types)",
       "Suivi kilométrique",
       "Enregistrements maintenance"
     ],
@@ -106,6 +108,7 @@
       "Conducteurs illimités",
       "Contrôles techniques",
       "Prévisions maintenance",
+      "Alertes documents expirés",
       "Analytiques"
     ],
     "enterpriseFeatures": [
@@ -451,9 +454,10 @@
       "features": {
         "up5": "Jusqu'à 5 véhicules",
         "up3drivers": "Jusqu'à 3 conducteurs",
-        "profiles": "Fiches véhicules et conducteurs",
+        "profiles": "Fiches conducteurs complètes (coordonnées, adresse, DDN)",
         "basicMileage": "Suivi kilométrique de base",
         "maintenanceRecords": "Enregistrements de maintenance",
+        "driverDocs": "Documents réglementaires conducteurs (6 types)",
         "emailSupport": "Support par email",
         "up25": "Jusqu'à 25 véhicules",
         "unlimitedDrivers": "Conducteurs illimités",
@@ -462,6 +466,7 @@
         "washTracking": "Suivi des lavages",
         "forecasting": "Prévisions de maintenance",
         "analytics": "Tableau de bord analytique",
+        "docAlerts": "Alertes documents expirés & à renouveler",
         "prioritySupport": "Support prioritaire",
         "unlimitedVehicles": "Véhicules illimités",
         "everythingPro": "Tout ce qui est dans Pro",
