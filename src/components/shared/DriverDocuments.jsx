@@ -285,7 +285,7 @@ export default function DriverDocuments({ driverId, driver }) {
             <h2 className="font-semibold text-slate-900 text-sm">Documents réglementaires</h2>
           </div>
           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${badgeStyle}`}>
-            {completedCount}/{totalCount} en règle
+            {completedCount}/{totalCount} conformes
           </span>
         </div>
         <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
@@ -451,7 +451,7 @@ export default function DriverDocuments({ driverId, driver }) {
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
               <span className="text-[11px] font-semibold text-emerald-600 uppercase tracking-wide">
-                En règle · {validTypes.length}
+                Conformes · {validTypes.length}
               </span>
             </div>
             {validExpanded
