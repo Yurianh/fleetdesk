@@ -417,103 +417,136 @@ function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, v
           </div>
         </div>
       ) : (
-        <div className="space-y-2">
-          {/* Red group */}
-          {totalUrgent > 0 && (
-            <div className="rounded-xl bg-red-50 border border-red-100 overflow-hidden">
-              <div className="flex items-center gap-2 px-3 pt-2.5 pb-1.5">
-                <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
-                <p className="text-xs font-semibold text-red-700 flex-1">
-                  {t('alerts.urgentGroup', { count: totalUrgent })}
-                </p>
+        <div className="space-y-3">
+
+          {/* ── Section Véhicules ── */}
+          {(urgentInspections.length > 0 || urgentForecasts.filter(f => f.status === 'overdue').length > 0 || warningInspections.length > 0 || urgentForecasts.filter(f => f.status === 'due_soon').length > 0) && (
+            <div>
+              <div className="flex items-center gap-1.5 mb-1.5 px-0.5">
+                <Truck className="w-3.5 h-3.5 text-zinc-400" />
+                <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Véhicules</span>
               </div>
-              <div className="space-y-0.5 pb-2">
-                {urgentInspections.map(ins => {
-                  const v = getVehicleById(vehicles, ins.vehicle_id)
-                  const d = differenceInDays(new Date(ins.expiration_date), new Date())
-                  return (
-                    <Link key={ins.id} to="/Inspections" className="flex items-center justify-between px-3 py-1.5 hover:bg-red-100/50 transition-colors">
-                      <div>
-                        <p className="text-xs font-semibold text-zinc-800">{v?.plate_number || '—'}</p>
-                        <p className="text-xs text-red-600">
-                          {d === 0 ? t('alerts.ctExpiresToday') : t('alerts.ctExpiresDays', { count: d })}
-                        </p>
-                      </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
-                    </Link>
-                  )
-                })}
-                {urgentForecasts.filter(f => f.status === 'overdue').map(f => (
-                  <Link key={f.schedule.id} to="/Maintenance" className="flex items-center justify-between px-3 py-1.5 hover:bg-red-100/50 transition-colors">
-                    <div>
-                      <p className="text-xs font-semibold text-zinc-800">{f.vehicle?.plate_number || '—'}</p>
-                      <p className="text-xs text-red-600">{t('alerts.overdueService')}</p>
+              <div className="space-y-1.5">
+                {(urgentInspections.length > 0 || urgentForecasts.filter(f => f.status === 'overdue').length > 0) && (
+                  <div className="rounded-xl bg-red-50 border border-red-100 overflow-hidden">
+                    <div className="flex items-center gap-2 px-3 pt-2.5 pb-1.5">
+                      <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
+                      <p className="text-xs font-semibold text-red-700">Action immédiate</p>
                     </div>
-                    <ChevronRight className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
-                  </Link>
-                ))}
-                {urgentDocAlerts.map(({ doc, driver, days }) => (
-                  <Link key={doc.id} to={`/Drivers/${driver.id}`} className="flex items-center justify-between px-3 py-1.5 hover:bg-red-100/50 transition-colors">
-                    <div>
-                      <p className="text-xs font-semibold text-zinc-800">{driver.name}</p>
-                      <p className="text-xs text-red-600">
-                        {DOC_TYPE_CONFIG[doc.type]?.label || doc.type} — {days < 0 ? `expiré il y a ${Math.abs(days)}j` : `expire dans ${days}j`}
-                      </p>
+                    <div className="space-y-0.5 pb-2">
+                      {urgentInspections.map(ins => {
+                        const v = getVehicleById(vehicles, ins.vehicle_id)
+                        const d = differenceInDays(new Date(ins.expiration_date), new Date())
+                        return (
+                          <Link key={ins.id} to="/Inspections" className="flex items-center justify-between px-3 py-1.5 hover:bg-red-100/50 transition-colors">
+                            <div>
+                              <p className="text-xs font-semibold text-zinc-800">{v?.model || v?.plate_number || '—'}</p>
+                              <p className="text-xs text-red-600">{d === 0 ? t('alerts.ctExpiresToday') : t('alerts.ctExpiresDays', { count: d })}</p>
+                            </div>
+                            <ChevronRight className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
+                          </Link>
+                        )
+                      })}
+                      {urgentForecasts.filter(f => f.status === 'overdue').map(f => (
+                        <Link key={f.schedule.id} to="/Maintenance" className="flex items-center justify-between px-3 py-1.5 hover:bg-red-100/50 transition-colors">
+                          <div>
+                            <p className="text-xs font-semibold text-zinc-800">{f.vehicle?.model || f.vehicle?.plate_number || '—'}</p>
+                            <p className="text-xs text-red-600">{t('alerts.overdueService')}</p>
+                          </div>
+                          <ChevronRight className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
+                        </Link>
+                      ))}
                     </div>
-                    <ChevronRight className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
-                  </Link>
-                ))}
+                  </div>
+                )}
+                {(warningInspections.length > 0 || urgentForecasts.filter(f => f.status === 'due_soon').length > 0) && (
+                  <div className="rounded-xl bg-amber-50 border border-amber-100 overflow-hidden">
+                    <div className="flex items-center gap-2 px-3 pt-2.5 pb-1.5">
+                      <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
+                      <p className="text-xs font-semibold text-amber-700">À surveiller</p>
+                    </div>
+                    <div className="space-y-0.5 pb-2">
+                      {warningInspections.map(ins => {
+                        const v = getVehicleById(vehicles, ins.vehicle_id)
+                        const d = differenceInDays(new Date(ins.expiration_date), new Date())
+                        return (
+                          <Link key={ins.id} to="/Inspections" className="flex items-center justify-between px-3 py-1.5 hover:bg-amber-100/50 transition-colors">
+                            <div>
+                              <p className="text-xs font-semibold text-zinc-800">{v?.model || v?.plate_number || '—'}</p>
+                              <p className="text-xs text-amber-600">{t('alerts.ctDueDays', { count: d })}</p>
+                            </div>
+                            <ChevronRight className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+                          </Link>
+                        )
+                      })}
+                      {urgentForecasts.filter(f => f.status === 'due_soon').map(f => (
+                        <Link key={f.schedule.id} to="/Maintenance" className="flex items-center justify-between px-3 py-1.5 hover:bg-amber-100/50 transition-colors">
+                          <div>
+                            <p className="text-xs font-semibold text-zinc-800">{f.vehicle?.model || f.vehicle?.plate_number || '—'}</p>
+                            <p className="text-xs text-amber-600">
+                              {f.kmUntil !== null ? t('alerts.serviceInKm', { km: f.kmUntil.toLocaleString() }) : t('alerts.serviceInDays', { count: f.daysUntil })}
+                            </p>
+                          </div>
+                          <ChevronRight className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
 
-          {/* Orange group */}
-          {totalWarning > 0 && (
-            <div className="rounded-xl bg-amber-50 border border-amber-100 overflow-hidden">
-              <div className="flex items-center gap-2 px-3 pt-2.5 pb-1.5">
-                <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
-                <p className="text-xs font-semibold text-amber-700 flex-1">
-                  {t('alerts.warningGroup', { count: totalWarning })}
-                </p>
+          {/* ── Section Conducteurs ── */}
+          {(urgentDocAlerts.length > 0 || warningDocAlerts.length > 0) && (
+            <div>
+              <div className="flex items-center gap-1.5 mb-1.5 px-0.5">
+                <Users className="w-3.5 h-3.5 text-zinc-400" />
+                <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Conducteurs</span>
               </div>
-              <div className="space-y-0.5 pb-2">
-                {warningInspections.map(ins => {
-                  const v = getVehicleById(vehicles, ins.vehicle_id)
-                  const d = differenceInDays(new Date(ins.expiration_date), new Date())
-                  return (
-                    <Link key={ins.id} to="/Inspections" className="flex items-center justify-between px-3 py-1.5 hover:bg-amber-100/50 transition-colors">
-                      <div>
-                        <p className="text-xs font-semibold text-zinc-800">{v?.plate_number || '—'}</p>
-                        <p className="text-xs text-amber-600">{t('alerts.ctDueDays', { count: d })}</p>
-                      </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-                    </Link>
-                  )
-                })}
-                {urgentForecasts.filter(f => f.status === 'due_soon').map(f => (
-                  <Link key={f.schedule.id} to="/Maintenance" className="flex items-center justify-between px-3 py-1.5 hover:bg-amber-100/50 transition-colors">
-                    <div>
-                      <p className="text-xs font-semibold text-zinc-800">{f.vehicle?.plate_number || '—'}</p>
-                      <p className="text-xs text-amber-600">
-                        {f.kmUntil !== null
-                          ? t('alerts.serviceInKm', { km: f.kmUntil.toLocaleString() })
-                          : t('alerts.serviceInDays', { count: f.daysUntil })}
-                      </p>
+              <div className="space-y-1.5">
+                {urgentDocAlerts.length > 0 && (
+                  <div className="rounded-xl bg-red-50 border border-red-100 overflow-hidden">
+                    <div className="flex items-center gap-2 px-3 pt-2.5 pb-1.5">
+                      <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
+                      <p className="text-xs font-semibold text-red-700">Documents expirés</p>
                     </div>
-                    <ChevronRight className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-                  </Link>
-                ))}
-                {warningDocAlerts.map(({ doc, driver, days }) => (
-                  <Link key={doc.id} to={`/Drivers/${driver.id}`} className="flex items-center justify-between px-3 py-1.5 hover:bg-amber-100/50 transition-colors">
-                    <div>
-                      <p className="text-xs font-semibold text-zinc-800">{driver.name}</p>
-                      <p className="text-xs text-amber-600">
-                        {DOC_TYPE_CONFIG[doc.type]?.label || doc.type} — expire dans {days}j
-                      </p>
+                    <div className="space-y-0.5 pb-2">
+                      {urgentDocAlerts.map(({ doc, driver, days }) => (
+                        <Link key={doc.id} to={`/Drivers/${driver.id}`} className="flex items-center justify-between px-3 py-1.5 hover:bg-red-100/50 transition-colors">
+                          <div>
+                            <p className="text-xs font-semibold text-zinc-800">{driver.name}</p>
+                            <p className="text-xs text-red-600">
+                              {DOC_TYPE_CONFIG[doc.type]?.label || doc.type} — {days < 0 ? `expiré il y a ${Math.abs(days)}j` : `expire dans ${days}j`}
+                            </p>
+                          </div>
+                          <ChevronRight className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
+                        </Link>
+                      ))}
                     </div>
-                    <ChevronRight className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-                  </Link>
-                ))}
+                  </div>
+                )}
+                {warningDocAlerts.length > 0 && (
+                  <div className="rounded-xl bg-amber-50 border border-amber-100 overflow-hidden">
+                    <div className="flex items-center gap-2 px-3 pt-2.5 pb-1.5">
+                      <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
+                      <p className="text-xs font-semibold text-amber-700">Documents à renouveler</p>
+                    </div>
+                    <div className="space-y-0.5 pb-2">
+                      {warningDocAlerts.map(({ doc, driver, days }) => (
+                        <Link key={doc.id} to={`/Drivers/${driver.id}`} className="flex items-center justify-between px-3 py-1.5 hover:bg-amber-100/50 transition-colors">
+                          <div>
+                            <p className="text-xs font-semibold text-zinc-800">{driver.name}</p>
+                            <p className="text-xs text-amber-600">
+                              {DOC_TYPE_CONFIG[doc.type]?.label || doc.type} — expire dans {days}j
+                            </p>
+                          </div>
+                          <ChevronRight className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
