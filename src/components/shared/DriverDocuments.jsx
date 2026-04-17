@@ -209,8 +209,9 @@ export default function DriverDocuments({ driverId, driver }) {
       }
       invalidate()
       setDialogOpen(false)
-    } catch {
-      toast.error("Erreur lors de l'enregistrement")
+    } catch (err) {
+      console.error('handleSave error:', err)
+      toast.error(err?.message || "Erreur lors de l'enregistrement")
     } finally {
       setSaving(false)
     }
