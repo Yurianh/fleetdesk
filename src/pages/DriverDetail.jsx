@@ -215,6 +215,11 @@ export default function DriverDetail() {
         )}
       </div>
 
+      {/* ── Documents ── */}
+      <div className="mb-4">
+        <DriverDocuments driverId={id} driver={driver} />
+      </div>
+
       {/* ── Assignment section ── */}
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden mb-4">
         <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
@@ -373,11 +378,6 @@ export default function DriverDetail() {
             </div>
           </div>
         )}
-      </div>
-
-      {/* ── Documents ── */}
-      <div className="mb-4">
-        <DriverDocuments driverId={id} driver={driver} />
       </div>
 
       {/* ── Assignment history ── */}
