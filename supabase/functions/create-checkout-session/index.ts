@@ -71,15 +71,11 @@ Deno.serve(async (req) => {
       locale: 'fr',
     }
 
-    // 14-day free trial for Pro — no credit card required to start
+    // 14-day free trial for Pro — card required but not charged until trial ends
     if (plan === 'pro' && !existingCustomerId) {
       sessionParams.subscription_data = {
         trial_period_days: 14,
-        trial_settings: {
-          end_behavior: { missing_payment_method: 'cancel' },
-        },
       }
-      sessionParams.payment_method_collection = 'if_required'
     }
 
     // Reuse existing customer or create by email
