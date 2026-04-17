@@ -71,12 +71,10 @@ Deno.serve(async (req) => {
       locale: 'fr',
     }
 
-    // 14-day free trial for Pro — only during initial onboarding (not yet a paying customer)
-    const isInitialOnboarding = !user.user_metadata?.onboarding_complete
-    if (plan === 'pro' && isInitialOnboarding) {
-      sessionParams.subscription_data = {
-        trial_period_days: 14,
-      }
+    // 14-day free trial for Pro (portal guard above already blocks existing paid customers)
+    if (plan === 'pro') {
+      sessionParams.subscription_data = { trial_period_days: 14 }
+      console.log('[checkout] trial applied: 14 days for pro')
     }
 
     // Reuse existing customer or create by email
