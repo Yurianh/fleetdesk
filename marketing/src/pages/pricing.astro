@@ -9,8 +9,10 @@ const APP_URL = 'https://app.fleetdesk.fr'
 const plans = [
   {
     name: 'Starter',
-    price: '9 €',
+    monthlyPrice: '9',
+    annualPrice: '7',
     period: '/mois',
+    annualTotal: '86',
     desc: 'Pour les artisans et indépendants qui veulent une flotte enfin organisée.',
     badge: null,
     trialNote: null,
@@ -24,13 +26,14 @@ const plans = [
     cta: 'Commencer gratuitement',
     ctaHref: `${APP_URL}/login?plan=starter`,
     ctaStyle: 'border',
-    planId: 'starter',
     highlighted: false,
   },
   {
     name: 'Pro',
-    price: '29 €',
+    monthlyPrice: '29',
+    annualPrice: '23',
     period: '/mois',
+    annualTotal: '278',
     desc: 'Pour les équipes en croissance qui ne peuvent pas se permettre un incident de conformité.',
     badge: 'Le plus populaire',
     trialNote: '14 jours gratuits · Sans carte bancaire',
@@ -46,13 +49,14 @@ const plans = [
     cta: 'Démarrer l\'essai gratuit',
     ctaHref: `${APP_URL}/login?plan=pro`,
     ctaStyle: 'primary',
-    planId: 'pro',
     highlighted: true,
   },
   {
     name: 'Enterprise',
-    price: '79 €',
+    monthlyPrice: '79',
+    annualPrice: '63',
     period: '/mois',
+    annualTotal: '758',
     desc: 'Pour les flottes multi-gestionnaires avec des exigences de traçabilité et d\'audit.',
     badge: null,
     trialNote: null,
@@ -67,7 +71,6 @@ const plans = [
     cta: 'Contacter l\'équipe',
     ctaHref: '/contact',
     ctaStyle: 'border',
-    planId: 'enterprise',
     highlighted: false,
   },
 ]
@@ -87,7 +90,7 @@ const faq = [
   },
   {
     q: 'La facturation annuelle est-elle disponible ?',
-    a: 'Oui, avec une remise de 20 %. Contactez-nous pour la configurer sur votre compte.'
+    a: 'Oui, avec une remise de 20 %. Activez-la depuis vos paramètres ou contactez-nous pour la configurer. Vous payez en une fois pour l\'année et économisez 2 mois.'
   },
 ]
 ---
@@ -104,20 +107,35 @@ const faq = [
       <h1 class="text-4xl sm:text-5xl font-bold text-zinc-900 tracking-tight mb-5">
         Le prix juste pour votre flotte
       </h1>
-      <p class="text-lg text-zinc-500 max-w-xl mx-auto mb-6">
+      <p class="text-lg text-zinc-500 max-w-xl mx-auto">
         Démarrez en quelques minutes. Évoluez sans friction. Résiliez à tout moment.
       </p>
-      <!-- Annual savings callout -->
-      <div class="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-100 text-emerald-700 text-sm font-medium px-4 py-2 rounded-full">
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        Facturation annuelle disponible — économisez 20 %
-      </div>
     </div>
   </section>
 
   <!-- Pricing cards -->
   <section id="plans" class="py-16 bg-zinc-50">
     <div class="max-w-5xl mx-auto px-4 sm:px-6">
+
+      <!-- Billing toggle -->
+      <div class="flex items-center justify-center mb-12">
+        <div class="inline-flex bg-white border border-zinc-200 rounded-full p-1 shadow-sm">
+          <button
+            id="btn-monthly"
+            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 bg-zinc-900 text-white shadow"
+          >
+            Mensuel
+          </button>
+          <button
+            id="btn-annual"
+            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-zinc-500 hover:text-zinc-700 flex items-center gap-2"
+          >
+            Annuel
+            <span class="text-[11px] font-bold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded-full">-20%</span>
+          </button>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
         {plans.map(p => (
           <div class={`relative flex flex-col rounded-2xl p-7 ${p.highlighted ? 'border-2 border-[#2563EB] bg-white shadow-xl shadow-[#2563EB]/10 scale-[1.02]' : 'bg-white border border-zinc-200'}`}>
@@ -133,9 +151,23 @@ const faq = [
             <div class="mb-5">
               <p class={`text-xs font-semibold uppercase tracking-widest mb-2 ${p.highlighted ? 'text-[#2563EB]' : 'text-zinc-400'}`}>{p.name}</p>
               <div class="flex items-end gap-1 mb-1">
-                <span class="text-4xl font-bold tracking-tight text-zinc-900 font-mono">{p.price}</span>
+                <span
+                  class="price-amount text-4xl font-bold tracking-tight text-zinc-900 font-mono"
+                  data-monthly={p.monthlyPrice}
+                  data-annual={p.annualPrice}
+                >
+                  {p.monthlyPrice}
+                </span>
+                <span class="text-xl font-bold text-zinc-900 mb-0.5">€</span>
                 <span class="text-sm mb-1.5 text-zinc-400">{p.period}</span>
               </div>
+              {/* Annual subtotal line */}
+              <p
+                class="annual-total text-xs text-zinc-400 hidden"
+                data-total={p.annualTotal}
+              >
+                soit {p.annualTotal} € / an
+              </p>
               {p.trialNote && (
                 <p class="text-xs font-semibold text-emerald-600 mt-1">{p.trialNote}</p>
               )}
@@ -211,3 +243,35 @@ const faq = [
   <CTASection />
   <Footer />
 </Layout>
+
+<script>
+  const btnMonthly = document.getElementById('btn-monthly')
+  const btnAnnual  = document.getElementById('btn-annual')
+  const amounts    = document.querySelectorAll('.price-amount')
+  const totals     = document.querySelectorAll('.annual-total')
+
+  function setMonthly() {
+    btnMonthly.classList.add('bg-zinc-900', 'text-white', 'shadow')
+    btnMonthly.classList.remove('text-zinc-500')
+    btnAnnual.classList.remove('bg-zinc-900', 'text-white', 'shadow')
+    btnAnnual.classList.add('text-zinc-500')
+    amounts.forEach(el => {
+      el.textContent = el.dataset.monthly
+    })
+    totals.forEach(el => el.classList.add('hidden'))
+  }
+
+  function setAnnual() {
+    btnAnnual.classList.add('bg-zinc-900', 'text-white', 'shadow')
+    btnAnnual.classList.remove('text-zinc-500')
+    btnMonthly.classList.remove('bg-zinc-900', 'text-white', 'shadow')
+    btnMonthly.classList.add('text-zinc-500')
+    amounts.forEach(el => {
+      el.textContent = el.dataset.annual
+    })
+    totals.forEach(el => el.classList.remove('hidden'))
+  }
+
+  btnMonthly.addEventListener('click', setMonthly)
+  btnAnnual.addEventListener('click', setAnnual)
+</script>
