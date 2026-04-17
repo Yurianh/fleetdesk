@@ -71,8 +71,9 @@ Deno.serve(async (req) => {
       locale: 'fr',
     }
 
-    // 14-day free trial for Pro — card required but not charged until trial ends
-    if (plan === 'pro' && !existingCustomerId) {
+    // 14-day free trial for Pro — only during initial onboarding (not yet a paying customer)
+    const isInitialOnboarding = !user.user_metadata?.onboarding_complete
+    if (plan === 'pro' && isInitialOnboarding) {
       sessionParams.subscription_data = {
         trial_period_days: 14,
       }
