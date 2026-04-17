@@ -7,6 +7,13 @@ import { useTranslation } from 'react-i18next'
 
 const FLEET_SIZE_KEYS = ['1-5', '6-20', '21-50', '50+']
 
+const FLEET_PLAN_MAP = {
+  '1-5':   'starter',
+  '6-20':  'pro',
+  '21-50': 'enterprise',
+  '50+':   'enterprise',
+}
+
 const GRADIENT = 'linear-gradient(135deg, #bfdbfe 0%, #d1fae5 45%, #fef3c7 100%)'
 
 function StepIndicator({ current, total }) {
@@ -39,6 +46,8 @@ export default function SetupProfile() {
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState('')
 
+  const recommendedPlanId = FLEET_PLAN_MAP[fleetSize] || 'pro'
+
   const plans = [
     {
       id: 'starter',
@@ -53,7 +62,6 @@ export default function SetupProfile() {
       price: t('marketing.pricing.plans.pro.price'),
       period: t('marketing.pricing.plans.pro.period'),
       features: t('onboarding.proFeatures', { returnObjects: true }),
-      recommended: true,
     },
     {
       id: 'enterprise',
@@ -199,7 +207,7 @@ export default function SetupProfile() {
                   {t('common.back')}
                 </button>
                 <button
-                  onClick={() => setStep(2)}
+                  onClick={() => { setPlan(FLEET_PLAN_MAP[fleetSize] || 'pro'); setStep(2) }}
                   disabled={!company.trim() || !fleetSize}
                   className="flex-1 flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
                 >
@@ -215,7 +223,13 @@ export default function SetupProfile() {
               <StepIndicator current={2} total={3} />
               <p className="text-xs font-medium text-[#2563EB] mb-1">{t('onboarding.step3of3')}</p>
               <h1 className="text-[17px] font-semibold text-zinc-900 mb-1">{t('onboarding.choosePlan')}</h1>
-              <p className="text-sm text-zinc-400 mb-6">{t('onboarding.choosePlanDesc')}</p>
+              <p className="text-sm text-zinc-400 mb-3">{t('onboarding.choosePlanDesc')}</p>
+              {fleetSize && (
+                <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2 mb-4">
+                  <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                  Pour une flotte de {fleetSize} véhicules, nous vous recommandons le plan <span className="font-bold capitalize ml-0.5">{recommendedPlanId}</span>.
+                </div>
+              )}
 
               <div className="space-y-3 mb-6">
                 {plans.map(p => {
@@ -239,8 +253,8 @@ export default function SetupProfile() {
                           </div>
                           <div>
                             <span className="text-sm font-semibold text-zinc-900">{t(`marketing.pricing.plans.${p.id}.name`)}</span>
-                            {p.recommended && (
-                              <span className="ml-2 text-[10px] font-bold text-[#2563EB] bg-[#2563EB]/10 px-1.5 py-0.5 rounded-full">
+                            {p.id === recommendedPlanId && (
+                              <span className="ml-2 text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">
                                 {t('onboarding.recommended')}
                               </span>
                             )}
