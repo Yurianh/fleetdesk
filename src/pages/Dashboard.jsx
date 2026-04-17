@@ -849,6 +849,9 @@ export default function Dashboard() {
 
   const totalAlerts = urgentInspections.length + urgentForecasts.length
   const openIssues  = maintenanceRecords.filter(m => m.status === 'PROBLEM').length
+    + urgentDocAlerts.length + warningDocAlerts.length
+    + urgentInspections.length + warningInspections.length
+    + urgentForecasts.length
 
   // ── Unified activity timeline ──────────────────────────────────
   // Merges all event types: assignments, mileage, washes, maintenance
