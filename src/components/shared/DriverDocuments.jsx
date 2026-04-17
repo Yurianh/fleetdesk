@@ -134,6 +134,8 @@ export default function DriverDocuments({ driverId, driver }) {
     docsByType[d.type] = d
   }
 
+  const [showHelp, setShowHelp] = useState(false)
+
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ['driverDocuments', driverId] })
     queryClient.invalidateQueries({ queryKey: ['allDriverDocuments'] })
@@ -233,9 +235,10 @@ export default function DriverDocuments({ driverId, driver }) {
   const conf = DOC_TYPE_CONFIG[form.type]
 
   // Categorise documents by urgency
-  const urgentTypes = []   // expired or expiring ≤ 30 days
-  const missingTypes = []  // no doc at all
-  const validTypes = []    // recorded or valid
+  const expiredTypes = []       // days < 0 → critical
+  const expiringSoonTypes = []  // 0 ≤ days ≤ 60 → warning
+  const missingTypes = []       // no doc at all
+  const validTypes = []         // days > 60 or no expiry set
 
   for (const type of DOC_TYPES_ORDER) {
     const doc = docsByType[type]
@@ -245,70 +248,85 @@ export default function DriverDocuments({ driverId, driver }) {
       validTypes.push(type)
     } else {
       const days = differenceInDays(new Date(doc.expiry_date), new Date())
-      if (days <= 30) urgentTypes.push(type)
+      if (days < 0) expiredTypes.push(type)
+      else if (days <= 60) expiringSoonTypes.push(type)
       else validTypes.push(type)
     }
   }
 
   const completedCount = validTypes.length
   const totalCount = DOC_TYPES_ORDER.length
+  const progressPct = Math.round((completedCount / totalCount) * 100)
+  const overallStatus = expiredTypes.length > 0 ? 'expired'
+    : expiringSoonTypes.length > 0 ? 'expiring'
+    : completedCount === totalCount ? 'complete'
+    : 'incomplete'
+
+  const progressColor = overallStatus === 'expired' ? 'bg-red-400'
+    : overallStatus === 'expiring' ? 'bg-amber-400'
+    : overallStatus === 'complete' ? 'bg-emerald-400'
+    : 'bg-slate-300'
+
+  const badgeStyle = overallStatus === 'expired' ? 'text-red-700 bg-red-100'
+    : overallStatus === 'expiring' ? 'text-amber-700 bg-amber-100'
+    : overallStatus === 'complete' ? 'text-emerald-700 bg-emerald-100'
+    : 'text-slate-500 bg-slate-100'
 
   return (
   <>
     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-      {/* Header with progress summary */}
+
+      {/* ── Header ── */}
       <div className="px-5 py-4 border-b border-slate-100">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <FileText className="w-4 h-4 text-slate-400" />
             <h2 className="font-semibold text-slate-900 text-sm">Documents réglementaires</h2>
           </div>
-          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-            urgentTypes.length > 0
-              ? 'text-red-700 bg-red-100'
-              : completedCount === totalCount
-              ? 'text-emerald-700 bg-emerald-100'
-              : 'text-slate-500 bg-slate-100'
-          }`}>
+          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${badgeStyle}`}>
             {completedCount}/{totalCount} en règle
           </span>
         </div>
-        {/* Progress bar */}
-        <div className="mt-2.5 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+        <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
           <div
-            className={`h-full rounded-full transition-all ${urgentTypes.length > 0 ? 'bg-red-400' : 'bg-emerald-400'}`}
-            style={{ width: `${(completedCount / totalCount) * 100}%` }}
+            className={`h-full rounded-full transition-all duration-500 ${progressColor}`}
+            style={{ width: `${progressPct}%` }}
           />
         </div>
+        {overallStatus !== 'complete' && (
+          <p className="text-xs text-slate-400 mt-2.5 leading-relaxed">
+            Certains documents sont requis pour la conformité légale. Mettez-les à jour pour éviter tout risque en cas de contrôle.
+          </p>
+        )}
       </div>
 
-      {/* Urgent items — expired or expiring soon */}
-      {urgentTypes.length > 0 && (
-        <div className="divide-y divide-red-50">
-          <div className="px-5 pt-3 pb-1">
-            <p className="text-[11px] font-semibold text-red-600 uppercase tracking-wide flex items-center gap-1">
-              <AlertTriangle className="w-3 h-3" /> Attention requise
-            </p>
+      {/* ── Expirés ── */}
+      {expiredTypes.length > 0 && (
+        <div>
+          <div className="px-5 py-2 bg-red-50 border-b border-red-100 flex items-center gap-2">
+            <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
+            <span className="text-[11px] font-semibold text-red-600 uppercase tracking-wide">
+              Expirés · {expiredTypes.length}
+            </span>
           </div>
-          {urgentTypes.map(type => {
-            const typeConf = DOC_TYPE_CONFIG[type]
-            const doc = docsByType[type]
-            return (
-              <div key={type} className="flex items-center gap-3 px-5 py-3 border-l-2 border-red-400 bg-red-50/30">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-sm font-medium text-slate-900">{typeConf.label}</p>
-                    <DocStatusBadge doc={doc} />
-                  </div>
-                  {doc && (
-                    <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                      <p className="text-xs text-slate-400">
-                        Validé le {format(new Date(doc.validation_date), 'd MMM yyyy', { locale: fr })}
-                      </p>
+          <div className="divide-y divide-red-50">
+            {expiredTypes.map(type => {
+              const doc = docsByType[type]
+              const days = Math.abs(differenceInDays(new Date(doc.expiry_date), new Date()))
+              return (
+                <div key={type} className="flex items-center gap-3 px-5 py-3.5 bg-red-50/30 hover:bg-red-50/60 transition-colors border-l-2 border-red-400">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                      <p className="text-sm font-semibold text-slate-900">{DOC_TYPE_CONFIG[type].label}</p>
+                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-red-700 bg-red-100 px-2 py-0.5 rounded-full">
+                        <AlertTriangle className="w-3 h-3" />Expiré il y a {days}j
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 flex-wrap">
                       {doc.expiry_date && (
-                        <p className="text-xs text-slate-400">
-                          · Expire le {format(new Date(doc.expiry_date), 'd MMM yyyy', { locale: fr })}
-                        </p>
+                        <span className="text-xs text-slate-400">
+                          Expiré le {format(new Date(doc.expiry_date), 'd MMM yyyy', { locale: fr })}
+                        </span>
                       )}
                       {doc.file_url && (
                         <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
@@ -317,98 +335,163 @@ export default function DriverDocuments({ driverId, driver }) {
                         </a>
                       )}
                     </div>
-                  )}
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button onClick={() => openEdit(doc)}
+                      className="text-xs font-semibold text-white bg-red-500 hover:bg-red-600 px-3 py-1.5 rounded-lg transition-colors shadow-sm">
+                      Mettre à jour
+                    </button>
+                    <button onClick={() => setDeleteTarget(doc)}
+                      className="p-1.5 text-slate-300 hover:text-red-400 hover:bg-red-50 rounded-lg transition-colors">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  <button onClick={() => openEdit(doc)}
-                    className="p-1.5 text-slate-400 hover:text-[#1D4ED8] hover:bg-blue-50 rounded-lg transition-colors">
-                    <Pencil className="w-3.5 h-3.5" />
-                  </button>
-                  <button onClick={() => setDeleteTarget(doc)}
-                    className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      )}
-
-      {/* Missing items — compact grid */}
-      {missingTypes.length > 0 && (
-        <div className="px-5 py-4 border-t border-slate-100">
-          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-3">
-            À compléter · {missingTypes.length}
-          </p>
-          <div className="grid grid-cols-2 gap-2">
-            {missingTypes.map(type => (
-              <button
-                key={type}
-                onClick={() => openAdd(type)}
-                className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-dashed border-slate-200 hover:border-[#2563EB] hover:bg-[#2563EB]/5 text-left transition-colors group"
-              >
-                <Plus className="w-3.5 h-3.5 text-slate-300 group-hover:text-[#2563EB] shrink-0 transition-colors" />
-                <span className="text-xs font-medium text-slate-500 group-hover:text-[#2563EB] leading-tight transition-colors">
-                  {DOC_TYPE_CONFIG[type].label}
-                </span>
-              </button>
-            ))}
+              )
+            })}
           </div>
         </div>
       )}
 
-      {/* Valid items — collapsible */}
+      {/* ── Expire bientôt ── */}
+      {expiringSoonTypes.length > 0 && (
+        <div className={expiredTypes.length > 0 ? 'border-t border-slate-100' : ''}>
+          <div className="px-5 py-2 bg-amber-50 border-b border-amber-100 flex items-center gap-2">
+            <Clock className="w-3.5 h-3.5 text-amber-500" />
+            <span className="text-[11px] font-semibold text-amber-600 uppercase tracking-wide">
+              Expire bientôt · {expiringSoonTypes.length}
+            </span>
+          </div>
+          <div className="divide-y divide-amber-50/60">
+            {expiringSoonTypes.map(type => {
+              const doc = docsByType[type]
+              const days = differenceInDays(new Date(doc.expiry_date), new Date())
+              return (
+                <div key={type} className="flex items-center gap-3 px-5 py-3.5 bg-amber-50/20 hover:bg-amber-50/50 transition-colors border-l-2 border-amber-400">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                      <p className="text-sm font-semibold text-slate-900">{DOC_TYPE_CONFIG[type].label}</p>
+                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
+                        <Clock className="w-3 h-3" />Expire dans {days}j
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 flex-wrap">
+                      {doc.expiry_date && (
+                        <span className="text-xs text-slate-400">
+                          Expire le {format(new Date(doc.expiry_date), 'd MMM yyyy', { locale: fr })}
+                        </span>
+                      )}
+                      {doc.file_url && (
+                        <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs text-[#2563EB] hover:underline">
+                          <ExternalLink className="w-3 h-3" />PDF
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button onClick={() => openEdit(doc)}
+                      className="text-xs font-semibold text-amber-700 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-lg transition-colors">
+                      Renouveler
+                    </button>
+                    <button onClick={() => setDeleteTarget(doc)}
+                      className="p-1.5 text-slate-300 hover:text-red-400 hover:bg-red-50 rounded-lg transition-colors">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── À compléter ── */}
+      {missingTypes.length > 0 && (
+        <div className={(expiredTypes.length > 0 || expiringSoonTypes.length > 0) ? 'border-t border-slate-100' : ''}>
+          <div className="px-5 py-2 bg-slate-50 border-b border-slate-100">
+            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
+              À compléter · {missingTypes.length}
+            </span>
+          </div>
+          <div className="px-5 py-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {missingTypes.map(type => (
+                <button
+                  key={type}
+                  onClick={() => openAdd(type)}
+                  className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-dashed border-slate-200 hover:border-[#2563EB] hover:bg-[#2563EB]/5 text-left transition-all group"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-7 h-7 rounded-lg bg-slate-100 group-hover:bg-[#2563EB]/10 flex items-center justify-center shrink-0 transition-colors">
+                      <Plus className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#2563EB] transition-colors" />
+                    </div>
+                    <span className="text-xs font-medium text-slate-600 group-hover:text-slate-900 leading-tight transition-colors">
+                      {DOC_TYPE_CONFIG[type].label}
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-semibold text-slate-300 group-hover:text-[#2563EB] shrink-0 transition-colors">
+                    Ajouter →
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── En règle (collapsible) ── */}
       {validTypes.length > 0 && (
         <div className="border-t border-slate-100">
           <button
             onClick={() => setValidExpanded(v => !v)}
-            className="w-full flex items-center justify-between px-5 py-3 hover:bg-slate-50 transition-colors"
+            className="w-full flex items-center justify-between px-5 py-3 hover:bg-slate-50/80 transition-colors"
           >
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide flex items-center gap-1.5">
-              <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-              En règle · {validTypes.length}
-            </p>
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+              <span className="text-[11px] font-semibold text-emerald-600 uppercase tracking-wide">
+                En règle · {validTypes.length}
+              </span>
+            </div>
             {validExpanded
               ? <ChevronUp className="w-4 h-4 text-slate-300" />
               : <ChevronDown className="w-4 h-4 text-slate-300" />
             }
           </button>
           {validExpanded && (
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-slate-50">
               {validTypes.map(type => {
-                const typeConf = DOC_TYPE_CONFIG[type]
                 const doc = docsByType[type]
                 return (
-                  <div key={type} className="flex items-center gap-3 px-5 py-3">
+                  <div key={type} className="flex items-center gap-3 px-5 py-3 hover:bg-slate-50/60 transition-colors group">
+                    <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+                      <Check className="w-2.5 h-2.5 text-emerald-500" />
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-sm font-medium text-slate-900">{typeConf.label}</p>
-                        <DocStatusBadge doc={doc} />
-                      </div>
+                      <p className="text-sm font-medium text-slate-700">{DOC_TYPE_CONFIG[type].label}</p>
                       {doc && (
-                        <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                          <p className="text-xs text-slate-400">
+                        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                          <span className="text-xs text-slate-400">
                             Validé le {format(new Date(doc.validation_date), 'd MMM yyyy', { locale: fr })}
-                          </p>
+                          </span>
                           {doc.expiry_date && (
-                            <p className="text-xs text-slate-400">
+                            <span className="text-xs text-slate-400">
                               · Expire le {format(new Date(doc.expiry_date), 'd MMM yyyy', { locale: fr })}
-                            </p>
+                            </span>
                           )}
-                          {doc.notes && <p className="text-xs text-slate-400 italic">· {doc.notes}</p>}
-                          {doc.file_url && (
-                            <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 text-xs text-[#2563EB] hover:underline">
-                              <ExternalLink className="w-3 h-3" />PDF
-                            </a>
-                          )}
+                          {doc.notes && <span className="text-xs text-slate-400 italic">· {doc.notes}</span>}
                         </div>
                       )}
                     </div>
-                    <div className="flex items-center gap-1 flex-shrink-0">
+                    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {doc?.file_url && (
+                        <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
+                          className="p-1.5 text-slate-400 hover:text-[#2563EB] hover:bg-blue-50 rounded-lg transition-colors">
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      )}
                       <button onClick={() => openEdit(doc)}
-                        className="p-1.5 text-slate-400 hover:text-[#1D4ED8] hover:bg-blue-50 rounded-lg transition-colors">
+                        className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
                       <button onClick={() => setDeleteTarget(doc)}
