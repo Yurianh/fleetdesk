@@ -5,6 +5,7 @@ import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from '@/lib/AuthContext'
 import { ThemeProvider } from '@/lib/ThemeContext'
+import { Analytics } from '@vercel/analytics/react'
 
 // App
 import PageNotFound from './lib/PageNotFound'
@@ -113,6 +114,7 @@ function App() {
             <AppRoutes />
           </Router>
           <Toaster />
+          <Analytics />
         </QueryClientProvider>
       </AuthProvider>
     </ThemeProvider>
