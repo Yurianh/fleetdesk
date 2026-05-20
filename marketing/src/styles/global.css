@@ -5,4 +5,13 @@
 @layer base {
   html { scroll-behavior: smooth; }
   body { @apply antialiased; }
+
+  h1, h2 {
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  h3 {
+    letter-spacing: -0.015em;
+  }
 }

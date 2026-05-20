@@ -1,26 +1,31 @@
 ---
 const APP_URL = 'https://app.fleetdesk.fr'
 ---
-<section class="py-24 border-t border-zinc-100">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-    <h2 class="text-3xl sm:text-4xl font-bold text-zinc-900 tracking-tight mb-4" style="text-wrap: balance">
-      Prêt à prendre le contrôle de votre flotte ?
+<section class="py-28 bg-zinc-900 relative overflow-hidden">
+  <!-- Gradient blob -->
+  <div class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full opacity-20 blur-3xl"
+    style="background: radial-gradient(ellipse, #2563EB 0%, transparent 70%);" />
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center relative z-10">
+    <p class="text-sm font-semibold text-blue-400 tracking-wide mb-4">Commencez aujourd'hui</p>
+    <h2 class="text-3xl sm:text-5xl font-bold text-white mb-5" style="text-wrap: balance">
+      Prêt à prendre le contrôle<br />de votre flotte ?
     </h2>
     <p class="text-lg text-zinc-400 max-w-xl mx-auto mb-10">
-      Rejoignez les gestionnaires de flotte qui s'appuient sur FleetDesk pour réduire les coûts, rester conformes et garder chaque véhicule sur la route.
+      Rejoignez les équipes qui évitent les pannes imprévues, restent conformes et gardent chaque véhicule sur la route.
     </p>
     <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
       <a href={`${APP_URL}/login?plan=starter`}
-        class="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
+        class="inline-flex items-center gap-2 bg-white hover:bg-zinc-100 text-zinc-900 font-semibold text-sm px-7 py-3.5 rounded-lg transition-colors">
         Commencer gratuitement
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
         </svg>
       </a>
-      <a href="/contact" class="text-sm font-medium text-zinc-400 hover:text-zinc-700 transition-colors">
+      <a href="/contact" class="text-sm font-medium text-zinc-500 hover:text-zinc-300 transition-colors">
         Parler à un commercial
       </a>
     </div>
-    <p class="mt-6 text-xs text-zinc-400">Sans carte bancaire · Gratuit pour les petites flottes</p>
+    <p class="mt-6 text-xs text-zinc-600">Sans carte bancaire · Gratuit pour les petites flottes · Résiliation en 1 clic</p>
   </div>
 </section>

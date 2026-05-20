@@ -144,7 +144,10 @@ export default function HeroSection() {
 
   return (
     <section className="relative overflow-hidden bg-white pt-16 pb-24 sm:pt-20 sm:pb-32">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      {/* Background gradient blobs */}
+      <div className="pointer-events-none absolute -top-40 -right-40 w-[700px] h-[700px] rounded-full bg-blue-50 opacity-60 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-20 -left-20 w-[400px] h-[400px] rounded-full bg-violet-50 opacity-50 blur-3xl" />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
           {/* Left: copy */}
