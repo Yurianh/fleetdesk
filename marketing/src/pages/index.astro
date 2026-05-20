@@ -7,10 +7,64 @@ import Footer from '../components/Footer.astro'
 
 const APP_URL = 'https://app.fleetdesk.fr'
 
-const stats = [
-  { value: '27%',  label: 'Réduction moyenne des pannes imprévues' },
-  { value: '2,4×', label: 'Planification de maintenance plus rapide' },
-  { value: '94%',  label: 'Visibilité sur la conformité des contrôles' },
+const trustStats = [
+  { value: '5 min',  label: 'Pour importer toute votre flotte' },
+  { value: '14 j',   label: 'Essai Pro gratuit, sans carte bancaire' },
+  { value: '6',      label: 'Documents réglementaires suivis par conducteur' },
+]
+
+const pains = [
+  {
+    icon: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+    color: 'bg-red-50 text-red-500',
+    title: 'Contrôle technique raté',
+    desc: 'Un oubli de date = véhicule immobilisé, amende, client non livré. FleetDesk alerte 30 jours avant l\'échéance.',
+  },
+  {
+    icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>',
+    color: 'bg-orange-50 text-orange-500',
+    title: 'Document conducteur expiré',
+    desc: 'Visite médicale périmée, formation SST expirée — votre chauffeur ne peut plus rouler légalement sans le savoir.',
+  },
+  {
+    icon: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+    color: 'bg-amber-50 text-amber-500',
+    title: 'Panne surprise',
+    desc: 'La vidange oubliée qui finit en moteur HS. Sans suivi kilométrique, les maintenances préventives ne se font jamais.',
+  },
+  {
+    icon: '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/>',
+    color: 'bg-zinc-100 text-zinc-500',
+    title: 'Excel ingérable à 5+ véhicules',
+    desc: 'Formules cassées, onglets divergents, données perdues. Un tableur n\'est pas un logiciel de gestion de flotte.',
+  },
+]
+
+const steps = [
+  {
+    num: '01',
+    title: 'Ajoutez votre flotte',
+    desc: 'Immatriculations, kilométrages, conducteurs — tout est en place en moins de 5 minutes. Aucune formation requise.',
+    color: 'text-[#2563EB]',
+    numBg: 'bg-blue-50 text-[#2563EB]',
+    border: 'border-blue-100',
+  },
+  {
+    num: '02',
+    title: 'Configurez vos alertes',
+    desc: 'Contrôles techniques, documents conducteurs, intervalles de maintenance — FleetDesk surveille à votre place, 24h/24.',
+    color: 'text-violet-600',
+    numBg: 'bg-violet-50 text-violet-600',
+    border: 'border-violet-100',
+  },
+  {
+    num: '03',
+    title: 'Gérez en toute sérénité',
+    desc: 'Tableau de bord centralisé, alertes proactives, zéro oubli. Votre flotte tourne, vous restez conformes.',
+    color: 'text-emerald-600',
+    numBg: 'bg-emerald-50 text-emerald-600',
+    border: 'border-emerald-100',
+  },
 ]
 
 const highlights = [
@@ -39,6 +93,36 @@ const highlights = [
     desc: 'Transformez les données opérationnelles en insights clairs — coûts, tendances kilométriques et prévisions en un coup d\'œil.',
   },
 ]
+
+const testimonials = [
+  {
+    name: 'Marc Lefebvre',
+    role: 'Gérant · Lefebvre Express',
+    sector: 'Livraison — 8 véhicules',
+    initials: 'ML',
+    avatarBg: 'bg-blue-100 text-[#2563EB]',
+    quote: 'Le premier mois, FleetDesk m\'a rappelé 3 contrôles techniques que j\'avais complètement oubliés. Trois immobilisations évitées dès le départ.',
+    stars: 5,
+  },
+  {
+    name: 'Sophie Renard',
+    role: 'Responsable flotte · BTP Renard',
+    sector: 'BTP — 12 véhicules',
+    initials: 'SR',
+    avatarBg: 'bg-violet-100 text-violet-600',
+    quote: 'Le suivi des documents conducteurs était un cauchemar sur Excel. Maintenant j\'ai une alerte dès qu\'une visite médicale approche. Fini les mauvaises surprises.',
+    stars: 5,
+  },
+  {
+    name: 'Karim Aïssa',
+    role: 'Gérant · AK Plomberie',
+    sector: 'Artisan — 5 véhicules',
+    initials: 'KA',
+    avatarBg: 'bg-emerald-100 text-emerald-600',
+    quote: 'Je cherchais quelque chose de simple, pas un ERP à configurer pendant 3 semaines. FleetDesk s\'apprend en une heure. Mes maintenances sont planifiées 3 mois à l\'avance.',
+    stars: 5,
+  },
+]
 ---
 <Layout
   title="Gestion de flotte simple"
@@ -48,11 +132,11 @@ const highlights = [
 
   <HeroSection client:load />
 
-  <!-- Stats -->
+  <!-- Trust stats -->
   <section class="border-y border-zinc-100 bg-zinc-50">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
       <div class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-zinc-100">
-        {stats.map(s => (
+        {trustStats.map(s => (
           <div class="py-6 sm:py-0 sm:px-10 first:pl-0 last:pr-0">
             <p class="text-3xl font-bold font-mono text-zinc-900 tracking-tight mb-1">{s.value}</p>
             <p class="text-sm text-zinc-500">{s.label}</p>
@@ -62,8 +146,72 @@ const highlights = [
     </div>
   </section>
 
+  <!-- Problem section -->
+  <section class="py-24 bg-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="mb-14 max-w-2xl">
+        <p class="text-sm font-semibold text-red-500 tracking-wide mb-3">Avant FleetDesk</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-zinc-900 tracking-tight mb-4">
+          Ce que coûte vraiment<br />une flotte mal suivie
+        </h2>
+        <p class="text-lg text-zinc-500">
+          Contrôle raté, document expiré, panne évitable — chaque oubli a un prix. FleetDesk existe pour que ça n'arrive plus.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {pains.map(p => (
+          <div class="bg-zinc-50 border border-zinc-100 rounded-xl p-5">
+            <div class={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${p.color}`}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={p.icon} />
+            </div>
+            <h3 class="text-sm font-semibold text-zinc-900 mb-2">{p.title}</h3>
+            <p class="text-sm text-zinc-500 leading-relaxed">{p.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="py-24 bg-zinc-50 border-y border-zinc-100">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="text-center mb-14">
+        <p class="text-sm font-semibold text-[#2563EB] tracking-wide mb-3">Mise en route</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-zinc-900 tracking-tight mb-4">
+          Opérationnel en 5 minutes
+        </h2>
+        <p class="text-lg text-zinc-500 max-w-xl mx-auto">
+          Pas d'intégration complexe, pas de formation. Vous êtes prêt avant la fin de votre café.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+        <!-- Connector line (desktop) -->
+        <div class="hidden md:block absolute top-10 left-[calc(33.33%+1rem)] right-[calc(33.33%+1rem)] h-px bg-zinc-200 z-0" />
+        {steps.map(s => (
+          <div class={`relative z-10 bg-white border ${s.border} rounded-2xl p-7`}>
+            <div class={`inline-flex items-center justify-center w-10 h-10 rounded-xl text-sm font-bold font-mono mb-5 ${s.numBg}`}>
+              {s.num}
+            </div>
+            <h3 class={`text-base font-semibold mb-2 ${s.color}`}>{s.title}</h3>
+            <p class="text-sm text-zinc-500 leading-relaxed">{s.desc}</p>
+          </div>
+        ))}
+      </div>
+      <div class="mt-10 text-center">
+        <a href={`${APP_URL}/login?plan=starter`}
+          class="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
+          Commencer gratuitement
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </a>
+        <p class="mt-3 text-xs text-zinc-400">Sans carte bancaire · Gratuit pour les petites flottes</p>
+      </div>
+    </div>
+  </section>
+
   <!-- Highlights -->
-  <section class="py-24">
+  <section class="py-24 bg-white">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       <div class="mb-14 max-w-2xl">
         <h2 class="text-3xl sm:text-4xl font-bold text-zinc-900 tracking-tight mb-4">
@@ -91,6 +239,45 @@ const highlights = [
             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
           </svg>
         </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="py-24 bg-zinc-50 border-y border-zinc-100">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="text-center mb-14">
+        <p class="text-sm font-semibold text-[#2563EB] tracking-wide mb-3">Témoignages</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-zinc-900 tracking-tight">
+          Ce qu'en disent nos clients
+        </h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {testimonials.map(t => (
+          <div class="bg-white border border-zinc-100 rounded-2xl p-7 flex flex-col">
+            <!-- Stars -->
+            <div class="flex gap-0.5 mb-5">
+              {Array.from({ length: t.stars }).map(() => (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#FBBF24" stroke="none">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              ))}
+            </div>
+            <!-- Quote -->
+            <p class="text-sm text-zinc-600 leading-relaxed flex-1 mb-6">"{t.quote}"</p>
+            <!-- Author -->
+            <div class="flex items-center gap-3">
+              <div class={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${t.avatarBg}`}>
+                {t.initials}
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-zinc-900">{t.name}</p>
+                <p class="text-xs text-zinc-400">{t.role}</p>
+                <p class="text-xs text-zinc-400">{t.sector}</p>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   </section>
