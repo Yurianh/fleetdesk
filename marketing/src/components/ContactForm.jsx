@@ -12,11 +12,30 @@ export default function ContactForm() {
   async function handleSubmit(e) {
     e.preventDefault()
     setSending(true)
-    // TODO: wire up to your preferred email service (Resend, Formspree, etc.)
-    // For now, open mailto as fallback
-    const body = encodeURIComponent(`Nom: ${form.name}\nEntreprise: ${form.company}\n\n${form.message}`)
-    window.open(`mailto:contact@fleetdesk.fr?subject=Message de ${form.name}&body=${body}`)
-    setTimeout(() => { setSending(false); setSent(true) }, 500)
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: '9c20f57d-a94d-46db-ad2b-a0f9b3185ee4',
+          name: form.name,
+          email: form.email,
+          company: form.company,
+          message: form.message,
+          subject: `Nouveau message FleetDesk de ${form.name}`,
+        }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setSent(true)
+      } else {
+        throw new Error(data.message)
+      }
+    } catch (err) {
+      alert('Erreur lors de l\'envoi. Veuillez réessayer.')
+    } finally {
+      setSending(false)
+    }
   }
 
   if (sent) {
