@@ -56,6 +56,10 @@ export default function Drivers() {
 
   const handleCreate = async () => {
     if (!form.name) return
+    if (form.employee_id && drivers.some(d => d.employee_id === form.employee_id)) {
+      toast.error(`L'ID conducteur "${form.employee_id}" est déjà utilisé.`)
+      return
+    }
     setSaving(true)
     try {
       await createDriver({ ...form, date_of_birth: form.date_of_birth || null, email: form.email || null })
@@ -88,7 +92,7 @@ export default function Drivers() {
           )}
           <Button
             onClick={() => canAddDriver ? setShowAdd(true) : toast.error(t('plan.driverLimitReached') + ' ' + t('plan.upgradeHint'))}
-            className={canAddDriver ? 'bg-[#2563EB] hover:bg-[#1D4ED8]' : 'bg-zinc-300 cursor-not-allowed hover:bg-zinc-300'}
+            className={canAddDriver ? 'bg-[#0066FF] hover:bg-[#0052D6]' : 'bg-zinc-300 cursor-not-allowed hover:bg-zinc-300'}
           >
             <Plus className="w-4 h-4 mr-2" /> Ajouter
           </Button>
@@ -126,7 +130,7 @@ export default function Drivers() {
                       <tr key={d.id} className="hover:bg-white transition-colors">
                         <td className="px-5 py-3.5">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <Link to={`/Drivers/${d.id}`} className="font-semibold text-slate-900 hover:text-[#1D4ED8]">{d.name}</Link>
+                            <Link to={`/Drivers/${d.id}`} className="font-semibold text-slate-900 hover:text-[#0052D6]">{d.name}</Link>
                             {driverDocStatus[d.id] === 'expired' && (
                               <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-red-700 bg-red-100 px-1.5 py-0.5 rounded-full"><AlertTriangle className="w-2.5 h-2.5" />Doc. expiré</span>
                             )}
@@ -151,7 +155,7 @@ export default function Drivers() {
                         <td className="px-5 py-3.5">
                           <div className="flex items-center justify-end gap-1">
                             <button onClick={() => setDeleteTarget(d)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
-                            <Link to={`/Drivers/${d.id}`} className="p-1.5 text-slate-400 hover:text-[#1D4ED8]"><ChevronRight className="w-4 h-4" /></Link>
+                            <Link to={`/Drivers/${d.id}`} className="p-1.5 text-slate-400 hover:text-[#0052D6]"><ChevronRight className="w-4 h-4" /></Link>
                           </div>
                         </td>
                       </tr>
@@ -224,7 +228,7 @@ export default function Drivers() {
                 <div><Label>Carte de lavage</Label><Input value={form.wash_card} onChange={e => setForm({...form, wash_card: e.target.value})} placeholder="N° carte lavage" /></div>
               </div>
             </div>
-            <Button onClick={handleCreate} disabled={saving || !form.name} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8]">
+            <Button onClick={handleCreate} disabled={saving || !form.name} className="w-full bg-[#0066FF] hover:bg-[#0052D6]">
               {saving ? (
                 <span className="flex items-center gap-2">
                   <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>

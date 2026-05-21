@@ -80,7 +80,7 @@ export default function Assignments() {
                               <Truck className="w-3.5 h-3.5 text-emerald-600" />
                             </div>
                             <div>
-                              <p className="font-semibold text-slate-900 group-hover/link:text-[#1D4ED8]">{vehicle?.model || '—'}</p>
+                              <p className="font-semibold text-slate-900 group-hover/link:text-[#0052D6]">{vehicle?.model || '—'}</p>
                               <p className="text-xs text-slate-400 font-mono">{vehicle?.plate_number || ''}</p>
                             </div>
                           </Link>
@@ -90,7 +90,7 @@ export default function Assignments() {
                             <div className="w-7 h-7 bg-slate-100 rounded-full flex items-center justify-center flex-shrink-0">
                               <User className="w-3.5 h-3.5 text-slate-500" />
                             </div>
-                            <p className="font-medium text-slate-700 group-hover/link:text-[#1D4ED8]">{driver?.name || '—'}</p>
+                            <p className="font-medium text-slate-700 group-hover/link:text-[#0052D6]">{driver?.name || '—'}</p>
                           </Link>
                         </td>
                         <td className="px-5 py-3.5 text-sm text-slate-400">
@@ -169,7 +169,7 @@ export default function Assignments() {
                           <Truck className="w-3.5 h-3.5 text-slate-400" />
                         </div>
                         <div>
-                          <p className="font-semibold text-slate-500 group-hover/link:text-[#1D4ED8]">{v.model}</p>
+                          <p className="font-semibold text-slate-500 group-hover/link:text-[#0052D6]">{v.model}</p>
                           <p className="text-xs text-slate-400 font-mono">{v.plate_number}</p>
                         </div>
                       </Link>

@@ -331,7 +331,7 @@ export default function DriverDocuments({ driverId, driver }) {
                       )}
                       {doc.file_url && (
                         <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs text-[#2563EB] hover:underline">
+                          className="inline-flex items-center gap-1 text-xs text-[#0066FF] hover:underline">
                           <ExternalLink className="w-3 h-3" />PDF
                         </a>
                       )}
@@ -384,7 +384,7 @@ export default function DriverDocuments({ driverId, driver }) {
                       )}
                       {doc.file_url && (
                         <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs text-[#2563EB] hover:underline">
+                          className="inline-flex items-center gap-1 text-xs text-[#0066FF] hover:underline">
                           <ExternalLink className="w-3 h-3" />PDF
                         </a>
                       )}
@@ -421,17 +421,17 @@ export default function DriverDocuments({ driverId, driver }) {
                 <button
                   key={type}
                   onClick={() => openAdd(type)}
-                  className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-dashed border-slate-200 hover:border-[#2563EB] hover:bg-[#2563EB]/5 text-left transition-all group"
+                  className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-dashed border-slate-200 hover:border-[#0066FF] hover:bg-[#0066FF]/5 text-left transition-all group"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-7 h-7 rounded-lg bg-slate-100 group-hover:bg-[#2563EB]/10 flex items-center justify-center shrink-0 transition-colors">
-                      <Plus className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#2563EB] transition-colors" />
+                    <div className="w-7 h-7 rounded-lg bg-slate-100 group-hover:bg-[#0066FF]/10 flex items-center justify-center shrink-0 transition-colors">
+                      <Plus className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#0066FF] transition-colors" />
                     </div>
                     <span className="text-xs font-medium text-slate-600 group-hover:text-slate-900 leading-tight transition-colors">
                       {DOC_TYPE_CONFIG[type].label}
                     </span>
                   </div>
-                  <span className="text-[11px] font-semibold text-slate-300 group-hover:text-[#2563EB] shrink-0 transition-colors">
+                  <span className="text-[11px] font-semibold text-slate-300 group-hover:text-[#0066FF] shrink-0 transition-colors">
                     Ajouter →
                   </span>
                 </button>
@@ -487,7 +487,7 @@ export default function DriverDocuments({ driverId, driver }) {
                     <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                       {doc?.file_url && (
                         <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
-                          className="p-1.5 text-slate-400 hover:text-[#2563EB] hover:bg-blue-50 rounded-lg transition-colors">
+                          className="p-1.5 text-slate-400 hover:text-[#0066FF] hover:bg-blue-50 rounded-lg transition-colors">
                           <ExternalLink className="w-3.5 h-3.5" />
                         </a>
                       )}
@@ -573,7 +573,7 @@ export default function DriverDocuments({ driverId, driver }) {
                       href={editDoc.file_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-[#2563EB] hover:underline"
+                      className="text-xs text-[#0066FF] hover:underline"
                     >
                       Voir le PDF →
                     </a>
@@ -616,7 +616,7 @@ export default function DriverDocuments({ driverId, driver }) {
           <Button
             onClick={handleSave}
             disabled={saving || !form.validation_date}
-            className="w-full bg-[#2563EB] hover:bg-[#1D4ED8]"
+            className="w-full bg-[#0066FF] hover:bg-[#0052D6]"
           >
             {saving
               ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Enregistrement...</>

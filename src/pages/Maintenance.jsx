@@ -571,7 +571,7 @@ export default function Maintenance() {
             </Button>
             <Button
               size="sm"
-              className="bg-[#2563EB] hover:bg-[#1D4ED8]"
+              className="bg-[#0066FF] hover:bg-[#0052D6]"
               onClick={() => openRecordModal()}
             >
               <Plus className="w-4 h-4 mr-1.5" /> Ajouter un entretien
@@ -747,7 +747,7 @@ export default function Maintenance() {
                 </button>
               )}
             </div>
-            <Button onClick={() => openRecordModal()} className="bg-[#2563EB] hover:bg-[#1D4ED8] shrink-0" size="sm">
+            <Button onClick={() => openRecordModal()} className="bg-[#0066FF] hover:bg-[#0052D6] shrink-0" size="sm">
               <Plus className="w-4 h-4 mr-2" /> Ajouter un entretien
             </Button>
           </div>
@@ -758,7 +758,7 @@ export default function Maintenance() {
                 <Wrench className="w-8 h-8 text-slate-200 mx-auto mb-3" />
                 <p className="font-medium text-slate-500 mb-1">Aucun entretien enregistré</p>
                 <p className="text-sm text-slate-400 mb-4">Enregistrez le premier entretien d'un véhicule.</p>
-                <Button onClick={() => openRecordModal()} size="sm" className="bg-[#2563EB] hover:bg-[#1D4ED8]">
+                <Button onClick={() => openRecordModal()} size="sm" className="bg-[#0066FF] hover:bg-[#0052D6]">
                   <Plus className="w-4 h-4 mr-1.5" /> Ajouter un entretien
                 </Button>
               </div>
@@ -859,7 +859,7 @@ export default function Maintenance() {
         <TabsContent value="schedules">
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm text-slate-500">{schedules.length} planning{schedules.length !== 1 ? 's' : ''} configuré{schedules.length !== 1 ? 's' : ''}</p>
-            <Button onClick={() => setScheduleModal(true)} className="bg-[#2563EB] hover:bg-[#1D4ED8]" size="sm">
+            <Button onClick={() => setScheduleModal(true)} className="bg-[#0066FF] hover:bg-[#0052D6]" size="sm">
               <Plus className="w-4 h-4 mr-2" /> Nouveau planning
             </Button>
           </div>
@@ -872,7 +872,7 @@ export default function Maintenance() {
                 <Wrench className="w-8 h-8 text-slate-200 mx-auto mb-3" />
                 <p className="font-medium text-slate-500 mb-1">Aucun planning configuré</p>
                 <p className="text-sm text-slate-400 mb-4">Définissez les intervalles de maintenance par véhicule pour activer les prévisions.</p>
-                <Button onClick={() => setScheduleModal(true)} size="sm" className="bg-[#2563EB] hover:bg-[#1D4ED8]">
+                <Button onClick={() => setScheduleModal(true)} size="sm" className="bg-[#0066FF] hover:bg-[#0052D6]">
                   <Plus className="w-4 h-4 mr-1.5" /> Nouveau planning
                 </Button>
               </div>

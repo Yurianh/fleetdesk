@@ -139,7 +139,7 @@ export default function Inspections() {
             : `${inspections.length} contrôle${inspections.length !== 1 ? 's' : ''} enregistré${inspections.length !== 1 ? 's' : ''}`
         }
       >
-        <Button onClick={openCreate} className="bg-[#2563EB] hover:bg-[#1D4ED8]">
+        <Button onClick={openCreate} className="bg-[#0066FF] hover:bg-[#0052D6]">
           <Plus className="w-4 h-4 mr-2" /> Ajouter un contrôle
         </Button>
       </PageHeader>
@@ -206,7 +206,7 @@ export default function Inspections() {
                         <p className="text-xs text-slate-400">Expire : {format(new Date(ins.expiration_date), 'd MMM yyyy', { locale: dateLocale })}</p>
                         <div className="mt-1.5 flex items-center gap-2">
                           <StatusBadge expirationDate={ins.expiration_date} />
-                          {ins.invoice_url && <Paperclip className="w-3.5 h-3.5 text-[#2563EB]" />}
+                          {ins.invoice_url && <Paperclip className="w-3.5 h-3.5 text-[#0066FF]" />}
                         </div>
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0">

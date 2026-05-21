@@ -113,7 +113,7 @@ export default function Settings() {
                       : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 flex-shrink-0 ${section === s.id ? 'text-[#2563EB]' : 'text-zinc-400'}`} />
+                  <Icon className={`w-4 h-4 flex-shrink-0 ${section === s.id ? 'text-[#0066FF]' : 'text-zinc-400'}`} />
                   {t(s.labelKey)}
                 </button>
               )
@@ -150,7 +150,7 @@ export default function Settings() {
                   <div>
                     <label className="block text-xs font-medium text-zinc-500 mb-1.5">{t('settings.fullName')}</label>
                     <input value={name} onChange={e => setName(e.target.value)}
-                      className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30" />
+                      className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30" />
                   </div>
                   {isCollaborator ? (
                     <div>
@@ -163,7 +163,7 @@ export default function Settings() {
                     <div>
                       <label className="block text-xs font-medium text-zinc-500 mb-1.5">{t('settings.company')}</label>
                       <input value={company} onChange={e => setCompany(e.target.value)}
-                        className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30" />
+                        className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30" />
                     </div>
                   )}
                   <div>
@@ -173,7 +173,7 @@ export default function Settings() {
                     <p className="text-[11px] text-zinc-400 mt-1">{t('settings.emailReadOnly')}</p>
                   </div>
                   <button onClick={saveProfile} disabled={saving}
-                    className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 text-white text-sm font-medium rounded-lg px-4 py-2 transition-colors">
+                    className="flex items-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] disabled:opacity-50 text-white text-sm font-medium rounded-lg px-4 py-2 transition-colors">
                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                     {t('settings.saveChanges')}
                   </button>
@@ -230,7 +230,7 @@ export default function Settings() {
                     </p>
                     {limits.vehicles !== Infinity && (
                       <div className="mt-2 h-1.5 bg-zinc-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-[#2563EB] rounded-full transition-all"
+                        <div className="h-full bg-[#0066FF] rounded-full transition-all"
                           style={{ width: `${Math.min(100, (vehicles.length / limits.vehicles) * 100)}%` }} />
                       </div>
                     )}
@@ -242,7 +242,7 @@ export default function Settings() {
                     </p>
                     {limits.drivers !== Infinity && (
                       <div className="mt-2 h-1.5 bg-zinc-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-[#2563EB] rounded-full transition-all"
+                        <div className="h-full bg-[#0066FF] rounded-full transition-all"
                           style={{ width: `${Math.min(100, (drivers.length / limits.drivers) * 100)}%` }} />
                       </div>
                     )}
@@ -285,7 +285,7 @@ export default function Settings() {
                       finally { setSaving(false) }
                     }}
                     disabled={saving}
-                    className="mt-4 w-full flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] disabled:opacity-50 text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
+                    className="mt-4 w-full flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] active:scale-[0.98] disabled:opacity-50 text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
                   >
                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
                     Ouvrir le portail de facturation
@@ -312,7 +312,7 @@ export default function Settings() {
                         <div className="flex items-center gap-3">
                           <span className="text-sm font-bold text-zinc-900">29 €<span className="text-xs font-normal text-zinc-400">/mois</span></span>
                           <button onClick={() => handleUpgrade('pro')} disabled={saving}
-                            className="flex items-center gap-1.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-medium rounded-lg px-3 py-1.5 transition-colors">
+                            className="flex items-center gap-1.5 bg-[#0066FF] hover:bg-[#0052D6] text-white text-xs font-medium rounded-lg px-3 py-1.5 transition-colors">
                             {t('settings.upgrade')} <ChevronRight className="w-3.5 h-3.5" />
                           </button>
                         </div>
@@ -368,7 +368,7 @@ export default function Settings() {
                   {/* Invite form */}
                   <div className="bg-white border border-zinc-200 rounded-xl p-5">
                     <h2 className="text-sm font-semibold text-zinc-900 mb-4 flex items-center gap-2">
-                      <UserPlus className="w-4 h-4 text-[#2563EB]" /> Inviter un collaborateur
+                      <UserPlus className="w-4 h-4 text-[#0066FF]" /> Inviter un collaborateur
                     </h2>
                     <div className="flex gap-2 max-w-md">
                       <div className="relative flex-1">
@@ -378,11 +378,11 @@ export default function Settings() {
                           value={inviteEmail}
                           onChange={e => setInviteEmail(e.target.value)}
                           placeholder="adresse@email.com"
-                          className="w-full pl-8 pr-3 py-2 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30"
+                          className="w-full pl-8 pr-3 py-2 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30"
                         />
                       </div>
                       <Select value={inviteRole} onValueChange={setInviteRole}>
-                        <SelectTrigger className="w-[110px] border-zinc-200 text-sm text-zinc-700 rounded-lg h-[38px] focus:ring-[#2563EB]/30">
+                        <SelectTrigger className="w-[110px] border-zinc-200 text-sm text-zinc-700 rounded-lg h-[38px] focus:ring-[#0066FF]/30">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -404,7 +404,7 @@ export default function Settings() {
                           } catch (e) { toast.error(e.message) }
                         }}
                         disabled={inviteMember.isPending || !inviteEmail}
-                        className="flex items-center gap-1.5 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:bg-zinc-300 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg px-4 py-2 transition-colors h-[38px]"
+                        className="flex items-center gap-1.5 bg-[#0066FF] hover:bg-[#0052D6] disabled:bg-zinc-300 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg px-4 py-2 transition-colors h-[38px]"
                       >
                         {inviteMember.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
                         Inviter
@@ -476,7 +476,7 @@ export default function Settings() {
                   <button key={lang.code} onClick={() => i18n.changeLanguage(lang.code)}
                     className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border text-sm font-medium transition-all ${
                       i18n.language === lang.code
-                        ? 'border-[#2563EB] bg-blue-50 text-blue-700'
+                        ? 'border-[#0066FF] bg-blue-50 text-blue-700'
                         : 'border-zinc-200 text-zinc-600 hover:border-zinc-300'
                     }`}>
                     <span className="text-lg">{lang.flag}</span>
@@ -502,7 +502,7 @@ export default function Settings() {
                     <button key={String(opt.id)} onClick={() => opt.id !== isDark && toggleTheme()}
                       className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border text-sm font-medium transition-all ${
                         isDark === opt.id
-                          ? 'border-[#2563EB] bg-blue-50 text-blue-700'
+                          ? 'border-[#0066FF] bg-blue-50 text-blue-700'
                           : 'border-zinc-200 text-zinc-600 hover:border-zinc-300'
                       }`}>
                       <Icon className="w-4 h-4" />

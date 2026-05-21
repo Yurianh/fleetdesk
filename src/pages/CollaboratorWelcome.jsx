@@ -65,7 +65,7 @@ export default function CollaboratorWelcome() {
     >
       {/* Logo */}
       <div className="flex items-center gap-2.5 mb-6 select-none pointer-events-none">
-        <div className="w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center shadow-sm">
+        <div className="w-8 h-8 bg-[#0066FF] rounded-lg flex items-center justify-center shadow-sm">
           <Truck className="w-4 h-4 text-white" />
         </div>
         <span className="text-[15px] font-semibold text-zinc-800 tracking-tight">FleetDesk</span>
@@ -76,7 +76,7 @@ export default function CollaboratorWelcome() {
 
         {/* Invitation badge */}
         <div className="flex justify-center mb-5">
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-3 py-1.5 rounded-full">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0066FF] bg-[#0066FF]/10 px-3 py-1.5 rounded-full">
             <Users className="w-3.5 h-3.5" />
             Invitation {role === 'admin' ? 'Administrateur' : 'Membre'}
           </span>
@@ -86,7 +86,7 @@ export default function CollaboratorWelcome() {
         <h1 className="text-[17px] font-semibold text-zinc-900 mb-1 text-center">
           {isReInvited ? 'Bienvenue a nouveau dans' : 'Rejoignez la flotte de'}
         </h1>
-        <p className="text-base font-semibold text-[#2563EB] text-center mb-1">{orgOwnerName}</p>
+        <p className="text-base font-semibold text-[#0066FF] text-center mb-1">{orgOwnerName}</p>
         <p className="text-sm text-zinc-400 text-center mb-6">
           {isReInvited
             ? 'Confirmez votre nom pour rejoindre cette flotte.'
@@ -104,7 +104,7 @@ export default function CollaboratorWelcome() {
               placeholder="Ex : Marie"
               value={name}
               onChange={e => setName(e.target.value)}
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all duration-150"
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF] transition-all duration-150"
             />
           </div>
 
@@ -119,7 +119,7 @@ export default function CollaboratorWelcome() {
                     placeholder="8 caracteres minimum"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
-                    className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 pr-9 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all duration-150"
+                    className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 pr-9 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF] transition-all duration-150"
                   />
                   <button
                     type="button"
@@ -140,7 +140,7 @@ export default function CollaboratorWelcome() {
                   value={confirm}
                   onChange={e => setConfirm(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleJoin()}
-                  className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all duration-150"
+                  className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF] transition-all duration-150"
                 />
               </div>
             </>
@@ -155,7 +155,7 @@ export default function CollaboratorWelcome() {
             isReInvited ? 'Connexion avec votre email habituel' : 'Connexion avec votre email et ce mot de passe',
           ].map(item => (
             <div key={item} className="flex items-center gap-2">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#2563EB] shrink-0" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#0066FF] shrink-0" />
               <span className="text-xs text-zinc-500">{item}</span>
             </div>
           ))}
@@ -168,7 +168,7 @@ export default function CollaboratorWelcome() {
         <button
           onClick={handleJoin}
           disabled={loading}
-          className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
+          className="w-full bg-[#0066FF] hover:bg-[#0052D6] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
         >
           {loading ? 'En cours...' : isReInvited ? 'Rejoindre' : "Creer mon acces et rejoindre"}
         </button>

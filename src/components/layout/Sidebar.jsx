@@ -20,7 +20,7 @@ function NavItem({ item, isActive, isCollapsed, onMobileClose }) {
       onClick={() => { if (window.innerWidth < 1024) onMobileClose(); }}
       className={cn(
         'group relative flex items-center gap-3 rounded-lg py-2 text-[13px] font-medium',
-        'transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]/60',
+        'transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF]/60',
         isCollapsed ? 'lg:justify-center lg:px-0 px-3' : 'px-3',
         isActive
           ? 'bg-zinc-100 text-zinc-900'
@@ -28,12 +28,12 @@ function NavItem({ item, isActive, isCollapsed, onMobileClose }) {
       )}
     >
       {isActive && (
-        <span className="absolute left-0 top-[7px] bottom-[7px] w-[3px] rounded-r-full bg-[#2563EB]" />
+        <span className="absolute left-0 top-[7px] bottom-[7px] w-[3px] rounded-r-full bg-[#0066FF]" />
       )}
       <Icon className={cn(
         'flex-shrink-0 transition-colors duration-150',
         isCollapsed ? 'lg:w-[18px] lg:h-[18px] w-4 h-4' : 'w-4 h-4',
-        isActive ? 'text-[#2563EB]' : 'text-zinc-400 group-hover:text-zinc-700'
+        isActive ? 'text-[#0066FF]' : 'text-zinc-400 group-hover:text-zinc-700'
       )} />
       <span className={cn('truncate leading-none select-none', isCollapsed && 'lg:hidden')}>
         {item.label}
@@ -116,7 +116,7 @@ export default function Sidebar({ open, onToggle }) {
         {/* ── Header ── */}
         <div className="flex items-center h-[56px] px-3 gap-2 border-b border-zinc-100 flex-shrink-0">
           <div className={cn('flex items-center gap-2.5 flex-1 min-w-0', isCollapsed && 'lg:hidden')}>
-            <div className="w-7 h-7 bg-[#2563EB] rounded-lg flex-shrink-0 flex items-center justify-center shadow-sm shadow-[#2563EB]/20">
+            <div className="w-7 h-7 bg-[#0066FF] rounded-lg flex-shrink-0 flex items-center justify-center shadow-sm shadow-[#0066FF]/20">
               <Truck className="w-[13px] h-[13px] text-white" />
             </div>
             <div className="min-w-0 leading-none">
@@ -205,7 +205,7 @@ export default function Sidebar({ open, onToggle }) {
                 isCollapsed && 'lg:justify-center lg:px-0'
               )}
             >
-              <History className={cn('w-[14px] h-[14px] flex-shrink-0', isActive('/Activity') ? 'text-[#2563EB]' : '')} />
+              <History className={cn('w-[14px] h-[14px] flex-shrink-0', isActive('/Activity') ? 'text-[#0066FF]' : '')} />
               <span className={cn(isCollapsed && 'lg:hidden')}>Activité</span>
             </Link>
           )}
@@ -221,7 +221,7 @@ export default function Sidebar({ open, onToggle }) {
               isCollapsed && 'lg:justify-center lg:px-0'
             )}
           >
-            <Settings className={cn('w-[14px] h-[14px] flex-shrink-0', isActive('/Settings') ? 'text-[#2563EB]' : '')} />
+            <Settings className={cn('w-[14px] h-[14px] flex-shrink-0', isActive('/Settings') ? 'text-[#0066FF]' : '')} />
             <span className={cn(isCollapsed && 'lg:hidden')}>{t('nav.settings')}</span>
           </Link>
           <button

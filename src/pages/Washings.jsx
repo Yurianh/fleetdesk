@@ -115,7 +115,7 @@ export default function Washings() {
         title="Lavages"
         description={washRecords.length > 0 ? `${washRecords.length} lavage${washRecords.length !== 1 ? 's' : ''} · Total : ${totalAmount.toFixed(2)} €` : 'Aucun lavage enregistré'}
       >
-        <Button onClick={openCreate} className="bg-[#2563EB] hover:bg-[#1D4ED8]">
+        <Button onClick={openCreate} className="bg-[#0066FF] hover:bg-[#0052D6]">
           <Plus className="w-4 h-4 mr-2" /> Ajouter un lavage
         </Button>
       </PageHeader>
@@ -183,7 +183,7 @@ export default function Washings() {
                         <p className="text-sm text-slate-600">{driver?.name || '—'}</p>
                         <p className="text-xs text-slate-400 mt-0.5">
                           {format(new Date(w.date), 'd MMM yyyy', { locale: dateLocale })} · <span className="font-semibold text-slate-700">{Number(w.amount).toFixed(2)} €</span>
-                          {w.invoice_url && <span className="ml-1.5 inline-flex items-center gap-0.5 text-[#2563EB]"><Paperclip className="w-3 h-3" /></span>}
+                          {w.invoice_url && <span className="ml-1.5 inline-flex items-center gap-0.5 text-[#0066FF]"><Paperclip className="w-3 h-3" /></span>}
                         </p>
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0">

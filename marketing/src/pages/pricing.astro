@@ -103,12 +103,12 @@ const faq = [
   <!-- Header -->
   <section class="bg-white border-b border-zinc-100 py-20">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-      <p class="text-sm font-semibold text-[#2563EB] tracking-wide mb-3">Tarifs</p>
+      <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Tarifs</p>
       <h1 class="text-4xl sm:text-5xl font-bold text-zinc-900 tracking-tight mb-5">
-        Le prix juste pour votre flotte
+        Simple. Transparent. Sans surprise.
       </h1>
       <p class="text-lg text-zinc-500 max-w-xl mx-auto">
-        Démarrez en quelques minutes. Évoluez sans friction. Résiliez à tout moment.
+        Démarrez en 5 minutes. Évoluez quand vous voulez. Résiliez en un clic.
       </p>
     </div>
   </section>
@@ -138,18 +138,18 @@ const faq = [
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
         {plans.map(p => (
-          <div class={`relative flex flex-col rounded-2xl p-7 ${p.highlighted ? 'border-2 border-[#2563EB] bg-white shadow-xl shadow-[#2563EB]/10 scale-[1.02]' : 'bg-white border border-zinc-200'}`}>
+          <div class={`relative flex flex-col rounded-2xl p-7 ${p.highlighted ? 'border-2 border-[#0066FF] bg-white shadow-xl shadow-[#0066FF]/10 scale-[1.02]' : 'bg-white border border-zinc-200'}`}>
 
             {/* Badge */}
             {p.badge && (
               <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                <span class="bg-[#2563EB] text-white text-xs font-semibold px-3 py-1 rounded-full">{p.badge}</span>
+                <span class="bg-[#0066FF] text-white text-xs font-semibold px-3 py-1 rounded-full">{p.badge}</span>
               </div>
             )}
 
             {/* Plan name + price */}
             <div class="mb-5">
-              <p class={`text-xs font-semibold uppercase tracking-widest mb-2 ${p.highlighted ? 'text-[#2563EB]' : 'text-zinc-400'}`}>{p.name}</p>
+              <p class={`text-xs font-semibold uppercase tracking-widest mb-2 ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-400'}`}>{p.name}</p>
               <div class="flex items-end gap-1 mb-1">
                 <span
                   class="price-amount text-4xl font-bold tracking-tight text-zinc-900 font-mono"
@@ -180,7 +180,7 @@ const faq = [
             <ul class="space-y-3 mb-8 flex-1">
               {p.features.map(f => (
                 <li class="flex items-start gap-2.5">
-                  <svg class={`w-4 h-4 mt-0.5 flex-shrink-0 ${f.highlight ? 'text-emerald-500' : 'text-[#2563EB]'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <svg class={`w-4 h-4 mt-0.5 flex-shrink-0 ${f.highlight ? 'text-emerald-500' : 'text-[#0066FF]'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
                   <span class={`text-sm ${f.highlight ? 'text-zinc-800 font-medium' : 'text-zinc-600'}`}>{f.text}</span>
@@ -193,7 +193,7 @@ const faq = [
               href={p.ctaHref}
               class={`block w-full text-center text-sm font-semibold px-5 py-3 rounded-xl transition-colors ${
                 p.ctaStyle === 'primary'
-                  ? 'bg-[#2563EB] text-white hover:bg-[#1D4ED8]'
+                  ? 'bg-[#0066FF] text-white hover:bg-[#0052D6]'
                   : 'border border-zinc-200 text-zinc-700 hover:bg-zinc-50'
               }`}
             >

@@ -201,7 +201,7 @@ export default function VehicleDetail() {
       <p className="text-xs text-slate-400 font-medium">{label}</p>
       <button
         onClick={onAdd}
-        className="flex items-center gap-1 text-xs font-medium text-[#2563EB] hover:text-[#1D4ED8] transition-colors"
+        className="flex items-center gap-1 text-xs font-medium text-[#0066FF] hover:text-[#0052D6] transition-colors"
       >
         <Plus className="w-3.5 h-3.5" /> Ajouter
       </button>
@@ -214,14 +214,14 @@ export default function VehicleDetail() {
 
   return (
     <div className="p-4 lg:p-8 max-w-5xl mx-auto">
-      <Link to="/Vehicles" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-[#1D4ED8] mb-6">
+      <Link to="/Vehicles" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-[#0052D6] mb-6">
         <ArrowLeft className="w-4 h-4" /> {t('vehicles.title')}
       </Link>
 
       <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 mb-6">
         <div className="flex flex-wrap items-center gap-4">
           <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-            <Truck className="w-6 h-6 text-[#1D4ED8]" />
+            <Truck className="w-6 h-6 text-[#0052D6]" />
           </div>
           <div className="flex-1 min-w-0">
             <h1 className="text-xl font-bold text-slate-900">{vehicle.plate_number}</h1>
@@ -240,17 +240,17 @@ export default function VehicleDetail() {
               <p className="text-sm text-slate-500">Mise en circulation</p>
               {vehicle.mec_date
                 ? <p className="font-semibold text-slate-900">{format(new Date(vehicle.mec_date), 'd MMM yyyy', { locale: dateLocale })}</p>
-                : <button onClick={openVehicleInfo} className="text-sm font-medium text-slate-300 hover:text-[#2563EB] transition-colors">Ajouter →</button>
+                : <button onClick={openVehicleInfo} className="text-sm font-medium text-slate-300 hover:text-[#0066FF] transition-colors">Ajouter →</button>
               }
             </div>
             <div>
               <p className="text-sm text-slate-500">Carte grise</p>
               {vehicle.registration_card_url
                 ? <a href={vehicle.registration_card_url} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm font-semibold text-[#2563EB] hover:text-[#1D4ED8] transition-colors">
+                    className="inline-flex items-center gap-1 text-sm font-semibold text-[#0066FF] hover:text-[#0052D6] transition-colors">
                     <FileText className="w-3.5 h-3.5" /> Voir →
                   </a>
-                : <button onClick={openVehicleInfo} className="text-sm font-medium text-slate-300 hover:text-[#2563EB] transition-colors">Ajouter →</button>
+                : <button onClick={openVehicleInfo} className="text-sm font-medium text-slate-300 hover:text-[#0066FF] transition-colors">Ajouter →</button>
               }
             </div>
           </div>
@@ -473,7 +473,7 @@ export default function VehicleDetail() {
               {regFile ? (
                 <span className="text-slate-700 truncate block">{regFile.name}</span>
               ) : vehicle.registration_card_url ? (
-                <a href={vehicle.registration_card_url} target="_blank" rel="noopener noreferrer" className="text-[#2563EB] hover:underline text-sm">Voir la carte grise →</a>
+                <a href={vehicle.registration_card_url} target="_blank" rel="noopener noreferrer" className="text-[#0066FF] hover:underline text-sm">Voir la carte grise →</a>
               ) : (
                 <span className="text-slate-400">Joindre la carte grise<span className="block text-xs text-slate-300 mt-0.5">JPG, PNG ou PDF · max 10 Mo</span></span>
               )}

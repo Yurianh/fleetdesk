@@ -99,7 +99,7 @@ export default function Mileage() {
         title="Kilométrage"
         description={`${mileageEntries.length} entrée${mileageEntries.length !== 1 ? 's' : ''} enregistrée${mileageEntries.length !== 1 ? 's' : ''}`}
       >
-        <Button onClick={openCreate} className="bg-[#2563EB] hover:bg-[#1D4ED8]">
+        <Button onClick={openCreate} className="bg-[#0066FF] hover:bg-[#0052D6]">
           <Plus className="w-4 h-4 mr-2" /> Enregistrer un kilométrage
         </Button>
       </PageHeader>
@@ -227,7 +227,7 @@ export default function Mileage() {
           <DialogHeader><DialogTitle>Modifier le relevé</DialogTitle></DialogHeader>
           <div className="space-y-4 mt-2">
             <div><Label>Kilométrage (km)</Label><Input type="number" value={editForm.mileage} onChange={e => setEditForm({...editForm, mileage: e.target.value})} /></div>
-            <Button onClick={handleEdit} disabled={editSaving || !editForm.mileage} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8]">
+            <Button onClick={handleEdit} disabled={editSaving || !editForm.mileage} className="w-full bg-[#0066FF] hover:bg-[#0052D6]">
               {editSaving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Enregistrement...</> : 'Enregistrer'}
             </Button>
           </div>

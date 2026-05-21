@@ -15,10 +15,10 @@ module.exports = {
   		},
   		colors: {
   			brand: {
-  				DEFAULT: '#2563EB',
-  				light: '#EFF6FF',
-  				muted: '#93C5FD',
-  				dark: '#1D4ED8',
+  				DEFAULT: '#0066FF',
+  				light: '#E5EEFF',
+  				muted: '#99BBFF',
+  				dark: '#0052D6',
   			},
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',

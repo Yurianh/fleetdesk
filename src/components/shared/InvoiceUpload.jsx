@@ -54,7 +54,7 @@ export function InvoiceUpload({ file, existingUrl, amount, onFileChange, onAmoun
               </p>
               {existingUrl && !file && (
                 <a href={existingUrl} target="_blank" rel="noopener noreferrer"
-                  className="text-xs text-[#2563EB] hover:underline">
+                  className="text-xs text-[#0066FF] hover:underline">
                   Voir la facture →
                 </a>
               )}

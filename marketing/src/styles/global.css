@@ -2,16 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --brand:        #0066FF;
+  --brand-hover:  #0052D6;
+  --brand-light:  #E5EEFF;
+  --brand-muted:  #80AAFF;
+  --accent:       #38BDF8;
+  --dark-bg:      #05091A;
+  --dark-card:    #0A1128;
+  --dark-border:  #1A2845;
+}
+
 @layer base {
   html { scroll-behavior: smooth; }
   body { @apply antialiased; }
 
   h1, h2 {
-    letter-spacing: -0.03em;
+    letter-spacing: -0.035em;
     text-wrap: balance;
   }
 
   h3 {
-    letter-spacing: -0.015em;
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer utilities {
+  .brand-glow {
+    box-shadow: 0 0 60px rgba(0, 102, 255, 0.18), 0 0 120px rgba(0, 102, 255, 0.08);
+  }
+  .brand-glow-sm {
+    box-shadow: 0 0 24px rgba(0, 102, 255, 0.14);
+  }
+  .text-gradient-brand {
+    background: linear-gradient(135deg, #0066FF 0%, #38BDF8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .bg-dark-grid {
+    background-image:
+      linear-gradient(rgba(26, 40, 69, 0.4) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26, 40, 69, 0.4) 1px, transparent 1px);
+    background-size: 48px 48px;
   }
 }

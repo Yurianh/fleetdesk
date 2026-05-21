@@ -40,7 +40,7 @@ import { supabase } from '@/lib/supabase'
 
 // ─── Vehicle Usage Analytics ─────────────────────────────────────────
 
-const CHART_COLORS = ['#1D4ED8', '#10b981', '#f59e0b', '#ef4444', '#64748b', '#06b6d4']
+const CHART_COLORS = ['#0066FF', '#10b981', '#f59e0b', '#ef4444', '#64748b', '#06b6d4']
 
 function UsageTooltip({ active, payload, vehicles }) {
   if (!active || !payload?.length) return null
@@ -217,7 +217,7 @@ function AddVehicleModal({ open, onClose }) {
         <div className="space-y-4 mt-2">
           <div><Label>{t('vehicles.plate')}</Label><Input value={form.plate_number} onChange={e => setForm({...form, plate_number: e.target.value})} placeholder="AB-123-CD" /></div>
           <div><Label>{t('vehicles.model')}</Label><Input value={form.model} onChange={e => setForm({...form, model: e.target.value})} placeholder="Renault Trafic" /></div>
-          <Button onClick={handle} disabled={saving || !form.plate_number || !form.model} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8]">
+          <Button onClick={handle} disabled={saving || !form.plate_number || !form.model} className="w-full bg-[#0066FF] hover:bg-[#0052D6]">
             {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('common.saving')}</> : t('common.save')}
           </Button>
         </div>
@@ -250,7 +250,7 @@ function AddDriverModal({ open, onClose }) {
         <div className="space-y-4 mt-2">
           <div><Label>{t('drivers.name')}</Label><Input value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Jean Dupont" /></div>
           <div><Label>{t('dashboard.phoneOptional')}</Label><Input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} placeholder="+33 6 00 00 00 00" /></div>
-          <Button onClick={handle} disabled={saving || !form.name} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8]">
+          <Button onClick={handle} disabled={saving || !form.name} className="w-full bg-[#0066FF] hover:bg-[#0052D6]">
             {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('common.saving')}</> : t('common.save')}
           </Button>
         </div>
@@ -307,7 +307,7 @@ function RecordMileageModal({ open, onClose, vehicles }) {
             <Label>{t('dashboard.effectiveDate')}</Label>
             <Input type="date" value={date} max={today} onChange={e => setDate(e.target.value)} />
           </div>
-          <Button onClick={handle} disabled={saving || !vehicleId || !mileage || !date} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8]">
+          <Button onClick={handle} disabled={saving || !vehicleId || !mileage || !date} className="w-full bg-[#0066FF] hover:bg-[#0052D6]">
             {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('common.saving')}</> : t('common.save')}
           </Button>
         </div>
@@ -375,7 +375,7 @@ function AddWashModal({ open, onClose, vehicles, drivers }) {
             <Label>Date</Label>
             <Input type="date" value={date} max={today} onChange={e => setDate(e.target.value)} />
           </div>
-          <Button onClick={handle} disabled={saving || !vehicleId || !date} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8]">
+          <Button onClick={handle} disabled={saving || !vehicleId || !date} className="w-full bg-[#0066FF] hover:bg-[#0052D6]">
             {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Enregistrement...</> : 'Enregistrer'}
           </Button>
         </div>
@@ -1060,8 +1060,8 @@ export default function Dashboard() {
         {/* Fleet summary card */}
         <div className="bg-white border border-zinc-100 rounded-xl p-5">
           <div className="flex items-center gap-2.5 mb-4">
-            <div className="w-8 h-8 bg-[#2563EB]/[0.08] rounded-lg flex items-center justify-center">
-              <Truck className="w-4 h-4 text-[#2563EB]" strokeWidth={1.5} />
+            <div className="w-8 h-8 bg-[#0066FF]/[0.08] rounded-lg flex items-center justify-center">
+              <Truck className="w-4 h-4 text-[#0066FF]" strokeWidth={1.5} />
             </div>
             <div>
               <p className="text-xs font-medium text-zinc-400">{t('dashboard.fleet')}</p>

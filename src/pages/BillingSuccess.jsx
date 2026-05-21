@@ -80,7 +80,7 @@ export default function BillingSuccess() {
 
         {/* Logo */}
         <div className="flex items-center gap-2.5 mb-6 justify-center select-none pointer-events-none">
-          <div className="w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center shadow-sm">
+          <div className="w-8 h-8 bg-[#0066FF] rounded-lg flex items-center justify-center shadow-sm">
             <Truck className="w-4 h-4 text-white" />
           </div>
           <span className="text-[15px] font-semibold text-zinc-800 tracking-tight">FleetDesk</span>
@@ -91,7 +91,7 @@ export default function BillingSuccess() {
           {/* Loading */}
           {status === 'loading' && (
             <>
-              <Loader2 className="w-10 h-10 text-[#2563EB] animate-spin mx-auto mb-4" />
+              <Loader2 className="w-10 h-10 text-[#0066FF] animate-spin mx-auto mb-4" />
               <h1 className="text-[17px] font-semibold text-zinc-900 mb-2">Activation de votre plan...</h1>
               <p className="text-sm text-zinc-400">Veuillez patienter pendant que nous confirmons votre paiement.</p>
             </>
@@ -107,7 +107,7 @@ export default function BillingSuccess() {
                   <CheckCircle2 className="w-9 h-9 text-emerald-500" />
                 </div>
               </div>
-              <div className="inline-flex items-center gap-1.5 bg-[#2563EB]/8 text-[#2563EB] text-xs font-semibold px-3 py-1 rounded-full mb-4">
+              <div className="inline-flex items-center gap-1.5 bg-[#0066FF]/8 text-[#0066FF] text-xs font-semibold px-3 py-1 rounded-full mb-4">
                 <Sparkles className="w-3 h-3" />
                 Formule {planName} activée
               </div>
@@ -129,7 +129,7 @@ export default function BillingSuccess() {
               </div>
               <button
                 onClick={() => navigate('/Dashboard', { replace: true })}
-                className="w-full flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
+                className="w-full flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] active:scale-[0.98] text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
               >
                 Accéder au tableau de bord <ArrowRight className="w-4 h-4" />
               </button>
@@ -169,7 +169,7 @@ export default function BillingSuccess() {
               <p className="text-sm text-zinc-400 mb-6">Aucun montant n'a été débité. Vous pouvez choisir un plan et réessayer.</p>
               <button
                 onClick={() => navigate('/setup-profile', { replace: true })}
-                className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
+                className="w-full bg-[#0066FF] hover:bg-[#0052D6] active:scale-[0.98] text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
               >
                 Retour aux plans
               </button>

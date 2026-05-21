@@ -9,10 +9,21 @@ export default {
       },
       colors: {
         brand: {
-          DEFAULT: '#2563EB',
-          light: '#EFF6FF',
-          muted: '#93C5FD',
-          dark: '#1D4ED8',
+          DEFAULT: '#0066FF',
+          hover:   '#0052D6',
+          light:   '#E5EEFF',
+          muted:   '#80AAFF',
+        },
+        accent: {
+          DEFAULT: '#38BDF8',
+          hover:   '#0EA5E9',
+        },
+        dark: {
+          DEFAULT:  '#05091A',
+          card:     '#0A1128',
+          elevated: '#0F1830',
+          border:   '#1A2845',
+          muted:    '#2A3D5E',
         },
       },
     },

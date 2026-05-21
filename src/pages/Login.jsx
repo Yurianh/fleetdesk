@@ -109,7 +109,7 @@ export default function Login() {
     >
       {/* Logo */}
       <div className="flex items-center gap-2.5 mb-6 select-none pointer-events-none">
-        <div className="w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center shadow-sm">
+        <div className="w-8 h-8 bg-[#0066FF] rounded-lg flex items-center justify-center shadow-sm">
           <Truck className="w-4 h-4 text-white" />
         </div>
         <span className="text-[15px] font-semibold text-zinc-800 tracking-tight">FleetDesk</span>
@@ -164,7 +164,7 @@ export default function Login() {
                     ? 'border-red-300 focus:ring-red-200 focus:border-red-400'
                     : touched.email && emailValid
                     ? 'border-emerald-300 focus:ring-emerald-100 focus:border-emerald-400'
-                    : 'border-zinc-200 focus:ring-[#2563EB]/20 focus:border-[#2563EB]'
+                    : 'border-zinc-200 focus:ring-[#0066FF]/20 focus:border-[#0066FF]'
                 }`}
                 placeholder={t('login.emailPlaceholder')}
               />
@@ -189,7 +189,7 @@ export default function Login() {
                 onBlur={() => setTouched(prev => ({ ...prev, password: true }))}
                 required
                 minLength={6}
-                className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 pr-9 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all duration-150"
+                className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 pr-9 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF] transition-all duration-150"
                 placeholder={t('login.passwordPlaceholder')}
               />
               <button
@@ -236,7 +236,7 @@ export default function Login() {
                       ? 'border-red-300 focus:ring-red-200 focus:border-red-400'
                       : touched.confirm && confirmMatch
                       ? 'border-emerald-300 focus:ring-emerald-100 focus:border-emerald-400'
-                      : 'border-zinc-200 focus:ring-[#2563EB]/20 focus:border-[#2563EB]'
+                      : 'border-zinc-200 focus:ring-[#0066FF]/20 focus:border-[#0066FF]'
                   }`}
                   placeholder="••••••••"
                 />
@@ -265,7 +265,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading || (mode === 'signup' && password !== confirm && confirm.length > 0)}
-            className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
+            className="w-full bg-[#0066FF] hover:bg-[#0052D6] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
           >
             {loading
               ? (mode === 'login' ? t('login.signingIn') : t('login.creating'))
@@ -277,7 +277,7 @@ export default function Login() {
           {mode === 'login' ? t('login.noAccount') : t('login.hasAccount')}{' '}
           <button
             onClick={() => switchMode(mode === 'login' ? 'signup' : 'login')}
-            className="text-[#2563EB] hover:underline font-semibold"
+            className="text-[#0066FF] hover:underline font-semibold"
           >
             {mode === 'login' ? t('login.signUp') : t('login.signInBtn')}
           </button>

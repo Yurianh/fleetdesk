@@ -31,7 +31,7 @@ export default function FormModal({
           <Button
             onClick={onSubmit}
             disabled={saving}
-            className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8]"
+            className="flex-1 bg-[#0066FF] hover:bg-[#0052D6]"
           >
             {saving ? (
               <span className="flex items-center gap-2">

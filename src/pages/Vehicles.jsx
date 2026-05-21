@@ -48,7 +48,7 @@ function RegistrationUpload({ file, existingUrl, onFileChange, onClear }) {
           {file ? (
             <span className="text-slate-700 truncate block">{file.name}</span>
           ) : existingUrl ? (
-            <a href={existingUrl} target="_blank" rel="noopener noreferrer" className="text-[#2563EB] hover:underline text-sm">
+            <a href={existingUrl} target="_blank" rel="noopener noreferrer" className="text-[#0066FF] hover:underline text-sm">
               Voir la carte grise →
             </a>
           ) : (
@@ -327,7 +327,7 @@ export default function Vehicles() {
         {/* Left accent bar */}
         <td className={`w-0.5 p-0 ${isAssigned ? 'bg-emerald-400' : 'bg-transparent'}`} />
         <td className="px-5 py-3.5">
-          <Link to={`/Vehicles/${v.id}`} className={`font-semibold hover:text-[#1D4ED8] ${isAssigned ? 'text-slate-900' : 'text-slate-400'}`}>
+          <Link to={`/Vehicles/${v.id}`} className={`font-semibold hover:text-[#0052D6] ${isAssigned ? 'text-slate-900' : 'text-slate-400'}`}>
             {v.model}
           </Link>
         </td>
@@ -363,9 +363,9 @@ export default function Vehicles() {
             <button onClick={() => openMaint(v.id)} title="Ajouter un entretien" className="p-1.5 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors"><Wrench className="w-3.5 h-3.5" /></button>
             <button onClick={() => openInsp(v.id)} title="Ajouter un contrôle technique" className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"><ClipboardCheck className="w-3.5 h-3.5" /></button>
             <button onClick={() => openWash(v.id)} title="Ajouter un lavage" className="p-1.5 text-slate-400 hover:text-sky-500 hover:bg-sky-50 rounded-lg transition-colors"><Droplets className="w-3.5 h-3.5" /></button>
-            <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model, mec_date: v.mec_date || '' }); setRegistrationFile(null); setRegistrationUrl(v.registration_card_url || '') }} className="p-1.5 text-slate-400 hover:text-[#2563EB] hover:bg-blue-50 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+            <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model, mec_date: v.mec_date || '' }); setRegistrationFile(null); setRegistrationUrl(v.registration_card_url || '') }} className="p-1.5 text-slate-400 hover:text-[#0066FF] hover:bg-blue-50 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
             <button onClick={() => setDeleteTarget(v)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
-            <Link to={`/Vehicles/${v.id}`} className="p-1.5 text-slate-400 hover:text-[#1D4ED8]"><ChevronRight className="w-4 h-4" /></Link>
+            <Link to={`/Vehicles/${v.id}`} className="p-1.5 text-slate-400 hover:text-[#0052D6]"><ChevronRight className="w-4 h-4" /></Link>
           </div>
         </td>
       </tr>
@@ -397,7 +397,7 @@ export default function Vehicles() {
           <button onClick={() => openMaint(v.id)} title="Entretien" className="p-1.5 text-slate-400 hover:text-orange-500"><Wrench className="w-3.5 h-3.5" /></button>
           <button onClick={() => openInsp(v.id)} title="Contrôle technique" className="p-1.5 text-slate-400 hover:text-emerald-600"><ClipboardCheck className="w-3.5 h-3.5" /></button>
           <button onClick={() => openWash(v.id)} title="Lavage" className="p-1.5 text-slate-400 hover:text-sky-500"><Droplets className="w-3.5 h-3.5" /></button>
-          <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model, mec_date: v.mec_date || '' }); setRegistrationFile(null); setRegistrationUrl(v.registration_card_url || '') }} className="p-1.5 text-slate-400 hover:text-[#2563EB]"><Pencil className="w-3.5 h-3.5" /></button>
+          <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model, mec_date: v.mec_date || '' }); setRegistrationFile(null); setRegistrationUrl(v.registration_card_url || '') }} className="p-1.5 text-slate-400 hover:text-[#0066FF]"><Pencil className="w-3.5 h-3.5" /></button>
           <button onClick={() => setDeleteTarget(v)} className="p-1.5 text-slate-400 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
         </div>
       </div>
@@ -413,7 +413,7 @@ export default function Vehicles() {
           )}
           <Button
             onClick={() => canAddVehicle ? setShowAdd(true) : toast.error(t('plan.vehicleLimitReached') + ' ' + t('plan.upgradeHint'))}
-            className={canAddVehicle ? 'bg-[#2563EB] hover:bg-[#1D4ED8]' : 'bg-zinc-300 cursor-not-allowed hover:bg-zinc-300'}
+            className={canAddVehicle ? 'bg-[#0066FF] hover:bg-[#0052D6]' : 'bg-zinc-300 cursor-not-allowed hover:bg-zinc-300'}
           >
             <Plus className="w-4 h-4 mr-2" /> {t('vehicles.addVehicle')}
           </Button>
@@ -490,7 +490,7 @@ export default function Vehicles() {
             <div><Label>Date de mise en circulation <span className="text-slate-400 font-normal">(optionnel)</span></Label><Input type="date" value={form.mec_date} onChange={e => setForm({...form, mec_date: e.target.value})} /></div>
             <RegistrationUpload file={registrationFile} existingUrl={registrationUrl}
               onFileChange={setRegistrationFile} onClear={() => { setRegistrationFile(null); setRegistrationUrl('') }} />
-            <Button onClick={handleCreate} disabled={saving || !form.plate_number || !form.model} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8]">
+            <Button onClick={handleCreate} disabled={saving || !form.plate_number || !form.model} className="w-full bg-[#0066FF] hover:bg-[#0052D6]">
               {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Enregistrement...</> : 'Enregistrer'}
             </Button>
           </div>
@@ -507,7 +507,7 @@ export default function Vehicles() {
             <div><Label>Date de mise en circulation <span className="text-slate-400 font-normal">(optionnel)</span></Label><Input type="date" value={form.mec_date} onChange={e => setForm({...form, mec_date: e.target.value})} /></div>
             <RegistrationUpload file={registrationFile} existingUrl={registrationUrl}
               onFileChange={setRegistrationFile} onClear={() => { setRegistrationFile(null); setRegistrationUrl('') }} />
-            <Button onClick={handleEdit} disabled={saving || !form.plate_number || !form.model} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8]">
+            <Button onClick={handleEdit} disabled={saving || !form.plate_number || !form.model} className="w-full bg-[#0066FF] hover:bg-[#0052D6]">
               {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Enregistrement...</> : 'Enregistrer'}
             </Button>
           </div>

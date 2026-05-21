@@ -27,7 +27,7 @@ export default function Navbar({ currentPath = '/' }) {
 
         {/* Logo */}
         <a href="/" className="flex items-center gap-2.5 flex-shrink-0">
-          <div className="w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center shadow-sm">
+          <div className="w-8 h-8 bg-[#0066FF] rounded-lg flex items-center justify-center shadow-sm">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/>
               <rect x="9" y="11" width="14" height="10" rx="2"/>
@@ -43,7 +43,7 @@ export default function Navbar({ currentPath = '/' }) {
             <a key={l.href} href={l.href}
               className={`px-3.5 py-2 text-sm rounded-lg transition-colors ${
                 currentPath.startsWith(l.href)
-                  ? 'text-[#2563EB] bg-blue-50 font-medium'
+                  ? 'text-[#0066FF] bg-[#E5EEFF] font-medium'
                   : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
               }`}>
               {l.label}
@@ -56,7 +56,7 @@ export default function Navbar({ currentPath = '/' }) {
           {loggedIn ? (
             <>
               <a href={APP_URL}
-                className="text-sm bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium px-4 py-2 rounded-lg transition-colors">
+                className="text-sm bg-[#0066FF] hover:bg-[#0052D6] text-white font-medium px-4 py-2 rounded-lg transition-colors">
                 Accéder au dashboard →
               </a>
             </>
@@ -67,7 +67,7 @@ export default function Navbar({ currentPath = '/' }) {
                 Se connecter
               </a>
               <a href="/pricing#plans"
-                className="text-sm bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium px-4 py-2 rounded-lg transition-colors">
+                className="text-sm bg-[#0066FF] hover:bg-[#0052D6] text-white font-medium px-4 py-2 rounded-lg transition-colors">
                 Commencer
               </a>
             </>
@@ -94,7 +94,7 @@ export default function Navbar({ currentPath = '/' }) {
             <a key={l.href} href={l.href} onClick={() => setOpen(false)}
               className={`block px-3 py-2 text-sm rounded-lg ${
                 currentPath.startsWith(l.href)
-                  ? 'text-[#2563EB] bg-blue-50 font-medium'
+                  ? 'text-[#0066FF] bg-[#E5EEFF] font-medium'
                   : 'text-zinc-600 hover:bg-zinc-100'
               }`}>
               {l.label}
@@ -104,7 +104,7 @@ export default function Navbar({ currentPath = '/' }) {
             {loggedIn ? (
               <>
                 <a href={APP_URL} onClick={() => setOpen(false)}
-                  className="block text-center text-sm bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium px-4 py-2.5 rounded-lg transition-colors">
+                  className="block text-center text-sm bg-[#0066FF] hover:bg-[#0052D6] text-white font-medium px-4 py-2.5 rounded-lg transition-colors">
                   Accéder au dashboard →
                 </a>
               </>
@@ -115,7 +115,7 @@ export default function Navbar({ currentPath = '/' }) {
                   Se connecter
                 </a>
                 <a href="/pricing#plans" onClick={() => setOpen(false)}
-                  className="block text-center text-sm bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium px-4 py-2.5 rounded-lg transition-colors">
+                  className="block text-center text-sm bg-[#0066FF] hover:bg-[#0052D6] text-white font-medium px-4 py-2.5 rounded-lg transition-colors">
                   Commencer
                 </a>
               </>

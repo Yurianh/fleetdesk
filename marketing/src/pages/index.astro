@@ -8,35 +8,35 @@ import Footer from '../components/Footer.astro'
 const APP_URL = 'https://app.fleetdesk.fr'
 
 const trustStats = [
-  { value: '5 min',  label: 'Pour importer toute votre flotte' },
-  { value: '14 j',   label: 'Essai Pro gratuit, sans carte bancaire' },
+  { value: '5 min',  label: 'Pour être opérationnel, sans aide' },
+  { value: '14 j',   label: "D'essai complet sur Pro, sans carte" },
   { value: '6',      label: 'Documents réglementaires suivis par conducteur' },
 ]
 
 const pains = [
   {
     icon: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
-    iconCls: 'bg-red-900/30 text-red-400',
-    title: 'Contrôle technique raté',
-    desc: 'Un oubli de date = véhicule immobilisé, amende, client non livré. FleetDesk alerte 30 jours avant l\'échéance.',
+    iconCls: 'bg-red-50 text-red-500',
+    title: 'CT manqué — véhicule à l\'arrêt',
+    desc: 'Un oubli de date = immobilisation immédiate, amende, client non livré. FleetDesk alerte 30 jours avant l\'échéance.',
   },
   {
     icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>',
-    iconCls: 'bg-orange-900/30 text-orange-400',
-    title: 'Document conducteur expiré',
-    desc: 'Visite médicale périmée, formation SST expirée — votre chauffeur ne peut plus rouler légalement sans le savoir.',
+    iconCls: 'bg-orange-50 text-orange-500',
+    title: 'Conducteur hors conformité',
+    desc: 'Visite médicale périmée, formation SST expirée — votre chauffeur roule illégalement sans que personne le sache.',
   },
   {
     icon: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
-    iconCls: 'bg-amber-900/30 text-amber-400',
-    title: 'Panne surprise',
+    iconCls: 'bg-amber-50 text-amber-600',
+    title: 'La panne qu\'on aurait pu éviter',
     desc: 'La vidange oubliée qui finit en moteur HS. Sans suivi kilométrique, les maintenances préventives ne se font jamais.',
   },
   {
     icon: '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/>',
-    iconCls: 'bg-zinc-700/60 text-zinc-300',
-    title: 'Excel ingérable à 5+ véhicules',
-    desc: 'Formules cassées, onglets divergents, données perdues. Un tableur n\'est pas un logiciel de gestion de flotte.',
+    iconCls: 'bg-zinc-100 text-zinc-500',
+    title: 'Excel n\'est pas un outil de flotte',
+    desc: 'Formules cassées, onglets divergents, données perdues. Dès 5 véhicules, un tableur devient un problème.',
   },
 ]
 
@@ -45,37 +45,37 @@ const steps = [
     num: '01',
     title: 'Ajoutez votre flotte',
     desc: 'Immatriculations, kilométrages, conducteurs — tout est en place en moins de 5 minutes. Aucune formation requise.',
-    color: 'text-[#2563EB]',
-    numBg: 'bg-blue-50 text-[#2563EB]',
-    border: 'border-blue-100',
+    color: 'text-[#0066FF]',
+    numBg: 'bg-[#E5EEFF] text-[#0066FF]',
+    border: 'border-[#C8DBFF]',
   },
   {
     num: '02',
     title: 'Configurez vos alertes',
     desc: 'Contrôles techniques, documents conducteurs, intervalles de maintenance — FleetDesk surveille à votre place, 24h/24.',
-    color: 'text-violet-600',
-    numBg: 'bg-violet-50 text-violet-600',
-    border: 'border-violet-100',
+    color: 'text-[#0066FF]',
+    numBg: 'bg-[#E5EEFF] text-[#0066FF]',
+    border: 'border-[#C8DBFF]',
   },
   {
     num: '03',
-    title: 'Gérez en toute sérénité',
-    desc: 'Tableau de bord centralisé, alertes proactives, zéro oubli. Votre flotte tourne, vous restez conformes.',
-    color: 'text-emerald-600',
-    numBg: 'bg-emerald-50 text-emerald-600',
-    border: 'border-emerald-100',
+    title: 'Pilotez sans y penser',
+    desc: 'Tableau de bord centralisé, alertes proactives, zéro oubli. Votre flotte tourne. Vous restez conformes.',
+    color: 'text-[#0066FF]',
+    numBg: 'bg-[#E5EEFF] text-[#0066FF]',
+    border: 'border-[#C8DBFF]',
   },
 ]
 
 const highlights = [
   {
-    color: 'bg-blue-50 text-[#2563EB]',
+    color: 'bg-[#E5EEFF] text-[#0066FF]',
     icon: '<path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>',
     title: 'Suivi des véhicules',
     desc: 'Maintenez un registre complet et à jour de chaque véhicule — statut, kilométrage et historique en un seul endroit.',
   },
   {
-    color: 'bg-violet-50 text-violet-600',
+    color: 'bg-[#E0F5FE] text-[#0EA5E9]',
     icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
     title: 'Gestion des conducteurs',
     desc: 'Fiches conducteurs complètes, suivi des documents réglementaires obligatoires et alertes d\'expiration — tout centralisé.',
@@ -100,7 +100,7 @@ const testimonials = [
     role: 'Gérant · Lefebvre Express',
     sector: 'Livraison — 8 véhicules',
     initials: 'ML',
-    avatarBg: 'bg-blue-100 text-[#2563EB]',
+    avatarBg: 'bg-[#E5EEFF] text-[#0066FF]',
     quote: 'Le premier mois, FleetDesk m\'a rappelé 3 contrôles techniques que j\'avais complètement oubliés. Trois immobilisations évitées dès le départ.',
   },
   {
@@ -108,7 +108,7 @@ const testimonials = [
     role: 'Responsable flotte · BTP Renard',
     sector: 'BTP — 12 véhicules',
     initials: 'SR',
-    avatarBg: 'bg-violet-100 text-violet-600',
+    avatarBg: 'bg-[#E0F5FE] text-[#0EA5E9]',
     quote: 'Le suivi des documents conducteurs était un cauchemar sur Excel. Maintenant j\'ai une alerte dès qu\'une visite médicale approche. Fini les mauvaises surprises.',
   },
   {
@@ -122,8 +122,8 @@ const testimonials = [
 ]
 ---
 <Layout
-  title="Gestion de flotte simple"
-  description="FleetDesk maintient votre flotte en marche — alertes de maintenance, suivi kilométrique, affectations des conducteurs et contrôles techniques."
+  title="FleetDesk — Gestion de flotte pour PME"
+  description="Zéro contrôle technique raté, zéro document expiré, zéro panne surprise. FleetDesk surveille votre flotte à votre place."
 >
   <Navbar client:load currentPath="/" />
 
@@ -135,7 +135,7 @@ const testimonials = [
       <div class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-zinc-100">
         {trustStats.map(s => (
           <div class="py-8 sm:py-0 sm:px-10 first:pl-0 last:pr-0">
-            <p class="text-5xl sm:text-6xl font-black font-mono text-zinc-900 tracking-tight mb-2">{s.value}</p>
+            <p class="text-5xl sm:text-6xl font-black text-zinc-900 tracking-tight mb-2">{s.value}</p>
             <p class="text-sm text-zinc-500">{s.label}</p>
           </div>
         ))}
@@ -143,28 +143,26 @@ const testimonials = [
     </div>
   </section>
 
-  <!-- Problem section — dark -->
-  <section class="py-24 bg-zinc-900 relative overflow-hidden">
-    <div class="pointer-events-none absolute top-0 right-0 w-[500px] h-[400px] rounded-full opacity-10 blur-3xl"
-      style="background: radial-gradient(ellipse, #ef4444 0%, transparent 70%);" />
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+  <!-- Problem section -->
+  <section class="py-24 bg-zinc-50 border-b border-zinc-100">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
       <div class="mb-14 max-w-2xl">
-        <p class="text-sm font-semibold text-red-400 tracking-wide mb-3">Avant FleetDesk</p>
-        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+        <p class="text-sm font-semibold text-red-500 tracking-wide mb-3">Le vrai coût de l'oubli</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-zinc-900 mb-4">
           Ce que coûte vraiment<br />une flotte mal suivie
         </h2>
-        <p class="text-lg text-zinc-400">
-          Contrôle raté, document expiré, panne évitable — chaque oubli a un prix. FleetDesk existe pour que ça n'arrive plus.
+        <p class="text-lg text-zinc-500">
+          Un CT manqué, une visite médicale oubliée, une vidange trop tardive — les petits oublis finissent toujours par coûter cher.
         </p>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {pains.map(p => (
-          <div class="bg-zinc-800/50 border border-zinc-700/50 rounded-xl p-6">
+          <div class="bg-white border border-zinc-100 rounded-xl p-6 hover:shadow-md transition-shadow">
             <div class={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${p.iconCls}`}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={p.icon} />
             </div>
-            <h3 class="text-sm font-semibold text-zinc-100 mb-2">{p.title}</h3>
-            <p class="text-sm text-zinc-400 leading-relaxed">{p.desc}</p>
+            <h3 class="text-sm font-semibold text-zinc-900 mb-2">{p.title}</h3>
+            <p class="text-sm text-zinc-500 leading-relaxed">{p.desc}</p>
           </div>
         ))}
       </div>
@@ -175,12 +173,12 @@ const testimonials = [
   <section class="py-24 bg-zinc-50 border-b border-zinc-100">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       <div class="text-center mb-14">
-        <p class="text-sm font-semibold text-[#2563EB] tracking-wide mb-3">Mise en route</p>
+        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">3 étapes</p>
         <h2 class="text-3xl sm:text-4xl font-bold text-zinc-900 mb-4">
           Opérationnel en 5 minutes
         </h2>
         <p class="text-lg text-zinc-500 max-w-xl mx-auto">
-          Pas d'intégration complexe, pas de formation. Vous êtes prêt avant la fin de votre café.
+          Aucune intégration, aucune formation. Vous êtes prêt avant la fin de votre café.
         </p>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
@@ -193,7 +191,7 @@ const testimonials = [
               {s.num}
             </div>
             <div class="relative">
-              <div class={`inline-flex items-center justify-center w-10 h-10 rounded-xl text-sm font-bold font-mono mb-5 ${s.numBg}`}>
+              <div class={`inline-flex items-center justify-center w-10 h-10 rounded-xl text-sm font-bold mb-5 ${s.numBg}`}>
                 {s.num}
               </div>
               <h3 class={`text-base font-semibold mb-2 ${s.color}`}>{s.title}</h3>
@@ -204,7 +202,7 @@ const testimonials = [
       </div>
       <div class="mt-10 text-center">
         <a href={`${APP_URL}/login?plan=starter`}
-          class="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
+          class="inline-flex items-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
           Commencer gratuitement
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
@@ -215,30 +213,201 @@ const testimonials = [
     </div>
   </section>
 
-  <!-- Highlights -->
-  <section class="py-24 bg-white">
+  <!-- Features — 2×2 screenshot cards -->
+  <section class="py-24 bg-zinc-50">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
-      <div class="mb-14 max-w-2xl">
+      <div class="text-center mb-14">
+        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Ce qui fait la différence</p>
         <h2 class="text-3xl sm:text-4xl font-bold text-zinc-900 mb-4">
-          Tout ce dont votre flotte a besoin
+          Moins d'oublis. Moins de pannes.<br />Plus de maîtrise.
         </h2>
-        <p class="text-lg text-zinc-500">
-          Des fiches véhicules aux prévisions de maintenance — conçu pour les équipes qui font avancer les choses.
+        <p class="text-lg text-zinc-500 max-w-xl mx-auto">
+          Des fiches véhicules aux prévisions de maintenance — sans tableur, sans formation, sans prise de tête.
         </p>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {highlights.map(h => (
-          <div class="rounded-xl p-5 border border-zinc-100 hover:border-zinc-200 hover:shadow-md bg-white transition-all">
-            <div class={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${h.color}`}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={h.icon} />
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+        <!-- Card 1: Véhicules -->
+        <div class="bg-white border border-zinc-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all hover:-translate-y-0.5">
+          <div class="bg-zinc-50 px-6 pt-5 h-52 overflow-hidden relative border-b border-zinc-100">
+            <div class="flex items-center gap-1.5 mb-4">
+              <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
+              <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
+              <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
+              <div class="ml-2 flex-1 bg-white border border-zinc-200 rounded px-2 py-0.5 text-[9px] text-zinc-400 font-mono">app.fleetdesk.fr/vehicules</div>
             </div>
-            <h3 class="text-sm font-semibold text-zinc-900 mb-2">{h.title}</h3>
-            <p class="text-sm text-zinc-500 leading-relaxed">{h.desc}</p>
+            <div class="flex items-center px-3 py-1 mb-1.5 border-b border-zinc-200">
+              <span class="text-[9px] font-medium text-zinc-400 uppercase tracking-wide flex-1">Immatriculation</span>
+              <span class="text-[9px] font-medium text-zinc-400 uppercase tracking-wide w-20 text-center">Statut</span>
+              <span class="text-[9px] font-medium text-zinc-400 uppercase tracking-wide w-20 text-right">Kilométrage</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center bg-white border border-zinc-100 rounded-lg px-3 py-2">
+                <span class="text-[10px] font-mono text-zinc-700 flex-1">AB-123-CD</span>
+                <span class="text-[9px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-full w-20 text-center">Actif</span>
+                <span class="text-[10px] text-zinc-400 w-20 text-right">45 200 km</span>
+              </div>
+              <div class="flex items-center bg-white border border-zinc-100 rounded-lg px-3 py-2">
+                <span class="text-[10px] font-mono text-zinc-700 flex-1">EF-456-GH</span>
+                <span class="text-[9px] bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded-full w-20 text-center">Révision</span>
+                <span class="text-[10px] text-zinc-400 w-20 text-right">31 800 km</span>
+              </div>
+              <div class="flex items-center bg-white border border-zinc-100 rounded-lg px-3 py-2">
+                <span class="text-[10px] font-mono text-zinc-700 flex-1">IJ-789-KL</span>
+                <span class="text-[9px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-full w-20 text-center">Actif</span>
+                <span class="text-[10px] text-zinc-400 w-20 text-right">78 400 km</span>
+              </div>
+            </div>
           </div>
-        ))}
+          <div class="p-6">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-8 h-8 rounded-lg bg-[#E5EEFF] flex items-center justify-center flex-shrink-0">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/>
+                  <rect x="9" y="11" width="14" height="10" rx="2"/>
+                  <circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                </svg>
+              </div>
+              <h3 class="text-sm font-semibold text-zinc-900">Vos véhicules, d'un coup d'œil</h3>
+            </div>
+            <p class="text-sm text-zinc-500 leading-relaxed">Toujours au courant de l'état de chaque véhicule — statut, kilométrage, historique. Sans chercher.</p>
+          </div>
+        </div>
+
+        <!-- Card 2: Conducteurs -->
+        <div class="bg-white border border-zinc-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all hover:-translate-y-0.5">
+          <div class="bg-zinc-50 px-6 pt-5 h-52 overflow-hidden relative border-b border-zinc-100">
+            <div class="flex items-center gap-1.5 mb-4">
+              <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
+              <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
+              <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
+              <div class="ml-2 flex-1 bg-white border border-zinc-200 rounded px-2 py-0.5 text-[9px] text-zinc-400 font-mono">app.fleetdesk.fr/conducteurs</div>
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex items-center gap-2 bg-white border border-zinc-100 rounded-lg px-3 py-2">
+                <div class="w-6 h-6 rounded-full bg-[#E5EEFF] flex items-center justify-center text-[8px] font-bold text-[#0066FF] flex-shrink-0">ML</div>
+                <span class="text-[10px] text-zinc-700 flex-1">Marc Lefebvre</span>
+                <span class="text-[9px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-full">Conforme</span>
+              </div>
+              <div class="flex items-center gap-2 bg-white border border-zinc-100 rounded-lg px-3 py-2">
+                <div class="w-6 h-6 rounded-full bg-amber-50 flex items-center justify-center text-[8px] font-bold text-amber-600 flex-shrink-0">SR</div>
+                <span class="text-[10px] text-zinc-700 flex-1">Sophie Renard</span>
+                <span class="text-[9px] bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded-full">⚠ Expire 15j</span>
+              </div>
+              <div class="flex items-center gap-2 bg-white border border-zinc-100 rounded-lg px-3 py-2">
+                <div class="w-6 h-6 rounded-full bg-[#E5EEFF] flex items-center justify-center text-[8px] font-bold text-[#0066FF] flex-shrink-0">KA</div>
+                <span class="text-[10px] text-zinc-700 flex-1">Karim Aïssa</span>
+                <span class="text-[9px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-full">Conforme</span>
+              </div>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-8 h-8 rounded-lg bg-[#E0F5FE] flex items-center justify-center flex-shrink-0">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
+              <h3 class="text-sm font-semibold text-zinc-900">Zéro document expiré</h3>
+            </div>
+            <p class="text-sm text-zinc-500 leading-relaxed">Vous saurez qu'un document expire avant que votre conducteur reprenne le volant.</p>
+          </div>
+        </div>
+
+        <!-- Card 3: Maintenance -->
+        <div class="bg-white border border-zinc-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all hover:-translate-y-0.5">
+          <div class="bg-zinc-50 px-6 pt-5 h-52 overflow-hidden relative border-b border-zinc-100">
+            <div class="flex items-center gap-1.5 mb-4">
+              <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
+              <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
+              <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
+              <div class="ml-2 flex-1 bg-white border border-zinc-200 rounded px-2 py-0.5 text-[9px] text-zinc-400 font-mono">app.fleetdesk.fr/maintenance</div>
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex items-center gap-2 bg-white border border-zinc-100 rounded-lg px-3 py-2">
+                <div class="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0"></div>
+                <span class="text-[10px] text-zinc-700 flex-1">CT · AB-123-CD</span>
+                <span class="text-[9px] text-red-500 font-medium">Dans 3 j</span>
+              </div>
+              <div class="flex items-center gap-2 bg-white border border-zinc-100 rounded-lg px-3 py-2">
+                <div class="w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0"></div>
+                <span class="text-[10px] text-zinc-700 flex-1">Vidange · EF-456-GH</span>
+                <span class="text-[9px] text-amber-600 font-medium">Dans 12 j</span>
+              </div>
+              <div class="flex items-center gap-2 bg-white border border-zinc-100 rounded-lg px-3 py-2">
+                <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0"></div>
+                <span class="text-[10px] text-zinc-700 flex-1">Freins · IJ-789-KL</span>
+                <span class="text-[9px] text-zinc-400">Dans 28 j</span>
+              </div>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
+                </svg>
+              </div>
+              <h3 class="text-sm font-semibold text-zinc-900">Anticipez les pannes</h3>
+            </div>
+            <p class="text-sm text-zinc-500 leading-relaxed">Intervalles kilométriques ou temporels — FleetDesk vous prévient avant que la panne vous surprenne.</p>
+          </div>
+        </div>
+
+        <!-- Card 4: Analytique -->
+        <div class="bg-white border border-zinc-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all hover:-translate-y-0.5">
+          <div class="bg-zinc-50 px-6 pt-5 h-52 overflow-hidden relative border-b border-zinc-100">
+            <div class="flex items-center gap-1.5 mb-3">
+              <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
+              <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
+              <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
+              <div class="ml-2 flex-1 bg-white border border-zinc-200 rounded px-2 py-0.5 text-[9px] text-zinc-400 font-mono">app.fleetdesk.fr/analytique</div>
+            </div>
+            <div class="flex gap-2 mb-3">
+              <div class="flex-1 bg-white border border-zinc-100 rounded-lg px-3 py-2">
+                <p class="text-[9px] text-zinc-400 mb-0.5">Km ce mois</p>
+                <p class="text-[13px] font-bold text-zinc-800">12 450</p>
+              </div>
+              <div class="flex-1 bg-white border border-zinc-100 rounded-lg px-3 py-2">
+                <p class="text-[9px] text-zinc-400 mb-0.5">Coût entretien</p>
+                <p class="text-[13px] font-bold text-emerald-600">↓ 18%</p>
+              </div>
+            </div>
+            <div class="bg-white border border-zinc-100 rounded-lg px-3 py-2">
+              <div class="flex items-end gap-1 h-12">
+                <div class="flex-1 bg-[#0066FF]/15 rounded-sm" style="height:45%"></div>
+                <div class="flex-1 bg-[#0066FF]/25 rounded-sm" style="height:60%"></div>
+                <div class="flex-1 bg-[#0066FF]/35 rounded-sm" style="height:40%"></div>
+                <div class="flex-1 bg-[#0066FF]/55 rounded-sm" style="height:75%"></div>
+                <div class="flex-1 bg-[#0066FF]/45 rounded-sm" style="height:55%"></div>
+                <div class="flex-1 bg-[#0066FF] rounded-sm" style="height:90%"></div>
+                <div class="flex-1 bg-[#0066FF]/65 rounded-sm" style="height:68%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="20" x2="18" y2="10"/>
+                  <line x1="12" y1="20" x2="12" y2="4"/>
+                  <line x1="6" y1="20" x2="6" y2="14"/>
+                </svg>
+              </div>
+              <h3 class="text-sm font-semibold text-zinc-900">Comprenez vos coûts réels</h3>
+            </div>
+            <p class="text-sm text-zinc-500 leading-relaxed">Coûts, kilométrages, tendances — pas dans un tableur, dans un vrai tableau de bord.</p>
+          </div>
+        </div>
+
       </div>
-      <div class="mt-10">
-        <a href="/features" class="inline-flex items-center gap-2 text-sm font-medium text-[#2563EB] hover:text-[#1D4ED8] transition-colors">
+      <div class="mt-10 text-center">
+        <a href="/features" class="inline-flex items-center gap-2 text-sm font-medium text-[#0066FF] hover:text-[#0052D6] transition-colors">
           Voir toutes les fonctionnalités
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
@@ -252,9 +421,9 @@ const testimonials = [
   <section class="py-24 bg-zinc-50 border-y border-zinc-100">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       <div class="text-center mb-14">
-        <p class="text-sm font-semibold text-[#2563EB] tracking-wide mb-3">Témoignages</p>
+        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Ils ont arrêté Excel</p>
         <h2 class="text-3xl sm:text-4xl font-bold text-zinc-900">
-          Ce qu'en disent nos clients
+          Ils en parlent mieux que nous
         </h2>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">

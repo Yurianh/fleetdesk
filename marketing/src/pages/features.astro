@@ -13,7 +13,7 @@ const categories = [
         desc: 'Gardez une fiche complète pour chaque véhicule — marque, modèle, plaque, statut et historique complet en un seul endroit.',
         details: ['Statut en temps réel : actif, en maintenance, hors service', 'Historique complet des événements par véhicule', 'Recherche et filtres par marque, modèle ou plaque'],
         icon: '<path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>',
-        bg: 'bg-blue-50', color: 'text-[#2563EB]', accentBg: 'bg-[#2563EB]',
+        bg: 'bg-blue-50', color: 'text-[#0066FF]', accentBg: 'bg-[#0066FF]',
       },
       {
         title: 'Profils conducteurs',
@@ -79,7 +79,7 @@ const categories = [
         desc: "Graphiques et résumés visuels des coûts, tendances kilométriques et activité de maintenance — sans tableur nécessaire.",
         details: ['KPIs en temps réel : véhicules actifs, coûts, alertes', 'Évolution kilométrique sur les 30 derniers jours', 'Répartition des dépenses par catégorie'],
         icon: '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
-        bg: 'bg-blue-50', color: 'text-[#2563EB]', accentBg: 'bg-[#2563EB]',
+        bg: 'bg-blue-50', color: 'text-[#0066FF]', accentBg: 'bg-[#0066FF]',
       },
       {
         title: 'Prévision de maintenance',
@@ -108,12 +108,12 @@ const categories = [
   <!-- Header -->
   <section class="bg-white border-b border-zinc-100 py-20">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-      <p class="text-sm font-semibold text-[#2563EB] tracking-wide mb-3">Fonctionnalités</p>
+      <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Fonctionnalités</p>
       <h1 class="text-4xl sm:text-5xl font-bold text-zinc-900 tracking-tight mb-5">
         Tout ce qu'il faut pour votre flotte
       </h1>
       <p class="text-lg text-zinc-500 max-w-2xl mx-auto">
-        De l'immatriculation des véhicules au suivi de conformité, FleetDesk couvre tout le cycle de gestion de flotte — sans la complexité.
+        De l'immatriculation au suivi de conformité — sans formation, sans intégration, sans prise de tête.
       </p>
     </div>
   </section>
@@ -123,7 +123,7 @@ const categories = [
     <div class="max-w-6xl mx-auto px-4 sm:px-6 space-y-20">
       {categories.map(cat => (
         <div>
-          <h2 class="text-xs font-semibold uppercase tracking-[0.1em] text-[#2563EB] mb-8">{cat.title}</h2>
+          <h2 class="text-xs font-semibold uppercase tracking-[0.1em] text-[#0066FF] mb-8">{cat.title}</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {cat.features.map(f => (
               <div class="group relative bg-white border border-zinc-100 rounded-xl p-6 hover:-translate-y-1 hover:shadow-xl hover:border-zinc-200 transition-all duration-150 cursor-default overflow-hidden">
