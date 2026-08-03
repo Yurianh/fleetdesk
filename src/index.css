@@ -85,10 +85,10 @@
     font-family: 'Hanken Grotesk', system-ui, sans-serif;
   }
 
-  /* No monospace typeface — plates, IDs and figures stay in Hanken Grotesk,
-     with tabular figures so numbers still align in columns. */
+  /* No monospace anywhere — plates, IDs and figures render in plain
+     proportional Hanken Grotesk, exactly like body text. */
   .font-mono, code, pre, [class*="mono"] {
     font-family: 'Hanken Grotesk', system-ui, sans-serif;
-    font-variant-numeric: tabular-nums;
+    font-variant-numeric: normal;
   }
 }
