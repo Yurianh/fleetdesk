@@ -82,10 +82,10 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Geist', system-ui, sans-serif;
+    font-family: 'Hanken Grotesk', system-ui, sans-serif;
   }
 
   .font-mono, code, pre, [class*="mono"] {
-    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-family: 'Spline Sans Mono', ui-monospace, monospace;
   }
 }
