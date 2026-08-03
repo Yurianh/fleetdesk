@@ -1,10 +1,10 @@
 import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react'
 import {
   Truck, Users, ArrowLeftRight, AlertTriangle,
-  Gauge, Wrench, Droplets, ClipboardCheck,
-  CheckCircle2, Plus, Loader2, ArrowRight,
+  Gauge, Wrench, Droplets,
+  CheckCircle2, Loader2,
   TrendingUp, TrendingDown, Clock, Activity,
-  Bell, ChevronRight, Car, StickyNote, Check, Tag, X
+  Bell, ChevronRight, StickyNote, Check, Tag, X
 } from 'lucide-react'
 import {
   format, differenceInDays, subMonths, eachMonthOfInterval,
@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
 import { useQueryClient } from '@tanstack/react-query'
-import { computeForecasts, statusColors } from '@/lib/maintenanceForecast'
+import { computeForecasts } from '@/lib/maintenanceForecast'
 import {
   useVehicles, useDrivers, useAssignments, useMileageEntries,
   useTechnicalInspections, useMaintenanceRecords, useWashRecords,
@@ -450,7 +450,7 @@ function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, v
                         const v = getVehicleById(vehicles, ins.vehicle_id)
                         const d = differenceInDays(new Date(ins.expiration_date), new Date())
                         return (
-                          <Link key={ins.id} to="/Inspections" className="flex items-center justify-between px-3 py-1.5 hover:bg-red-100/50 transition-colors">
+                          <Link key={ins.id} to={`/Vehicles/${ins.vehicle_id}?tab=inspections`} className="flex items-center justify-between px-3 py-1.5 hover:bg-red-100/50 transition-colors">
                             <div>
                               <p className="text-xs font-semibold text-zinc-800">{v?.model || v?.plate_number || '—'}</p>
                               <p className="text-xs text-red-600">{d === 0 ? t('alerts.ctExpiresToday') : t('alerts.ctExpiresDays', { count: d })}</p>
@@ -482,7 +482,7 @@ function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, v
                         const v = getVehicleById(vehicles, ins.vehicle_id)
                         const d = differenceInDays(new Date(ins.expiration_date), new Date())
                         return (
-                          <Link key={ins.id} to="/Inspections" className="flex items-center justify-between px-3 py-1.5 hover:bg-amber-100/50 transition-colors">
+                          <Link key={ins.id} to={`/Vehicles/${ins.vehicle_id}?tab=inspections`} className="flex items-center justify-between px-3 py-1.5 hover:bg-amber-100/50 transition-colors">
                             <div>
                               <p className="text-xs font-semibold text-zinc-800">{v?.model || v?.plate_number || '—'}</p>
                               <p className="text-xs text-amber-600">{t('alerts.ctDueDays', { count: d })}</p>

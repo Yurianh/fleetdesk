@@ -1,26 +1,26 @@
 import React, { useState, useRef } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Truck, Plus, FileText, Paperclip, Camera, X } from 'lucide-react'
+import { useParams, Link, useSearchParams } from 'react-router-dom'
+import { ArrowLeft, Truck, Plus, FileText, Paperclip, Camera, X, ChevronRight } from 'lucide-react'
 import { format, addYears } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { SearchableSelect } from '@/components/ui/searchable-select'
 import FormModal from '@/components/shared/FormModal'
 import { InvoiceUpload } from '@/components/shared/InvoiceUpload'
 import EmptyState from '@/components/shared/EmptyState'
+import AssignDriverDialog from '@/components/shared/AssignDriverDialog'
 import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
   useVehicles, useDrivers, useAssignments, useMileageEntries,
   useMaintenanceRecords, useTechnicalInspections, useWashRecords,
-  getDriverById, getLatestAssignments, getLatestMileage,
+  getDriverById, getLatestAssignments,
   createMileageEntry, createMaintenanceRecord, createTechnicalInspection, createWashRecord,
   updateVehicle
 } from '@/lib/useFleetData'
@@ -32,6 +32,14 @@ export default function VehicleDetail() {
   const dateLocale = useDateLocale()
   const { id } = useParams()
   const queryClient = useQueryClient()
+
+  // Tab state lives in the URL so alerts and colleagues can deep-link
+  // (e.g. /Vehicles/:id?tab=inspections)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const VALID_TABS = ['mileage', 'maintenance', 'inspections', 'washes', 'assignments']
+  const tabParam = searchParams.get('tab')
+  const activeTab = VALID_TABS.includes(tabParam) ? tabParam : 'mileage'
+  const setActiveTab = (tab) => setSearchParams(tab === 'mileage' ? {} : { tab }, { replace: true })
 
   const { data: vehicles }          = useVehicles()
   const { data: drivers }           = useDrivers()
@@ -68,6 +76,9 @@ export default function VehicleDetail() {
   const regFileRef   = useRef(null)
   const regCameraRef = useRef(null)
 
+  // ── Assign driver ──
+  const [assignDriverOpen, setAssignDriverOpen] = useState(false)
+
   if (!vehicle) return <div className="p-8 text-center text-slate-400">{t('vehicles.noResults')}</div>
 
   const vehicleAssignments = assignments.filter(a => a.vehicle_id === id)
@@ -76,8 +87,10 @@ export default function VehicleDetail() {
   const vehicleInspections = inspections.filter(i => i.vehicle_id === id)
   const vehicleWashes      = washRecords.filter(w => w.vehicle_id === id)
 
-  const latestAssignment = vehicleAssignments[0]
-  const currentDriver    = latestAssignment ? getDriverById(drivers, latestAssignment.driver_id) : null
+  // Active assignment only (ended_at IS NULL) — vehicleAssignments[0] would
+  // show the last driver even after unassignment
+  const activeAssignment = getLatestAssignments(assignments)[id]
+  const currentDriver    = activeAssignment ? getDriverById(drivers, activeAssignment.driver_id) : null
   const latestMileage    = vehicleMileage[0]
 
   // ── Submit handlers ───────────────────────────────────────────────
@@ -230,7 +243,29 @@ export default function VehicleDetail() {
           <div className="flex flex-wrap gap-6 sm:gap-8 mt-1 sm:mt-0">
             <div>
               <p className="text-sm text-slate-500">{t('assignments.driver')}</p>
-              <p className="font-semibold text-slate-900">{currentDriver?.name || '—'}</p>
+              {currentDriver ? (
+                <div className="flex items-center gap-2">
+                  <Link
+                    to={`/Drivers/${currentDriver.id}`}
+                    className="inline-flex items-center gap-1 font-semibold text-slate-900 hover:text-[#0052D6] transition-colors"
+                  >
+                    {currentDriver.name} <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
+                  </Link>
+                  <button
+                    onClick={() => setAssignDriverOpen(true)}
+                    className="text-xs font-medium text-[#0066FF] hover:text-[#0052D6] transition-colors"
+                  >
+                    Changer
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setAssignDriverOpen(true)}
+                  className="text-sm font-medium text-[#0066FF] hover:text-[#0052D6] transition-colors"
+                >
+                  + Affecter
+                </button>
+              )}
             </div>
             <div>
               <p className="text-sm text-slate-500">{t('mileage.title')}</p>
@@ -259,7 +294,7 @@ export default function VehicleDetail() {
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <Tabs defaultValue="mileage">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="w-full justify-start bg-white border-b border-slate-200 rounded-none px-2 h-12 min-w-max">
               <TabsTrigger value="mileage">Kilométrage</TabsTrigger>
               <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
@@ -442,6 +477,13 @@ export default function VehicleDetail() {
       </div>
 
       {/* ── Modals ────────────────────────────────────────────────────── */}
+
+      {/* Affecter un conducteur */}
+      <AssignDriverDialog
+        open={assignDriverOpen}
+        onClose={() => setAssignDriverOpen(false)}
+        vehicleId={id}
+      />
 
       {/* Kilométrage */}
       <FormModal open={mileageModal} onClose={() => setMileageModal(false)} title="Enregistrer un kilométrage"

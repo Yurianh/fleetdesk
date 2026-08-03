@@ -2,7 +2,9 @@ import React from 'react'
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
-import { ArrowLeftRight, User, Truck, UserMinus } from 'lucide-react'
+import { ArrowLeftRight, User, Truck, UserMinus, Plus, UserPlus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import AssignDriverDialog from '@/components/shared/AssignDriverDialog'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import PageHeader from '@/components/shared/PageHeader'
@@ -27,6 +29,9 @@ export default function Assignments() {
   const queryClient = useQueryClient()
 
   const [unassigningId, setUnassigningId] = useState(null)
+  // null = closed · { vehicleId: null } = open, free vehicle choice ·
+  // { vehicleId: id } = open, preselected vehicle
+  const [assignDialog, setAssignDialog] = useState(null)
 
   const latestAssignments = getLatestAssignments(assignments)
   const activeList = Object.values(latestAssignments)
@@ -47,7 +52,11 @@ export default function Assignments() {
       <PageHeader
         title={t('assignments.title')}
         description={`${activeList.length} affectation${activeList.length !== 1 ? 's' : ''} active${activeList.length !== 1 ? 's' : ''} · ${unassignedVehicles.length} véhicule${unassignedVehicles.length !== 1 ? 's' : ''} libre${unassignedVehicles.length !== 1 ? 's' : ''}`}
-      />
+      >
+        <Button onClick={() => setAssignDialog({ vehicleId: null })} className="bg-[#0066FF] hover:bg-[#0052D6]">
+          <Plus className="w-4 h-4 mr-2" /> Nouvelle affectation
+        </Button>
+      </PageHeader>
 
       <DataError queries={[assignmentsQ]} />
 
@@ -57,7 +66,8 @@ export default function Assignments() {
           <EmptyState
             icon={ArrowLeftRight}
             title="Aucune affectation active"
-            description="Affectez un véhicule à un conducteur depuis sa fiche."
+            description="Affectez un conducteur à un véhicule pour démarrer le suivi."
+            action={{ label: 'Nouvelle affectation', onClick: () => setAssignDialog({ vehicleId: null }) }}
           />
         ) : (
           <>
@@ -178,8 +188,13 @@ export default function Assignments() {
                         </div>
                       </Link>
                     </td>
-                    <td className="px-5 py-3.5">
-                      <span className="text-xs text-slate-300">Non affecté</span>
+                    <td className="px-5 py-3.5 text-right">
+                      <button
+                        onClick={() => setAssignDialog({ vehicleId: v.id })}
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-[#0066FF] hover:text-[#0052D6] bg-[#0066FF]/5 hover:bg-[#0066FF]/10 px-3 py-1.5 rounded-lg transition-colors"
+                      >
+                        <UserPlus className="w-3 h-3" /> Affecter
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -188,19 +203,34 @@ export default function Assignments() {
           </div>
           <div className="sm:hidden divide-y divide-slate-100">
             {unassignedVehicles.map(v => (
-              <Link key={v.id} to={`/Vehicles/${v.id}`} className="flex items-center gap-3 p-4">
-                <div className="w-9 h-9 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Truck className="w-4 h-4 text-slate-400" />
-                </div>
-                <div>
-                  <p className="font-semibold text-slate-500">{v.model}</p>
-                  <p className="text-xs text-slate-400 font-mono">{v.plate_number}</p>
-                </div>
-              </Link>
+              <div key={v.id} className="flex items-center gap-3 p-4">
+                <Link to={`/Vehicles/${v.id}`} className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className="w-9 h-9 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Truck className="w-4 h-4 text-slate-400" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-slate-500 truncate">{v.model}</p>
+                    <p className="text-xs text-slate-400 font-mono truncate">{v.plate_number}</p>
+                  </div>
+                </Link>
+                <button
+                  onClick={() => setAssignDialog({ vehicleId: v.id })}
+                  className="flex-shrink-0 inline-flex items-center gap-1.5 text-xs font-medium text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-lg"
+                >
+                  <UserPlus className="w-3 h-3" /> Affecter
+                </button>
+              </div>
             ))}
           </div>
         </div>
       )}
+
+      {/* Create assignment dialog */}
+      <AssignDriverDialog
+        open={!!assignDialog}
+        onClose={() => setAssignDialog(null)}
+        vehicleId={assignDialog?.vehicleId || null}
+      />
     </div>
   )
 }
