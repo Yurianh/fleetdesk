@@ -1,5 +1,5 @@
 import React from 'react'
-import { Truck, Users, ArrowLeftRight, ClipboardCheck, Check, X, Sparkles, ArrowRight, PlayCircle } from 'lucide-react'
+import { Truck, Users, ArrowLeftRight, ClipboardCheck, Check, X, Sparkles, ArrowRight, PlayCircle, Wand2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useOnboarding } from '@/lib/OnboardingContext'
 
@@ -8,6 +8,7 @@ import { useOnboarding } from '@/lib/OnboardingContext'
 // while visible in OnboardingContext; dismissable and replayable from the sidebar.
 export default function GettingStarted({
   vehiclesCount, driversCount, assignedCount, inspectionsCount,
+  guiding = false, onStartGuide,
   onAddVehicle, onAddDriver, onAssign, onAddInspection,
 }) {
   const { t } = useTranslation()
@@ -57,6 +58,11 @@ export default function GettingStarted({
   const pct = Math.round((doneCount / total) * 100)
   // The first not-yet-done, unlocked step gets the primary CTA styling.
   const nextIdx = steps.findIndex(s => !s.done && !s.locked)
+  // The guided chain covers the first three steps (vehicle → driver → assign).
+  const coreDone = steps[0].done && steps[1].done && steps[2].done
+  const guideLabel = doneCount === 0
+    ? t('gettingStarted.guideStart')
+    : t('gettingStarted.guideContinue')
 
   return (
     <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden mb-8 shadow-sm">
@@ -98,6 +104,20 @@ export default function GettingStarted({
           />
         </div>
       </div>
+
+      {/* Guided setup CTA — walks vehicle → driver → assignment in one flow */}
+      {!coreDone && onStartGuide && (
+        <div className="px-5 sm:px-6 pt-4">
+          <button
+            onClick={onStartGuide}
+            className="w-full inline-flex items-center justify-center gap-2 text-sm font-semibold text-white bg-[#0066FF] hover:bg-[#0052D6] rounded-xl py-2.5 transition-colors"
+          >
+            <Wand2 className="w-4 h-4" />
+            {guiding ? t('gettingStarted.guideResume') : guideLabel}
+          </button>
+          <p className="text-[11px] text-zinc-400 text-center mt-1.5">{t('gettingStarted.guideHint')}</p>
+        </div>
+      )}
 
       {/* Steps */}
       <div className="p-5 sm:p-6 pt-4 space-y-2">

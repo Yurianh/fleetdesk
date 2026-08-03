@@ -849,6 +849,34 @@ export default function Dashboard() {
   const latestAssignments = getLatestAssignments(assignments)
   const assignedCount = Object.keys(latestAssignments).length
 
+  // ── Guided setup chain: vehicle → driver → assignment ──────────────
+  // Opens the next step's modal automatically once the current one is
+  // created, so a lost user is walked through the whole path in one go.
+  const [guiding, setGuiding] = useState(false)
+  const guideCounts = useRef({ v: vehicles.length, d: drivers.length, a: assignedCount })
+
+  const startGuide = () => {
+    setGuiding(true)
+    if (vehicles.length === 0) setShowAddVehicle(true)
+    else if (drivers.length === 0) setShowAddDriver(true)
+    else if (assignedCount === 0) setShowAssign(true)
+  }
+
+  useEffect(() => {
+    const prev = guideCounts.current
+    const next = { v: vehicles.length, d: drivers.length, a: assignedCount }
+    // On any genuine creation during a guided run, open the next missing step.
+    const created = next.v > prev.v || next.d > prev.d || next.a > prev.a
+    if (guiding && created) {
+      if (next.a > 0) {
+        setGuiding(false)
+        toast.success(t('gettingStarted.guideDone'))
+      } else if (next.d === 0) setShowAddDriver(true)
+      else if (next.v > 0) setShowAssign(true)
+    }
+    guideCounts.current = next
+  }, [vehicles.length, drivers.length, assignedCount, guiding, t])
+
   const forecasts = useMemo(
     () => computeForecasts({ schedules, vehicles, maintenanceRecords, mileageEntries }),
     [schedules, vehicles, maintenanceRecords, mileageEntries]
@@ -1024,6 +1052,8 @@ export default function Dashboard() {
             driversCount={drivers.length}
             assignedCount={assignedCount}
             inspectionsCount={inspections.length}
+            guiding={guiding}
+            onStartGuide={startGuide}
             onAddVehicle={() => canAddVehicle ? setShowAddVehicle(true) : toast.error(t('plan.vehicleLimitReached') + ' ' + t('plan.upgradeHint'))}
             onAddDriver={() => canAddDriver ? setShowAddDriver(true) : toast.error(t('plan.driverLimitReached') + ' ' + t('plan.upgradeHint'))}
             onAssign={() => setShowAssign(true)}
