@@ -202,6 +202,7 @@ export async function createVehicle(data) {
 }
 
 export async function createDriver(data) {
+  if (DEMO) return
   const label = data.name || 'Conducteur'
   const { error } = await supabase.from('drivers').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
@@ -209,6 +210,7 @@ export async function createDriver(data) {
 }
 
 export async function createAssignment(data) {
+  if (DEMO) return { swapped: false }
   const uid = await orgUid()
   const now = new Date().toISOString()
 
@@ -254,6 +256,7 @@ export async function createAssignment(data) {
 }
 
 export async function unassignVehicle(vehicleId) {
+  if (DEMO) return
   const uid = await orgUid()
   const { error } = await supabase.from('assignments')
     .update({ ended_at: new Date().toISOString() })
@@ -263,6 +266,7 @@ export async function unassignVehicle(vehicleId) {
 }
 
 export async function createMileageEntry(data) {
+  if (DEMO) return
   const label = data.mileage ? `${Number(data.mileage).toLocaleString('fr-FR')} km` : 'Relevé kilométrique'
   const { error } = await supabase.from('mileage_entries').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
@@ -270,6 +274,7 @@ export async function createMileageEntry(data) {
 }
 
 export async function createMaintenanceRecord(data) {
+  if (DEMO) return
   const label = data.type || 'Maintenance'
   // Canonical status enum is uppercase ('OK' / 'PROBLEM') — normalize any caller input
   const status = data.status ? String(data.status).toUpperCase() : data.status
@@ -279,12 +284,14 @@ export async function createMaintenanceRecord(data) {
 }
 
 export async function createTechnicalInspection(data) {
+  if (DEMO) return
   const { error } = await supabase.from('technical_inspections').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
   logActivity('createTechnicalInspection', 'inspection', '', 'Contrôle technique')
 }
 
 export async function createWashRecord(data) {
+  if (DEMO) return
   const label = data.amount ? `Lavage ${Number(data.amount).toFixed(2)} €` : 'Lavage'
   const { error } = await supabase.from('wash_records').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
@@ -292,6 +299,7 @@ export async function createWashRecord(data) {
 }
 
 export async function createMaintenanceSchedule(data) {
+  if (DEMO) return
   const label = data.task || 'Planning maintenance'
   const { error } = await supabase.from('maintenance_schedules').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
@@ -299,90 +307,105 @@ export async function createMaintenanceSchedule(data) {
 }
 
 export async function updateMaintenanceSchedule(id, data) {
+  if (DEMO) return
   const { error } = await supabase.from('maintenance_schedules').update(data).eq('id', id)
   if (error) throw error
   logActivity('updateMaintenanceSchedule', 'maintenance_schedule', id, '')
 }
 
 export async function deleteMaintenanceSchedule(id) {
+  if (DEMO) return
   const { error } = await supabase.from('maintenance_schedules').delete().eq('id', id)
   if (error) throw error
   logActivity('deleteMaintenanceSchedule', 'maintenance_schedules', id, '')
 }
 
 export async function updateDriver(id, data) {
+  if (DEMO) return
   const { error } = await supabase.from('drivers').update(data).eq('id', id)
   if (error) throw error
   logActivity('updateDriver', 'driver', id, '')
 }
 
 export async function deleteDriver(id) {
+  if (DEMO) return
   const { error } = await supabase.from('drivers').delete().eq('id', id)
   if (error) throw error
   logActivity('deleteDriver', 'driver', id, '')
 }
 
 export async function updateVehicle(id, data) {
+  if (DEMO) return
   const { error } = await supabase.from('vehicles').update(data).eq('id', id)
   if (error) throw error
   logActivity('updateVehicle', 'vehicle', id, data.plate_number || '')
 }
 
 export async function deleteVehicle(id) {
+  if (DEMO) return
   const { error } = await supabase.from('vehicles').delete().eq('id', id)
   if (error) throw error
   logActivity('deleteVehicle', 'vehicle', id, '')
 }
 
 export async function updateMileageEntry(id, data) {
+  if (DEMO) return
   const { error } = await supabase.from('mileage_entries').update(data).eq('id', id)
   if (error) throw error
   logActivity('updateMileageEntry', 'mileage', id, '')
 }
 
 export async function updateAssignment(id, data) {
+  if (DEMO) return
   const { error } = await supabase.from('assignments').update(data).eq('id', id)
   if (error) throw error
   logActivity('updateAssignment', 'assignment', id, '')
 }
 
 export async function deleteMileageEntry(id) {
+  if (DEMO) return
   const { error } = await supabase.from('mileage_entries').delete().eq('id', id)
   if (error) throw error
   logActivity('deleteMileageEntry', 'mileage_entries', id, '')
 }
 
 export async function deleteAssignment(id) {
+  if (DEMO) return
   const { error } = await supabase.from('assignments').delete().eq('id', id)
   if (error) throw error
   logActivity('deleteAssignment', 'assignments', id, '')
 }
 
 export async function updateTechnicalInspection(id, data) {
+  if (DEMO) return
   const { error } = await supabase.from('technical_inspections').update(data).eq('id', id)
   if (error) throw error
   logActivity('updateTechnicalInspection', 'inspection', id, '')
 }
 
 export async function deleteTechnicalInspection(id) {
+  if (DEMO) return
   const { error } = await supabase.from('technical_inspections').delete().eq('id', id)
   if (error) throw error
   logActivity('deleteTechnicalInspection', 'technical_inspections', id, '')
 }
 
 export async function updateWashRecord(id, data) {
+  if (DEMO) return
   const { error } = await supabase.from('wash_records').update(data).eq('id', id)
   if (error) throw error
   logActivity('updateWashRecord', 'wash', id, '')
 }
 
 export async function deleteWashRecord(id) {
+  if (DEMO) return
   const { error } = await supabase.from('wash_records').delete().eq('id', id)
   if (error) throw error
   logActivity('deleteWashRecord', 'wash_records', id, '')
 }
 
 export async function updateMaintenanceRecord(id, data) {
+  if (DEMO) return
   // Same enum normalization as createMaintenanceRecord
   if (data.status) data = { ...data, status: String(data.status).toUpperCase() }
   const { error } = await supabase.from('maintenance_records').update(data).eq('id', id)
@@ -391,6 +414,7 @@ export async function updateMaintenanceRecord(id, data) {
 }
 
 export async function deleteMaintenanceRecord(id) {
+  if (DEMO) return
   const { error } = await supabase.from('maintenance_records').delete().eq('id', id)
   if (error) throw error
   logActivity('deleteMaintenanceRecord', 'maintenance_records', id, '')
@@ -435,6 +459,7 @@ export function useAllDriverDocuments() {
 }
 
 export async function createDriverDocument(data) {
+  if (DEMO) return
   const uid = await orgUid()
   const { error } = await supabase.from('driver_documents').insert({ ...data, org_id: uid })
   if (error) throw error
@@ -442,6 +467,7 @@ export async function createDriverDocument(data) {
 }
 
 export async function updateDriverDocument(id, data) {
+  if (DEMO) return
   const { error } = await supabase.from('driver_documents')
     .update({ ...data, updated_at: new Date().toISOString() })
     .eq('id', id)
@@ -450,6 +476,7 @@ export async function updateDriverDocument(id, data) {
 }
 
 export async function deleteDriverDocument(id) {
+  if (DEMO) return
   const { error } = await supabase.from('driver_documents').delete().eq('id', id)
   if (error) throw error
   logActivity('deleteDriverDocument', 'driver_document', id, '')

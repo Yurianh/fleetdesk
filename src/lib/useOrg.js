@@ -10,6 +10,7 @@ async function getAuthHeader() {
 }
 
 async function invokeWithAuth(fnName, body) {
+  if (DEMO) return {} // demo: member invite/remove are no-ops
   const headers = await getAuthHeader()
   const { data, error } = await supabase.functions.invoke(fnName, { body, headers })
   if (error) {
@@ -30,6 +31,7 @@ export function useOrgMembers() {
   return useQuery({
     queryKey: ['orgMembers'],
     queryFn: async () => {
+      if (DEMO) return []
       const { data: { user } } = await supabase.auth.getUser()
       if (!user || user.user_metadata?.org_id) return []
       const { data, error } = await supabase
