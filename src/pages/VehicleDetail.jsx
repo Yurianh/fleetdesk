@@ -327,7 +327,9 @@ export default function VehicleDetail() {
                     ))}
                   </div>
                 </>
-              ) : <EmptyState title="Aucun kilométrage enregistré" />}
+              ) : <EmptyState title="Aucun kilométrage enregistré"
+                    description="Relevez le compteur régulièrement pour suivre l'usage et déclencher les prévisions d'entretien."
+                    action={{ label: 'Enregistrer un relevé', onClick: () => setMileageModal(true) }} />}
             </TabsContent>
 
             {/* ── Maintenance ───────────────────────────────────────── */}
@@ -362,7 +364,9 @@ export default function VehicleDetail() {
                     ))}
                   </div>
                 </>
-              ) : <EmptyState title="Aucun entretien enregistré" />}
+              ) : <EmptyState title="Aucun entretien enregistré"
+                    description="Consignez les entretiens (vidange, freins…) pour garder un historique et suivre les coûts."
+                    action={{ label: 'Ajouter un entretien', onClick: () => setMaintenanceModal(true) }} />}
             </TabsContent>
 
             {/* ── Contrôles tech. ───────────────────────────────────── */}
@@ -392,7 +396,9 @@ export default function VehicleDetail() {
                     ))}
                   </div>
                 </>
-              ) : <EmptyState title="Aucun contrôle technique" />}
+              ) : <EmptyState title="Aucun contrôle technique"
+                    description="Enregistrez le contrôle technique : FleetDesk calcule l'expiration et vous alerte avant l'échéance."
+                    action={{ label: 'Ajouter un contrôle', onClick: () => setInspectionModal(true) }} />}
             </TabsContent>
 
             {/* ── Lavages ───────────────────────────────────────────── */}
@@ -432,7 +438,9 @@ export default function VehicleDetail() {
                     })}
                   </div>
                 </>
-              ) : <EmptyState title="Aucun lavage enregistré" />}
+              ) : <EmptyState title="Aucun lavage enregistré"
+                    description="Suivez les lavages et leurs coûts par véhicule et par conducteur."
+                    action={{ label: 'Ajouter un lavage', onClick: () => setWashModal(true) }} />}
             </TabsContent>
 
             {/* ── Affectations ──────────────────────────────────────── */}
@@ -470,7 +478,9 @@ export default function VehicleDetail() {
                     })}
                   </div>
                 </>
-              ) : <EmptyState title="Aucune affectation" />}
+              ) : <EmptyState title="Aucune affectation"
+                    description="Affectez un conducteur à ce véhicule pour suivre qui le conduit."
+                    action={{ label: 'Affecter un conducteur', onClick: () => setAssignDriverOpen(true) }} />}
             </TabsContent>
           </Tabs>
         </div>

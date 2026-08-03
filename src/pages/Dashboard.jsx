@@ -33,6 +33,10 @@ import {
 } from '@/lib/useFleetData'
 import { DOC_TYPE_CONFIG } from '@/components/shared/DriverDocuments'
 import DataError from '@/components/shared/DataError'
+import AssignDriverDialog from '@/components/shared/AssignDriverDialog'
+import GettingStarted from '@/components/onboarding/GettingStarted'
+import { useOnboarding } from '@/lib/OnboardingContext'
+import { useNavigate } from 'react-router-dom'
 import { usePageTitle } from '@/lib/usePageTitle'
 import { useTranslation } from 'react-i18next'
 import { usePlanLimits } from '@/lib/usePlanLimits'
@@ -836,6 +840,10 @@ export default function Dashboard() {
   const [showAddDriver,  setShowAddDriver]  = useState(false)
   const [showMileage,    setShowMileage]    = useState(false)
   const [showWash,       setShowWash]       = useState(false)
+  const [showAssign,     setShowAssign]     = useState(false)
+
+  const navigate = useNavigate()
+  const { checklistVisible } = useOnboarding()
 
   const today = new Date()
   const latestAssignments = getLatestAssignments(assignments)
@@ -980,6 +988,7 @@ export default function Dashboard() {
       <AddDriverModal  open={showAddDriver}  onClose={() => setShowAddDriver(false)} />
       <RecordMileageModal open={showMileage} onClose={() => setShowMileage(false)} vehicles={vehicles} />
       <AddWashModal open={showWash} onClose={() => setShowWash(false)} vehicles={vehicles} drivers={drivers} />
+      <AssignDriverDialog open={showAssign} onClose={() => setShowAssign(false)} />
 
       {/* ── Main content ─────────────────────────────────────────── */}
       <div className="flex-1 p-5 sm:p-8 min-w-0">
@@ -1008,6 +1017,19 @@ export default function Dashboard() {
         </div>
 
         <DataError queries={allQueries} />
+
+        {checklistVisible && (
+          <GettingStarted
+            vehiclesCount={vehicles.length}
+            driversCount={drivers.length}
+            assignedCount={assignedCount}
+            inspectionsCount={inspections.length}
+            onAddVehicle={() => canAddVehicle ? setShowAddVehicle(true) : toast.error(t('plan.vehicleLimitReached') + ' ' + t('plan.upgradeHint'))}
+            onAddDriver={() => canAddDriver ? setShowAddDriver(true) : toast.error(t('plan.driverLimitReached') + ' ' + t('plan.upgradeHint'))}
+            onAssign={() => setShowAssign(true)}
+            onAddInspection={() => navigate('/Inspections')}
+          />
+        )}
 
         {/* ── Quick actions ─────────────────────────────────────── */}
         <div className="flex flex-wrap items-center gap-2 mb-7">
@@ -1107,15 +1129,17 @@ export default function Dashboard() {
         </div>
 
         {/* Alert Center — consolidated, priority-based */}
-        <AlertCenter
-          urgentInspections={urgentInspections}
-          warningInspections={warningInspections}
-          urgentForecasts={urgentForecasts}
-          vehicles={vehicles}
-          urgentDocAlerts={urgentDocAlerts}
-          warningDocAlerts={warningDocAlerts}
-          dataUnavailable={alertsUnavailable}
-        />
+        <div data-tour="alerts">
+          <AlertCenter
+            urgentInspections={urgentInspections}
+            warningInspections={warningInspections}
+            urgentForecasts={urgentForecasts}
+            vehicles={vehicles}
+            urgentDocAlerts={urgentDocAlerts}
+            warningDocAlerts={warningDocAlerts}
+            dataUnavailable={alertsUnavailable}
+          />
+        </div>
 
         {/* Fleet Insights */}
         <FleetInsights vehicles={vehicles} mileageEntries={mileageEntries} />

@@ -3,6 +3,8 @@ import { Outlet } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import Sidebar from './Sidebar'
 import AppLoader from './AppLoader'
+import { OnboardingProvider } from '@/lib/OnboardingContext'
+import ProductTour from '@/components/onboarding/ProductTour'
 import {
   useFleetRealtime,
   useVehicles, useDrivers, useAssignments,
@@ -43,7 +45,7 @@ export default function AppLayout() {
   }, [allSettled])
 
   return (
-    <>
+    <OnboardingProvider>
       {/* App always renders behind the loader — no zero-flash when overlay lifts */}
       <div className="flex h-dvh bg-background overflow-hidden">
         <Sidebar open={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
@@ -66,6 +68,8 @@ export default function AppLayout() {
         </div>
       </div>
 
+      <ProductTour />
+
       {/* Loader overlay — fades out once data is ready, then unmounts */}
       {!loaderGone && (
         <div
@@ -79,6 +83,6 @@ export default function AppLayout() {
           <AppLoader />
         </div>
       )}
-    </>
+    </OnboardingProvider>
   )
 }

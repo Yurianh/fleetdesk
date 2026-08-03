@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Truck, Users, ArrowLeftRight,
   Gauge, Wrench, ClipboardCheck, Droplets,
-  X, ChevronLeft, ChevronRight, LogOut, Settings, History,
+  X, ChevronLeft, ChevronRight, LogOut, Settings, History, Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { useOnboarding } from '@/lib/OnboardingContext';
 
 // ─── Single nav item ───────────────────────────────────────────────────────
 function NavItem({ item, isActive, isCollapsed, onMobileClose }) {
@@ -44,8 +45,10 @@ function NavItem({ item, isActive, isCollapsed, onMobileClose }) {
 // ─── Sidebar ───────────────────────────────────────────────────────────────
 export default function Sidebar({ open, onToggle }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { t } = useTranslation();
+  const { reopenChecklist, isCollaborator } = useOnboarding();
 
   const navGroups = [
     {
@@ -56,6 +59,7 @@ export default function Sidebar({ open, onToggle }) {
     },
     {
       label: t('nav.fleet'),
+      tourId: 'fleet',
       items: [
         { label: t('nav.vehicles'),    path: '/Vehicles',    icon: Truck },
         { label: t('nav.drivers'),     path: '/Drivers',     icon: Users },
@@ -64,6 +68,7 @@ export default function Sidebar({ open, onToggle }) {
     },
     {
       label: t('nav.operations'),
+      tourId: 'operations',
       items: [
         { label: t('nav.mileage'),      path: '/Mileage',     icon: Gauge },
         { label: t('nav.maintenance'),  path: '/Maintenance', icon: Wrench },
@@ -72,6 +77,12 @@ export default function Sidebar({ open, onToggle }) {
       ],
     },
   ];
+
+  const openGettingStarted = () => {
+    reopenChecklist();
+    navigate('/Dashboard');
+    if (window.innerWidth < 1024) onToggle();
+  };
 
   const [isCollapsed, setIsCollapsed] = useState(
     () => localStorage.getItem('sidebar-collapsed') === 'true'
@@ -151,7 +162,7 @@ export default function Sidebar({ open, onToggle }) {
         {/* ── Navigation ── */}
         <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-3">
           {navGroups.map((group, gi) => (
-            <div key={gi} className={gi > 0 ? 'mt-1' : ''}>
+            <div key={gi} data-tour={group.tourId} className={gi > 0 ? 'mt-1' : ''}>
               {group.label && (
                 <>
                   <p className={cn(
@@ -206,6 +217,20 @@ export default function Sidebar({ open, onToggle }) {
               <History className={cn('w-[14px] h-[14px] flex-shrink-0', isActive('/Activity') ? 'text-[#0066FF]' : '')} />
               <span className={cn(isCollapsed && 'lg:hidden')}>Activité</span>
             </Link>
+          )}
+          {!isCollaborator && (
+            <button
+              onClick={openGettingStarted}
+              title={isCollapsed ? t('gettingStarted.title') : undefined}
+              className={cn(
+                'flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-xs font-medium',
+                'text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50 transition-colors',
+                isCollapsed && 'lg:justify-center lg:px-0'
+              )}
+            >
+              <Sparkles className="w-[14px] h-[14px] flex-shrink-0 text-[#0066FF]" />
+              <span className={cn(isCollapsed && 'lg:hidden')}>{t('gettingStarted.navLabel')}</span>
+            </button>
           )}
           <Link
             to="/Settings"
