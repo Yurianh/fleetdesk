@@ -1027,7 +1027,7 @@ export default function Dashboard() {
             <p className="text-xs font-medium text-zinc-400 mb-1 capitalize">
               {format(new Date(), 'EEEE d MMMM yyyy', { locale: dateLocale })}
             </p>
-            <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 tracking-tight">
+            <h1 className="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 tracking-tight">
               {t('dashboard.greeting', { name: user?.user_metadata?.full_name?.split(' ')[0] || user?.user_metadata?.name?.split(' ')[0] || '' })}
             </h1>
             <p className="text-zinc-400 text-sm mt-0.5">{t('dashboard.subtitle')}</p>

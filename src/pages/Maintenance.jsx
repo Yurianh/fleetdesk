@@ -544,7 +544,7 @@ export default function Maintenance() {
       {/* ── Structured header ───────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 tracking-tight">Maintenance</h1>
+          <h1 className="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 tracking-tight">Maintenance</h1>
           <p className="text-sm text-zinc-400 mt-1">Suivi des entretiens et prévisions par véhicule</p>
         </div>
 

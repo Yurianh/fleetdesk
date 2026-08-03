@@ -204,7 +204,7 @@ export default function HeroSection() {
           Pour les flottes de 2 à 50 véhicules
         </div>
 
-        <h1 className="text-5xl sm:text-6xl lg:text-[68px] font-bold text-zinc-900 tracking-tight leading-[1.04] mb-6">
+        <h1 className="font-display text-5xl sm:text-6xl lg:text-[68px] font-semibold text-zinc-900 tracking-tight leading-[1.04] mb-6">
           Chaque véhicule.<br />
           Chaque conducteur.<br />
           <span className="text-[#0066FF]">Une seule plateforme.</span>
