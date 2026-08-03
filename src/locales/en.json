@@ -61,6 +61,18 @@
     "createError": "Unable to create account.",
     "emailConfirm": "Account created. Check your email to confirm your registration."
   },
+  "deleteConfirm": {
+    "mileageTitle": "Delete entry",
+    "mileageDesc": "Delete this mileage entry? This action is irreversible.",
+    "inspectionTitle": "Delete inspection",
+    "inspectionDesc": "Delete this technical inspection? The attached invoice will also be deleted. This action is irreversible.",
+    "washTitle": "Delete wash",
+    "washDesc": "Delete this wash? The attached invoice will also be deleted. This action is irreversible.",
+    "maintenanceRecordTitle": "Delete maintenance record",
+    "maintenanceRecordDesc": "Delete this maintenance record? The attached invoice will also be deleted. This action is irreversible.",
+    "maintenanceScheduleTitle": "Delete schedule",
+    "maintenanceScheduleDesc": "Delete this maintenance schedule? The related forecasts will disappear. This action is irreversible."
+  },
   "gettingStarted": {
     "navLabel": "Getting started",
     "title": "Set up your fleet",

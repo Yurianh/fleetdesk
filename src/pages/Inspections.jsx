@@ -276,8 +276,8 @@ export default function Inspections() {
         onCancel={() => setConfirmDeleteId(null)}
         onConfirm={() => handleDelete(confirmDeleteId)}
         deleting={deletingId === confirmDeleteId}
-        title="Supprimer le contrôle"
-        description="Supprimer ce contrôle technique ? La facture associée sera également supprimée. Cette action est irréversible."
+        title={t('deleteConfirm.inspectionTitle')}
+        description={t('deleteConfirm.inspectionDesc')}
       />
     </div>
   )

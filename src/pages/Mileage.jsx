@@ -246,8 +246,8 @@ export default function Mileage() {
         onCancel={() => setConfirmDeleteId(null)}
         onConfirm={() => handleDelete(confirmDeleteId)}
         deleting={deletingId === confirmDeleteId}
-        title="Supprimer le relevé"
-        description="Supprimer ce relevé kilométrique ? Cette action est irréversible."
+        title={t('deleteConfirm.mileageTitle')}
+        description={t('deleteConfirm.mileageDesc')}
       />
     </div>
   )

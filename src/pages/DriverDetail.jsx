@@ -13,8 +13,9 @@ import EmptyState from '@/components/shared/EmptyState'
 import DriverDocuments from '@/components/shared/DriverDocuments'
 import {
   useDrivers, useVehicles, useAssignments,
-  updateDriver, createAssignment, unassignVehicle, getVehicleById, getLatestAssignments, getDriverById
+  updateDriver, unassignVehicle, getVehicleById, getLatestAssignments, getDriverById
 } from '@/lib/useFleetData'
+import { useAssignDriver } from '@/lib/useAssignDriver'
 import { usePageTitle } from '@/lib/usePageTitle'
 
 function CardBadge({ icon: Icon, label, value, color }) {
@@ -44,7 +45,8 @@ export default function DriverDetail() {
   const [form, setForm]                   = useState(null)
   const [assignOpen, setAssignOpen]       = useState(false)
   const [assignVehicleId, setAssignVehicleId] = useState('')
-  const [assigning, setAssigning]         = useState(false)
+  const { assign, assigning }             = useAssignDriver()
+  const [unassigning, setUnassigning]     = useState(false)
   const [vehicleSearch, setVehicleSearch] = useState('')
   const searchRef = useRef(null)
 
@@ -113,30 +115,23 @@ export default function DriverDetail() {
 
   const handleAssign = async () => {
     if (!assignVehicleId) return
-    setAssigning(true)
     try {
-      const { swapped } = await createAssignment({
-        vehicle_id: assignVehicleId,
-        driver_id: id,
-        assigned_at: new Date().toISOString(),
-      })
-      queryClient.invalidateQueries({ queryKey: ['assignments'] })
+      const { swapped } = await assign({ vehicleId: assignVehicleId, driverId: id })
       setAssignOpen(false)
       setAssignVehicleId('')
       toast.success(swapped ? 'Véhicules échangés.' : 'Véhicule affecté.')
     } catch { toast.error("Erreur lors de l'affectation.") }
-    finally { setAssigning(false) }
   }
 
   const handleUnassign = async () => {
     if (!currentVehicle) return
-    setAssigning(true)
+    setUnassigning(true)
     try {
       await unassignVehicle(currentVehicle.id)
       queryClient.invalidateQueries({ queryKey: ['assignments'] })
       toast.success('Conducteur désaffecté.')
     } catch { toast.error('Erreur lors de la désaffectation.') }
-    finally { setAssigning(false) }
+    finally { setUnassigning(false) }
   }
 
   return (
@@ -238,7 +233,7 @@ export default function DriverDetail() {
               {currentVehicle && (
                 <button
                   onClick={handleUnassign}
-                  disabled={assigning}
+                  disabled={unassigning}
                   className="text-xs font-medium text-slate-400 hover:text-red-500 bg-slate-100 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
                 >
                   <UserMinus className="w-3 h-3" /> Désaffecter

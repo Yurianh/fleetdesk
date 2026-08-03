@@ -3,12 +3,12 @@ import { Search, Users, ArrowLeftRight } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { SearchableSelect } from '@/components/ui/searchable-select'
-import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
   useVehicles, useDrivers, useAssignments,
-  getLatestAssignments, getVehicleById, createAssignment,
+  getLatestAssignments, getVehicleById,
 } from '@/lib/useFleetData'
+import { useAssignDriver } from '@/lib/useAssignDriver'
 
 // Assign a driver to a vehicle — the mirror of DriverDetail's inline vehicle
 // picker, with the same visual vocabulary (Actuel / Disponible / Échange).
@@ -18,12 +18,11 @@ export default function AssignDriverDialog({ open, onClose, vehicleId: fixedVehi
   const { data: vehicles }    = useVehicles()
   const { data: drivers }     = useDrivers()
   const { data: assignments } = useAssignments()
-  const queryClient = useQueryClient()
+  const { assign, assigning } = useAssignDriver()
 
   const [vehicleId, setVehicleId] = useState(fixedVehicleId || '')
   const [driverId,  setDriverId]  = useState('')
   const [search,    setSearch]    = useState('')
-  const [assigning, setAssigning] = useState(false)
   const searchRef = useRef(null)
 
   useEffect(() => {
@@ -51,18 +50,11 @@ export default function AssignDriverDialog({ open, onClose, vehicleId: fixedVehi
 
   const handleAssign = async () => {
     if (!vehicleId || !driverId) return
-    setAssigning(true)
     try {
-      const { swapped } = await createAssignment({
-        vehicle_id: vehicleId,
-        driver_id: driverId,
-        assigned_at: new Date().toISOString(),
-      })
-      queryClient.invalidateQueries({ queryKey: ['assignments'] })
+      const { swapped } = await assign({ vehicleId, driverId })
       toast.success(swapped ? 'Véhicules échangés.' : 'Conducteur affecté.')
       onClose()
     } catch { toast.error("Erreur lors de l'affectation.") }
-    finally { setAssigning(false) }
   }
 
   return (

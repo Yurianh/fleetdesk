@@ -61,6 +61,18 @@
     "createError": "Impossible de créer le compte.",
     "emailConfirm": "Compte créé. Vérifiez votre email pour confirmer votre inscription."
   },
+  "deleteConfirm": {
+    "mileageTitle": "Supprimer le relevé",
+    "mileageDesc": "Supprimer ce relevé kilométrique ? Cette action est irréversible.",
+    "inspectionTitle": "Supprimer le contrôle",
+    "inspectionDesc": "Supprimer ce contrôle technique ? La facture associée sera également supprimée. Cette action est irréversible.",
+    "washTitle": "Supprimer le lavage",
+    "washDesc": "Supprimer ce lavage ? La facture associée sera également supprimée. Cette action est irréversible.",
+    "maintenanceRecordTitle": "Supprimer l'entretien",
+    "maintenanceRecordDesc": "Supprimer cet entretien ? La facture associée sera également supprimée. Cette action est irréversible.",
+    "maintenanceScheduleTitle": "Supprimer le planning",
+    "maintenanceScheduleDesc": "Supprimer ce planning de maintenance ? Les prévisions associées disparaîtront. Cette action est irréversible."
+  },
   "gettingStarted": {
     "navLabel": "Premiers pas",
     "title": "Configurez votre flotte",

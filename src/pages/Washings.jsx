@@ -263,8 +263,8 @@ export default function Washings() {
         onCancel={() => setConfirmDeleteId(null)}
         onConfirm={() => handleDelete(confirmDeleteId)}
         deleting={deletingId === confirmDeleteId}
-        title="Supprimer le lavage"
-        description="Supprimer ce lavage ? La facture associée sera également supprimée. Cette action est irréversible."
+        title={t('deleteConfirm.washTitle')}
+        description={t('deleteConfirm.washDesc')}
       />
     </div>
   )

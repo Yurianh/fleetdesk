@@ -378,6 +378,7 @@ export default function Maintenance() {
   const [recordForm, setRecordForm]       = useState(EMPTY_RECORD)
   const [savingRecord, setSavingRecord]   = useState(false)
   const [deletingRecordId, setDeletingRecordId] = useState(null)
+  const [deletingScheduleId, setDeletingScheduleId] = useState(null)
   const [okCollapsed, setOkCollapsed]     = useState(false)
   const [invoiceFile, setInvoiceFile]     = useState(null)
   const [invoiceExistingUrl, setInvoiceExistingUrl] = useState('')
@@ -526,12 +527,13 @@ export default function Maintenance() {
   }
 
   const handleDeleteSchedule = async (id) => {
+    setDeletingScheduleId(id)
     try {
       await deleteMaintenanceSchedule(id)
       queryClient.invalidateQueries({ queryKey: ['maintenanceSchedules'] })
       toast.success(t('maintenance.scheduleDeleted'))
     } catch { toast.error('Erreur lors de la suppression') }
-    finally { setConfirmDelete(null) }
+    finally { setDeletingScheduleId(null); setConfirmDelete(null) }
   }
 
   return (
@@ -1023,11 +1025,15 @@ export default function Maintenance() {
         onConfirm={() => confirmDelete?.kind === 'record'
           ? handleDeleteRecord(confirmDelete.id)
           : handleDeleteSchedule(confirmDelete?.id)}
-        deleting={deletingRecordId === confirmDelete?.id}
-        title={confirmDelete?.kind === 'record' ? "Supprimer l'entretien" : 'Supprimer le planning'}
+        deleting={confirmDelete?.kind === 'record'
+          ? deletingRecordId === confirmDelete?.id
+          : deletingScheduleId === confirmDelete?.id}
+        title={confirmDelete?.kind === 'record'
+          ? t('deleteConfirm.maintenanceRecordTitle')
+          : t('deleteConfirm.maintenanceScheduleTitle')}
         description={confirmDelete?.kind === 'record'
-          ? "Supprimer cet entretien ? La facture associée sera également supprimée. Cette action est irréversible."
-          : 'Supprimer ce planning de maintenance ? Les prévisions associées disparaîtront. Cette action est irréversible.'}
+          ? t('deleteConfirm.maintenanceRecordDesc')
+          : t('deleteConfirm.maintenanceScheduleDesc')}
       />
     </div>
   )
