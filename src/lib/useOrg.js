@@ -1,5 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from './supabase'
+import { activityLog as mockActivityLog } from './mockData'
+
+const DEMO = import.meta.env.VITE_DEMO_MODE === 'true'
 
 async function getAuthHeader() {
   const { data: { session } } = await supabase.auth.getSession()
@@ -44,6 +47,7 @@ export function useActivityLog(limit = 50) {
   return useQuery({
     queryKey: ['activityLog', limit],
     queryFn: async () => {
+      if (DEMO) return mockActivityLog.slice(0, limit)
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return []
       const orgId = user.user_metadata?.org_id || user.id

@@ -1,13 +1,17 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from './supabase'
+import { mockUser } from './mockData'
+
+const DEMO = import.meta.env.VITE_DEMO_MODE === 'true'
 
 const AuthContext = createContext({})
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(DEMO ? mockUser : null)
+  const [loading, setLoading] = useState(!DEMO)
 
   useEffect(() => {
+    if (DEMO) return
     supabase.auth.getSession().then((result) => {
       setUser(result.data?.session?.user ?? null)
       setLoading(false)
@@ -27,7 +31,8 @@ export function AuthProvider({ children }) {
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [DEMO])
 
   const signIn = async (email, password) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })

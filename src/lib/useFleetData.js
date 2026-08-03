@@ -1,6 +1,9 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { supabase } from './supabase'
+import * as mock from './mockData'
+
+const DEMO = import.meta.env.VITE_DEMO_MODE === 'true'
 
 async function orgUid() {
   const { data: { user } } = await supabase.auth.getUser()
@@ -75,6 +78,7 @@ export function useVehicles() {
   return useQuery({
     queryKey: ['vehicles'],
     queryFn: async () => {
+      if (DEMO) return mock.vehicles
       const uid = await orgUid()
       const { data, error } = await supabase.from('vehicles').select('*').eq('user_id', uid).order('created_at', { ascending: false })
       if (error) throw error
@@ -88,6 +92,7 @@ export function useDrivers() {
   return useQuery({
     queryKey: ['drivers'],
     queryFn: async () => {
+      if (DEMO) return mock.drivers
       const uid = await orgUid()
       const { data, error } = await supabase.from('drivers').select('*').eq('user_id', uid).order('created_at', { ascending: false })
       if (error) throw error
@@ -101,6 +106,7 @@ export function useAssignments() {
   return useQuery({
     queryKey: ['assignments'],
     queryFn: async () => {
+      if (DEMO) return mock.assignments
       const uid = await orgUid()
       const { data, error } = await supabase.from('assignments').select('*').eq('user_id', uid).order('assigned_at', { ascending: false })
       if (error) throw error
@@ -114,6 +120,7 @@ export function useMileageEntries() {
   return useQuery({
     queryKey: ['mileageEntries'],
     queryFn: async () => {
+      if (DEMO) return mock.mileageEntries
       const uid = await orgUid()
       const { data, error } = await supabase.from('mileage_entries').select('*').eq('user_id', uid).order('created_at', { ascending: false })
       if (error) throw error
@@ -127,6 +134,7 @@ export function useMaintenanceRecords() {
   return useQuery({
     queryKey: ['maintenanceRecords'],
     queryFn: async () => {
+      if (DEMO) return mock.maintenanceRecords
       const uid = await orgUid()
       const { data, error } = await supabase.from('maintenance_records').select('*').eq('user_id', uid).order('date', { ascending: false })
       if (error) throw error
@@ -140,6 +148,7 @@ export function useTechnicalInspections() {
   return useQuery({
     queryKey: ['technicalInspections'],
     queryFn: async () => {
+      if (DEMO) return mock.technicalInspections
       const uid = await orgUid()
       const { data, error } = await supabase.from('technical_inspections').select('*').eq('user_id', uid).order('inspection_date', { ascending: false })
       if (error) throw error
@@ -153,6 +162,7 @@ export function useWashRecords() {
   return useQuery({
     queryKey: ['washRecords'],
     queryFn: async () => {
+      if (DEMO) return mock.washRecords
       const uid = await orgUid()
       const { data, error } = await supabase.from('wash_records').select('*').eq('user_id', uid).order('date', { ascending: false })
       if (error) throw error
@@ -166,6 +176,7 @@ export function useMaintenanceSchedules() {
   return useQuery({
     queryKey: ['maintenanceSchedules'],
     queryFn: async () => {
+      if (DEMO) return mock.maintenanceSchedules
       const uid = await orgUid()
       const { data, error } = await supabase
         .from('maintenance_schedules')
@@ -180,8 +191,10 @@ export function useMaintenanceSchedules() {
 }
 
 // ── Mutations ─────────────────────────────────────────────────────
+// In demo mode all mutations are no-ops — data is read-only mock data
 
 export async function createVehicle(data) {
+  if (DEMO) return
   const label = `${data.plate_number || ''}${data.model ? ' — ' + data.model : ''}`.trim() || 'Véhicule'
   const { error } = await supabase.from('vehicles').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
@@ -386,6 +399,7 @@ export function useDriverDocuments(driverId) {
     queryKey: ['driverDocuments', driverId],
     queryFn: async () => {
       if (!driverId) return []
+      if (DEMO) return mock.allDriverDocuments.filter(d => d.driver_id === driverId)
       const { data, error } = await supabase
         .from('driver_documents')
         .select('*')
@@ -403,6 +417,7 @@ export function useAllDriverDocuments() {
   return useQuery({
     queryKey: ['allDriverDocuments'],
     queryFn: async () => {
+      if (DEMO) return mock.allDriverDocuments
       const uid = await orgUid()
       const { data, error } = await supabase
         .from('driver_documents')
