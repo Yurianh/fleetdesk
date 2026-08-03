@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { User, CreditCard, Globe, Shield, ChevronRight, Check, Loader2, Truck, Zap, Sun, Moon, Users, UserPlus, Trash2, Mail } from 'lucide-react'
+import { User, CreditCard, Globe, Shield, ChevronRight, Check, Loader2, Truck, Zap, Users, UserPlus, Trash2, Mail } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
-import { useTheme } from '@/lib/ThemeContext'
 import { supabase } from '@/lib/supabase'
 import { usePlanLimits } from '@/lib/usePlanLimits'
 import { useVehicles, useDrivers } from '@/lib/useFleetData'
@@ -19,7 +18,6 @@ const SECTIONS = [
   { id: 'plan',     icon: CreditCard, labelKey: 'settings.plan' },
   { id: 'language', icon: Globe,      labelKey: 'settings.language' },
   { id: 'account',  icon: Shield,     labelKey: 'settings.account' },
-  { id: 'appearance', icon: Sun,      labelKey: 'settings.appearance' },
 ]
 
 const PLAN_INFO = {
@@ -46,7 +44,6 @@ export default function Settings() {
   const [inviteRole, setInviteRole] = useState('member')
 
   const [section, setSection] = useState('profile')
-  const { isDark, toggleTheme } = useTheme()
   const [saving, setSaving] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
 
@@ -484,33 +481,6 @@ export default function Settings() {
                     {i18n.language === lang.code && <Check className="w-4 h-4 ml-1" />}
                   </button>
                 ))}
-              </div>
-            </div>
-          )}
-
-          {/* ── Appearance ── */}
-          {section === 'appearance' && (
-            <div className="bg-white border border-zinc-200 rounded-xl p-5">
-              <h2 className="text-sm font-semibold text-zinc-900 mb-4">{t('settings.appearanceTitle')}</h2>
-              <div className="flex gap-3">
-                {[
-                  { id: false, icon: Sun,  label: t('settings.lightMode') },
-                  { id: true,  icon: Moon, label: t('settings.darkMode')  },
-                ].map(opt => {
-                  const Icon = opt.icon
-                  return (
-                    <button key={String(opt.id)} onClick={() => opt.id !== isDark && toggleTheme()}
-                      className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border text-sm font-medium transition-all ${
-                        isDark === opt.id
-                          ? 'border-[#0066FF] bg-blue-50 text-blue-700'
-                          : 'border-zinc-200 text-zinc-600 hover:border-zinc-300'
-                      }`}>
-                      <Icon className="w-4 h-4" />
-                      {opt.label}
-                      {isDark === opt.id && <Check className="w-4 h-4 ml-1" />}
-                    </button>
-                  )
-                })}
               </div>
             </div>
           )}

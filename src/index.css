@@ -89,24 +89,3 @@
     font-family: 'Geist Mono', ui-monospace, monospace;
   }
 }
-
-
-/* ── Dark mode: override hardcoded Tailwind utility classes ── */
-.dark .bg-white                { background-color: hsl(240 7% 11%) !important; }
-.dark .bg-zinc-50              { background-color: hsl(240 6% 13%) !important; }
-.dark .bg-zinc-100             { background-color: hsl(240 5% 16%) !important; }
-.dark .bg-zinc-200             { background-color: hsl(240 5% 20%) !important; }
-.dark .border-zinc-100         { border-color: hsl(240 5% 18%) !important; }
-.dark .border-zinc-200         { border-color: hsl(240 5% 22%) !important; }
-.dark .divide-zinc-100 > * + * { border-color: hsl(240 5% 18%) !important; }
-.dark .text-zinc-900           { color: hsl(0 0% 92%) !important; }
-.dark .text-zinc-800           { color: hsl(0 0% 83%) !important; }
-.dark .text-zinc-700           { color: hsl(0 0% 72%) !important; }
-.dark .text-zinc-600           { color: hsl(0 0% 62%) !important; }
-.dark .text-zinc-500           { color: hsl(0 0% 52%) !important; }
-.dark .text-zinc-400           { color: hsl(0 0% 45%) !important; }
-.dark .hover\:bg-zinc-50:hover { background-color: hsl(240 5% 16%) !important; }
-.dark .hover\:bg-zinc-100:hover{ background-color: hsl(240 5% 19%) !important; }
-.dark .hover\:text-zinc-900:hover { color: hsl(0 0% 96%) !important; }
-.dark .hover\:text-zinc-800:hover { color: hsl(0 0% 88%) !important; }
-.dark .bg-zinc-900             { background-color: hsl(240 8% 6%) !important; }

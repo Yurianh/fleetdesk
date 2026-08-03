@@ -15,6 +15,8 @@ import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import FormModal from '@/components/shared/FormModal'
 import { InvoiceUpload } from '@/components/shared/InvoiceUpload'
+import DataError from '@/components/shared/DataError'
+import ConfirmDeleteDialog from '@/components/shared/ConfirmDeleteDialog'
 import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import {
   useVehicles, useMaintenanceRecords, useMaintenanceSchedules, useMileageEntries,
@@ -365,8 +367,10 @@ export default function Maintenance() {
   const { t } = useTranslation()
   const dateLocale = useDateLocale()
   const { data: vehicles }      = useVehicles()
-  const { data: records }       = useMaintenanceRecords()
-  const { data: schedules, isError: schedulesError } = useMaintenanceSchedules()
+  const recordsQ                = useMaintenanceRecords()
+  const { data: records }       = recordsQ
+  const schedulesQ              = useMaintenanceSchedules()
+  const { data: schedules, isError: schedulesError } = schedulesQ
   const { data: mileageEntries } = useMileageEntries()
   const queryClient = useQueryClient()
 
@@ -480,6 +484,8 @@ export default function Maintenance() {
     finally { setSavingRecord(false) }
   }
 
+  // Delete confirmation — one dialog for both records and schedules
+  const [confirmDelete, setConfirmDelete] = useState(null) // { kind: 'record' | 'schedule', id }
   const handleDeleteRecord = async (id) => {
     setDeletingRecordId(id)
     try {
@@ -489,7 +495,7 @@ export default function Maintenance() {
       queryClient.invalidateQueries({ queryKey: ['maintenanceRecords'] })
       toast.success(t('maintenance.deleted'))
     } catch { toast.error('Erreur lors de la suppression') }
-    finally { setDeletingRecordId(null) }
+    finally { setDeletingRecordId(null); setConfirmDelete(null) }
   }
 
   const handleSaveSchedule = async () => {
@@ -526,10 +532,13 @@ export default function Maintenance() {
       queryClient.invalidateQueries({ queryKey: ['maintenanceSchedules'] })
       toast.success(t('maintenance.scheduleDeleted'))
     } catch { toast.error('Erreur lors de la suppression') }
+    finally { setConfirmDelete(null) }
   }
 
   return (
     <div className="p-5 sm:p-8">
+
+      <DataError queries={[recordsQ, schedulesQ]} />
 
       {/* ── Structured header ───────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
@@ -814,7 +823,7 @@ export default function Maintenance() {
                                   </a>
                                 )}
                                 <button onClick={() => openEditRecord(r)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-                                <button onClick={() => handleDeleteRecord(r.id)} disabled={deletingRecordId === r.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                                <button onClick={() => setConfirmDelete({ kind: 'record', id: r.id })} disabled={deletingRecordId === r.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                               </div>
                             </td>
                           </tr>
@@ -843,7 +852,7 @@ export default function Maintenance() {
                           </div>
                           <div className="flex items-center gap-1 shrink-0">
                             <button onClick={() => openEditRecord(r)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400"><Pencil className="w-4 h-4" /></button>
-                            <button onClick={() => handleDeleteRecord(r.id)} disabled={deletingRecordId === r.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
+                            <button onClick={() => setConfirmDelete({ kind: 'record', id: r.id })} disabled={deletingRecordId === r.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
                           </div>
                         </div>
                       </div>
@@ -891,14 +900,14 @@ export default function Maintenance() {
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {schedules.map(s => (
-                        <ScheduleRow key={s.id} schedule={s} vehicles={vehicles} onDelete={handleDeleteSchedule} onSave={handleUpdateSchedule} />
+                        <ScheduleRow key={s.id} schedule={s} vehicles={vehicles} onDelete={(id) => setConfirmDelete({ kind: 'schedule', id })} onSave={handleUpdateSchedule} />
                       ))}
                     </tbody>
                   </table>
                 </div>
                 <div className="sm:hidden">
                   {schedules.map(s => (
-                    <ScheduleCard key={s.id} schedule={s} vehicles={vehicles} onDelete={handleDeleteSchedule} onSave={handleUpdateSchedule} />
+                    <ScheduleCard key={s.id} schedule={s} vehicles={vehicles} onDelete={(id) => setConfirmDelete({ kind: 'schedule', id })} onSave={handleUpdateSchedule} />
                   ))}
                 </div>
               </>
@@ -1007,6 +1016,20 @@ export default function Maintenance() {
           <Input value={scheduleForm.notes} onChange={e => setScheduleForm(f => ({ ...f, notes: e.target.value }))} placeholder="Ex : Vidange + filtre" />
         </div>
       </FormModal>
+
+      {/* Delete confirm dialog — records and schedules */}
+      <ConfirmDeleteDialog
+        open={!!confirmDelete}
+        onCancel={() => setConfirmDelete(null)}
+        onConfirm={() => confirmDelete?.kind === 'record'
+          ? handleDeleteRecord(confirmDelete.id)
+          : handleDeleteSchedule(confirmDelete?.id)}
+        deleting={deletingRecordId === confirmDelete?.id}
+        title={confirmDelete?.kind === 'record' ? "Supprimer l'entretien" : 'Supprimer le planning'}
+        description={confirmDelete?.kind === 'record'
+          ? "Supprimer cet entretien ? La facture associée sera également supprimée. Cette action est irréversible."
+          : 'Supprimer ce planning de maintenance ? Les prévisions associées disparaîtront. Cette action est irréversible.'}
+      />
     </div>
   )
 }

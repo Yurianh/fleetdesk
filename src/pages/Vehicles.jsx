@@ -16,6 +16,7 @@ import EmptyState from '@/components/shared/EmptyState'
 import FormModal from '@/components/shared/FormModal'
 import { InvoiceUpload } from '@/components/shared/InvoiceUpload'
 import VehicleStatusBadge from '@/components/shared/VehicleStatusBadge'
+import DataError from '@/components/shared/DataError'
 import {
   useVehicles, useDrivers, useAssignments, useMileageEntries, useTechnicalInspections,
   createVehicle, updateVehicle, deleteVehicle, unassignVehicle, getLatestAssignments, getLatestMileage, getDriverById,
@@ -108,7 +109,8 @@ function MobileSectionHeader({ color, label, count }) {
 export default function Vehicles() {
   usePageTitle('Véhicules')
   const { t } = useTranslation()
-  const { data: vehicles } = useVehicles()
+  const vehiclesQ = useVehicles()
+  const { data: vehicles } = vehiclesQ
   const { data: drivers } = useDrivers()
   const { data: assignments } = useAssignments()
   const { data: mileageEntries } = useMileageEntries()
@@ -128,7 +130,7 @@ export default function Vehicles() {
   // ── Maintenance quick-add ──
   const [maintModal, setMaintModal] = useState(false)
   const [maintVehicleId, setMaintVehicleId] = useState('')
-  const [maintForm, setMaintForm] = useState({ date: '', mileage: '', status: 'ok', description: '' })
+  const [maintForm, setMaintForm] = useState({ date: '', mileage: '', status: 'OK', description: '' })
   const [maintInvoiceFile, setMaintInvoiceFile] = useState(null)
   const [maintInvoiceAmount, setMaintInvoiceAmount] = useState('')
   const [savingMaint, setSavingMaint] = useState(false)
@@ -220,7 +222,7 @@ export default function Vehicles() {
 
   const openMaint = (vehicleId) => {
     setMaintVehicleId(vehicleId)
-    setMaintForm({ date: '', mileage: latestMileage[vehicleId]?.mileage?.toString() || '', status: 'ok', description: '' })
+    setMaintForm({ date: '', mileage: latestMileage[vehicleId]?.mileage?.toString() || '', status: 'OK', description: '' })
     setMaintInvoiceFile(null)
     setMaintInvoiceAmount('')
     setMaintModal(true)
@@ -420,6 +422,8 @@ export default function Vehicles() {
         </div>
       </PageHeader>
 
+      <DataError queries={[vehiclesQ]} />
+
       <div className="relative mb-6 max-w-full sm:max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
         <Input placeholder={t('vehicles.searchPlaceholder')} value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
@@ -550,12 +554,12 @@ export default function Vehicles() {
           <Select value={maintForm.status} onValueChange={v => setMaintForm(f => ({ ...f, status: v }))}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="ok">OK</SelectItem>
-              <SelectItem value="problem">Problème</SelectItem>
+              <SelectItem value="OK">OK</SelectItem>
+              <SelectItem value="PROBLEM">Problème</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        {maintForm.status === 'problem' && (
+        {maintForm.status === 'PROBLEM' && (
           <div>
             <Label>Description du problème</Label>
             <Textarea value={maintForm.description} onChange={e => setMaintForm(f => ({ ...f, description: e.target.value }))} placeholder="Décrivez le problème constaté..." rows={3} />

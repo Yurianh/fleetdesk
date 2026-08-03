@@ -271,7 +271,9 @@ export async function createMileageEntry(data) {
 
 export async function createMaintenanceRecord(data) {
   const label = data.type || 'Maintenance'
-  const { error } = await supabase.from('maintenance_records').insert({ ...data, user_id: await orgUid() })
+  // Canonical status enum is uppercase ('OK' / 'PROBLEM') — normalize any caller input
+  const status = data.status ? String(data.status).toUpperCase() : data.status
+  const { error } = await supabase.from('maintenance_records').insert({ ...data, status, user_id: await orgUid() })
   if (error) throw error
   logActivity('createMaintenanceRecord', 'maintenance', '', label)
 }
@@ -381,6 +383,8 @@ export async function deleteWashRecord(id) {
 }
 
 export async function updateMaintenanceRecord(id, data) {
+  // Same enum normalization as createMaintenanceRecord
+  if (data.status) data = { ...data, status: String(data.status).toUpperCase() }
   const { error } = await supabase.from('maintenance_records').update(data).eq('id', id)
   if (error) throw error
   logActivity('updateMaintenanceRecord', 'maintenance', id, '')

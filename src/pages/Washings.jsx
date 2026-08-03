@@ -13,6 +13,8 @@ import PageHeader from '@/components/shared/PageHeader'
 import EmptyState from '@/components/shared/EmptyState'
 import FormModal from '@/components/shared/FormModal'
 import { InvoiceUpload } from '@/components/shared/InvoiceUpload'
+import DataError from '@/components/shared/DataError'
+import ConfirmDeleteDialog from '@/components/shared/ConfirmDeleteDialog'
 import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import {
   useVehicles, useDrivers, useWashRecords,
@@ -29,7 +31,8 @@ export default function Washings() {
   const dateLocale = useDateLocale()
   const { data: vehicles }   = useVehicles()
   const { data: drivers }    = useDrivers()
-  const { data: washRecords } = useWashRecords()
+  const washQ = useWashRecords()
+  const { data: washRecords } = washQ
   const queryClient = useQueryClient()
 
   const [modal, setModal]   = useState(false)
@@ -97,6 +100,7 @@ export default function Washings() {
     finally { setSaving(false) }
   }
 
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null)
   const handleDelete = async (id) => {
     setDeletingId(id)
     try {
@@ -106,7 +110,7 @@ export default function Washings() {
       queryClient.invalidateQueries({ queryKey: ['washRecords'] })
       toast.success(t('washings.deleted'))
     } catch { toast.error('Erreur lors de la suppression') }
-    finally { setDeletingId(null) }
+    finally { setDeletingId(null); setConfirmDeleteId(null) }
   }
 
   return (
@@ -119,6 +123,8 @@ export default function Washings() {
           <Plus className="w-4 h-4 mr-2" /> Ajouter un lavage
         </Button>
       </PageHeader>
+
+      <DataError queries={[washQ]} />
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         {washRecords.length === 0 ? (
@@ -161,7 +167,7 @@ export default function Washings() {
                               </a>
                             )}
                             <button onClick={() => openEdit(w)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-                            <button onClick={() => handleDelete(w.id)} disabled={deletingId === w.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                            <button onClick={() => setConfirmDeleteId(w.id)} disabled={deletingId === w.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                           </div>
                         </td>
                       </tr>
@@ -194,7 +200,7 @@ export default function Washings() {
                           </a>
                         )}
                         <button onClick={() => openEdit(w)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700"><Pencil className="w-4 h-4" /></button>
-                        <button onClick={() => handleDelete(w.id)} disabled={deletingId === w.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
+                        <button onClick={() => setConfirmDeleteId(w.id)} disabled={deletingId === w.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     </div>
                   </div>
@@ -250,6 +256,16 @@ export default function Washings() {
           showAmount={false}
         />
       </FormModal>
+
+      {/* Delete confirm dialog */}
+      <ConfirmDeleteDialog
+        open={!!confirmDeleteId}
+        onCancel={() => setConfirmDeleteId(null)}
+        onConfirm={() => handleDelete(confirmDeleteId)}
+        deleting={deletingId === confirmDeleteId}
+        title="Supprimer le lavage"
+        description="Supprimer ce lavage ? La facture associée sera également supprimée. Cette action est irréversible."
+      />
     </div>
   )
 }

@@ -9,6 +9,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import PageHeader from '@/components/shared/PageHeader'
 import EmptyState from '@/components/shared/EmptyState'
+import DataError from '@/components/shared/DataError'
 import { differenceInDays } from 'date-fns'
 import {
   useDrivers, useVehicles, useAssignments, useAllDriverDocuments,
@@ -21,7 +22,8 @@ import { usePlanLimits } from '@/lib/usePlanLimits'
 export default function Drivers() {
   usePageTitle('Conducteurs')
   const { t } = useTranslation()
-  const { data: drivers } = useDrivers()
+  const driversQ = useDrivers()
+  const { data: drivers } = driversQ
   const { data: vehicles } = useVehicles()
   const { data: assignments } = useAssignments()
   const { data: allDocs = [] } = useAllDriverDocuments()
@@ -98,6 +100,8 @@ export default function Drivers() {
           </Button>
         </div>
       </PageHeader>
+
+      <DataError queries={[driversQ]} />
 
       <div className="relative mb-6 max-w-full sm:max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />

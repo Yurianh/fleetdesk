@@ -13,6 +13,8 @@ import { toast } from 'sonner'
 import PageHeader from '@/components/shared/PageHeader'
 import EmptyState from '@/components/shared/EmptyState'
 import FormModal from '@/components/shared/FormModal'
+import DataError from '@/components/shared/DataError'
+import ConfirmDeleteDialog from '@/components/shared/ConfirmDeleteDialog'
 import {
   useVehicles, useMileageEntries,
   createMileageEntry, deleteMileageEntry, updateMileageEntry,
@@ -25,7 +27,8 @@ export default function Mileage() {
   const { t } = useTranslation()
   const dateLocale = useDateLocale()
   const { data: vehicles }      = useVehicles()
-  const { data: mileageEntries } = useMileageEntries()
+  const mileageQ = useMileageEntries()
+  const { data: mileageEntries } = mileageQ
   const queryClient = useQueryClient()
   const latestMileage = getLatestMileage(mileageEntries)
 
@@ -77,6 +80,7 @@ export default function Mileage() {
     finally { setEditSaving(false) }
   }
 
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null)
   const handleDelete = async (id) => {
     setDeletingId(id)
     try {
@@ -84,7 +88,7 @@ export default function Mileage() {
       queryClient.invalidateQueries({ queryKey: ['mileageEntries'] })
       toast.success(t('mileage.deleted'))
     } catch { toast.error(t('common.deleteError')) }
-    finally { setDeletingId(null) }
+    finally { setDeletingId(null); setConfirmDeleteId(null) }
   }
 
   const filtered = mileageEntries.filter(m => {
@@ -103,6 +107,8 @@ export default function Mileage() {
           <Plus className="w-4 h-4 mr-2" /> Enregistrer un kilométrage
         </Button>
       </PageHeader>
+
+      <DataError queries={[mileageQ]} />
 
       {mileageEntries.length > 0 && (
         <div className="relative mb-5 max-w-full sm:max-w-md">
@@ -153,7 +159,7 @@ export default function Mileage() {
                         <td className="px-5 py-3.5 text-slate-500">{format(new Date(m.created_at), 'd MMM yyyy, HH:mm', { locale: dateLocale })}</td>
                         <td className="px-5 py-3.5">
                           <div className="flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => handleDelete(m.id)} disabled={deletingId === m.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors">
+                            <button onClick={() => setConfirmDeleteId(m.id)} disabled={deletingId === m.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors">
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
@@ -176,7 +182,7 @@ export default function Mileage() {
                       <p className="text-sm font-semibold text-slate-800 mt-0.5">{m.mileage?.toLocaleString('fr-FR') ?? '—'} km</p>
                       <p className="text-xs text-slate-400">{format(new Date(m.created_at), 'd MMM yyyy', { locale: dateLocale })}</p>
                     </div>
-                    <button onClick={() => handleDelete(m.id)} disabled={deletingId === m.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 transition-colors flex-shrink-0">
+                    <button onClick={() => setConfirmDeleteId(m.id)} disabled={deletingId === m.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 transition-colors flex-shrink-0">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -233,6 +239,16 @@ export default function Mileage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete confirm dialog */}
+      <ConfirmDeleteDialog
+        open={!!confirmDeleteId}
+        onCancel={() => setConfirmDeleteId(null)}
+        onConfirm={() => handleDelete(confirmDeleteId)}
+        deleting={deletingId === confirmDeleteId}
+        title="Supprimer le relevé"
+        description="Supprimer ce relevé kilométrique ? Cette action est irréversible."
+      />
     </div>
   )
 }

@@ -3,11 +3,10 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Truck, Users, ArrowLeftRight,
   Gauge, Wrench, ClipboardCheck, Droplets,
-  X, ChevronLeft, ChevronRight, LogOut, Sun, Moon, Settings, History,
+  X, ChevronLeft, ChevronRight, LogOut, Settings, History,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/AuthContext';
-import { useTheme } from '@/lib/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
 // ─── Single nav item ───────────────────────────────────────────────────────
@@ -46,7 +45,6 @@ function NavItem({ item, isActive, isCollapsed, onMobileClose }) {
 export default function Sidebar({ open, onToggle }) {
   const location = useLocation();
   const { user, signOut } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
   const { t } = useTranslation();
 
   const navGroups = [

@@ -32,6 +32,7 @@ import {
   createVehicle, createDriver, createMileageEntry, createWashRecord
 } from '@/lib/useFleetData'
 import { DOC_TYPE_CONFIG } from '@/components/shared/DriverDocuments'
+import DataError from '@/components/shared/DataError'
 import { usePageTitle } from '@/lib/usePageTitle'
 import { useTranslation } from 'react-i18next'
 import { usePlanLimits } from '@/lib/usePlanLimits'
@@ -386,11 +387,11 @@ function AddWashModal({ open, onClose, vehicles, drivers }) {
 
 // ─── Alert Center ─────────────────────────────────────────────────
 // Groups all time-sensitive alerts (inspections + maintenance) by priority
-function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, vehicles, urgentDocAlerts = [], warningDocAlerts = [] }) {
+function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, vehicles, urgentDocAlerts = [], warningDocAlerts = [], dataUnavailable = false }) {
   const { t } = useTranslation()
   const totalUrgent = urgentInspections.length + urgentForecasts.filter(f => f.status === 'overdue').length + urgentDocAlerts.length
   const totalWarning = warningInspections.length + urgentForecasts.filter(f => f.status === 'due_soon').length + warningDocAlerts.length
-  const allClear = totalUrgent === 0 && totalWarning === 0
+  const allClear = totalUrgent === 0 && totalWarning === 0 && !dataUnavailable
 
   return (
     <div className="bg-white rounded-xl p-5 border border-zinc-100">
@@ -418,6 +419,17 @@ function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, v
         </div>
       ) : (
         <div className="space-y-3">
+
+          {/* ── Data unavailable — never claim "all clear" on failed queries ── */}
+          {dataUnavailable && (
+            <div className="flex items-start gap-3 rounded-xl bg-amber-50 border border-amber-100 px-3 py-2.5">
+              <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-xs font-semibold text-amber-700">{t('alerts.unavailable')}</p>
+                <p className="text-xs text-amber-600">{t('alerts.unavailableDesc')}</p>
+              </div>
+            </div>
+          )}
 
           {/* ── Section Véhicules ── */}
           {(urgentInspections.length > 0 || urgentForecasts.filter(f => f.status === 'overdue').length > 0 || warningInspections.length > 0 || urgentForecasts.filter(f => f.status === 'due_soon').length > 0) && (
@@ -796,15 +808,27 @@ export default function Dashboard() {
   const dateLocale = useDateLocale()
   usePageTitle(t('nav.dashboard'))
 
-  const { data: vehicles }           = useVehicles()
-  const { data: drivers }            = useDrivers()
-  const { data: assignments }        = useAssignments()
-  const { data: mileageEntries }     = useMileageEntries()
-  const { data: inspections }        = useTechnicalInspections()
-  const { data: maintenanceRecords } = useMaintenanceRecords()
-  const { data: washRecords }        = useWashRecords()
-  const { data: schedules }          = useMaintenanceSchedules()
-  const { data: allDriverDocuments } = useAllDriverDocuments()
+  const vehiclesQ           = useVehicles()
+  const driversQ            = useDrivers()
+  const assignmentsQ        = useAssignments()
+  const mileageQ            = useMileageEntries()
+  const inspectionsQ        = useTechnicalInspections()
+  const maintenanceQ        = useMaintenanceRecords()
+  const washQ               = useWashRecords()
+  const schedulesQ          = useMaintenanceSchedules()
+  const driverDocsQ         = useAllDriverDocuments()
+  const { data: vehicles }           = vehiclesQ
+  const { data: drivers }            = driversQ
+  const { data: assignments }        = assignmentsQ
+  const { data: mileageEntries }     = mileageQ
+  const { data: inspections }        = inspectionsQ
+  const { data: maintenanceRecords } = maintenanceQ
+  const { data: washRecords }        = washQ
+  const { data: schedules }          = schedulesQ
+  const { data: allDriverDocuments } = driverDocsQ
+  const allQueries = [vehiclesQ, driversQ, assignmentsQ, mileageQ, inspectionsQ, maintenanceQ, washQ, schedulesQ, driverDocsQ]
+  // Alert Center must never show a green "all clear" computed from failed queries
+  const alertsUnavailable = [vehiclesQ, driversQ, mileageQ, inspectionsQ, maintenanceQ, schedulesQ, driverDocsQ].some(q => q.isError)
 
   const { canAddVehicle, canAddDriver } = usePlanLimits(vehicles.length, drivers.length)
 
@@ -983,6 +1007,8 @@ export default function Dashboard() {
           )}
         </div>
 
+        <DataError queries={allQueries} />
+
         {/* ── Quick actions ─────────────────────────────────────── */}
         <div className="flex flex-wrap items-center gap-2 mb-7">
           {[
@@ -1088,6 +1114,7 @@ export default function Dashboard() {
           vehicles={vehicles}
           urgentDocAlerts={urgentDocAlerts}
           warningDocAlerts={warningDocAlerts}
+          dataUnavailable={alertsUnavailable}
         />
 
         {/* Fleet Insights */}

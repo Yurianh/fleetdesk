@@ -14,6 +14,8 @@ import PageHeader from '@/components/shared/PageHeader'
 import EmptyState from '@/components/shared/EmptyState'
 import FormModal from '@/components/shared/FormModal'
 import { InvoiceUpload } from '@/components/shared/InvoiceUpload'
+import DataError from '@/components/shared/DataError'
+import ConfirmDeleteDialog from '@/components/shared/ConfirmDeleteDialog'
 import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import {
   useVehicles, useTechnicalInspections,
@@ -38,7 +40,8 @@ export default function Inspections() {
   const { t } = useTranslation()
   const dateLocale = useDateLocale()
   const { data: vehicles }    = useVehicles()
-  const { data: inspections } = useTechnicalInspections()
+  const inspectionsQ = useTechnicalInspections()
+  const { data: inspections } = inspectionsQ
   const queryClient = useQueryClient()
 
   const [modal, setModal]     = useState(false)
@@ -112,6 +115,7 @@ export default function Inspections() {
     finally { setSaving(false) }
   }
 
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null)
   const handleDelete = async (id) => {
     setDeletingId(id)
     try {
@@ -121,7 +125,7 @@ export default function Inspections() {
       queryClient.invalidateQueries({ queryKey: ['technicalInspections'] })
       toast.success(t('inspections.deleted'))
     } catch { toast.error('Erreur lors de la suppression') }
-    finally { setDeletingId(null) }
+    finally { setDeletingId(null); setConfirmDeleteId(null) }
   }
 
   const expiredCount  = inspections.filter(i => differenceInDays(new Date(i.expiration_date), new Date()) < 0).length
@@ -143,6 +147,8 @@ export default function Inspections() {
           <Plus className="w-4 h-4 mr-2" /> Ajouter un contrôle
         </Button>
       </PageHeader>
+
+      <DataError queries={[inspectionsQ]} />
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         {inspections.length === 0 ? (
@@ -184,7 +190,7 @@ export default function Inspections() {
                               </a>
                             )}
                             <button onClick={() => openEdit(ins)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-                            <button onClick={() => handleDelete(ins.id)} disabled={deletingId === ins.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                            <button onClick={() => setConfirmDeleteId(ins.id)} disabled={deletingId === ins.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                           </div>
                         </td>
                       </tr>
@@ -217,7 +223,7 @@ export default function Inspections() {
                           </a>
                         )}
                         <button onClick={() => openEdit(ins)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700"><Pencil className="w-4 h-4" /></button>
-                        <button onClick={() => handleDelete(ins.id)} disabled={deletingId === ins.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
+                        <button onClick={() => setConfirmDeleteId(ins.id)} disabled={deletingId === ins.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     </div>
                   </div>
@@ -263,6 +269,16 @@ export default function Inspections() {
           showAmount={true}
         />
       </FormModal>
+
+      {/* Delete confirm dialog */}
+      <ConfirmDeleteDialog
+        open={!!confirmDeleteId}
+        onCancel={() => setConfirmDeleteId(null)}
+        onConfirm={() => handleDelete(confirmDeleteId)}
+        deleting={deletingId === confirmDeleteId}
+        title="Supprimer le contrôle"
+        description="Supprimer ce contrôle technique ? La facture associée sera également supprimée. Cette action est irréversible."
+      />
     </div>
   )
 }

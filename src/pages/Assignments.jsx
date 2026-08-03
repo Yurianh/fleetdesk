@@ -7,6 +7,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import PageHeader from '@/components/shared/PageHeader'
 import EmptyState from '@/components/shared/EmptyState'
+import DataError from '@/components/shared/DataError'
 import { Link } from 'react-router-dom'
 import {
   useVehicles, useDrivers, useAssignments,
@@ -21,7 +22,8 @@ export default function Assignments() {
   const dateLocale = useDateLocale()
   const { data: vehicles }    = useVehicles()
   const { data: drivers }     = useDrivers()
-  const { data: assignments } = useAssignments()
+  const assignmentsQ = useAssignments()
+  const { data: assignments } = assignmentsQ
   const queryClient = useQueryClient()
 
   const [unassigningId, setUnassigningId] = useState(null)
@@ -46,6 +48,8 @@ export default function Assignments() {
         title={t('assignments.title')}
         description={`${activeList.length} affectation${activeList.length !== 1 ? 's' : ''} active${activeList.length !== 1 ? 's' : ''} · ${unassignedVehicles.length} véhicule${unassignedVehicles.length !== 1 ? 's' : ''} libre${unassignedVehicles.length !== 1 ? 's' : ''}`}
       />
+
+      <DataError queries={[assignmentsQ]} />
 
       {/* ── Active assignments ── */}
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden mb-6">
