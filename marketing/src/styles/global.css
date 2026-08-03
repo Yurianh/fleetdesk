@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* No monospace typeface — plates and figures stay in Hanken Grotesk with
+   tabular figures so numbers align in columns. */
+.font-mono {
+  font-variant-numeric: tabular-nums;
+}
+
 :root {
   --brand:        #0066FF;
   --brand-hover:  #0052D6;

@@ -6,7 +6,8 @@ module.exports = {
   	extend: {
   		fontFamily: {
   			sans: ['Hanken Grotesk', 'system-ui', 'sans-serif'],
-  			mono: ['Spline Sans Mono', 'ui-monospace', 'monospace'],
+  			// No monospace: "mono" maps to the sans with tabular figures (see index.css)
+  			mono: ['Hanken Grotesk', 'system-ui', 'sans-serif'],
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

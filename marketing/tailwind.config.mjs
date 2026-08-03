@@ -5,7 +5,8 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Hanken Grotesk', 'system-ui', 'sans-serif'],
-        mono: ['Spline Sans Mono', 'ui-monospace', 'monospace'],
+        // No monospace: "mono" maps to the sans with tabular figures (see global.css)
+        mono: ['Hanken Grotesk', 'system-ui', 'sans-serif'],
       },
       colors: {
         brand: {
