@@ -20,21 +20,44 @@ Deno.serve(async (req) => {
     })
     const { data: { user }, error: authErr } = await supabaseUser.auth.getUser()
     if (authErr || !user) return new Response(JSON.stringify({ error: 'Non autorise' }), { status: 401, headers: corsHeaders })
-    if (user.user_metadata?.org_id) {
-      return new Response(JSON.stringify({ error: 'Seul le proprietaire peut retirer des membres.' }), { status: 403, headers: corsHeaders })
-    }
 
     const supabaseAdmin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
 
+    // Authorise the caller: the owner (no org_id) or an active admin of the org.
+    // The caller's role comes from org_members (trusted), never user_metadata.
+    const callerOrgId = user.user_metadata?.org_id
+    let orgId = user.id
+    let callerIsAdmin = false
+    if (callerOrgId) {
+      const { data: caller } = await supabaseAdmin
+        .from('org_members').select('role, status')
+        .eq('user_id', user.id).eq('org_id', callerOrgId).maybeSingle()
+      if (!caller || caller.status !== 'active' || caller.role !== 'admin') {
+        return new Response(JSON.stringify({ error: 'Seuls le proprietaire et les admins peuvent retirer des membres.' }), { status: 403, headers: corsHeaders })
+      }
+      callerIsAdmin = true
+      orgId = callerOrgId
+    }
+
     const { data: member, error: fetchErr } = await supabaseAdmin
       .from('org_members')
-      .select('id, user_id, org_id, email')
+      .select('id, user_id, org_id, email, role')
       .eq('id', memberId)
       .maybeSingle()
 
     if (fetchErr) throw fetchErr
     if (!member) return new Response(JSON.stringify({ error: 'Membre introuvable.' }), { status: 404, headers: corsHeaders })
-    if (member.org_id !== user.id) return new Response(JSON.stringify({ error: 'Acces refuse.' }), { status: 403, headers: corsHeaders })
+    if (member.org_id !== orgId) return new Response(JSON.stringify({ error: 'Acces refuse.' }), { status: 403, headers: corsHeaders })
+
+    // Admin guardrails: an admin cannot remove another admin, nor themselves.
+    if (callerIsAdmin) {
+      if (member.user_id === user.id) {
+        return new Response(JSON.stringify({ error: 'Vous ne pouvez pas vous retirer vous-meme.' }), { status: 403, headers: corsHeaders })
+      }
+      if (member.role === 'admin') {
+        return new Response(JSON.stringify({ error: 'Un admin ne peut pas retirer un autre admin.' }), { status: 403, headers: corsHeaders })
+      }
+    }
 
     // Delete from org_members first
     const { error: deleteErr } = await supabaseAdmin

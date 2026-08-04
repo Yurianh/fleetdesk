@@ -47,6 +47,12 @@ export default function Settings() {
   const inviteMember = useInviteMember()
   const removeMember = useRemoveMember()
   const isCollaborator = !!user?.user_metadata?.org_id
+  const isAdmin = isCollaborator && user?.user_metadata?.role === 'admin'
+  // Owner or admin may manage the team; members/drivers get a read-only notice.
+  // Server enforces the same (invite-member / remove-member); this is UX only.
+  const canManageTeam = !isCollaborator || isAdmin
+  const canDeleteMember = (m) =>
+    m.user_id !== user.id && (!isCollaborator || m.role !== 'admin')
   const [inviteEmail, setInviteEmail] = useState('')
   const [inviteRole, setInviteRole] = useState('member')
   const [inviteVehicle, setInviteVehicle] = useState('')
@@ -388,9 +394,9 @@ export default function Settings() {
                     Passer à Enterprise <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
-              ) : isCollaborator ? (
+              ) : !canManageTeam ? (
                 <div className="bg-white border border-zinc-200 rounded-xl p-5">
-                  <p className="text-sm text-zinc-500">Vous êtes membre d'une organisation. Seul le propriétaire peut gérer l'équipe.</p>
+                  <p className="text-sm text-zinc-500">Vous êtes membre d'une organisation. Seul le propriétaire ou un administrateur peut gérer l'équipe.</p>
                 </div>
               ) : (
                 <>
@@ -416,7 +422,7 @@ export default function Settings() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="member">Membre</SelectItem>
-                          <SelectItem value="admin">Admin</SelectItem>
+                          {!isCollaborator && <SelectItem value="admin">Admin</SelectItem>}
                           <SelectItem value="driver">Chauffeur</SelectItem>
                         </SelectContent>
                       </Select>
@@ -494,19 +500,21 @@ export default function Settings() {
                             </div>
                           </div>
                         </div>
-                        <button
-                          onClick={async () => {
-                            try {
-                              await removeMember.mutateAsync({ memberId: m.id, userId: m.user_id })
-                              toast.success('Membre retiré.')
-                            } catch (e) { toast.error(e.message) }
-                          }}
-                          disabled={removeMember.isPending}
-                          className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
-                          title="Retirer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {canDeleteMember(m) && (
+                          <button
+                            onClick={async () => {
+                              try {
+                                await removeMember.mutateAsync({ memberId: m.id, userId: m.user_id })
+                                toast.success('Membre retiré.')
+                              } catch (e) { toast.error(e.message) }
+                            }}
+                            disabled={removeMember.isPending}
+                            className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                            title="Retirer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     ))}
                   </div>

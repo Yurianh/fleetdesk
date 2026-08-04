@@ -33,11 +33,17 @@ export function useOrgMembers() {
     queryFn: async () => {
       if (DEMO) return []
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user || user.user_metadata?.org_id) return []
+      if (!user) return []
+      // Owner (no org_id) manages their own org; an admin manages the owner's org.
+      // Other collaborators (member/driver) don't need the list. RLS enforces the
+      // real permission — a forged metadata.role just yields an empty list.
+      const isCollaborator = !!user.user_metadata?.org_id
+      if (isCollaborator && user.user_metadata?.role !== 'admin') return []
+      const orgId = user.user_metadata?.org_id || user.id
       const { data, error } = await supabase
         .from('org_members')
         .select('*')
-        .eq('org_id', user.id)
+        .eq('org_id', orgId)
         .order('invited_at', { ascending: false })
       if (error) throw error
       return data || []

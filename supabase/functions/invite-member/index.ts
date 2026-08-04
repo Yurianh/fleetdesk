@@ -19,13 +19,32 @@ Deno.serve(async (req) => {
     const { data: { user }, error: authErr } = await supabaseUser.auth.getUser()
     if (authErr || !user) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders })
 
-    if (user.user_metadata?.org_id) {
-      return new Response(JSON.stringify({ error: 'Seuls les proprietaires peuvent inviter des membres.' }), { status: 403, headers: corsHeaders })
+    const supabaseAdmin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
+
+    // Resolve the org + authorise the caller. The owner (no org_id) manages their
+    // own org. An admin collaborator may also invite, but NOT another admin
+    // (prevents privilege escalation). The caller's role is read from org_members
+    // (service-role written), never from user_metadata, which the user can edit.
+    const callerOrgId = user.user_metadata?.org_id
+    let orgId: string
+    if (callerOrgId) {
+      const { data: caller } = await supabaseAdmin
+        .from('org_members').select('role, status')
+        .eq('user_id', user.id).eq('org_id', callerOrgId).maybeSingle()
+      if (!caller || caller.status !== 'active' || caller.role !== 'admin') {
+        return new Response(JSON.stringify({ error: 'Seuls le proprietaire et les admins peuvent inviter des membres.' }), { status: 403, headers: corsHeaders })
+      }
+      if (role === 'admin') {
+        return new Response(JSON.stringify({ error: "Un admin ne peut pas inviter un autre admin. Demandez au proprietaire." }), { status: 403, headers: corsHeaders })
+      }
+      orgId = callerOrgId
+    } else {
+      orgId = user.id
     }
 
-    const orgId = user.id
-    const orgOwnerName = user.user_metadata?.full_name || user.email || 'votre organisation'
-    const supabaseAdmin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
+    // The org identity (owner) drives the invite email context, whoever invites.
+    const { data: ownerData } = await supabaseAdmin.auth.admin.getUserById(orgId)
+    const orgOwnerName = ownerData?.user?.user_metadata?.full_name || ownerData?.user?.email || 'votre organisation'
 
     // Check for existing invite
     const { data: existing } = await supabaseAdmin
@@ -80,7 +99,7 @@ Deno.serve(async (req) => {
     }
 
     const siteUrl = Deno.env.get('SITE_URL') || 'https://app.fleetdesk.fr'
-    const orgCompany = user.user_metadata?.company || ''
+    const orgCompany = ownerData?.user?.user_metadata?.company || ''
     // For a driver ("chauffeur"), stamp the vehicle their account is tied to so
     // the app can pre-select and lock it in the mileage/wash forms.
     const inviteMeta = { org_id: orgId, role, org_owner_name: orgOwnerName, org_company: orgCompany, ...(role === 'driver' && vehicleId ? { vehicle_id: vehicleId } : {}) }
