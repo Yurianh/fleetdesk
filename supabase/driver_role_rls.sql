@@ -23,6 +23,12 @@
 alter table public.org_members
   add column if not exists vehicle_id uuid references public.vehicles(id) on delete set null;
 
+-- Link a driver's account to their conducteur (drivers) record + a pending flag
+-- so a chauffeur can complete their own profile on first login.
+alter table public.drivers
+  add column if not exists member_user_id uuid,
+  add column if not exists pending boolean not null default false;
+
 -- 2) Trusted lookups (security definer bypasses RLS to read org_members) -------
 create or replace function public.fd_caller_role()
 returns text
@@ -84,14 +90,28 @@ begin
   end loop;
 end $$;
 
+-- 3b) drivers: no insert/delete for drivers, but they MAY update their OWN
+--     linked conducteur record (member_user_id = auth.uid()) to complete it.
+drop policy if exists fd_driver_no_insert on public.drivers;
+create policy fd_driver_no_insert on public.drivers as restrictive for insert to authenticated
+  with check (public.fd_caller_role() is distinct from 'driver');
+drop policy if exists fd_driver_own_update on public.drivers;
+create policy fd_driver_own_update on public.drivers as restrictive for update to authenticated
+  using (public.fd_caller_role() is distinct from 'driver' or member_user_id = auth.uid())
+  with check (public.fd_caller_role() is distinct from 'driver' or member_user_id = auth.uid());
+drop policy if exists fd_driver_no_delete on public.drivers;
+create policy fd_driver_no_delete on public.drivers as restrictive for delete to authenticated
+  using (public.fd_caller_role() is distinct from 'driver');
+
 -- 4) Everything else: drivers get NO write access -----------------------------
 -- SELECT is left untouched so the driver can still see their vehicle's name and
 -- their own mileage/wash lists (read is scoped by your existing org policies).
+-- (drivers handled above; org_members not looped so join-org service role is unaffected.)
 do $$
 declare t text;
 begin
   foreach t in array array[
-    'vehicles','drivers','assignments','maintenance_records',
+    'vehicles','assignments','maintenance_records',
     'maintenance_schedules','technical_inspections','driver_documents','org_members'
   ]
   loop

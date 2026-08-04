@@ -58,6 +58,18 @@ Deno.serve(async (req) => {
       user_metadata: { ...user.user_metadata, org_id: orgId },
     })
 
+    // Link a chauffeur's account to their conducteur (drivers) record by email,
+    // so RLS lets them complete their own profile. Best-effort.
+    try {
+      if (user.email) {
+        await supabaseAdmin.from('drivers')
+          .update({ member_user_id: user.id })
+          .eq('user_id', orgId).ilike('email', user.email).is('member_user_id', null)
+      }
+    } catch (e) {
+      console.error('driver link failed:', (e as Error).message)
+    }
+
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })

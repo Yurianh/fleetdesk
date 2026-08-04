@@ -49,6 +49,36 @@ Deno.serve(async (req) => {
       .insert({ org_id: orgId, email, role, status: 'pending', ...(role === 'driver' && vehicleId ? { vehicle_id: vehicleId } : {}) })
     if (insertErr) throw insertErr
 
+    // A chauffeur is also a conducteur: ensure a drivers record exists (reuse by
+    // email, else create a pending one) and assign it to their vehicle. The
+    // chauffeur completes the profile on first login. Best-effort: never block
+    // the invitation if this fails.
+    if (role === 'driver' && vehicleId) {
+      try {
+        let driverId: string | null = null
+        const { data: existingDriver } = await supabaseAdmin
+          .from('drivers').select('id').eq('user_id', orgId).ilike('email', email).maybeSingle()
+        if (existingDriver) {
+          driverId = existingDriver.id
+        } else {
+          const { data: newDriver, error: dErr } = await supabaseAdmin
+            .from('drivers')
+            .insert({ user_id: orgId, email, name: email.split('@')[0], pending: true })
+            .select('id').single()
+          if (dErr) throw dErr
+          driverId = newDriver.id
+        }
+        // Auto-assign the conducteur to the vehicle (close any active assignment first)
+        const nowTs = new Date().toISOString()
+        await supabaseAdmin.from('assignments').update({ ended_at: nowTs })
+          .eq('user_id', orgId).eq('vehicle_id', vehicleId).is('ended_at', null)
+        await supabaseAdmin.from('assignments')
+          .insert({ user_id: orgId, vehicle_id: vehicleId, driver_id: driverId, assigned_at: nowTs })
+      } catch (e) {
+        console.error('driver conductor/assignment setup failed:', (e as Error).message)
+      }
+    }
+
     const siteUrl = Deno.env.get('SITE_URL') || 'https://app.fleetdesk.fr'
     const orgCompany = user.user_metadata?.company || ''
     // For a driver ("chauffeur"), stamp the vehicle their account is tied to so

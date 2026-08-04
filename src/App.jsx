@@ -12,6 +12,7 @@ import AppLoader from '@/components/layout/AppLoader'
 import Login from '@/pages/Login'
 import SetupProfile from '@/pages/SetupProfile'
 import CollaboratorWelcome from '@/pages/CollaboratorWelcome'
+import DriverProfile from '@/pages/DriverProfile'
 import BillingSuccess from '@/pages/BillingSuccess'
 import Dashboard from '@/pages/Dashboard'
 import Vehicles from '@/pages/Vehicles'
@@ -93,6 +94,7 @@ function AppRoutes() {
             <Route path="/" element={<Navigate to="/Mileage" replace />} />
             <Route path="/Mileage" element={<Mileage />} />
             <Route path="/Washings" element={<Washings />} />
+            <Route path="/mon-profil" element={<DriverProfile />} />
             <Route path="*" element={<Navigate to="/Mileage" replace />} />
           </>
         ) : (
