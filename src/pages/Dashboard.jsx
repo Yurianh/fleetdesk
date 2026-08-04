@@ -35,6 +35,7 @@ import { DOC_TYPE_CONFIG } from '@/components/shared/DriverDocuments'
 import DataError from '@/components/shared/DataError'
 import AssignDriverDialog from '@/components/shared/AssignDriverDialog'
 import GettingStarted from '@/components/onboarding/GettingStarted'
+import MemberOnboarding from '@/components/onboarding/MemberOnboarding'
 import { useOnboarding } from '@/lib/OnboardingContext'
 import { useNavigate } from 'react-router-dom'
 import { usePageTitle } from '@/lib/usePageTitle'
@@ -843,7 +844,7 @@ export default function Dashboard() {
   const [showAssign,     setShowAssign]     = useState(false)
 
   const navigate = useNavigate()
-  const { checklistVisible } = useOnboarding()
+  const { checklistVisible, accountType } = useOnboarding()
 
   const today = new Date()
   const latestAssignments = getLatestAssignments(assignments)
@@ -1060,7 +1061,7 @@ export default function Dashboard() {
 
         <DataError queries={allQueries} />
 
-        {checklistVisible && (
+        {checklistVisible && (accountType === 'owner' ? (
           <GettingStarted
             vehiclesCount={vehicles.length}
             driversCount={drivers.length}
@@ -1073,7 +1074,15 @@ export default function Dashboard() {
             onAssign={() => setShowAssign(true)}
             onAddInspection={() => navigate('/Inspections')}
           />
-        )}
+        ) : (
+          <MemberOnboarding
+            role={accountType}
+            onLogMileage={() => setShowMileage(true)}
+            onLogWash={() => setShowWash(true)}
+            onAssign={() => setShowAssign(true)}
+            onManageTeam={() => navigate('/Settings')}
+          />
+        ))}
 
         {/* ── Quick actions ─────────────────────────────────────── */}
         <div className="flex flex-wrap items-center gap-2 mb-7">

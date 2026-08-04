@@ -48,7 +48,7 @@ export default function Sidebar({ open, onToggle }) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { t } = useTranslation();
-  const { reopenChecklist, isCollaborator } = useOnboarding();
+  const { reopenChecklist } = useOnboarding();
 
   const navGroups = [
     {
@@ -218,20 +218,18 @@ export default function Sidebar({ open, onToggle }) {
               <span className={cn(isCollapsed && 'lg:hidden')}>Activité</span>
             </Link>
           )}
-          {!isCollaborator && (
-            <button
-              onClick={openGettingStarted}
-              title={isCollapsed ? t('gettingStarted.title') : undefined}
-              className={cn(
-                'flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-xs font-medium',
-                'text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50 transition-colors',
-                isCollapsed && 'lg:justify-center lg:px-0'
-              )}
-            >
-              <Sparkles className="w-[14px] h-[14px] flex-shrink-0 text-[#0066FF]" />
-              <span className={cn(isCollapsed && 'lg:hidden')}>{t('gettingStarted.navLabel')}</span>
-            </button>
-          )}
+          <button
+            onClick={openGettingStarted}
+            title={isCollapsed ? t('gettingStarted.title') : undefined}
+            className={cn(
+              'flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-xs font-medium',
+              'text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50 transition-colors',
+              isCollapsed && 'lg:justify-center lg:px-0'
+            )}
+          >
+            <Sparkles className="w-[14px] h-[14px] flex-shrink-0 text-[#0066FF]" />
+            <span className={cn(isCollapsed && 'lg:hidden')}>{t('gettingStarted.navLabel')}</span>
+          </button>
           <Link
             to="/Settings"
             onClick={() => { if (window.innerWidth < 1024) onToggle() }}

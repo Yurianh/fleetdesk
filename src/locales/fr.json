@@ -102,6 +102,21 @@
     "step4Desc": "FleetDesk calcule l'expiration et vous alerte avant l'échéance.",
     "step4Cta": "Enregistrer"
   },
+  "memberOnboarding": {
+    "title": "Bienvenue dans FleetDesk",
+    "subtitle_admin": "Pilotez les opérations et votre équipe.",
+    "subtitle_member": "Enregistrez les opérations du quotidien.",
+    "subtitle_driver": "Vos opérations en deux gestes.",
+    "driverNote": "Votre véhicule est déjà associé à votre compte : saisissez simplement votre kilométrage et vos lavages.",
+    "mileage": "Enregistrer un kilométrage",
+    "mileageDesc": "Relevez le compteur de votre véhicule.",
+    "wash": "Ajouter un lavage",
+    "washDesc": "Notez un passage au lavage.",
+    "assign": "Voir les affectations",
+    "assignDesc": "Consultez qui conduit quel véhicule.",
+    "team": "Gérer l'équipe",
+    "teamDesc": "Invitez des collègues et gérez les accès."
+  },
   "tour": {
     "next": "Suivant",
     "back": "Précédent",

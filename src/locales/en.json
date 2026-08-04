@@ -102,6 +102,21 @@
     "step4Desc": "FleetDesk computes the expiry and alerts you before the deadline.",
     "step4Cta": "Log"
   },
+  "memberOnboarding": {
+    "title": "Welcome to FleetDesk",
+    "subtitle_admin": "Run operations and your team.",
+    "subtitle_member": "Log day-to-day operations.",
+    "subtitle_driver": "Your operations in two taps.",
+    "driverNote": "Your vehicle is already linked to your account: just enter your mileage and washes.",
+    "mileage": "Log mileage",
+    "mileageDesc": "Record your vehicle's odometer.",
+    "wash": "Add a wash",
+    "washDesc": "Note a trip to the car wash.",
+    "assign": "View assignments",
+    "assignDesc": "See who drives which vehicle.",
+    "team": "Manage the team",
+    "teamDesc": "Invite colleagues and manage access."
+  },
   "tour": {
     "next": "Next",
     "back": "Back",
