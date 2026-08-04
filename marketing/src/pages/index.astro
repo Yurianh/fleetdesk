@@ -97,7 +97,7 @@ const testimonials = [
   <HeroSection client:load />
 
   <!-- Problem section -->
-  <section class="py-24 bg-zinc-50 border-b border-zinc-100">
+  <section class="py-24 bg-white border-b border-zinc-100">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       <div class="mb-14 max-w-2xl">
         <p class="text-sm font-semibold text-red-500 tracking-wide mb-3">Le vrai coût de l'oubli</p>
@@ -110,7 +110,7 @@ const testimonials = [
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {pains.map(p => (
-          <div class="bg-white border border-zinc-100 rounded-xl p-6 hover:shadow-md transition-shadow">
+          <div class="bg-zinc-50 border border-zinc-100 rounded-xl p-6 hover:border-zinc-200 hover:bg-white hover:shadow-md transition-all">
             <div class={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${p.iconCls}`}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={p.icon} />
             </div>
@@ -167,7 +167,7 @@ const testimonials = [
   </section>
 
   <!-- Features — 2×2 screenshot cards -->
-  <section class="py-24 bg-zinc-50">
+  <section class="py-24 bg-white border-b border-zinc-100">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       <div class="text-center mb-14">
         <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Ce qui fait la différence</p>
@@ -182,7 +182,7 @@ const testimonials = [
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
 
         <!-- Card 1: Véhicules -->
-        <div class="bg-white border border-zinc-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all hover:-translate-y-0.5">
+        <div class="bg-white border border-zinc-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all hover:-translate-y-0.5">
           <div class="bg-zinc-50 px-6 pt-5 h-52 overflow-hidden relative border-b border-zinc-100">
             <div class="flex items-center gap-1.5 mb-4">
               <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
@@ -229,7 +229,7 @@ const testimonials = [
         </div>
 
         <!-- Card 2: Conducteurs -->
-        <div class="bg-white border border-zinc-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all hover:-translate-y-0.5">
+        <div class="bg-white border border-zinc-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all hover:-translate-y-0.5">
           <div class="bg-zinc-50 px-6 pt-5 h-52 overflow-hidden relative border-b border-zinc-100">
             <div class="flex items-center gap-1.5 mb-4">
               <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
@@ -272,7 +272,7 @@ const testimonials = [
         </div>
 
         <!-- Card 3: Maintenance -->
-        <div class="bg-white border border-zinc-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all hover:-translate-y-0.5">
+        <div class="bg-white border border-zinc-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all hover:-translate-y-0.5">
           <div class="bg-zinc-50 px-6 pt-5 h-52 overflow-hidden relative border-b border-zinc-100">
             <div class="flex items-center gap-1.5 mb-4">
               <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
@@ -313,7 +313,7 @@ const testimonials = [
         </div>
 
         <!-- Card 4: Analytique -->
-        <div class="bg-white border border-zinc-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all hover:-translate-y-0.5">
+        <div class="bg-white border border-zinc-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all hover:-translate-y-0.5">
           <div class="bg-zinc-50 px-6 pt-5 h-52 overflow-hidden relative border-b border-zinc-100">
             <div class="flex items-center gap-1.5 mb-3">
               <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
