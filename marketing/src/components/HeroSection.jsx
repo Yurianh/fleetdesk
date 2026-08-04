@@ -192,96 +192,111 @@ export default function HeroSection() {
   const Panel = PANELS[tab]
 
   return (
-    <section className="bg-white overflow-hidden">
-      {/* Text content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20 pb-12 text-center">
-        <div className="inline-flex items-center gap-2 bg-[#E5EEFF] text-[#0066FF] text-xs font-semibold px-3.5 py-1.5 rounded-full mb-8">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/>
-            <rect x="9" y="11" width="14" height="10" rx="2"/>
-            <circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-          </svg>
-          Pour les flottes de 2 à 50 véhicules
-        </div>
+    <section className="bg-white overflow-hidden border-b border-zinc-100">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20 lg:pt-24 pb-16 lg:pb-24">
+        <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] gap-14 lg:gap-10 items-center">
 
-        <h1 className="font-display text-5xl sm:text-6xl lg:text-[68px] font-semibold text-zinc-900 tracking-tight leading-[1.04] mb-6">
-          Zéro contrôle raté.<br />
-          Zéro document expiré.<br />
-          <span className="text-[#0066FF]">Zéro panne surprise.</span>
-        </h1>
-
-        <p className="text-lg text-zinc-500 leading-relaxed mb-8 max-w-xl mx-auto">
-          FleetDesk surveille chaque véhicule et chaque conducteur à votre place, et vous alerte avant l'échéance. Toute votre flotte, dans un seul outil.
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
-          <a href={`${APP_URL}/login?plan=pro`}
-            className="inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-[#0066FF]/25">
-            Essayer gratuitement
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-            </svg>
-          </a>
-          <a href="#how"
-            className="inline-flex items-center justify-center gap-2 border border-zinc-200 hover:border-zinc-300 text-zinc-600 hover:text-zinc-900 font-medium text-sm px-8 py-3.5 rounded-xl transition-all">
-            Comment ça marche
-          </a>
-        </div>
-
-        {/* Risk-reversal / trust strip — placed right under the primary CTA */}
-        <div className="flex items-center justify-center gap-x-5 gap-y-2 text-sm text-zinc-500 flex-wrap">
-          {['14 jours d\'essai', 'Sans carte bancaire', 'Hébergé en France', 'Résiliation en 1 clic'].map((item, i) => (
-            <div key={item} className="flex items-center gap-2">
-              {i > 0 && <span className="hidden sm:block w-1 h-1 rounded-full bg-zinc-300 -ml-2.5" />}
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0066FF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
-                <polyline points="20 6 9 17 4 12"/>
+          {/* Left — copy, left-aligned */}
+          <div className="max-w-xl">
+            <div className="inline-flex items-center gap-2 bg-[#E5EEFF] text-[#0066FF] text-xs font-semibold px-3.5 py-1.5 rounded-full mb-7">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/>
+                <rect x="9" y="11" width="14" height="10" rx="2"/>
+                <circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
               </svg>
-              {item}
+              Pour les flottes de 2 à 50 véhicules
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Product mockup — light */}
-      <div className="bg-zinc-50 border-t border-zinc-100 pb-0">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-10">
-          {/* Browser window */}
-          <div className="rounded-t-xl overflow-hidden shadow-2xl shadow-zinc-200 border border-zinc-200 border-b-0">
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-semibold text-zinc-900 tracking-tight leading-[1.05] mb-6">
+              Zéro contrôle raté.<br />
+              Zéro document expiré.<br />
+              <span className="text-[#0066FF]">Zéro panne surprise.</span>
+            </h1>
 
-            {/* Chrome bar */}
-            <div className="bg-zinc-100 border-b border-zinc-200 px-4 py-2.5 flex items-center gap-3">
-              <div className="flex gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-zinc-300" />
-                <div className="w-2.5 h-2.5 rounded-full bg-zinc-300" />
-                <div className="w-2.5 h-2.5 rounded-full bg-zinc-300" />
-              </div>
-              <div className="flex-1 flex justify-center">
-                <div className="bg-white border border-zinc-200 rounded px-4 py-1 text-[11px] text-zinc-400 font-mono flex items-center gap-2">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-400">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            <p className="text-lg text-zinc-500 leading-relaxed mb-8">
+              FleetDesk surveille chaque véhicule et chaque conducteur à votre place, et vous alerte avant l'échéance. Toute votre flotte, dans un seul outil.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+              <a href={`${APP_URL}/login?plan=pro`}
+                className="inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-[#0066FF]/25">
+                Essayer gratuitement
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </a>
+              <a href="#how"
+                className="inline-flex items-center justify-center gap-2 border border-zinc-200 hover:border-zinc-300 text-zinc-600 hover:text-zinc-900 font-medium text-sm px-8 py-3.5 rounded-xl transition-all">
+                Comment ça marche
+              </a>
+            </div>
+
+            <div className="flex items-center gap-x-5 gap-y-2 text-sm text-zinc-500 flex-wrap">
+              {['14 jours d\'essai', 'Sans carte bancaire', 'Hébergé en France'].map((item, i) => (
+                <div key={item} className="flex items-center gap-2">
+                  {i > 0 && <span className="hidden sm:block w-1 h-1 rounded-full bg-zinc-300 -ml-2.5" />}
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0066FF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+                    <polyline points="20 6 9 17 4 12"/>
                   </svg>
-                  app.fleetdesk.fr
+                  {item}
                 </div>
-              </div>
-            </div>
-
-            {/* Tabs */}
-            <div className="flex gap-0.5 px-4 pt-2 bg-white border-b border-zinc-200">
-              {TABS.map(t => (
-                <button key={t.id} onClick={() => setTab(t.id)}
-                  className={`px-4 py-1.5 text-[11px] font-medium rounded-t-lg transition-all ${
-                    tab === t.id
-                      ? 'bg-zinc-50 border border-b-0 border-zinc-200 text-zinc-900 -mb-px pb-[7px]'
-                      : 'text-zinc-400 hover:text-zinc-600'
-                  }`}>
-                  {t.label}
-                </button>
               ))}
             </div>
+          </div>
 
-            {/* Panel */}
-            <div className="min-h-[320px] sm:min-h-[360px]">
-              <Panel />
+          {/* Right — product mockup, tilted with depth, bleeding off the right edge */}
+          <div className="relative lg:-mr-24 xl:-mr-44" style={{ perspective: '1800px' }}>
+            <div className="relative lg:[transform:rotateY(-9deg)_rotateX(3deg)] lg:origin-left transition-transform duration-500">
+              {/* Browser window */}
+              <div className="rounded-xl overflow-hidden shadow-2xl shadow-zinc-300/60 border border-zinc-200 bg-white">
+                {/* Chrome bar */}
+                <div className="bg-zinc-100 border-b border-zinc-200 px-4 py-2.5 flex items-center gap-3">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-zinc-300" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-zinc-300" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-zinc-300" />
+                  </div>
+                  <div className="flex-1 flex justify-center">
+                    <div className="bg-white border border-zinc-200 rounded px-4 py-1 text-[11px] text-zinc-400 flex items-center gap-2">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-400">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                      </svg>
+                      app.fleetdesk.fr
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tabs */}
+                <div className="flex gap-0.5 px-4 pt-2 bg-white border-b border-zinc-200 overflow-x-auto">
+                  {TABS.map(t => (
+                    <button key={t.id} onClick={() => setTab(t.id)}
+                      className={`px-3.5 py-1.5 text-[11px] font-medium rounded-t-lg transition-all whitespace-nowrap ${
+                        tab === t.id
+                          ? 'bg-zinc-50 border border-b-0 border-zinc-200 text-zinc-900 -mb-px pb-[7px]'
+                          : 'text-zinc-400 hover:text-zinc-600'
+                      }`}>
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Panel */}
+                <div className="min-h-[300px] sm:min-h-[340px]">
+                  <Panel />
+                </div>
+              </div>
+
+              {/* Floating alert card — makes the value (proactive alert) explicit */}
+              <div className="hidden sm:flex absolute -left-5 lg:-left-10 bottom-10 items-center gap-3 bg-white rounded-xl shadow-xl shadow-zinc-300/50 border border-zinc-100 pl-3 pr-4 py-2.5">
+                <span className="relative flex h-2.5 w-2.5 flex-shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-60" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
+                </span>
+                <div>
+                  <p className="text-[11px] font-semibold text-zinc-900 leading-tight">Contrôle technique</p>
+                  <p className="text-[11px] text-red-500 leading-tight">AB-123-CD expire dans 3 jours</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
