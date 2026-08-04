@@ -53,77 +53,104 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* Bento grid — the product's value in tiles */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:auto-rows-[178px]">
+        {/* Bento grid — a dense slice of the real product */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:auto-rows-[152px]">
 
-          {/* Hero tile: compliance alert (what FleetDesk catches for you) */}
-          <div className="sm:col-span-2 lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-2xl border border-[#0066FF]/20 bg-gradient-to-br from-[#EAF1FF] to-white p-6 flex flex-col">
-            <div className="flex items-center gap-2 mb-5">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-60" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
-              </span>
-              <span className="text-xs font-semibold text-[#0066FF] uppercase tracking-wide">Alerte conformité</span>
-            </div>
-            <div className="flex-1">
-              <p className="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 leading-tight mb-2">
-                Contrôle technique<br />dans 3 jours
-              </p>
-              <p className="text-sm text-zinc-500">Renault Master · AB-123-CD · Karim T.</p>
-            </div>
-            <div className="mt-5 flex items-center justify-between gap-3 rounded-xl bg-white/80 border border-zinc-100 px-4 py-3">
-              <div className="flex items-center gap-2.5">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0066FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                <span className="text-sm font-medium text-zinc-700">Détecté par FleetDesk, 30 j avant</span>
+          {/* Hero tile: the alert center (compliance is the product's core value) */}
+          <div className="sm:col-span-2 lg:col-span-2 lg:row-span-2 rounded-2xl border border-[#0066FF]/15 bg-gradient-to-br from-[#EAF1FF] via-white to-white p-5 flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-60" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+                </span>
+                <span className="text-[11px] font-semibold text-[#0066FF] uppercase tracking-wide">Centre d'alertes</span>
               </div>
+              <span className="text-[11px] font-medium text-zinc-400">3 échéances</span>
+            </div>
+
+            <p className="font-display text-xl text-zinc-900 mb-3">À surveiller cette semaine</p>
+
+            <div className="space-y-1.5 flex-1">
+              {[
+                { dot: 'bg-red-500',   pill: 'text-red-600 bg-red-50',       label: 'Contrôle technique', sub: 'Renault Master · AB-123-CD', due: '3 j' },
+                { dot: 'bg-amber-500', pill: 'text-amber-600 bg-amber-50',   label: 'Vidange programmée', sub: 'Peugeot Boxer · EF-456-GH',  due: '12 j' },
+                { dot: 'bg-amber-500', pill: 'text-amber-600 bg-amber-50',   label: 'Visite médicale',    sub: 'Sophie Renard · conductrice', due: '15 j' },
+              ].map(r => (
+                <div key={r.label} className="flex items-center gap-3 bg-white/80 border border-white rounded-lg px-3 py-2">
+                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${r.dot}`} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[13px] font-medium text-zinc-800 leading-tight">{r.label}</p>
+                    <p className="text-[11px] text-zinc-400 truncate">{r.sub}</p>
+                  </div>
+                  <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${r.pill}`}>{r.due}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-3 flex items-center gap-2 text-[12px] text-zinc-500">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0066FF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Chaque échéance détectée 30 jours à l'avance.
             </div>
           </div>
 
           {/* Vehicles tile */}
-          <div className="sm:col-span-2 rounded-2xl border border-zinc-200 bg-white p-5 flex flex-col">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide">Véhicules</p>
-              <p className="text-xs text-zinc-400">14 · 12 affectés</p>
+          <div className="sm:col-span-2 rounded-2xl border border-zinc-200 bg-white p-4 flex flex-col">
+            <div className="flex items-center justify-between mb-2.5">
+              <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Véhicules</p>
+              <p className="text-[11px] text-zinc-400">14 · 12 affectés</p>
             </div>
-            <div className="space-y-1.5 flex-1">
-              <div className="flex items-center bg-zinc-50 rounded-lg px-3 py-2">
-                <span className="text-xs text-zinc-700 flex-1">AB-123-CD</span>
-                <span className="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full">Actif</span>
-                <span className="text-xs text-zinc-400 w-20 text-right">45 200 km</span>
-              </div>
-              <div className="flex items-center bg-zinc-50 rounded-lg px-3 py-2">
-                <span className="text-xs text-zinc-700 flex-1">EF-456-GH</span>
-                <span className="text-[10px] bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full">Révision</span>
-                <span className="text-xs text-zinc-400 w-20 text-right">31 800 km</span>
-              </div>
+            <div className="space-y-1 flex-1">
+              {[
+                { plate: 'AB-123-CD', d: 'Karim T.',  s: 'Actif',    sc: 'bg-emerald-50 text-emerald-600', km: '45 200' },
+                { plate: 'EF-456-GH', d: 'Sophie M.', s: 'Révision', sc: 'bg-amber-50 text-amber-600',     km: '31 800' },
+                { plate: 'IJ-789-KL', d: 'Ahmed B.',  s: 'Actif',    sc: 'bg-emerald-50 text-emerald-600', km: '78 400' },
+              ].map(v => (
+                <div key={v.plate} className="flex items-center gap-2 bg-zinc-50 rounded-lg px-3 py-1.5">
+                  <span className="text-xs text-zinc-800 font-medium w-24">{v.plate}</span>
+                  <span className="text-[11px] text-zinc-400 flex-1 truncate">{v.d}</span>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${v.sc}`}>{v.s}</span>
+                  <span className="text-[11px] text-zinc-400 w-16 text-right">{v.km} km</span>
+                </div>
+              ))}
             </div>
           </div>
 
           {/* Analytics tile */}
-          <div className="rounded-2xl border border-zinc-200 bg-white p-5 flex flex-col">
-            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-1">Km ce mois</p>
-            <p className="text-xl font-bold text-zinc-900 mb-auto">12 450</p>
-            <div className="flex items-end gap-1 h-10 mt-3">
-              <div className="flex-1 bg-[#0066FF]/15 rounded-sm" style={{ height: '45%' }} />
-              <div className="flex-1 bg-[#0066FF]/25 rounded-sm" style={{ height: '65%' }} />
-              <div className="flex-1 bg-[#0066FF]/40 rounded-sm" style={{ height: '40%' }} />
-              <div className="flex-1 bg-[#0066FF]/60 rounded-sm" style={{ height: '80%' }} />
-              <div className="flex-1 bg-[#0066FF] rounded-sm" style={{ height: '95%' }} />
-              <div className="flex-1 bg-[#0066FF]/70 rounded-sm" style={{ height: '68%' }} />
+          <div className="rounded-2xl border border-zinc-200 bg-white p-4 flex flex-col">
+            <div className="flex items-baseline justify-between mb-0.5">
+              <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Km ce mois</p>
+              <span className="text-[10px] font-semibold text-emerald-600">↑ 8%</span>
+            </div>
+            <p className="text-lg font-bold text-zinc-900">12 450</p>
+            <div className="flex items-end gap-1 h-9 mt-auto">
+              {[45, 65, 40, 80, 95, 68].map((h, i) => (
+                <div key={i} className="flex-1 rounded-sm" style={{ height: `${h}%`, backgroundColor: `rgba(0,102,255,${0.2 + h / 160})` }} />
+              ))}
+            </div>
+            <div className="flex justify-between mt-1 text-[9px] text-zinc-300">
+              <span>Déc</span><span>Jan</span><span>Fév</span><span>Mar</span><span>Avr</span><span>Mai</span>
             </div>
           </div>
 
-          {/* Driver doc tile */}
-          <div className="rounded-2xl border border-zinc-200 bg-white p-5 flex flex-col">
-            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-3">Documents</p>
-            <div className="flex items-center gap-2.5 mb-auto">
-              <div className="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center text-[10px] font-bold text-amber-600 flex-shrink-0">SR</div>
-              <div className="min-w-0">
-                <p className="text-xs font-medium text-zinc-800 truncate">Sophie Renard</p>
-                <p className="text-[11px] text-zinc-400">Visite médicale</p>
+          {/* Driver docs tile */}
+          <div className="rounded-2xl border border-zinc-200 bg-white p-4 flex flex-col">
+            <div className="flex items-center justify-between mb-2.5">
+              <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Conducteurs</p>
+              <p className="text-[11px] text-emerald-600 font-medium">8/9 conformes</p>
+            </div>
+            <div className="space-y-1.5 flex-1">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-amber-50 flex items-center justify-center text-[9px] font-bold text-amber-600 flex-shrink-0">SR</div>
+                <span className="text-xs text-zinc-700 flex-1 truncate">Sophie Renard</span>
+                <span className="text-[10px] font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">15 j</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-[#E5EEFF] flex items-center justify-center text-[9px] font-bold text-[#0066FF] flex-shrink-0">KA</div>
+                <span className="text-xs text-zinc-700 flex-1 truncate">Karim Aïssa</span>
+                <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Conforme</span>
               </div>
             </div>
-            <span className="mt-3 inline-flex self-start items-center gap-1 text-[11px] font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Expire dans 15 j</span>
           </div>
 
         </div>

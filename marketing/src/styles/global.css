@@ -9,9 +9,10 @@
   font-variant-numeric: normal;
 }
 
-/* Spectral headings sit at a refined medium weight, never bold */
+/* Spectral headings sit at a refined medium weight, never bold, tracking tightened */
 .font-display {
   font-weight: 500 !important;
+  letter-spacing: -0.02em;
 }
 
 :root {
