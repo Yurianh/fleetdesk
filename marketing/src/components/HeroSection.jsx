@@ -41,7 +41,7 @@ export default function HeroSection() {
           </div>
 
           <div className="flex items-center gap-x-5 gap-y-2 text-sm text-zinc-500 flex-wrap">
-            {['14 jours d\'essai', 'Sans carte bancaire', 'Hébergé en France'].map((item, i) => (
+            {['14 jours d\'essai', 'Sans carte bancaire', 'Hébergé en Europe'].map((item, i) => (
               <div key={item} className="flex items-center gap-2">
                 {i > 0 && <span className="hidden sm:block w-1 h-1 rounded-full bg-zinc-300 -ml-2.5" />}
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0066FF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">

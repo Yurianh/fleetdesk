@@ -11,7 +11,7 @@ const sections = [
   { id: 'cookies',       label: 'Cookies'              },
 ]
 
-const updated = '30 mars 2026'
+const updated = '4 août 2026'
 ---
 
 <Layout
@@ -24,7 +24,7 @@ const updated = '30 mars 2026'
 
     <!-- Header -->
     <div class="mb-10">
-      <p class="text-xs font-semibold uppercase tracking-widest text-[#2563EB] mb-3">Informations légales</p>
+      <p class="text-xs font-semibold uppercase tracking-widest text-[#0066FF] mb-3">Informations légales</p>
       <h1 class="text-3xl font-bold text-zinc-900 mb-3">Conditions, confidentialité & RGPD</h1>
       <p class="text-zinc-500 text-sm">Dernière mise à jour : {updated}</p>
     </div>
@@ -51,14 +51,22 @@ const updated = '30 mars 2026'
           <div>
             <h3 class="font-semibold text-zinc-800 mb-1">Éditeur du site</h3>
             <p>FleetDesk, logiciel de gestion de flotte en mode SaaS.<br/>
-            Site web : <span class="text-[#2563EB]">https://fleetdesk.fr</span><br/>
-            Application : <span class="text-[#2563EB]">https://app.fleetdesk.fr</span><br/>
-            Contact : <a href="mailto:contact@fleetdesk.fr" class="text-[#2563EB] hover:underline">contact@fleetdesk.fr</a></p>
+            Raison sociale : <span class="text-zinc-400">[à compléter : dénomination, forme juridique]</span><br/>
+            Siège social : <span class="text-zinc-400">[à compléter : adresse]</span><br/>
+            SIREN / RCS : <span class="text-zinc-400">[à compléter]</span> · N° TVA intracommunautaire : <span class="text-zinc-400">[à compléter]</span><br/>
+            Directeur de la publication : <span class="text-zinc-400">[à compléter]</span><br/>
+            Site web : <span class="text-[#0066FF]">https://fleetdesk.fr</span> · Application : <span class="text-[#0066FF]">https://app.fleetdesk.fr</span><br/>
+            Contact : <a href="mailto:contact@fleetdesk.fr" class="text-[#0066FF] hover:underline">contact@fleetdesk.fr</a></p>
           </div>
 
           <div>
             <h3 class="font-semibold text-zinc-800 mb-1">Hébergement</h3>
-            <p>L'application FleetDesk est hébergée sur des infrastructures cloud tierces (Vercel Inc., Supabase Inc.) situées en Europe et aux États-Unis. Les données sont stockées sur des serveurs conformes aux normes de sécurité internationales (ISO 27001, SOC 2).</p>
+            <p>L'application FleetDesk est hébergée sur des infrastructures cloud configurées en région Union européenne :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1 ml-2">
+              <li><strong>Supabase Inc.</strong> — base de données et authentification. 970 Toa Payoh North #07-04, Singapour 318992.</li>
+              <li><strong>Vercel Inc.</strong> — diffusion de l'application. 340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis.</li>
+            </ul>
+            <p class="mt-2">Les fournisseurs mobilisés sont certifiés SOC 2. Certaines opérations techniques peuvent impliquer des prestataires établis hors UE (voir la section « Transferts hors UE »), encadrées par des garanties appropriées.</p>
           </div>
 
           <div>
@@ -82,12 +90,12 @@ const updated = '30 mars 2026'
         <div class="space-y-5">
           <div>
             <h3 class="font-semibold text-zinc-800 mb-1">1. Objet</h3>
-            <p>Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de la plateforme FleetDesk, logiciel de gestion de flotte accessible en ligne à l'adresse <span class="text-[#2563EB]">app.fleetdesk.fr</span>. En créant un compte, l'utilisateur accepte sans réserve les présentes CGU.</p>
+            <p>Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de la plateforme FleetDesk, logiciel de gestion de flotte accessible en ligne à l'adresse <span class="text-[#0066FF]">app.fleetdesk.fr</span>. En créant un compte, l'utilisateur accepte sans réserve les présentes CGU.</p>
           </div>
 
           <div>
             <h3 class="font-semibold text-zinc-800 mb-1">2. Accès au service</h3>
-            <p>FleetDesk est accessible à toute personne physique ou morale disposant d'un accès internet. L'accès aux fonctionnalités complètes nécessite la création d'un compte et la souscription à un abonnement. Un plan gratuit est disponible avec des fonctionnalités limitées.</p>
+            <p>FleetDesk est accessible à toute personne physique ou morale disposant d'un accès internet. L'accès aux fonctionnalités complètes nécessite la création d'un compte et la souscription à un abonnement. Un essai gratuit de 14 jours est disponible sur le plan Pro, sans carte bancaire.</p>
           </div>
 
           <div>
@@ -108,7 +116,7 @@ const updated = '30 mars 2026'
 
           <div>
             <h3 class="font-semibold text-zinc-800 mb-1">5. Abonnements et facturation</h3>
-            <p>Les tarifs sont consultables à l'adresse <a href="/pricing" class="text-[#2563EB] hover:underline">fleetdesk.fr/pricing</a>. Les abonnements sont souscrits pour une durée mensuelle ou annuelle, renouvelables tacitement. Tout mois commencé est dû. FleetDesk se réserve le droit de modifier ses tarifs avec un préavis de 30 jours. La résiliation prend effet à la fin de la période en cours.</p>
+            <p>Les tarifs sont consultables à l'adresse <a href="/pricing" class="text-[#0066FF] hover:underline">fleetdesk.fr/pricing</a>. Les abonnements sont souscrits pour une durée mensuelle ou annuelle, renouvelables tacitement. Tout mois commencé est dû. FleetDesk se réserve le droit de modifier ses tarifs avec un préavis de 30 jours. La résiliation prend effet à la fin de la période en cours.</p>
           </div>
 
           <div>
@@ -159,7 +167,13 @@ const updated = '30 mars 2026'
 
           <div>
             <h3 class="font-semibold text-zinc-800 mb-1">Partage des données</h3>
-            <p>FleetDesk ne vend ni ne loue les données personnelles. Elles peuvent être partagées uniquement avec des sous-traitants techniques strictement nécessaires à la fourniture du service (infrastructure cloud, paiement, e-mail transactionnel), tous soumis à des obligations contractuelles de confidentialité.</p>
+            <p>FleetDesk ne vend ni ne loue les données personnelles. Elles ne sont partagées qu'avec les sous-traitants techniques strictement nécessaires à la fourniture du service, tous soumis à des obligations contractuelles de confidentialité :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1 ml-2">
+              <li><strong>Supabase</strong> — base de données et authentification (région UE) ;</li>
+              <li><strong>Vercel</strong> — hébergement et diffusion de l'application (région UE) ;</li>
+              <li><strong>Stripe</strong> — traitement des paiements (États-Unis) ;</li>
+              <li><strong>Web3Forms</strong> — acheminement des messages du formulaire de contact (États-Unis).</li>
+            </ul>
           </div>
 
           <div>
@@ -201,7 +215,7 @@ const updated = '30 mars 2026'
 
           <div>
             <h3 class="font-semibold text-zinc-800 mb-1">Exercer vos droits</h3>
-            <p>Pour exercer l'un de ces droits, adressez une demande écrite à : <a href="mailto:privacy@fleetdesk.fr" class="text-[#2563EB] hover:underline">privacy@fleetdesk.fr</a>. Nous nous engageons à répondre dans un délai d'un mois. En cas de non-satisfaction, vous pouvez introduire une réclamation auprès de la <strong>CNIL</strong> (Commission Nationale de l'Informatique et des Libertés) : <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" class="text-[#2563EB] hover:underline">www.cnil.fr</a>.</p>
+            <p>Pour exercer l'un de ces droits, adressez une demande écrite à : <a href="mailto:privacy@fleetdesk.fr" class="text-[#0066FF] hover:underline">privacy@fleetdesk.fr</a>. Nous nous engageons à répondre dans un délai d'un mois. En cas de non-satisfaction, vous pouvez introduire une réclamation auprès de la <strong>CNIL</strong> (Commission Nationale de l'Informatique et des Libertés) : <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" class="text-[#0066FF] hover:underline">www.cnil.fr</a>.</p>
           </div>
 
           <div>
@@ -217,7 +231,7 @@ const updated = '30 mars 2026'
 
           <div>
             <h3 class="font-semibold text-zinc-800 mb-1">Transferts hors UE</h3>
-            <p>Certains de nos sous-traitants (Supabase, Vercel) peuvent traiter des données en dehors de l'Union européenne. Ces transferts sont encadrés par des garanties appropriées (Clauses Contractuelles Types de la Commission européenne ou décision d'adéquation).</p>
+            <p>Certains de nos sous-traitants (Stripe, Web3Forms) sont établis aux États-Unis et peuvent traiter des données en dehors de l'Union européenne. Ces transferts sont encadrés par des garanties appropriées (Clauses Contractuelles Types de la Commission européenne ou décision d'adéquation).</p>
           </div>
         </div>
       </section>
@@ -276,8 +290,8 @@ const updated = '30 mars 2026'
       <!-- Contact block -->
       <div class="bg-blue-50 rounded-2xl p-6 text-center">
         <p class="font-semibold text-zinc-900 mb-1">Une question sur vos données ?</p>
-        <p class="text-zinc-500 mb-4">Notre équipe répond sous 48 heures ouvrées.</p>
-        <a href="mailto:privacy@fleetdesk.fr" class="inline-flex items-center gap-2 text-sm font-medium text-[#2563EB] hover:text-[#1D4ED8] transition-colors">
+        <p class="text-zinc-500 mb-4">Notre équipe répond sous 24 heures ouvrées.</p>
+        <a href="mailto:privacy@fleetdesk.fr" class="inline-flex items-center gap-2 text-sm font-medium text-[#0066FF] hover:text-[#0052D6] transition-colors">
           privacy@fleetdesk.fr →
         </a>
       </div>
