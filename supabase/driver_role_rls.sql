@@ -146,3 +146,18 @@ end $$;
 --   insert into mileage_entries (vehicle_id, ...) values (<other vehicle>, ...); -- FAIL
 --   insert into mileage_entries (vehicle_id, ...) values (<their vehicle>, ...);  -- OK
 -- ============================================================================
+
+-- ============================================================================
+-- Realtime: ensure the admin's Conducteurs list updates live when a chauffeur
+-- edits their own profile. Add the table to the supabase_realtime publication
+-- if it isn't already there (idempotent).
+-- ============================================================================
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'drivers'
+  ) then
+    alter publication supabase_realtime add table public.drivers;
+  end if;
+end $$;

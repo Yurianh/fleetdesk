@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
-import { updateDriver } from '@/lib/useFleetData'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -15,6 +15,7 @@ import { usePageTitle } from '@/lib/usePageTitle'
 export default function DriverProfile() {
   usePageTitle('Mon profil')
   const { user } = useAuth()
+  const queryClient = useQueryClient()
   const [record, setRecord] = useState(null)
   const [form, setForm] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -39,9 +40,19 @@ export default function DriverProfile() {
     if (!record || !form.name.trim()) { toast.error('Votre nom est requis.'); return }
     setSaving(true)
     try {
-      await updateDriver(record.id, { ...form, date_of_birth: form.date_of_birth || null, pending: false })
+      // .select() returns the updated row(s). If RLS silently filters the
+      // update (0 rows), we surface a real error instead of a false success.
+      const { data, error } = await supabase
+        .from('drivers')
+        .update({ ...form, date_of_birth: form.date_of_birth || null, pending: false })
+        .eq('id', record.id)
+        .select()
+      if (error) throw error
+      if (!data || data.length === 0) throw new Error("Enregistrement refusé (permissions). Contactez votre flotte.")
       toast.success('Profil enregistré.')
-      setRecord(r => ({ ...r, pending: false }))
+      setRecord(data[0])
+      // Refresh any admin lists open in this session
+      queryClient.invalidateQueries({ queryKey: ['drivers'] })
     } catch (e) { toast.error(e.message || 'Erreur lors de l\'enregistrement.') }
     finally { setSaving(false) }
   }
