@@ -92,9 +92,8 @@
     font-variant-numeric: normal;
   }
 
-  /* Young Serif ships a single weight (400); render it true, no synthetic bold */
+  /* Spectral headings sit at a refined medium weight, never bold */
   .font-display {
-    font-weight: 400 !important;
-    font-synthesis-weight: none;
+    font-weight: 500 !important;
   }
 }

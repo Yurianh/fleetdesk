@@ -7,7 +7,7 @@ module.exports = {
   		fontFamily: {
   			sans: ['Onest', 'system-ui', 'sans-serif'],
   			// Display/heading companion — contrast serif for large titles
-  			display: ['Young Serif', 'Georgia', 'serif'],
+  			display: ['Spectral', 'Georgia', 'serif'],
   			// No monospace: "mono" maps to the sans with tabular figures (see index.css)
   			mono: ['Onest', 'system-ui', 'sans-serif'],
   		},
