@@ -17,17 +17,6 @@ export default {
           light:   '#E5EEFF',
           muted:   '#80AAFF',
         },
-        accent: {
-          DEFAULT: '#38BDF8',
-          hover:   '#0EA5E9',
-        },
-        dark: {
-          DEFAULT:  '#05091A',
-          card:     '#0A1128',
-          elevated: '#0F1830',
-          border:   '#1A2845',
-          muted:    '#2A3D5E',
-        },
       },
     },
   },

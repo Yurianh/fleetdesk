@@ -33,24 +33,3 @@
     letter-spacing: -0.02em;
   }
 }
-
-@layer utilities {
-  .brand-glow {
-    box-shadow: 0 0 60px rgba(0, 102, 255, 0.18), 0 0 120px rgba(0, 102, 255, 0.08);
-  }
-  .brand-glow-sm {
-    box-shadow: 0 0 24px rgba(0, 102, 255, 0.14);
-  }
-  .text-gradient-brand {
-    background: linear-gradient(135deg, #0066FF 0%, #38BDF8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .bg-dark-grid {
-    background-image:
-      linear-gradient(rgba(26, 40, 69, 0.4) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(26, 40, 69, 0.4) 1px, transparent 1px);
-    background-size: 48px 48px;
-  }
-}

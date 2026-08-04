@@ -205,45 +205,40 @@ export default function HeroSection() {
         </div>
 
         <h1 className="font-display text-5xl sm:text-6xl lg:text-[68px] font-semibold text-zinc-900 tracking-tight leading-[1.04] mb-6">
-          Chaque véhicule.<br />
-          Chaque conducteur.<br />
-          <span className="text-[#0066FF]">Une seule plateforme.</span>
+          Zéro contrôle raté.<br />
+          Zéro document expiré.<br />
+          <span className="text-[#0066FF]">Zéro panne surprise.</span>
         </h1>
 
         <p className="text-lg text-zinc-500 leading-relaxed mb-8 max-w-xl mx-auto">
-          Plus de contrôles ratés, de documents expirés ou de pannes qu'on aurait pu éviter. Tout ce qui se passe dans votre flotte, visible en un seul endroit.
+          FleetDesk surveille chaque véhicule et chaque conducteur à votre place, et vous alerte avant l'échéance. Toute votre flotte, dans un seul outil.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
-          <a href={`${APP_URL}/login?plan=starter`}
+        <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
+          <a href={`${APP_URL}/login?plan=pro`}
             className="inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-[#0066FF]/25">
-            Commencer gratuitement
+            Essayer gratuitement
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
             </svg>
           </a>
-          <a href="/features"
+          <a href="#how"
             className="inline-flex items-center justify-center gap-2 border border-zinc-200 hover:border-zinc-300 text-zinc-600 hover:text-zinc-900 font-medium text-sm px-8 py-3.5 rounded-xl transition-all">
             Comment ça marche
           </a>
         </div>
 
-        {/* Inline trust stats */}
-        <div className="flex items-center justify-center gap-6 sm:gap-10 text-sm flex-wrap">
-          <div className="flex items-center gap-2 text-zinc-500">
-            <span className="text-zinc-900 font-bold font-mono text-base">5 min</span>
-            pour importer votre flotte
-          </div>
-          <div className="hidden sm:block w-px h-4 bg-zinc-200" />
-          <div className="flex items-center gap-2 text-zinc-500">
-            <span className="text-zinc-900 font-bold font-mono text-base">14 j</span>
-            d'essai gratuit
-          </div>
-          <div className="hidden sm:block w-px h-4 bg-zinc-200" />
-          <div className="flex items-center gap-2 text-zinc-500">
-            <span className="text-zinc-900 font-bold font-mono text-base">6</span>
-            docs réglementaires / conducteur
-          </div>
+        {/* Risk-reversal / trust strip — placed right under the primary CTA */}
+        <div className="flex items-center justify-center gap-x-5 gap-y-2 text-sm text-zinc-500 flex-wrap">
+          {['14 jours d\'essai', 'Sans carte bancaire', 'Hébergé en France', 'Résiliation en 1 clic'].map((item, i) => (
+            <div key={item} className="flex items-center gap-2">
+              {i > 0 && <span className="hidden sm:block w-1 h-1 rounded-full bg-zinc-300 -ml-2.5" />}
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0066FF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              {item}
+            </div>
+          ))}
         </div>
       </div>
 

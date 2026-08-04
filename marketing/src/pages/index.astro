@@ -7,12 +7,6 @@ import Footer from '../components/Footer.astro'
 
 const APP_URL = 'https://app.fleetdesk.fr'
 
-const trustStats = [
-  { value: '5 min',  label: 'Pour être opérationnel, sans aide' },
-  { value: '14 j',   label: "D'essai complet sur Pro, sans carte" },
-  { value: '6',      label: 'Documents réglementaires suivis par conducteur' },
-]
-
 const pains = [
   {
     icon: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
@@ -67,33 +61,6 @@ const steps = [
   },
 ]
 
-const highlights = [
-  {
-    color: 'bg-[#E5EEFF] text-[#0066FF]',
-    icon: '<path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>',
-    title: 'Suivi des véhicules',
-    desc: 'Maintenez un registre complet et à jour de chaque véhicule — statut, kilométrage et historique en un seul endroit.',
-  },
-  {
-    color: 'bg-[#E0F5FE] text-[#0EA5E9]',
-    icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
-    title: 'Gestion des conducteurs',
-    desc: 'Fiches conducteurs complètes, suivi des documents réglementaires obligatoires et alertes d\'expiration — tout centralisé.',
-  },
-  {
-    color: 'bg-amber-50 text-amber-600',
-    icon: '<circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>',
-    title: 'Planification de maintenance',
-    desc: 'Définissez des intervalles de maintenance récurrents et anticipez les pannes avant qu\'elles surviennent.',
-  },
-  {
-    color: 'bg-emerald-50 text-emerald-600',
-    icon: '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
-    title: 'Analytique de flotte',
-    desc: 'Transformez les données opérationnelles en insights clairs — coûts, tendances kilométriques et prévisions en un coup d\'œil.',
-  },
-]
-
 const testimonials = [
   {
     name: 'Marc Lefebvre',
@@ -129,20 +96,6 @@ const testimonials = [
 
   <HeroSection client:load />
 
-  <!-- Trust stats -->
-  <section class="border-y border-zinc-100 bg-zinc-50">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-14">
-      <div class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-zinc-100">
-        {trustStats.map(s => (
-          <div class="py-8 sm:py-0 sm:px-10 first:pl-0 last:pr-0">
-            <p class="text-5xl sm:text-6xl font-black text-zinc-900 tracking-tight mb-2">{s.value}</p>
-            <p class="text-sm text-zinc-500">{s.label}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
   <!-- Problem section -->
   <section class="py-24 bg-zinc-50 border-b border-zinc-100">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
@@ -170,7 +123,7 @@ const testimonials = [
   </section>
 
   <!-- How it works -->
-  <section class="py-24 bg-zinc-50 border-b border-zinc-100">
+  <section id="how" class="scroll-mt-16 py-24 bg-zinc-50 border-b border-zinc-100">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       <div class="text-center mb-14">
         <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">3 étapes</p>
@@ -201,14 +154,14 @@ const testimonials = [
         ))}
       </div>
       <div class="mt-10 text-center">
-        <a href={`${APP_URL}/login?plan=starter`}
+        <a href={`${APP_URL}/login?plan=pro`}
           class="inline-flex items-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
-          Commencer gratuitement
+          Essayer gratuitement
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
           </svg>
         </a>
-        <p class="mt-3 text-xs text-zinc-400">Sans carte bancaire · Gratuit pour les petites flottes</p>
+        <p class="mt-3 text-xs text-zinc-400">14 jours d'essai sur Pro · sans carte bancaire</p>
       </div>
     </div>
   </section>
