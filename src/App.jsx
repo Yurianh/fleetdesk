@@ -12,6 +12,7 @@ import AppLoader from '@/components/layout/AppLoader'
 import Login from '@/pages/Login'
 import SetupProfile from '@/pages/SetupProfile'
 import CollaboratorWelcome from '@/pages/CollaboratorWelcome'
+import AuthConfirm from '@/pages/AuthConfirm'
 import BillingSuccess from '@/pages/BillingSuccess'
 import Dashboard from '@/pages/Dashboard'
 import Vehicles from '@/pages/Vehicles'
@@ -43,6 +44,17 @@ function LogoutAndRedirect() {
 
 function AppRoutes() {
   const { user, loading } = useAuth()
+
+  // Email-link auth callback (token_hash → session). Handled in any auth
+  // state and before the loading gate so the exchange runs immediately.
+  if (typeof window !== 'undefined' && window.location.pathname === '/auth/confirm') {
+    return (
+      <Routes>
+        <Route path="/auth/confirm" element={<AuthConfirm />} />
+      </Routes>
+    )
+  }
+
   if (loading) return <AppLoader message="Connexion en cours..." />
 
   // Not signed in
