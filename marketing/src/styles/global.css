@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 /* No monospace anywhere — plates and figures render in plain proportional
-   Hanken Grotesk, exactly like body text. */
+   Onest, exactly like body text. */
 .font-mono {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-family: 'Onest', system-ui, sans-serif;
   font-variant-numeric: normal;
 }
 

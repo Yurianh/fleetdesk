@@ -82,13 +82,13 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Hanken Grotesk', system-ui, sans-serif;
+    font-family: 'Onest', system-ui, sans-serif;
   }
 
   /* No monospace anywhere — plates, IDs and figures render in plain
-     proportional Hanken Grotesk, exactly like body text. */
+     proportional Onest, exactly like body text. */
   .font-mono, code, pre, [class*="mono"] {
-    font-family: 'Hanken Grotesk', system-ui, sans-serif;
+    font-family: 'Onest', system-ui, sans-serif;
     font-variant-numeric: normal;
   }
 }
