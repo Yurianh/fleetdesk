@@ -41,10 +41,12 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Insert pending member record first
+    // Insert pending member record first. Store the driver's vehicle here
+    // (service-role only) — this is the trusted source for RLS, not the
+    // user-editable user_metadata.
     const { error: insertErr } = await supabaseAdmin
       .from('org_members')
-      .insert({ org_id: orgId, email, role, status: 'pending' })
+      .insert({ org_id: orgId, email, role, status: 'pending', ...(role === 'driver' && vehicleId ? { vehicle_id: vehicleId } : {}) })
     if (insertErr) throw insertErr
 
     const siteUrl = Deno.env.get('SITE_URL') || 'https://app.fleetdesk.fr'
