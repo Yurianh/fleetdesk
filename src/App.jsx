@@ -111,6 +111,7 @@ function AppRoutes() {
             <Route path="/Inspections" element={<Inspections />} />
             <Route path="/Washings" element={<Washings />} />
             <Route path="/Settings" element={<Settings />} />
+            <Route path="/mon-profil" element={<DriverProfile />} />
             <Route path="/Activity" element={<ActivityLog />} />
             <Route path="*" element={<PageNotFound />} />
           </>

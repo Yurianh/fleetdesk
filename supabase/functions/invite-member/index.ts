@@ -68,11 +68,12 @@ Deno.serve(async (req) => {
       .insert({ org_id: orgId, email, role, status: 'pending', ...(role === 'driver' && vehicleId ? { vehicle_id: vehicleId } : {}) })
     if (insertErr) throw insertErr
 
-    // A chauffeur is also a conducteur: ensure a drivers record exists (reuse by
-    // email, else create a pending one) and assign it to their vehicle. The
-    // chauffeur completes the profile on first login. Best-effort: never block
-    // the invitation if this fails.
-    if (role === 'driver' && vehicleId) {
+    // A chauffeur AND an admin are also conducteurs: ensure a drivers record
+    // exists (reuse by email, else create a pending one) so they show up in the
+    // fleet and can complete their own profile on first login. A chauffeur is
+    // additionally assigned to their vehicle; an admin has no vehicle at invite.
+    // Best-effort: never block the invitation if this fails.
+    if (role === 'driver' || role === 'admin') {
       try {
         let driverId: string | null = null
         const { data: existingDriver } = await supabaseAdmin
@@ -87,14 +88,16 @@ Deno.serve(async (req) => {
           if (dErr) throw dErr
           driverId = newDriver.id
         }
-        // Auto-assign the conducteur to the vehicle (close any active assignment first)
-        const nowTs = new Date().toISOString()
-        await supabaseAdmin.from('assignments').update({ ended_at: nowTs })
-          .eq('user_id', orgId).eq('vehicle_id', vehicleId).is('ended_at', null)
-        await supabaseAdmin.from('assignments')
-          .insert({ user_id: orgId, vehicle_id: vehicleId, driver_id: driverId, assigned_at: nowTs })
+        // Auto-assign to the vehicle — chauffeur only (admins have no vehicle).
+        if (role === 'driver' && vehicleId) {
+          const nowTs = new Date().toISOString()
+          await supabaseAdmin.from('assignments').update({ ended_at: nowTs })
+            .eq('user_id', orgId).eq('vehicle_id', vehicleId).is('ended_at', null)
+          await supabaseAdmin.from('assignments')
+            .insert({ user_id: orgId, vehicle_id: vehicleId, driver_id: driverId, assigned_at: nowTs })
+        }
       } catch (e) {
-        console.error('driver conductor/assignment setup failed:', (e as Error).message)
+        console.error('conductor/assignment setup failed:', (e as Error).message)
       }
     }
 

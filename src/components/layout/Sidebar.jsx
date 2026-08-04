@@ -50,6 +50,7 @@ export default function Sidebar({ open, onToggle }) {
   const { t } = useTranslation();
   const { reopenChecklist, accountType } = useOnboarding();
   const isDriver = accountType === 'driver';
+  const isAdmin = accountType === 'admin';
 
   const navGroups = isDriver ? [
     {
@@ -241,6 +242,23 @@ export default function Sidebar({ open, onToggle }) {
               <Sparkles className="w-[14px] h-[14px] flex-shrink-0 text-[#0066FF]" />
               <span className={cn(isCollapsed && 'lg:hidden')}>{t('gettingStarted.navLabel')}</span>
             </button>
+          )}
+          {isAdmin && (
+            <Link
+              to="/mon-profil"
+              onClick={() => { if (window.innerWidth < 1024) onToggle() }}
+              className={cn(
+                'flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-xs font-medium',
+                'transition-colors',
+                isActive('/mon-profil')
+                  ? 'bg-zinc-100 text-zinc-900'
+                  : 'text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50',
+                isCollapsed && 'lg:justify-center lg:px-0'
+              )}
+            >
+              <IdCard className={cn('w-[14px] h-[14px] flex-shrink-0', isActive('/mon-profil') ? 'text-[#0066FF]' : '')} />
+              <span className={cn(isCollapsed && 'lg:hidden')}>Mon profil</span>
+            </Link>
           )}
           {!isDriver && (
             <Link
