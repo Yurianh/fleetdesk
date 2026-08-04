@@ -9,6 +9,12 @@
   font-variant-numeric: normal;
 }
 
+/* Young Serif ships a single weight (400); render it true, no synthetic bold */
+.font-display {
+  font-weight: 400 !important;
+  font-synthesis-weight: none;
+}
+
 :root {
   --brand:        #0066FF;
   --brand-hover:  #0052D6;
