@@ -98,6 +98,9 @@ end $$;
 
 -- 3b) drivers: no insert/delete for drivers, but they MAY update their OWN
 --     linked conducteur record (member_user_id = auth.uid()) to complete it.
+-- Drop a leftover blanket no-update policy from an earlier version of this file
+-- (when drivers was in the no-write loop) — otherwise it AND-blocks the update.
+drop policy if exists fd_driver_no_update on public.drivers;
 drop policy if exists fd_driver_no_insert on public.drivers;
 create policy fd_driver_no_insert on public.drivers as restrictive for insert to authenticated
   with check (public.fd_caller_role() is distinct from 'driver');
