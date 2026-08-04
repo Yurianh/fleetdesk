@@ -75,30 +75,45 @@ function AppRoutes() {
     )
   }
 
-  // Fully authenticated
+  // Fully authenticated. Drivers ("chauffeur" / sous-membre) get a restricted
+  // app: only mileage and washes for their own vehicle.
+  const isDriver = ['driver', 'sub-member'].includes(user.user_metadata?.role)
+  const home = isDriver ? '/Mileage' : '/Dashboard'
+
   return (
     <Routes>
-      <Route path="/login" element={<Navigate to="/Dashboard" replace />} />
-      <Route path="/join" element={<Navigate to="/Dashboard" replace />} />
-      <Route path="/setup-profile" element={<Navigate to="/Dashboard" replace />} />
+      <Route path="/login" element={<Navigate to={home} replace />} />
+      <Route path="/join" element={<Navigate to={home} replace />} />
+      <Route path="/setup-profile" element={<Navigate to={home} replace />} />
       <Route path="/logout" element={<LogoutAndRedirect />} />
       <Route path="/billing/success" element={<BillingSuccess />} />
       <Route element={<AppLayout />}>
-        <Route path="/" element={<Navigate to="/Dashboard" replace />} />
-        <Route path="/Dashboard" element={<Dashboard />} />
-        <Route path="/Vehicles" element={<Vehicles />} />
-        <Route path="/Vehicles/:id" element={<VehicleDetail />} />
-        <Route path="/Drivers" element={<Drivers />} />
-        <Route path="/Drivers/:id" element={<DriverDetail />} />
-        <Route path="/Assignments" element={<Assignments />} />
-        <Route path="/Mileage" element={<Mileage />} />
-        <Route path="/Maintenance" element={<Maintenance />} />
-        <Route path="/Inspections" element={<Inspections />} />
-        <Route path="/Washings" element={<Washings />} />
-        <Route path="/Settings" element={<Settings />} />
-        <Route path="/Activity" element={<ActivityLog />} />
+        {isDriver ? (
+          <>
+            <Route path="/" element={<Navigate to="/Mileage" replace />} />
+            <Route path="/Mileage" element={<Mileage />} />
+            <Route path="/Washings" element={<Washings />} />
+            <Route path="*" element={<Navigate to="/Mileage" replace />} />
+          </>
+        ) : (
+          <>
+            <Route path="/" element={<Navigate to="/Dashboard" replace />} />
+            <Route path="/Dashboard" element={<Dashboard />} />
+            <Route path="/Vehicles" element={<Vehicles />} />
+            <Route path="/Vehicles/:id" element={<VehicleDetail />} />
+            <Route path="/Drivers" element={<Drivers />} />
+            <Route path="/Drivers/:id" element={<DriverDetail />} />
+            <Route path="/Assignments" element={<Assignments />} />
+            <Route path="/Mileage" element={<Mileage />} />
+            <Route path="/Maintenance" element={<Maintenance />} />
+            <Route path="/Inspections" element={<Inspections />} />
+            <Route path="/Washings" element={<Washings />} />
+            <Route path="/Settings" element={<Settings />} />
+            <Route path="/Activity" element={<ActivityLog />} />
+            <Route path="*" element={<PageNotFound />} />
+          </>
+        )}
       </Route>
-      <Route path="*" element={<PageNotFound />} />
     </Routes>
   )
 }

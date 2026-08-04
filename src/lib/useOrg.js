@@ -68,7 +68,7 @@ export function useActivityLog(limit = 50) {
 export function useInviteMember() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ email, role }) => invokeWithAuth('invite-member', { email, role }),
+    mutationFn: ({ email, role, vehicleId }) => invokeWithAuth('invite-member', { email, role, vehicleId }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['orgMembers'] }),
   })
 }

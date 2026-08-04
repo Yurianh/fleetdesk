@@ -17,12 +17,13 @@ import DataError from '@/components/shared/DataError'
 import ConfirmDeleteDialog from '@/components/shared/ConfirmDeleteDialog'
 import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import {
-  useVehicles, useDrivers, useWashRecords,
+  useVehicles, useDrivers, useWashRecords, useAssignments,
   createWashRecord, updateWashRecord, deleteWashRecord,
-  getVehicleById, getDriverById
+  getVehicleById, getDriverById, getLatestAssignments
 } from '@/lib/useFleetData'
 
 import { usePageTitle } from '@/lib/usePageTitle'
+import { useAuth } from '@/lib/AuthContext'
 const EMPTY_FORM = { vehicle_id: '', driver_id: '', amount: '', date: '' }
 
 export default function Washings() {
@@ -31,9 +32,16 @@ export default function Washings() {
   const dateLocale = useDateLocale()
   const { data: vehicles }   = useVehicles()
   const { data: drivers }    = useDrivers()
+  const { data: assignments } = useAssignments()
   const washQ = useWashRecords()
   const { data: washRecords } = washQ
   const queryClient = useQueryClient()
+  const { user } = useAuth()
+  // Chauffeur: vehicle locked to their account; driver auto-filled from the
+  // vehicle's active assignment (they aren't a driver record themselves).
+  const isDriver = ['driver', 'sub-member'].includes(user?.user_metadata?.role)
+  const driverVehicleId = user?.user_metadata?.vehicle_id || ''
+  const driverAutoDriverId = isDriver ? (getLatestAssignments(assignments)[driverVehicleId]?.driver_id || '') : ''
 
   const [modal, setModal]   = useState(false)
   const [editing, setEditing] = useState(null)
@@ -47,7 +55,7 @@ export default function Washings() {
 
   const openCreate = () => {
     setEditing(null)
-    setForm(EMPTY_FORM)
+    setForm(isDriver ? { ...EMPTY_FORM, vehicle_id: driverVehicleId, driver_id: driverAutoDriverId } : EMPTY_FORM)
     setInvoiceFile(null)
     setInvoiceExistingUrl('')
     setModal(true)
@@ -66,7 +74,7 @@ export default function Washings() {
     setInvoiceExistingUrl('')
   }
 
-  const canSubmit = form.vehicle_id && form.driver_id && form.amount
+  const canSubmit = form.vehicle_id && form.amount && (isDriver || form.driver_id)
 
   const handleSubmit = async () => {
     if (!canSubmit) return
@@ -221,22 +229,31 @@ export default function Washings() {
       >
         <div>
           <Label>Véhicule</Label>
-          <SearchableSelect
-            value={form.vehicle_id}
-            onValueChange={v => setForm(f => ({...f, vehicle_id: v}))}
-            placeholder="Sélectionner un véhicule"
-            options={vehicles.map(v => ({ value: v.id, label: `${v.plate_number} — ${v.model}` }))}
-          />
+          {isDriver ? (
+            <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-700">
+              <Droplets className="w-4 h-4 text-slate-400" />
+              {(() => { const v = getVehicleById(vehicles, driverVehicleId); return v ? `${v.plate_number}${v.model ? ` — ${v.model}` : ''}` : 'Votre véhicule' })()}
+            </div>
+          ) : (
+            <SearchableSelect
+              value={form.vehicle_id}
+              onValueChange={v => setForm(f => ({...f, vehicle_id: v}))}
+              placeholder="Sélectionner un véhicule"
+              options={vehicles.map(v => ({ value: v.id, label: `${v.plate_number} — ${v.model}` }))}
+            />
+          )}
         </div>
-        <div>
-          <Label>Conducteur</Label>
-          <SearchableSelect
-            value={form.driver_id}
-            onValueChange={v => setForm(f => ({...f, driver_id: v}))}
-            placeholder="Sélectionner un conducteur"
-            options={drivers.map(d => ({ value: d.id, label: d.name }))}
-          />
-        </div>
+        {!isDriver && (
+          <div>
+            <Label>Conducteur</Label>
+            <SearchableSelect
+              value={form.driver_id}
+              onValueChange={v => setForm(f => ({...f, driver_id: v}))}
+              placeholder="Sélectionner un conducteur"
+              options={drivers.map(d => ({ value: d.id, label: d.name }))}
+            />
+          </div>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <Label>Date <span className="text-slate-400 font-normal">(optionnel — aujourd'hui par défaut)</span></Label>

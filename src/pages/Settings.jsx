@@ -42,6 +42,7 @@ export default function Settings() {
   const isCollaborator = !!user?.user_metadata?.org_id
   const [inviteEmail, setInviteEmail] = useState('')
   const [inviteRole, setInviteRole] = useState('member')
+  const [inviteVehicle, setInviteVehicle] = useState('')
 
   const [section, setSection] = useState('profile')
   const [saving, setSaving] = useState(false)
@@ -378,26 +379,28 @@ export default function Settings() {
                           className="w-full pl-8 pr-3 py-2 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30"
                         />
                       </div>
-                      <Select value={inviteRole} onValueChange={setInviteRole}>
-                        <SelectTrigger className="w-[110px] border-zinc-200 text-sm text-zinc-700 rounded-lg h-[38px] focus:ring-[#0066FF]/30">
+                      <Select value={inviteRole} onValueChange={(v) => { setInviteRole(v); if (v !== 'driver') setInviteVehicle('') }}>
+                        <SelectTrigger className="w-[130px] border-zinc-200 text-sm text-zinc-700 rounded-lg h-[38px] focus:ring-[#0066FF]/30">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="member">Membre</SelectItem>
                           <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="driver">Chauffeur</SelectItem>
                         </SelectContent>
                       </Select>
                       <button
                         onClick={async () => {
                           if (!inviteEmail) return
+                          if (inviteRole === 'driver' && !inviteVehicle) { toast.error('Sélectionnez le véhicule du chauffeur.'); return }
                           try {
-                            const result = await inviteMember.mutateAsync({ email: inviteEmail, role: inviteRole })
+                            const result = await inviteMember.mutateAsync({ email: inviteEmail, role: inviteRole, vehicleId: inviteRole === 'driver' ? inviteVehicle : null })
                             if (result?.existing_user) {
                               toast.success('Lien de connexion envoyé — cet utilisateur a déjà un compte.')
                             } else {
                               toast.success('Invitation envoyée.')
                             }
-                            setInviteEmail('')
+                            setInviteEmail(''); setInviteVehicle('')
                           } catch (e) { toast.error(e.message) }
                         }}
                         disabled={inviteMember.isPending || !inviteEmail}
@@ -407,6 +410,23 @@ export default function Settings() {
                         Inviter
                       </button>
                     </div>
+
+                    {/* Chauffeur: pick the vehicle their account is tied to */}
+                    {inviteRole === 'driver' && (
+                      <div className="max-w-md mt-2">
+                        <Select value={inviteVehicle} onValueChange={setInviteVehicle}>
+                          <SelectTrigger className="w-full border-zinc-200 text-sm text-zinc-700 rounded-lg h-[38px] focus:ring-[#0066FF]/30">
+                            <SelectValue placeholder="Véhicule associé au chauffeur" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {vehicles.map(v => (
+                              <SelectItem key={v.id} value={v.id}>{v.plate_number}{v.model ? ` — ${v.model}` : ''}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <p className="text-[11px] text-zinc-400 mt-1.5">Le chauffeur ne pourra saisir que le kilométrage et les lavages de ce véhicule.</p>
+                      </div>
+                    )}
                     <p className="text-[11px] text-zinc-400 mt-2">L'invité recevra un email pour rejoindre votre organisation.</p>
                   </div>
 
@@ -431,9 +451,9 @@ export default function Settings() {
                             {m.full_name && <p className="text-xs text-zinc-400 truncate">{m.email}</p>}
                             <div className="flex items-center gap-1.5 mt-0.5">
                               <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
-                                m.role === 'admin' ? 'bg-violet-50 text-violet-600' : 'bg-zinc-100 text-zinc-500'
+                                m.role === 'admin' ? 'bg-violet-50 text-violet-600' : m.role === 'driver' ? 'bg-[#E5EEFF] text-[#0066FF]' : 'bg-zinc-100 text-zinc-500'
                               }`}>
-                                {m.role === 'admin' ? 'Admin' : 'Membre'}
+                                {m.role === 'admin' ? 'Admin' : m.role === 'driver' ? 'Chauffeur' : 'Membre'}
                               </span>
                               <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
                                 m.status === 'active' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'

@@ -22,10 +22,15 @@ import {
 } from '@/lib/useFleetData'
 
 import { usePageTitle } from '@/lib/usePageTitle'
+import { useAuth } from '@/lib/AuthContext'
 export default function Mileage() {
   usePageTitle('Kilométrage')
   const { t } = useTranslation()
   const dateLocale = useDateLocale()
+  const { user } = useAuth()
+  // Chauffeur: their account is tied to one vehicle, pre-selected and locked.
+  const isDriver = ['driver', 'sub-member'].includes(user?.user_metadata?.role)
+  const driverVehicleId = user?.user_metadata?.vehicle_id || ''
   const { data: vehicles }      = useVehicles()
   const mileageQ = useMileageEntries()
   const { data: mileageEntries } = mileageQ
@@ -44,7 +49,7 @@ export default function Mileage() {
 
   const selectedCurrent = form.vehicle_id ? (latestMileage[form.vehicle_id]?.mileage ?? null) : null
 
-  const openCreate = () => { setForm({ vehicle_id: '', mileage: '', date: '' }); setModal(true) }
+  const openCreate = () => { setForm({ vehicle_id: isDriver ? driverVehicleId : '', mileage: '', date: '' }); setModal(true) }
   const closeModal = () => setModal(false)
 
   const handleSubmit = async () => {
@@ -202,15 +207,22 @@ export default function Mileage() {
       >
         <div>
           <Label>Véhicule</Label>
-          <SearchableSelect
-            value={form.vehicle_id}
-            onValueChange={v => setForm(f => ({...f, vehicle_id: v}))}
-            placeholder="Sélectionner un véhicule"
-            options={vehicles.map(v => ({
-              value: v.id,
-              label: `${v.plate_number} — ${v.model}${latestMileage[v.id] ? ` (${latestMileage[v.id].mileage?.toLocaleString('fr-FR') ?? '—'} km)` : ''}`,
-            }))}
-          />
+          {isDriver ? (
+            <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-700">
+              <Gauge className="w-4 h-4 text-slate-400" />
+              {(() => { const v = getVehicleById(vehicles, driverVehicleId); return v ? `${v.plate_number}${v.model ? ` — ${v.model}` : ''}` : 'Votre véhicule' })()}
+            </div>
+          ) : (
+            <SearchableSelect
+              value={form.vehicle_id}
+              onValueChange={v => setForm(f => ({...f, vehicle_id: v}))}
+              placeholder="Sélectionner un véhicule"
+              options={vehicles.map(v => ({
+                value: v.id,
+                label: `${v.plate_number} — ${v.model}${latestMileage[v.id] ? ` (${latestMileage[v.id].mileage?.toLocaleString('fr-FR') ?? '—'} km)` : ''}`,
+              }))}
+            />
+          )}
         </div>
         {selectedCurrent != null && (
           <p className="text-sm text-slate-500 -mt-1">

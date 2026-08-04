@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
   try {
-    const { email, role = 'member' } = await req.json()
+    const { email, role = 'member', vehicleId = null } = await req.json()
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) return new Response(JSON.stringify({ error: 'Missing auth' }), { status: 401, headers: corsHeaders })
 
@@ -49,7 +49,9 @@ Deno.serve(async (req) => {
 
     const siteUrl = Deno.env.get('SITE_URL') || 'https://app.fleetdesk.fr'
     const orgCompany = user.user_metadata?.company || ''
-    const inviteMeta = { org_id: orgId, role, org_owner_name: orgOwnerName, org_company: orgCompany }
+    // For a driver ("chauffeur"), stamp the vehicle their account is tied to so
+    // the app can pre-select and lock it in the mileage/wash forms.
+    const inviteMeta = { org_id: orgId, role, org_owner_name: orgOwnerName, org_company: orgCompany, ...(role === 'driver' && vehicleId ? { vehicle_id: vehicleId } : {}) }
 
     // Try to send invite email (works for brand new Supabase users)
     const { error: inviteErr } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
