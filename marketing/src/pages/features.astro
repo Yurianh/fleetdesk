@@ -10,21 +10,21 @@ const categories = [
     features: [
       {
         title: 'Registre des véhicules',
-        desc: 'Gardez une fiche complète pour chaque véhicule — marque, modèle, plaque, statut et historique complet en un seul endroit.',
+        desc: 'Gardez une fiche complète pour chaque véhicule : marque, modèle, plaque, statut et historique, en un seul endroit.',
         details: ['Statut en temps réel : actif, en maintenance, hors service', 'Historique complet des événements par véhicule', 'Recherche et filtres par marque, modèle ou plaque'],
         icon: '<path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>',
         bg: 'bg-blue-50', color: 'text-[#0066FF]', accentBg: 'bg-[#0066FF]',
       },
       {
         title: 'Profils conducteurs',
-        desc: 'Fiche complète par conducteur — coordonnées, date de naissance, adresse domicile, ID unique. Tout ce qu\'il faut pour gérer votre équipe.',
+        desc: 'Fiche complète par conducteur : coordonnées, date de naissance, adresse, identifiant unique. Tout ce qu\'il faut pour gérer votre équipe.',
         details: ['Téléphone, email, date de naissance et adresse domicile', 'ID conducteur unique avec validation anti-doublon', 'Historique des affectations par conducteur'],
         icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
         bg: 'bg-violet-50', color: 'text-violet-600', accentBg: 'bg-violet-600',
       },
       {
         title: 'Documents réglementaires',
-        desc: 'Suivez les 6 documents obligatoires par conducteur — aptitude à la conduite, casier judiciaire, formations SST/PSC1, TPMR, visite médicale et éco-conduite.',
+        desc: 'Suivez les 6 documents obligatoires par conducteur : aptitude à la conduite, casier judiciaire, formations SST/PSC1, TPMR, visite médicale et éco-conduite.',
         details: ['Barre de progression et statut global par conducteur', 'Alertes segmentées : expirés, à renouveler bientôt, manquants', 'Calcul automatique des dates d\'expiration selon la réglementation'],
         icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>',
         bg: 'bg-rose-50', color: 'text-rose-600', accentBg: 'bg-rose-600',
@@ -38,7 +38,7 @@ const categories = [
       },
       {
         title: 'Suivi kilométrique',
-        desc: "Enregistrez les relevés d'odomètre régulièrement pour des dossiers kilométriques précis — essentiels pour les déclencheurs de maintenance.",
+        desc: "Enregistrez les relevés d'odomètre régulièrement pour un suivi kilométrique précis, la base des alertes de maintenance.",
         details: ['Saisie rapide du kilométrage par véhicule', 'Historique chronologique des relevés', 'Calcul automatique des intervalles de maintenance'],
         icon: '<line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="4"/>',
         bg: 'bg-amber-50', color: 'text-amber-600', accentBg: 'bg-amber-600',
@@ -76,7 +76,7 @@ const categories = [
     features: [
       {
         title: 'Tableau de bord analytique',
-        desc: "Graphiques et résumés visuels des coûts, tendances kilométriques et activité de maintenance — sans tableur nécessaire.",
+        desc: "Coûts, tendances kilométriques et activité de maintenance, en graphiques clairs. Sans le moindre tableur.",
         details: ['KPIs en temps réel : véhicules actifs, coûts, alertes', 'Évolution kilométrique sur les 30 derniers jours', 'Répartition des dépenses par catégorie'],
         icon: '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
         bg: 'bg-blue-50', color: 'text-[#0066FF]', accentBg: 'bg-[#0066FF]',
@@ -90,7 +90,7 @@ const categories = [
       },
       {
         title: 'Alertes & conformité',
-        desc: "Tableau de bord d'alertes séparé entre véhicules et conducteurs — identifiez en un coup d'œil ce qui nécessite une action immédiate.",
+        desc: "Un tableau de bord d'alertes séparé pour les véhicules et les conducteurs. Vous voyez d'un coup d'œil ce qui demande une action.",
         details: ['Deux sections distinctes : alertes véhicules et alertes conducteurs', 'Code couleur : action immédiate (rouge) ou à surveiller (orange)', 'Alertes documents expirés et contrôles techniques dépassés'],
         icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
         bg: 'bg-amber-50', color: 'text-amber-600', accentBg: 'bg-amber-600',
@@ -101,7 +101,7 @@ const categories = [
 ---
 <Layout
   title="Fonctionnalités"
-  description="De l'immatriculation des véhicules au suivi de conformité, FleetDesk couvre tout le cycle de gestion de flotte — sans la complexité."
+  description="De l'immatriculation au suivi de conformité, FleetDesk couvre tout le cycle de gestion de flotte, sans la complexité."
 >
   <Navbar client:load currentPath="/features" />
 
@@ -113,7 +113,7 @@ const categories = [
         Tout ce qu'il faut pour votre flotte
       </h1>
       <p class="text-lg text-zinc-500 max-w-2xl mx-auto">
-        De l'immatriculation au suivi de conformité — sans formation, sans intégration, sans prise de tête.
+        De l'immatriculation au suivi de conformité. Sans formation, sans intégration, sans prise de tête.
       </p>
     </div>
   </section>

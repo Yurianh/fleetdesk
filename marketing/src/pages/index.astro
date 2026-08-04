@@ -11,14 +11,14 @@ const pains = [
   {
     icon: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
     iconCls: 'bg-red-50 text-red-500',
-    title: 'CT manqué — véhicule à l\'arrêt',
+    title: 'CT manqué, véhicule à l\'arrêt',
     desc: 'Un oubli de date = immobilisation immédiate, amende, client non livré. FleetDesk alerte 30 jours avant l\'échéance.',
   },
   {
     icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>',
     iconCls: 'bg-orange-50 text-orange-500',
     title: 'Conducteur hors conformité',
-    desc: 'Visite médicale périmée, formation SST expirée — votre chauffeur roule illégalement sans que personne le sache.',
+    desc: 'Visite médicale périmée, formation SST expirée : votre chauffeur roule illégalement, sans que personne le sache.',
   },
   {
     icon: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
@@ -38,7 +38,7 @@ const steps = [
   {
     num: '01',
     title: 'Ajoutez votre flotte',
-    desc: 'Immatriculations, kilométrages, conducteurs — tout est en place en moins de 5 minutes. Aucune formation requise.',
+    desc: 'Immatriculations, kilométrages, conducteurs : tout est en place en moins de 5 minutes. Aucune formation requise.',
     color: 'text-[#0066FF]',
     numBg: 'bg-[#E5EEFF] text-[#0066FF]',
     border: 'border-[#C8DBFF]',
@@ -46,7 +46,7 @@ const steps = [
   {
     num: '02',
     title: 'Configurez vos alertes',
-    desc: 'Contrôles techniques, documents conducteurs, intervalles de maintenance — FleetDesk surveille à votre place, 24h/24.',
+    desc: 'Contrôles techniques, documents conducteurs, intervalles de maintenance : FleetDesk surveille à votre place, 24h/24.',
     color: 'text-[#0066FF]',
     numBg: 'bg-[#E5EEFF] text-[#0066FF]',
     border: 'border-[#C8DBFF]',
@@ -65,7 +65,7 @@ const testimonials = [
   {
     name: 'Marc Lefebvre',
     role: 'Gérant · Lefebvre Express',
-    sector: 'Livraison — 8 véhicules',
+    sector: 'Livraison · 8 véhicules',
     initials: 'ML',
     avatarBg: 'bg-[#E5EEFF] text-[#0066FF]',
     quote: 'Le premier mois, FleetDesk m\'a rappelé 3 contrôles techniques que j\'avais complètement oubliés. Trois immobilisations évitées dès le départ.',
@@ -73,7 +73,7 @@ const testimonials = [
   {
     name: 'Sophie Renard',
     role: 'Responsable flotte · BTP Renard',
-    sector: 'BTP — 12 véhicules',
+    sector: 'BTP · 12 véhicules',
     initials: 'SR',
     avatarBg: 'bg-[#E0F5FE] text-[#0EA5E9]',
     quote: 'Le suivi des documents conducteurs était un cauchemar sur Excel. Maintenant j\'ai une alerte dès qu\'une visite médicale approche. Fini les mauvaises surprises.',
@@ -81,7 +81,7 @@ const testimonials = [
   {
     name: 'Karim Aïssa',
     role: 'Gérant · AK Plomberie',
-    sector: 'Artisan — 5 véhicules',
+    sector: 'Artisan · 5 véhicules',
     initials: 'KA',
     avatarBg: 'bg-emerald-100 text-emerald-600',
     quote: 'Je cherchais quelque chose de simple, pas un ERP à configurer pendant 3 semaines. FleetDesk s\'apprend en une heure. Mes maintenances sont planifiées 3 mois à l\'avance.',
@@ -118,7 +118,7 @@ const teaserPlans = [
 ]
 ---
 <Layout
-  title="FleetDesk — Gestion de flotte pour PME"
+  title="FleetDesk · Gestion de flotte pour PME"
   description="Zéro contrôle technique raté, zéro document expiré, zéro panne surprise. FleetDesk surveille votre flotte à votre place."
 >
   <Navbar client:load currentPath="/" />
@@ -254,7 +254,7 @@ const teaserPlans = [
     </div>
   </section>
 
-  <!-- Features — 2×2 screenshot cards -->
+  <!-- Features: alternating product rows -->
   <section class="py-24 bg-zinc-50 border-b border-zinc-100">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       <div class="mb-16 max-w-2xl">

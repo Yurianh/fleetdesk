@@ -244,7 +244,7 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* Right — product mockup, tilted with depth, bleeding off the right edge */}
+          {/* Right: product mockup, tilted with depth, bleeding off the right edge */}
           <div className="relative lg:-mr-24 xl:-mr-44" style={{ perspective: '1800px' }}>
             <div className="relative lg:[transform:rotateY(-9deg)_rotateX(3deg)] lg:origin-left transition-transform duration-500">
               {/* Browser window */}
@@ -286,7 +286,7 @@ export default function HeroSection() {
                 </div>
               </div>
 
-              {/* Floating alert card — makes the value (proactive alert) explicit */}
+              {/* Floating alert card: makes the value (proactive alert) explicit */}
               <div className="hidden sm:flex absolute -left-5 lg:-left-10 bottom-10 items-center gap-3 bg-white rounded-xl shadow-xl shadow-zinc-300/50 border border-zinc-100 pl-3 pr-4 py-2.5">
                 <span className="relative flex h-2.5 w-2.5 flex-shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-60" />
