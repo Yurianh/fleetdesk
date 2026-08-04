@@ -87,6 +87,35 @@ const testimonials = [
     quote: 'Je cherchais quelque chose de simple, pas un ERP à configurer pendant 3 semaines. FleetDesk s\'apprend en une heure. Mes maintenances sont planifiées 3 mois à l\'avance.',
   },
 ]
+
+const faq = [
+  {
+    q: 'Est-ce que je peux importer ma flotte depuis Excel ?',
+    a: 'Oui. Vous ajoutez vos véhicules et conducteurs en quelques minutes, sans import complexe. La plupart des gérants sont opérationnels en moins de 5 minutes, sans formation.',
+  },
+  {
+    q: 'L\'essai Pro est-il vraiment sans carte bancaire ?',
+    a: '14 jours d\'accès complet au plan Pro, sans rien saisir. Vous choisissez de continuer, ou pas. Aucun prélèvement sans votre accord.',
+  },
+  {
+    q: 'Combien de véhicules puis-je suivre ?',
+    a: 'De 2 à 50 véhicules selon la formule : jusqu\'à 5 sur Starter, 25 sur Pro, illimité sur Enterprise. Vous êtes prévenu avant d\'atteindre la limite, jamais coupé sans avertissement.',
+  },
+  {
+    q: 'Mes données restent-elles en France ?',
+    a: 'Oui. Vos données sont hébergées en Union européenne, conformes au RGPD, et exportables à tout moment. Elles vous appartiennent.',
+  },
+  {
+    q: 'Puis-je résilier facilement ?',
+    a: 'Résiliation en un clic depuis vos paramètres, sans engagement et sans rétention de vos données.',
+  },
+]
+
+const teaserPlans = [
+  { name: 'Starter', price: '9',  note: 'Jusqu\'à 5 véhicules',      highlighted: false, href: `${APP_URL}/login?plan=starter`, cta: 'Choisir' },
+  { name: 'Pro',     price: '29', note: '14 jours d\'essai gratuit', highlighted: true,  href: `${APP_URL}/login?plan=pro`,     cta: 'Essayer' },
+  { name: 'Enterprise', price: '79', note: 'Flottes illimitées',     highlighted: false, href: '/pricing',                      cta: 'Voir' },
+]
 ---
 <Layout
   title="FleetDesk — Gestion de flotte pour PME"
@@ -122,8 +151,64 @@ const testimonials = [
     </div>
   </section>
 
+  <!-- Comparison -->
+  <section class="py-24 bg-zinc-50 border-b border-zinc-100">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <div class="mb-12 max-w-2xl">
+        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Ni tableur, ni usine à gaz</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4">
+          Le juste milieu que vous cherchiez
+        </h2>
+        <p class="text-lg text-zinc-500">
+          Le tableur ne suit rien tout seul. L'ERP demande des semaines et un budget. FleetDesk fait le travail, sans la complexité.
+        </p>
+      </div>
+
+      <div class="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+        <table class="w-full min-w-[640px] border-separate border-spacing-0">
+          <thead>
+            <tr>
+              <th class="text-left align-bottom pb-4 pr-4 w-[34%]"></th>
+              <th class="text-center align-bottom pb-4 px-4 text-sm font-medium text-zinc-400">Tableur Excel</th>
+              <th class="text-center align-bottom pb-4 px-4 text-sm font-medium text-zinc-400">Logiciel ERP</th>
+              <th class="text-center align-bottom pb-3 px-4">
+                <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0066FF] bg-[#E5EEFF] px-3 py-1 rounded-full">FleetDesk</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              { label: 'Mise en route',                  excel: 'Manuelle, formules fragiles', erp: 'Plusieurs semaines',     fd: '5 minutes' },
+              { label: 'Alertes CT & documents',         excel: false,                          erp: 'Souvent en option',      fd: 'Automatiques, 30j avant' },
+              { label: 'Spécificités françaises (CT, carte grise)', excel: false,                erp: 'Rarement',               fd: true },
+              { label: 'Courbe d\'apprentissage',        excel: 'Élevée à grande échelle',      erp: 'Élevée',                 fd: 'Prise en main en 1h' },
+              { label: 'Prix',                           excel: 'Gratuit, mais coûteux en oublis', erp: 'Élevé, sur devis',    fd: 'Dès 9 €/mois' },
+              { label: 'Support',                        excel: false,                          erp: 'Variable',               fd: 'Email & prioritaire' },
+            ].map((row, i, arr) => (
+              <tr>
+                <td class={`py-4 pr-4 text-sm font-medium text-zinc-700 ${i < arr.length - 1 ? 'border-b border-zinc-100' : ''}`}>{row.label}</td>
+                {[row.excel, row.erp].map(cell => (
+                  <td class={`py-4 px-4 text-center text-sm text-zinc-400 ${i < arr.length - 1 ? 'border-b border-zinc-100' : ''}`}>
+                    {cell === false
+                      ? <svg class="w-4 h-4 mx-auto text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      : <span>{cell}</span>}
+                  </td>
+                ))}
+                <td class={`py-4 px-4 text-center text-sm font-medium text-zinc-800 bg-[#0066FF]/[0.04] ${i === 0 ? 'rounded-t-xl' : ''} ${i === arr.length - 1 ? 'rounded-b-xl' : ''}`}>
+                  {row.fd === true
+                    ? <svg class="w-4 h-4 mx-auto text-[#0066FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    : <span>{row.fd}</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
   <!-- How it works -->
-  <section id="how" class="scroll-mt-16 py-24 bg-zinc-50 border-b border-zinc-100">
+  <section id="how" class="scroll-mt-16 py-24 bg-white border-b border-zinc-100">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       <div class="text-center mb-14">
         <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">3 étapes</p>
@@ -167,7 +252,7 @@ const testimonials = [
   </section>
 
   <!-- Features — 2×2 screenshot cards -->
-  <section class="py-24 bg-white border-b border-zinc-100">
+  <section class="py-24 bg-zinc-50 border-b border-zinc-100">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       <div class="text-center mb-14">
         <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Ce qui fait la différence</p>
@@ -370,6 +455,39 @@ const testimonials = [
     </div>
   </section>
 
+  <!-- Trust / security -->
+  <section class="py-24 bg-white border-b border-zinc-100">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-center">
+        <div>
+          <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Vos données, en sécurité</p>
+          <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4">
+            Hébergé en France,<br />conforme dès le premier jour
+          </h2>
+          <p class="text-lg text-zinc-500 leading-relaxed">
+            Vos données de flotte et de conducteurs sont sensibles. Elles restent en France, chiffrées, et vous appartiennent, exportables à tout moment.
+          </p>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          {[
+            { t: 'Hébergement en France', d: 'Vos données sont stockées et traitées sur des serveurs situés en Union européenne.', icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' },
+            { t: 'Conforme RGPD', d: 'Traitement des données conducteurs conforme au règlement européen.', icon: '<path d="M9 12l2 2 4-4"/><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' },
+            { t: 'Paiement sécurisé Stripe', d: 'Aucune donnée bancaire ne transite ni n\'est stockée chez nous.', icon: '<rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>' },
+            { t: 'Vos données vous appartiennent', d: 'Export complet à tout moment. Résiliation en un clic, sans rétention.', icon: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>' },
+          ].map(f => (
+            <div class="bg-zinc-50 border border-zinc-100 rounded-xl p-5">
+              <div class="w-9 h-9 rounded-lg bg-[#E5EEFF] flex items-center justify-center mb-3">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={f.icon} />
+              </div>
+              <h3 class="text-sm font-semibold text-zinc-900 mb-1">{f.t}</h3>
+              <p class="text-sm text-zinc-500 leading-relaxed">{f.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Testimonials -->
   <section class="py-24 bg-zinc-50 border-y border-zinc-100">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
@@ -409,6 +527,72 @@ const testimonials = [
     </div>
   </section>
 
+  <!-- FAQ -->
+  <section class="py-24 bg-white border-b border-zinc-100">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+      <div class="mb-12 text-center">
+        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Vous vous demandez peut-être</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900">Questions fréquentes</h2>
+      </div>
+      <div class="divide-y divide-zinc-100">
+        {faq.map(item => (
+          <details class="group py-5">
+            <summary class="flex items-center justify-between gap-4 cursor-pointer list-none">
+              <span class="font-medium text-zinc-900">{item.q}</span>
+              <svg class="w-4 h-4 flex-shrink-0 text-zinc-400 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </summary>
+            <p class="text-sm text-zinc-500 leading-relaxed mt-3 pr-8">{item.a}</p>
+          </details>
+        ))}
+      </div>
+      <p class="text-center text-sm text-zinc-400 mt-10">
+        Une autre question ? <a href="/contact" class="text-[#0066FF] font-medium hover:text-[#0052D6]">Écrivez-nous</a>, réponse sous 24h ouvrées.
+      </p>
+    </div>
+  </section>
+
+  <!-- Pricing teaser -->
+  <section class="py-24 bg-zinc-50 border-b border-zinc-100">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6">
+      <div class="mb-10 text-center">
+        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Tarifs transparents</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-3">Un prix qui tient sur une ligne</h2>
+        <p class="text-lg text-zinc-500">Dès 9 €/mois. 14 jours d'essai sur Pro, sans carte.</p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {teaserPlans.map(p => (
+          <a href={p.href}
+            class={`group rounded-2xl p-6 transition-all ${p.highlighted ? 'bg-white border-2 border-[#0066FF] shadow-lg shadow-[#0066FF]/10' : 'bg-white border border-zinc-200 hover:border-zinc-300'}`}>
+            <p class={`text-xs font-semibold uppercase tracking-widest mb-3 ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-400'}`}>{p.name}</p>
+            <div class="flex items-end gap-1 mb-1">
+              <span class="text-3xl font-bold text-zinc-900">{p.price}</span>
+              <span class="text-base font-bold text-zinc-900 mb-0.5">€</span>
+              <span class="text-xs text-zinc-400 mb-1.5">/mois</span>
+            </div>
+            <p class="text-sm text-zinc-500 mb-5">{p.note}</p>
+            <span class={`inline-flex items-center gap-1.5 text-sm font-semibold ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-700'}`}>
+              {p.cta}
+              <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </span>
+          </a>
+        ))}
+      </div>
+      <p class="text-center text-sm mt-8">
+        <a href="/pricing" class="text-[#0066FF] font-medium hover:text-[#0052D6]">Comparer les formules en détail</a>
+      </p>
+    </div>
+  </section>
+
   <CTASection />
+
+  <!-- Sticky mobile CTA -->
+  <a href={`${APP_URL}/login?plan=pro`}
+    class="md:hidden fixed bottom-4 inset-x-4 z-40 flex items-center justify-center gap-2 bg-[#0066FF] text-white font-semibold text-sm py-3.5 rounded-xl shadow-xl shadow-[#0066FF]/30">
+    Essayer gratuitement
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+  </a>
+
   <Footer />
 </Layout>
