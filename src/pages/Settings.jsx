@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { User, CreditCard, Globe, Shield, ChevronRight, Check, Loader2, Truck, Zap, Users, UserPlus, Trash2, Mail, Sparkles } from 'lucide-react'
+import { User, CreditCard, Globe, Shield, ChevronRight, Check, Loader2, Truck, Zap, Users, UserPlus, Trash2, Mail, Sparkles, GraduationCap } from 'lucide-react'
+import SectionTutorials from '@/components/onboarding/SectionTutorials'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { usePlanLimits } from '@/lib/usePlanLimits'
@@ -14,7 +15,8 @@ import { useOnboarding } from '@/lib/OnboardingContext'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const SECTIONS = [
-  { id: 'profile',  icon: User,       labelKey: 'settings.profile' },
+  { id: 'profile',  icon: User,          labelKey: 'settings.profile' },
+  { id: 'tutorials',icon: GraduationCap, label: 'Tutoriels' },
   { id: 'team',     icon: Users,      labelKey: 'settings.team' },
   { id: 'plan',     icon: CreditCard, labelKey: 'settings.plan' },
   { id: 'language', icon: Globe,      labelKey: 'settings.language' },
@@ -125,7 +127,7 @@ export default function Settings() {
                   }`}
                 >
                   <Icon className={`w-4 h-4 flex-shrink-0 ${section === s.id ? 'text-[#0066FF]' : 'text-zinc-400'}`} />
-                  {t(s.labelKey)}
+                  {s.label ?? t(s.labelKey)}
                 </button>
               )
             })}
@@ -142,7 +144,7 @@ export default function Settings() {
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
                     section === s.id ? 'bg-slate-900 text-white' : 'text-zinc-500'
                   }`}>
-                  <Icon className="w-3.5 h-3.5" />{t(s.labelKey)}
+                  <Icon className="w-3.5 h-3.5" />{s.label ?? t(s.labelKey)}
                 </button>
               )
             })}
@@ -216,6 +218,9 @@ export default function Settings() {
             </div>
             </div>
           )}
+
+          {/* ── Tutoriels ── */}
+          {section === 'tutorials' && <SectionTutorials />}
 
           {/* ── Plan ── */}
           {section === 'plan' && (
