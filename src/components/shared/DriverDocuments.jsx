@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react'
-import { FileText, Pencil, Trash2, X, Check, AlertTriangle, CheckCircle2, Clock, Upload, ExternalLink, Loader2, ChevronDown, ChevronUp, Plus } from 'lucide-react'
+import { FileText, Pencil, Trash2, X, Check, AlertTriangle, CheckCircle2, Clock, Upload, ExternalLink, Loader2, Plus } from 'lucide-react'
 import { format, differenceInDays, addYears, differenceInYears } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { Button } from '@/components/ui/button'
@@ -20,39 +20,46 @@ import { compressImage } from '@/lib/compressImage'
 export const DOC_TYPE_CONFIG = {
   permis_conduire: {
     label: 'Permis de conduire',
+    category: 'conduite',
     validityYears: null,
-    hint: 'Date de fin de validité indiquée sur le permis',
+    hint: 'Valable selon la catégorie',
   },
   aptitude_conduite: {
     label: 'Aptitude à la conduite',
+    category: 'conduite',
     validityYears: 5,
     validityYearsOver62: 2,
-    hint: '5 ans · 2 ans si conducteur +62 ans',
+    hint: 'Valable 5 ans · 2 ans si +62 ans',
   },
   casier_judiciaire: {
     label: 'Casier judiciaire',
+    category: 'conduite',
     validityYears: 1,
-    hint: '1 an',
+    hint: 'Valable 1 an',
   },
   formation_sst_psc1: {
     label: 'Formation SST / PSC1',
+    category: 'formations',
     validityYears: 2,
-    hint: '2 ans',
+    hint: 'Valable 2 ans',
   },
   formation_tpmr: {
     label: 'Formation TPMR',
+    category: 'formations',
     validityYears: 5,
-    hint: '5 ans',
-  },
-  visite_medecin: {
-    label: 'Visite médecin du travail',
-    validityYears: null,
-    hint: 'Saisir la date d\'expiration manuellement',
+    hint: 'Valable 5 ans',
   },
   formation_eco_conduite: {
     label: 'Formation éco-conduite',
+    category: 'formations',
     validityYears: null,
-    hint: 'Saisir la date d\'expiration manuellement',
+    hint: 'Échéance à saisir manuellement',
+  },
+  visite_medecin: {
+    label: 'Visite médecin du travail',
+    category: 'medical',
+    validityYears: null,
+    hint: 'Échéance à saisir manuellement',
   },
 }
 
@@ -62,9 +69,28 @@ const DOC_TYPES_ORDER = [
   'casier_judiciaire',
   'formation_sst_psc1',
   'formation_tpmr',
-  'visite_medecin',
   'formation_eco_conduite',
+  'visite_medecin',
 ]
+
+// Category grouping for the documents card.
+const CATEGORIES = [
+  { id: 'conduite',   label: 'Identité & conduite' },
+  { id: 'formations', label: 'Formations' },
+  { id: 'medical',    label: 'Médical' },
+  { id: 'autre',      label: 'Autres documents' },
+]
+
+// Row-level state, worst-first, used to sort within a category and pick the action.
+function docState(doc) {
+  if (!doc) return 'missing'
+  if (!doc.expiry_date) return 'valid'
+  const days = differenceInDays(new Date(doc.expiry_date), new Date())
+  if (days < 0) return 'expired'
+  if (days <= 60) return 'expiring'
+  return 'valid'
+}
+const STATE_RANK = { expired: 0, expiring: 1, missing: 2, valid: 3 }
 
 // Free-form "Autre document" types are stored as `autre:<titre libre>` so an
 // admin can add arbitrary documents without a schema change or a fixed enum.
@@ -141,15 +167,12 @@ export default function DriverDocuments({ driverId, driver }) {
   const [saving, setSaving] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [deleting, setDeleting] = useState(false)
-  const [validExpanded, setValidExpanded] = useState(false)
   const fileRef = useRef(null)
 
   const docsByType = {}
   for (const d of documents) {
     docsByType[d.type] = d
   }
-
-  const [showHelp, setShowHelp] = useState(false)
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ['driverDocuments', driverId] })
@@ -290,32 +313,26 @@ export default function DriverDocuments({ driverId, driver }) {
       .map(d => ({ type: d.type, doc: d, custom: true })),
   ]
 
-  // Categorise entries by urgency
-  const expiredTypes = []       // days < 0 → critical
-  const expiringSoonTypes = []  // 0 ≤ days ≤ 60 → warning
-  const missingTypes = []       // no doc at all (regulatory only)
-  const validTypes = []         // days > 60 or no expiry set
-
-  for (const entry of entries) {
-    const doc = entry.doc
-    if (!doc) {
-      if (!entry.custom) missingTypes.push(entry)
-    } else if (!doc.expiry_date) {
-      validTypes.push(entry)
-    } else {
-      const days = differenceInDays(new Date(doc.expiry_date), new Date())
-      if (days < 0) expiredTypes.push(entry)
-      else if (days <= 60) expiringSoonTypes.push(entry)
-      else validTypes.push(entry)
-    }
-  }
+  // Group entries into ordered categories; within a category the worst status
+  // (expired → expiring → missing → valid) rises to the top so risk stays visible.
+  const entryCategory = (e) => e.custom ? 'autre' : (DOC_TYPE_CONFIG[e.type]?.category || 'autre')
+  const sections = CATEGORIES
+    .map(cat => ({
+      ...cat,
+      rows: entries
+        .filter(e => entryCategory(e) === cat.id)
+        .sort((a, b) => STATE_RANK[docState(a.doc)] - STATE_RANK[docState(b.doc)]),
+    }))
+    .filter(s => s.rows.length > 0)
 
   // Compliance meter reflects the fixed regulatory set only (custom docs are extra).
-  const completedCount = validTypes.filter(e => !e.custom).length
+  const completedCount = entries.filter(e => !e.custom && docState(e.doc) === 'valid').length
+  const expiredCount = entries.filter(e => docState(e.doc) === 'expired').length
+  const expiringCount = entries.filter(e => docState(e.doc) === 'expiring').length
   const totalCount = DOC_TYPES_ORDER.length
   const progressPct = Math.round((completedCount / totalCount) * 100)
-  const overallStatus = expiredTypes.length > 0 ? 'expired'
-    : expiringSoonTypes.length > 0 ? 'expiring'
+  const overallStatus = expiredCount > 0 ? 'expired'
+    : expiringCount > 0 ? 'expiring'
     : completedCount === totalCount ? 'complete'
     : 'incomplete'
 
@@ -328,6 +345,74 @@ export default function DriverDocuments({ driverId, driver }) {
     : overallStatus === 'expiring' ? 'text-amber-700 bg-amber-100'
     : overallStatus === 'complete' ? 'text-emerald-700 bg-emerald-100'
     : 'text-slate-500 bg-slate-100'
+
+  // One row, unified across states. Grouped by category, so the leading dot +
+  // status pill carry the urgency the old urgency-buckets used to.
+  const dotColor = { expired: 'bg-red-500', expiring: 'bg-amber-500', valid: 'bg-emerald-500', missing: 'bg-slate-300' }
+  const renderRow = (entry) => {
+    const { type, doc } = entry
+    const st = docState(doc)
+    const conf = DOC_TYPE_CONFIG[type]
+    return (
+      <div key={type} className="flex items-center gap-3 px-5 py-3 hover:bg-slate-50/70 transition-colors group">
+        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dotColor[st]}`} />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className="text-sm font-medium text-slate-800">{docLabel(type)}</p>
+            <DocStatusBadge doc={doc} />
+          </div>
+          <div className="flex items-center gap-2 mt-0.5 flex-wrap text-xs text-slate-400">
+            {st === 'missing' && <span>{conf?.hint || 'Non renseigné'}</span>}
+            {doc?.expiry_date && (
+              <span>{st === 'expired' ? 'Expiré le' : 'Expire le'} {format(new Date(doc.expiry_date), 'd MMM yyyy', { locale: fr })}</span>
+            )}
+            {doc && !doc.expiry_date && doc.validation_date && (
+              <span>Validé le {format(new Date(doc.validation_date), 'd MMM yyyy', { locale: fr })}</span>
+            )}
+            {doc?.notes && <span className="italic">· {doc.notes}</span>}
+            {doc?.file_url && (
+              <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[#0066FF] hover:underline">
+                <ExternalLink className="w-3 h-3" />Voir
+              </a>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-1 shrink-0">
+          {st === 'missing' && (
+            <button onClick={() => openAdd(type)}
+              className="text-xs font-semibold text-[#0066FF] bg-[#0066FF]/5 hover:bg-[#0066FF]/10 px-3 py-1.5 rounded-lg transition-colors">
+              Ajouter
+            </button>
+          )}
+          {st === 'expired' && (
+            <button onClick={() => openEdit(doc)}
+              className="text-xs font-semibold text-white bg-red-500 hover:bg-red-600 px-3 py-1.5 rounded-lg transition-colors shadow-sm">
+              Mettre à jour
+            </button>
+          )}
+          {st === 'expiring' && (
+            <button onClick={() => openEdit(doc)}
+              className="text-xs font-semibold text-amber-700 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-lg transition-colors">
+              Renouveler
+            </button>
+          )}
+          {st === 'valid' && doc && (
+            <button onClick={() => openEdit(doc)}
+              className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+          )}
+          {doc && (
+            <button onClick={() => setDeleteTarget(doc)}
+              className={`p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors ${st === 'valid' ? 'opacity-0 group-hover:opacity-100' : ''}`}>
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
+    )
+  }
 
   return (
   <>
@@ -357,211 +442,31 @@ export default function DriverDocuments({ driverId, driver }) {
         )}
       </div>
 
-      {/* ── Expirés ── */}
-      {expiredTypes.length > 0 && (
-        <div>
-          <div className="px-5 py-2 bg-red-50 border-b border-red-100 flex items-center gap-2">
-            <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
-            <span className="text-[11px] font-semibold text-red-600 uppercase tracking-wide">
-              Expirés · {expiredTypes.length}
-            </span>
-          </div>
-          <div className="divide-y divide-red-50">
-            {expiredTypes.map(({ type, doc }) => {
-              const days = Math.abs(differenceInDays(new Date(doc.expiry_date), new Date()))
-              return (
-                <div key={type} className="flex items-center gap-3 px-5 py-3.5 bg-red-50/30 hover:bg-red-50/60 transition-colors border-l-2 border-red-400">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                      <p className="text-sm font-semibold text-slate-900">{docLabel(type)}</p>
-                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-red-700 bg-red-100 px-2 py-0.5 rounded-full">
-                        <AlertTriangle className="w-3 h-3" />Expiré il y a {days}j
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3 flex-wrap">
-                      {doc.expiry_date && (
-                        <span className="text-xs text-slate-400">
-                          Expiré le {format(new Date(doc.expiry_date), 'd MMM yyyy', { locale: fr })}
-                        </span>
-                      )}
-                      {doc.file_url && (
-                        <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs text-[#0066FF] hover:underline">
-                          <ExternalLink className="w-3 h-3" />Voir
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <button onClick={() => openEdit(doc)}
-                      className="text-xs font-semibold text-white bg-red-500 hover:bg-red-600 px-3 py-1.5 rounded-lg transition-colors shadow-sm">
-                      Mettre à jour
-                    </button>
-                    <button onClick={() => setDeleteTarget(doc)}
-                      className="p-1.5 text-slate-300 hover:text-red-400 hover:bg-red-50 rounded-lg transition-colors">
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+      {/* ── Risk summary strip (only when something needs attention) ── */}
+      {(expiredCount > 0 || expiringCount > 0) && (
+        <div className="px-5 py-2 border-b border-slate-100 flex items-center gap-2 bg-amber-50/40">
+          <AlertTriangle className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
+          <span className="text-xs font-medium text-amber-700">
+            {expiredCount > 0 && `${expiredCount} document${expiredCount > 1 ? 's' : ''} expiré${expiredCount > 1 ? 's' : ''}`}
+            {expiredCount > 0 && expiringCount > 0 && ' · '}
+            {expiringCount > 0 && `${expiringCount} à renouveler bientôt`}
+          </span>
         </div>
       )}
 
-      {/* ── Expire bientôt ── */}
-      {expiringSoonTypes.length > 0 && (
-        <div className={expiredTypes.length > 0 ? 'border-t border-slate-100' : ''}>
-          <div className="px-5 py-2 bg-amber-50 border-b border-amber-100 flex items-center gap-2">
-            <Clock className="w-3.5 h-3.5 text-amber-500" />
-            <span className="text-[11px] font-semibold text-amber-600 uppercase tracking-wide">
-              Expire bientôt · {expiringSoonTypes.length}
-            </span>
-          </div>
-          <div className="divide-y divide-amber-50/60">
-            {expiringSoonTypes.map(({ type, doc }) => {
-              const days = differenceInDays(new Date(doc.expiry_date), new Date())
-              return (
-                <div key={type} className="flex items-center gap-3 px-5 py-3.5 bg-amber-50/20 hover:bg-amber-50/50 transition-colors border-l-2 border-amber-400">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                      <p className="text-sm font-semibold text-slate-900">{docLabel(type)}</p>
-                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
-                        <Clock className="w-3 h-3" />Expire dans {days}j
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3 flex-wrap">
-                      {doc.expiry_date && (
-                        <span className="text-xs text-slate-400">
-                          Expire le {format(new Date(doc.expiry_date), 'd MMM yyyy', { locale: fr })}
-                        </span>
-                      )}
-                      {doc.file_url && (
-                        <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs text-[#0066FF] hover:underline">
-                          <ExternalLink className="w-3 h-3" />Voir
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <button onClick={() => openEdit(doc)}
-                      className="text-xs font-semibold text-amber-700 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-lg transition-colors">
-                      Renouveler
-                    </button>
-                    <button onClick={() => setDeleteTarget(doc)}
-                      className="p-1.5 text-slate-300 hover:text-red-400 hover:bg-red-50 rounded-lg transition-colors">
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* ── À compléter ── */}
-      {missingTypes.length > 0 && (
-        <div className={(expiredTypes.length > 0 || expiringSoonTypes.length > 0) ? 'border-t border-slate-100' : ''}>
-          <div className="px-5 py-2 bg-slate-50 border-b border-slate-100">
+      {/* ── Category sections ── */}
+      {sections.map((section, si) => (
+        <div key={section.id} className={si > 0 ? 'border-t border-slate-100' : ''}>
+          <div className="px-5 pt-3.5 pb-1.5">
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
-              À compléter · {missingTypes.length}
+              {section.label}
             </span>
           </div>
-          <div className="px-5 py-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {missingTypes.map(({ type }) => (
-                <button
-                  key={type}
-                  onClick={() => openAdd(type)}
-                  className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-dashed border-slate-200 hover:border-[#0066FF] hover:bg-[#0066FF]/5 text-left transition-all group"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-7 h-7 rounded-lg bg-slate-100 group-hover:bg-[#0066FF]/10 flex items-center justify-center shrink-0 transition-colors">
-                      <Plus className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#0066FF] transition-colors" />
-                    </div>
-                    <span className="text-xs font-medium text-slate-600 group-hover:text-slate-900 leading-tight transition-colors">
-                      {docLabel(type)}
-                    </span>
-                  </div>
-                  <span className="text-[11px] font-semibold text-slate-300 group-hover:text-[#0066FF] shrink-0 transition-colors">
-                    Ajouter →
-                  </span>
-                </button>
-              ))}
-            </div>
+          <div className="divide-y divide-slate-50">
+            {section.rows.map(renderRow)}
           </div>
         </div>
-      )}
-
-      {/* ── En règle (collapsible) ── */}
-      {validTypes.length > 0 && (
-        <div className="border-t border-slate-100">
-          <button
-            onClick={() => setValidExpanded(v => !v)}
-            className="w-full flex items-center justify-between px-5 py-3 hover:bg-slate-50/80 transition-colors"
-          >
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-              <span className="text-[11px] font-semibold text-emerald-600 uppercase tracking-wide">
-                Conformes · {validTypes.length}
-              </span>
-            </div>
-            {validExpanded
-              ? <ChevronUp className="w-4 h-4 text-slate-300" />
-              : <ChevronDown className="w-4 h-4 text-slate-300" />
-            }
-          </button>
-          {validExpanded && (
-            <div className="divide-y divide-slate-50">
-              {validTypes.map(({ type, doc }) => {
-                return (
-                  <div key={type} className="flex items-center gap-3 px-5 py-3 hover:bg-slate-50/60 transition-colors group">
-                    <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
-                      <Check className="w-2.5 h-2.5 text-emerald-500" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-700">{docLabel(type)}</p>
-                      {doc && (
-                        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                          {doc.validation_date && (
-                            <span className="text-xs text-slate-400">
-                              Validé le {format(new Date(doc.validation_date), 'd MMM yyyy', { locale: fr })}
-                            </span>
-                          )}
-                          {doc.expiry_date && (
-                            <span className="text-xs text-slate-400">
-                              {doc.validation_date ? '· ' : ''}Expire le {format(new Date(doc.expiry_date), 'd MMM yyyy', { locale: fr })}
-                            </span>
-                          )}
-                          {doc.notes && <span className="text-xs text-slate-400 italic">· {doc.notes}</span>}
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                      {doc?.file_url && (
-                        <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
-                          className="p-1.5 text-slate-400 hover:text-[#0066FF] hover:bg-blue-50 rounded-lg transition-colors">
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
-                      )}
-                      <button onClick={() => openEdit(doc)}
-                        className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
-                        <Pencil className="w-3.5 h-3.5" />
-                      </button>
-                      <button onClick={() => setDeleteTarget(doc)}
-                        className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
-      )}
+      ))}
 
       {/* ── Add another (free-form) document ── */}
       <div className="border-t border-slate-100 px-5 py-3">
