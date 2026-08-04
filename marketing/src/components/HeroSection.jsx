@@ -53,8 +53,54 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* Bento grid — a dense slice of the real product */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:auto-rows-[152px]">
+        {/* Product: a real dashboard fragment, framed as the app */}
+        <div className="rounded-xl border border-zinc-200 shadow-2xl shadow-zinc-200/60 overflow-hidden bg-white">
+          {/* Browser chrome */}
+          <div className="bg-zinc-100 border-b border-zinc-200 px-4 py-2.5 flex items-center gap-3">
+            <div className="flex gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-zinc-300" />
+              <div className="w-2.5 h-2.5 rounded-full bg-zinc-300" />
+              <div className="w-2.5 h-2.5 rounded-full bg-zinc-300" />
+            </div>
+            <div className="flex-1 flex justify-center">
+              <div className="bg-white border border-zinc-200 rounded px-4 py-1 text-[11px] text-zinc-400 flex items-center gap-2">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                app.fleetdesk.fr/tableau-de-bord
+              </div>
+            </div>
+          </div>
+
+          <div className="flex">
+            {/* App sidebar */}
+            <aside className="hidden md:flex w-44 flex-shrink-0 flex-col border-r border-zinc-200 bg-white p-3">
+              <div className="flex items-center gap-2 px-1.5 mb-4">
+                <div className="w-5 h-5 bg-[#0066FF] rounded flex items-center justify-center flex-shrink-0">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/></svg>
+                </div>
+                <span className="text-[12px] font-semibold text-zinc-900">FleetDesk</span>
+              </div>
+              <div className="space-y-0.5">
+                {['Tableau de bord', 'Véhicules', 'Conducteurs', 'Affectations'].map((n, i) => (
+                  <div key={n} className={`px-2 py-1.5 rounded-md text-[11px] ${i === 0 ? 'bg-[#E5EEFF] text-[#0066FF] font-medium' : 'text-zinc-400'}`}>{n}</div>
+                ))}
+              </div>
+              <p className="px-2 pt-4 pb-1 text-[9px] font-semibold uppercase tracking-wider text-zinc-300">Opérations</p>
+              <div className="space-y-0.5">
+                {['Kilométrage', 'Maintenance', 'Contrôles', 'Lavages'].map(n => (
+                  <div key={n} className="px-2 py-1.5 rounded-md text-[11px] text-zinc-400">{n}</div>
+                ))}
+              </div>
+            </aside>
+
+            {/* Main content */}
+            <div className="flex-1 bg-zinc-50 p-4 sm:p-5 min-w-0">
+              <div className="mb-4">
+                <p className="text-[11px] text-zinc-400 mb-0.5">Mercredi 20 mai 2026</p>
+                <h3 className="font-display text-lg text-zinc-900">Bonjour, Thomas 👋</h3>
+              </div>
+
+              {/* Bento grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:auto-rows-[148px]">
 
           {/* Hero tile: the alert center (compliance is the product's core value) */}
           <div className="sm:col-span-2 lg:col-span-2 lg:row-span-2 rounded-2xl border border-[#0066FF]/15 bg-gradient-to-br from-[#EAF1FF] via-white to-white p-5 flex flex-col">
@@ -153,6 +199,9 @@ export default function HeroSection() {
             </div>
           </div>
 
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
