@@ -19,6 +19,12 @@
 -- Review before running on production, then test with a real driver account.
 -- ============================================================================
 
+-- 0) Allow the 'driver' role in the org_members role CHECK constraint ----------
+-- The original constraint only permits admin/member; widen it for chauffeurs.
+alter table public.org_members drop constraint if exists org_members_role_check;
+alter table public.org_members
+  add constraint org_members_role_check check (role in ('admin', 'member', 'driver', 'sub-member'));
+
 -- 1) Store the driver's vehicle on the trusted org_members row -----------------
 alter table public.org_members
   add column if not exists vehicle_id uuid references public.vehicles(id) on delete set null;
