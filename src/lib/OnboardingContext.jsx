@@ -22,7 +22,10 @@ export function OnboardingProvider({ children }) {
     if (!uid || isCollaborator) return
     const dismissed = localStorage.getItem(dismissKey(uid)) === 'true'
     setChecklistDismissed(dismissed)
-    if (localStorage.getItem(tourKey(uid)) !== 'true') setTourOpen(true)
+    // Auto-start the tour on desktop only — its steps point at the sidebar,
+    // which is a hidden drawer on mobile. Still replayable from the checklist.
+    const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024
+    if (isDesktop && localStorage.getItem(tourKey(uid)) !== 'true') setTourOpen(true)
   }, [uid, isCollaborator])
 
   const dismissChecklist = useCallback(() => {

@@ -1010,6 +1010,20 @@ export default function Dashboard() {
     }
   }
 
+  // Rendered in two slots: early in the main column on mobile, in the right
+  // rail on desktop (compliance alerts are the product's hero, per PRODUCT.md).
+  const alertCenter = (
+    <AlertCenter
+      urgentInspections={urgentInspections}
+      warningInspections={warningInspections}
+      urgentForecasts={urgentForecasts}
+      vehicles={vehicles}
+      urgentDocAlerts={urgentDocAlerts}
+      warningDocAlerts={warningDocAlerts}
+      dataUnavailable={alertsUnavailable}
+    />
+  )
+
   return (
     <div className="flex flex-col xl:flex-row min-h-dvh">
       <AddVehicleModal open={showAddVehicle} onClose={() => setShowAddVehicle(false)} />
@@ -1079,6 +1093,9 @@ export default function Dashboard() {
             </button>
           ))}
         </div>
+
+        {/* Alerts surfaced early on mobile (buried in the right rail on desktop) */}
+        <div className="xl:hidden mb-8">{alertCenter}</div>
 
         {/* Stat cards */}
         <div className="flex flex-col sm:flex-row bg-white border border-zinc-100 rounded-xl overflow-hidden mb-8">
@@ -1158,18 +1175,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Alert Center — consolidated, priority-based */}
-        <div data-tour="alerts">
-          <AlertCenter
-            urgentInspections={urgentInspections}
-            warningInspections={warningInspections}
-            urgentForecasts={urgentForecasts}
-            vehicles={vehicles}
-            urgentDocAlerts={urgentDocAlerts}
-            warningDocAlerts={warningDocAlerts}
-            dataUnavailable={alertsUnavailable}
-          />
-        </div>
+        {/* Alert Center — consolidated, priority-based (desktop rail; mobile copy is in the main column) */}
+        <div data-tour="alerts" className="hidden xl:block">{alertCenter}</div>
 
         {/* Fleet Insights */}
         <FleetInsights vehicles={vehicles} mileageEntries={mileageEntries} />

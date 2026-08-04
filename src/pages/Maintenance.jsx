@@ -159,7 +159,7 @@ function ForecastRow({ forecast, onMarkDone }) {
         <span className="text-sm font-medium text-slate-800">{vehicle?.plate_number || '—'}</span>
         <span className="text-sm text-slate-400"> · {vehicle?.model || ''}</span>
       </div>
-      <span className="text-xs text-slate-400 shrink-0 hidden sm:block tabular-nums w-24 text-right">
+      <span className="text-xs text-slate-400 shrink-0 tabular-nums sm:w-24 text-right">
         {daysUntil !== null ? `dans ${daysUntil} j` : kmUntil !== null ? `${kmUntil.toLocaleString('fr-FR')} km` : '—'}
       </span>
       <span className="text-xs text-slate-400 shrink-0 hidden sm:block w-20 text-right">
@@ -167,7 +167,7 @@ function ForecastRow({ forecast, onMarkDone }) {
       </span>
       <button
         onClick={() => onMarkDone(schedule.vehicle_id, currentMileage)}
-        className="opacity-0 group-hover:opacity-100 transition-opacity text-xs font-medium text-slate-500 hover:text-slate-800 shrink-0 px-2.5 py-1 rounded-lg hover:bg-slate-100"
+        className="sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-xs font-medium text-slate-600 sm:text-slate-500 hover:text-slate-800 shrink-0 px-2.5 py-1 rounded-lg bg-slate-100 sm:bg-transparent hover:bg-slate-100"
       >
         Effectué
       </button>
