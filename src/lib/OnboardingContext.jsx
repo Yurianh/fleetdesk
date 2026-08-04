@@ -29,6 +29,9 @@ export function OnboardingProvider({ children }) {
 
   const [checklistDismissed, setChecklistDismissed] = useState(true)
   const [tourOpen, setTourOpen] = useState(false)
+  // True when the tour auto-started on first connection (vs replayed from
+  // Settings). Used to nudge the user to their profile only on that first run.
+  const [tourAuto, setTourAuto] = useState(false)
   // Set true by AppLayout once the loading overlay has lifted (data ready).
   const [appReady, setAppReady] = useState(false)
   const markAppReady = useCallback(() => setAppReady(true), [])
@@ -48,6 +51,7 @@ export function OnboardingProvider({ children }) {
     if (!uid || !appReady) return
     const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024
     if (isDesktop && accountType !== 'driver' && localStorage.getItem(tourKey(uid)) !== 'true') {
+      setTourAuto(true)
       setTourOpen(true)
     }
   }, [uid, appReady, accountType])
@@ -62,7 +66,7 @@ export function OnboardingProvider({ children }) {
     if (uid) localStorage.removeItem(dismissKey(uid))
   }, [uid])
 
-  const startTour = useCallback(() => setTourOpen(true), [])
+  const startTour = useCallback(() => { setTourAuto(false); setTourOpen(true) }, [])
 
   const endTour = useCallback(() => {
     setTourOpen(false)
@@ -74,6 +78,7 @@ export function OnboardingProvider({ children }) {
     isCollaborator,
     checklistVisible: !checklistDismissed,
     tourOpen,
+    tourAuto,
     dismissChecklist,
     reopenChecklist,
     startTour,

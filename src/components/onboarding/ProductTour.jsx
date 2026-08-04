@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
+import { useNavigate } from 'react-router-dom'
 import { Truck, Layers, Bell, Sparkles, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useOnboarding } from '@/lib/OnboardingContext'
@@ -18,10 +19,18 @@ const STEPS = [
 const TOOLTIP_W = 340
 
 export default function ProductTour() {
-  const { tourOpen, endTour } = useOnboarding()
+  const { tourOpen, endTour, tourAuto, accountType } = useOnboarding()
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [idx, setIdx] = useState(0)
   const [rect, setRect] = useState(null)
+
+  // Finishing the first-run tour sends an admin to complete their own profile.
+  const finishTour = useCallback(() => {
+    const nudgeProfile = tourAuto && accountType === 'admin'
+    endTour()
+    if (nudgeProfile) navigate('/mon-profil')
+  }, [tourAuto, accountType, endTour, navigate])
 
   const step = STEPS[idx]
   const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024
@@ -149,7 +158,7 @@ export default function ProductTour() {
             )}
             {isLast ? (
               <button
-                onClick={endTour}
+                onClick={finishTour}
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#0066FF] hover:bg-[#0052D6] px-4 py-2 rounded-lg transition-colors"
               >
                 {t('tour.finish')}
