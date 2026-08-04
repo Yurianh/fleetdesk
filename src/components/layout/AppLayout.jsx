@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import Sidebar from './Sidebar'
 import AppLoader from './AppLoader'
-import { OnboardingProvider } from '@/lib/OnboardingContext'
+import { OnboardingProvider, useOnboarding } from '@/lib/OnboardingContext'
 import ProductTour from '@/components/onboarding/ProductTour'
 import {
   useFleetRealtime,
@@ -11,6 +11,14 @@ import {
   useMileageEntries, useMaintenanceRecords, useMaintenanceSchedules,
   useTechnicalInspections, useWashRecords, useAllDriverDocuments,
 } from '@/lib/useFleetData'
+
+// Signals the onboarding context that the loading overlay has lifted, so the
+// first-run tour only auto-starts against a fully rendered page.
+function TourReadyBridge({ ready }) {
+  const { markAppReady } = useOnboarding()
+  useEffect(() => { if (ready) markAppReady() }, [ready, markAppReady])
+  return null
+}
 
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -69,6 +77,7 @@ export default function AppLayout() {
       </div>
 
       <ProductTour />
+      <TourReadyBridge ready={loaderGone} />
 
       {/* Loader overlay — fades out once data is ready, then unmounts */}
       {!loaderGone && (

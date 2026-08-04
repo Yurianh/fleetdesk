@@ -29,19 +29,28 @@ export function OnboardingProvider({ children }) {
 
   const [checklistDismissed, setChecklistDismissed] = useState(true)
   const [tourOpen, setTourOpen] = useState(false)
+  // Set true by AppLayout once the loading overlay has lifted (data ready).
+  const [appReady, setAppReady] = useState(false)
+  const markAppReady = useCallback(() => setAppReady(true), [])
 
-  // Load persisted state once we know the user. Auto-start the tour for any
-  // brand-new account (tour never completed), non-intrusively — Skip is always shown.
+  // Load the checklist dismissal as soon as we know the user.
   useEffect(() => {
     if (!uid) return
-    const dismissed = localStorage.getItem(dismissKey(uid)) === 'true'
-    setChecklistDismissed(dismissed)
-    // Auto-start the tour on desktop only — its steps point at the sidebar,
-    // which is a hidden drawer on mobile. Drivers have a restricted nav, so
-    // they get the minimal card instead of the full nav tour.
+    setChecklistDismissed(localStorage.getItem(dismissKey(uid)) === 'true')
+  }, [uid])
+
+  // Auto-start the tour ONLY on the very first connection, and only AFTER the
+  // page has finished loading (appReady) so it never appears over the loader.
+  //  - desktop only: its steps point at the sidebar, a hidden drawer on mobile
+  //  - not for drivers: restricted nav → minimal card instead of the full tour
+  //  - once per account: tourKey persists on first completion/skip
+  useEffect(() => {
+    if (!uid || !appReady) return
     const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024
-    if (isDesktop && accountType !== 'driver' && localStorage.getItem(tourKey(uid)) !== 'true') setTourOpen(true)
-  }, [uid, accountType])
+    if (isDesktop && accountType !== 'driver' && localStorage.getItem(tourKey(uid)) !== 'true') {
+      setTourOpen(true)
+    }
+  }, [uid, appReady, accountType])
 
   const dismissChecklist = useCallback(() => {
     setChecklistDismissed(true)
@@ -69,6 +78,7 @@ export function OnboardingProvider({ children }) {
     reopenChecklist,
     startTour,
     endTour,
+    markAppReady,
   }
 
   return <OnboardingContext.Provider value={value}>{children}</OnboardingContext.Provider>

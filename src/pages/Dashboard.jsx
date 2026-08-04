@@ -31,7 +31,7 @@ import {
   getLatestAssignments, getDriverById, getVehicleById,
   createVehicle, createDriver, createMileageEntry, createWashRecord
 } from '@/lib/useFleetData'
-import { DOC_TYPE_CONFIG } from '@/components/shared/DriverDocuments'
+import { docLabel } from '@/components/shared/DriverDocuments'
 import DataError from '@/components/shared/DataError'
 import AssignDriverDialog from '@/components/shared/AssignDriverDialog'
 import GettingStarted from '@/components/onboarding/GettingStarted'
@@ -534,7 +534,7 @@ function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, v
                           <div>
                             <p className="text-xs font-semibold text-zinc-800">{driver.name}</p>
                             <p className="text-xs text-red-600">
-                              {DOC_TYPE_CONFIG[doc.type]?.label || doc.type} — {days < 0 ? `expiré il y a ${Math.abs(days)}j` : `expire dans ${days}j`}
+                              {docLabel(doc.type)} — {days < 0 ? `expiré il y a ${Math.abs(days)}j` : `expire dans ${days}j`}
                             </p>
                           </div>
                           <ChevronRight className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
@@ -555,7 +555,7 @@ function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, v
                           <div>
                             <p className="text-xs font-semibold text-zinc-800">{driver.name}</p>
                             <p className="text-xs text-amber-600">
-                              {DOC_TYPE_CONFIG[doc.type]?.label || doc.type} — expire dans {days}j
+                              {docLabel(doc.type)} — expire dans {days}j
                             </p>
                           </div>
                           <ChevronRight className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />

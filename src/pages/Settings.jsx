@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { User, CreditCard, Globe, Shield, ChevronRight, Check, Loader2, Truck, Zap, Users, UserPlus, Trash2, Mail } from 'lucide-react'
+import { User, CreditCard, Globe, Shield, ChevronRight, Check, Loader2, Truck, Zap, Users, UserPlus, Trash2, Mail, Sparkles } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { usePlanLimits } from '@/lib/usePlanLimits'
@@ -10,6 +10,7 @@ import { useOrgMembers, useInviteMember, useRemoveMember } from '@/lib/useOrg'
 import { toast } from 'sonner'
 import PageHeader from '@/components/shared/PageHeader'
 import { usePageTitle } from '@/lib/usePageTitle'
+import { useOnboarding } from '@/lib/OnboardingContext'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const SECTIONS = [
@@ -34,6 +35,12 @@ export default function Settings() {
   const { data: vehicles } = useVehicles()
   const { data: drivers } = useDrivers()
   const { plan, limits } = usePlanLimits(vehicles.length, drivers.length)
+  const { startTour } = useOnboarding()
+
+  const replayTour = () => {
+    navigate('/Dashboard')
+    startTour()
+  }
 
   // Team
   const { data: members = [] } = useOrgMembers()
@@ -141,6 +148,7 @@ export default function Settings() {
 
           {/* ── Profile ── */}
           {section === 'profile' && (
+            <div className="space-y-4">
             <div className="bg-white border border-zinc-200 rounded-xl divide-y divide-zinc-100">
               <div className="p-5">
                 <h2 className="text-sm font-semibold text-zinc-900 mb-4">{t('settings.profileInfo')}</h2>
@@ -177,6 +185,29 @@ export default function Settings() {
                   </button>
                 </div>
               </div>
+            </div>
+
+            {/* Aide — revoir le tutoriel */}
+            <div className="bg-white border border-zinc-200 rounded-xl p-5">
+              <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div className="flex items-start gap-3 min-w-0">
+                  <div className="w-9 h-9 rounded-lg bg-[#0066FF]/10 flex items-center justify-center flex-shrink-0">
+                    <Sparkles className="w-4 h-4 text-[#0066FF]" />
+                  </div>
+                  <div className="min-w-0">
+                    <h2 className="text-sm font-semibold text-zinc-900">Tutoriel de prise en main</h2>
+                    <p className="text-xs text-zinc-500 mt-0.5">Revoyez la visite guidée de l'application à tout moment.</p>
+                  </div>
+                </div>
+                <button
+                  onClick={replayTour}
+                  className="flex-shrink-0 flex items-center gap-2 text-sm font-medium text-[#0066FF] bg-[#0066FF]/5 hover:bg-[#0066FF]/10 rounded-lg px-4 py-2 transition-colors"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Revoir le tutoriel
+                </button>
+              </div>
+            </div>
             </div>
           )}
 

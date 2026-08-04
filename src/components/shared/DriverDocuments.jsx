@@ -17,6 +17,11 @@ import {
 import { uploadDriverDoc, deleteDriverDoc } from '@/lib/driverDocumentStorage'
 
 export const DOC_TYPE_CONFIG = {
+  permis_conduire: {
+    label: 'Permis de conduire',
+    validityYears: null,
+    hint: 'Date de fin de validité indiquée sur le permis',
+  },
   aptitude_conduite: {
     label: 'Aptitude à la conduite',
     validityYears: 5,
@@ -51,6 +56,7 @@ export const DOC_TYPE_CONFIG = {
 }
 
 const DOC_TYPES_ORDER = [
+  'permis_conduire',
   'aptitude_conduite',
   'casier_judiciaire',
   'formation_sst_psc1',
@@ -58,6 +64,13 @@ const DOC_TYPES_ORDER = [
   'visite_medecin',
   'formation_eco_conduite',
 ]
+
+// Free-form "Autre document" types are stored as `autre:<titre libre>` so an
+// admin can add arbitrary documents without a schema change or a fixed enum.
+export const CUSTOM_PREFIX = 'autre:'
+export const isCustomType = (type) => typeof type === 'string' && type.startsWith(CUSTOM_PREFIX)
+export const docLabel = (type) =>
+  DOC_TYPE_CONFIG[type]?.label || (isCustomType(type) ? type.slice(CUSTOM_PREFIX.length) : type)
 
 export function calcDocExpiry(type, validationDate, driverBirthDate) {
   if (!validationDate) return ''
@@ -122,6 +135,7 @@ export default function DriverDocuments({ driverId, driver }) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editDoc, setEditDoc] = useState(null)
   const [form, setForm] = useState({ type: '', validation_date: '', expiry_date: '', notes: '' })
+  const [customLabel, setCustomLabel] = useState('')
   const [file, setFile] = useState(null)
   const [saving, setSaving] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState(null)
@@ -144,13 +158,24 @@ export default function DriverDocuments({ driverId, driver }) {
   const openAdd = (type) => {
     setEditDoc(null)
     setFile(null)
+    setCustomLabel('')
     setForm({ type, validation_date: '', expiry_date: '', notes: '' })
+    setDialogOpen(true)
+  }
+
+  // Add a free-form "Autre document" — the type is resolved from the title on save.
+  const openAddCustom = () => {
+    setEditDoc(null)
+    setFile(null)
+    setCustomLabel('')
+    setForm({ type: CUSTOM_PREFIX, validation_date: '', expiry_date: '', notes: '' })
     setDialogOpen(true)
   }
 
   const openEdit = (doc) => {
     setEditDoc(doc)
     setFile(null)
+    setCustomLabel(isCustomType(doc.type) ? doc.type.slice(CUSTOM_PREFIX.length) : '')
     setForm({
       type: doc.type,
       validation_date: doc.validation_date || '',
@@ -159,6 +184,8 @@ export default function DriverDocuments({ driverId, driver }) {
     })
     setDialogOpen(true)
   }
+
+  const isCustomForm = form.type === CUSTOM_PREFIX || isCustomType(form.type)
 
   const handleValidationDateChange = (date) => {
     const expiry = calcDocExpiry(form.type, date, driver?.date_of_birth)
@@ -181,8 +208,21 @@ export default function DriverDocuments({ driverId, driver }) {
   }
 
   const handleSave = async () => {
-    if (!form.validation_date) {
+    const label = customLabel.trim()
+    if (isCustomForm && !label) {
+      toast.error('Donnez un titre au document')
+      return
+    }
+    const resolvedType = isCustomForm ? CUSTOM_PREFIX + label : form.type
+    const autoExpiry = !!DOC_TYPE_CONFIG[resolvedType]?.validityYears
+    // Auto-expiry types need the validation date to compute expiry. Others
+    // (permis, autre, manual types) only need at least one date.
+    if (autoExpiry && !form.validation_date) {
       toast.error('La date de validation est requise')
+      return
+    }
+    if (!autoExpiry && !form.validation_date && !form.expiry_date) {
+      toast.error('Renseignez une date de validation ou d\'expiration')
       return
     }
     setSaving(true)
@@ -194,8 +234,8 @@ export default function DriverDocuments({ driverId, driver }) {
       }
       const docData = {
         driver_id: driverId,
-        type: form.type,
-        validation_date: form.validation_date,
+        type: resolvedType,
+        validation_date: form.validation_date || null,
         expiry_date: form.expiry_date || null,
         notes: form.notes || null,
         file_url: fileUrl,
@@ -234,28 +274,40 @@ export default function DriverDocuments({ driverId, driver }) {
   }
 
   const conf = DOC_TYPE_CONFIG[form.type]
+  const dialogLabel = isCustomForm ? (customLabel.trim() || 'Autre document') : conf?.label
+  const dialogHint = isCustomForm ? 'Document libre — ajoutez une date d\'expiration pour être alerté avant échéance' : conf?.hint
 
-  // Categorise documents by urgency
+  // Build the list of entries to display: the fixed regulatory types (which may
+  // be missing), plus any free-form "autre:" documents (always present).
+  const entries = [
+    ...DOC_TYPES_ORDER.map(type => ({ type, doc: docsByType[type], custom: false })),
+    ...documents
+      .filter(d => isCustomType(d.type))
+      .map(d => ({ type: d.type, doc: d, custom: true })),
+  ]
+
+  // Categorise entries by urgency
   const expiredTypes = []       // days < 0 → critical
   const expiringSoonTypes = []  // 0 ≤ days ≤ 60 → warning
-  const missingTypes = []       // no doc at all
+  const missingTypes = []       // no doc at all (regulatory only)
   const validTypes = []         // days > 60 or no expiry set
 
-  for (const type of DOC_TYPES_ORDER) {
-    const doc = docsByType[type]
+  for (const entry of entries) {
+    const doc = entry.doc
     if (!doc) {
-      missingTypes.push(type)
+      if (!entry.custom) missingTypes.push(entry)
     } else if (!doc.expiry_date) {
-      validTypes.push(type)
+      validTypes.push(entry)
     } else {
       const days = differenceInDays(new Date(doc.expiry_date), new Date())
-      if (days < 0) expiredTypes.push(type)
-      else if (days <= 60) expiringSoonTypes.push(type)
-      else validTypes.push(type)
+      if (days < 0) expiredTypes.push(entry)
+      else if (days <= 60) expiringSoonTypes.push(entry)
+      else validTypes.push(entry)
     }
   }
 
-  const completedCount = validTypes.length
+  // Compliance meter reflects the fixed regulatory set only (custom docs are extra).
+  const completedCount = validTypes.filter(e => !e.custom).length
   const totalCount = DOC_TYPES_ORDER.length
   const progressPct = Math.round((completedCount / totalCount) * 100)
   const overallStatus = expiredTypes.length > 0 ? 'expired'
@@ -311,14 +363,13 @@ export default function DriverDocuments({ driverId, driver }) {
             </span>
           </div>
           <div className="divide-y divide-red-50">
-            {expiredTypes.map(type => {
-              const doc = docsByType[type]
+            {expiredTypes.map(({ type, doc }) => {
               const days = Math.abs(differenceInDays(new Date(doc.expiry_date), new Date()))
               return (
                 <div key={type} className="flex items-center gap-3 px-5 py-3.5 bg-red-50/30 hover:bg-red-50/60 transition-colors border-l-2 border-red-400">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                      <p className="text-sm font-semibold text-slate-900">{DOC_TYPE_CONFIG[type].label}</p>
+                      <p className="text-sm font-semibold text-slate-900">{docLabel(type)}</p>
                       <span className="inline-flex items-center gap-1 text-[11px] font-medium text-red-700 bg-red-100 px-2 py-0.5 rounded-full">
                         <AlertTriangle className="w-3 h-3" />Expiré il y a {days}j
                       </span>
@@ -364,14 +415,13 @@ export default function DriverDocuments({ driverId, driver }) {
             </span>
           </div>
           <div className="divide-y divide-amber-50/60">
-            {expiringSoonTypes.map(type => {
-              const doc = docsByType[type]
+            {expiringSoonTypes.map(({ type, doc }) => {
               const days = differenceInDays(new Date(doc.expiry_date), new Date())
               return (
                 <div key={type} className="flex items-center gap-3 px-5 py-3.5 bg-amber-50/20 hover:bg-amber-50/50 transition-colors border-l-2 border-amber-400">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                      <p className="text-sm font-semibold text-slate-900">{DOC_TYPE_CONFIG[type].label}</p>
+                      <p className="text-sm font-semibold text-slate-900">{docLabel(type)}</p>
                       <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
                         <Clock className="w-3 h-3" />Expire dans {days}j
                       </span>
@@ -417,7 +467,7 @@ export default function DriverDocuments({ driverId, driver }) {
           </div>
           <div className="px-5 py-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {missingTypes.map(type => (
+              {missingTypes.map(({ type }) => (
                 <button
                   key={type}
                   onClick={() => openAdd(type)}
@@ -428,7 +478,7 @@ export default function DriverDocuments({ driverId, driver }) {
                       <Plus className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#0066FF] transition-colors" />
                     </div>
                     <span className="text-xs font-medium text-slate-600 group-hover:text-slate-900 leading-tight transition-colors">
-                      {DOC_TYPE_CONFIG[type].label}
+                      {docLabel(type)}
                     </span>
                   </div>
                   <span className="text-[11px] font-semibold text-slate-300 group-hover:text-[#0066FF] shrink-0 transition-colors">
@@ -461,23 +511,24 @@ export default function DriverDocuments({ driverId, driver }) {
           </button>
           {validExpanded && (
             <div className="divide-y divide-slate-50">
-              {validTypes.map(type => {
-                const doc = docsByType[type]
+              {validTypes.map(({ type, doc }) => {
                 return (
                   <div key={type} className="flex items-center gap-3 px-5 py-3 hover:bg-slate-50/60 transition-colors group">
                     <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
                       <Check className="w-2.5 h-2.5 text-emerald-500" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-700">{DOC_TYPE_CONFIG[type].label}</p>
+                      <p className="text-sm font-medium text-slate-700">{docLabel(type)}</p>
                       {doc && (
                         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                          <span className="text-xs text-slate-400">
-                            Validé le {format(new Date(doc.validation_date), 'd MMM yyyy', { locale: fr })}
-                          </span>
+                          {doc.validation_date && (
+                            <span className="text-xs text-slate-400">
+                              Validé le {format(new Date(doc.validation_date), 'd MMM yyyy', { locale: fr })}
+                            </span>
+                          )}
                           {doc.expiry_date && (
                             <span className="text-xs text-slate-400">
-                              · Expire le {format(new Date(doc.expiry_date), 'd MMM yyyy', { locale: fr })}
+                              {doc.validation_date ? '· ' : ''}Expire le {format(new Date(doc.expiry_date), 'd MMM yyyy', { locale: fr })}
                             </span>
                           )}
                           {doc.notes && <span className="text-xs text-slate-400 italic">· {doc.notes}</span>}
@@ -507,6 +558,17 @@ export default function DriverDocuments({ driverId, driver }) {
           )}
         </div>
       )}
+
+      {/* ── Add another (free-form) document ── */}
+      <div className="border-t border-slate-100 px-5 py-3">
+        <button
+          onClick={openAddCustom}
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-[#0066FF] transition-colors"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          Ajouter un autre document
+        </button>
+      </div>
     </div>
 
     {/* Add / Edit dialog */}
@@ -516,13 +578,26 @@ export default function DriverDocuments({ driverId, driver }) {
           <DialogTitle>{editDoc ? 'Modifier le document' : 'Ajouter un document'}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 mt-2">
-          <div>
-            <p className="text-sm font-semibold text-slate-900">{conf?.label}</p>
-            <p className="text-xs text-slate-400 mt-0.5">{conf?.hint}</p>
-          </div>
+          {isCustomForm ? (
+            <div>
+              <Label>Titre du document *</Label>
+              <Input
+                value={customLabel}
+                onChange={e => setCustomLabel(e.target.value)}
+                placeholder="Ex : Attestation employeur, RIB, contrat..."
+                autoFocus
+              />
+              <p className="text-xs text-slate-400 mt-1">{dialogHint}</p>
+            </div>
+          ) : (
+            <div>
+              <p className="text-sm font-semibold text-slate-900">{dialogLabel}</p>
+              <p className="text-xs text-slate-400 mt-0.5">{dialogHint}</p>
+            </div>
+          )}
 
           <div>
-            <Label>Date de validation *</Label>
+            <Label>Date de validation{DOC_TYPE_CONFIG[form.type]?.validityYears ? ' *' : ''}</Label>
             <Input
               type="date"
               value={form.validation_date}
@@ -615,7 +690,11 @@ export default function DriverDocuments({ driverId, driver }) {
 
           <Button
             onClick={handleSave}
-            disabled={saving || !form.validation_date}
+            disabled={
+              saving ||
+              (isCustomForm && !customLabel.trim()) ||
+              (!form.validation_date && !form.expiry_date)
+            }
             className="w-full bg-[#0066FF] hover:bg-[#0052D6]"
           >
             {saving
