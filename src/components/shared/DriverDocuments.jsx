@@ -15,6 +15,7 @@ import {
   deleteDriverDocument,
 } from '@/lib/useFleetData'
 import { uploadDriverDoc, deleteDriverDoc } from '@/lib/driverDocumentStorage'
+import { compressImage } from '@/lib/compressImage'
 
 export const DOC_TYPE_CONFIG = {
   permis_conduire: {
@@ -199,8 +200,9 @@ export default function DriverDocuments({ driverId, driver }) {
       e.target.value = ''
       return
     }
-    if (f && f.type !== 'application/pdf') {
-      toast.error('Seuls les fichiers PDF sont acceptés')
+    const isAllowed = f && (f.type === 'application/pdf' || f.type.startsWith('image/'))
+    if (f && !isAllowed) {
+      toast.error('Formats acceptés : PDF ou image')
       e.target.value = ''
       return
     }
@@ -230,7 +232,9 @@ export default function DriverDocuments({ driverId, driver }) {
       let fileUrl = editDoc?.file_url || null
       if (file) {
         if (editDoc?.file_url) await deleteDriverDoc(editDoc.file_url)
-        fileUrl = await uploadDriverDoc(file)
+        // Images are compressed client-side before upload; PDFs pass through.
+        const toUpload = await compressImage(file)
+        fileUrl = await uploadDriverDoc(toUpload)
       }
       const docData = {
         driver_id: driverId,
@@ -383,7 +387,7 @@ export default function DriverDocuments({ driverId, driver }) {
                       {doc.file_url && (
                         <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-xs text-[#0066FF] hover:underline">
-                          <ExternalLink className="w-3 h-3" />PDF
+                          <ExternalLink className="w-3 h-3" />Voir
                         </a>
                       )}
                     </div>
@@ -435,7 +439,7 @@ export default function DriverDocuments({ driverId, driver }) {
                       {doc.file_url && (
                         <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-xs text-[#0066FF] hover:underline">
-                          <ExternalLink className="w-3 h-3" />PDF
+                          <ExternalLink className="w-3 h-3" />Voir
                         </a>
                       )}
                     </div>
@@ -629,10 +633,10 @@ export default function DriverDocuments({ driverId, driver }) {
             />
           </div>
 
-          {/* PDF upload */}
+          {/* File upload (PDF or image) */}
           <div className="border-t border-slate-100 pt-4">
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
-              Document PDF <span className="font-normal normal-case">— optionnel</span>
+              Document <span className="font-normal normal-case">— optionnel</span>
             </p>
             <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50">
               <div className="w-8 h-8 bg-white rounded-lg border border-slate-200 flex items-center justify-center shrink-0">
@@ -650,13 +654,13 @@ export default function DriverDocuments({ driverId, driver }) {
                       rel="noopener noreferrer"
                       className="text-xs text-[#0066FF] hover:underline"
                     >
-                      Voir le PDF →
+                      Voir le document →
                     </a>
                   </>
                 ) : (
                   <span className="text-sm text-slate-400">
-                    Joindre un PDF
-                    <span className="block text-xs text-slate-300 mt-0.5">PDF uniquement · max 10 Mo</span>
+                    Joindre un fichier
+                    <span className="block text-xs text-slate-300 mt-0.5">PDF ou image · max 10 Mo · les photos sont compressées</span>
                   </span>
                 )}
               </div>
@@ -673,7 +677,7 @@ export default function DriverDocuments({ driverId, driver }) {
                   type="button"
                   onClick={() => fileRef.current?.click()}
                   className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors shrink-0"
-                  title="Choisir un PDF"
+                  title="Choisir un fichier"
                 >
                   <Upload className="w-3.5 h-3.5" />
                 </button>
@@ -682,7 +686,7 @@ export default function DriverDocuments({ driverId, driver }) {
             <input
               ref={fileRef}
               type="file"
-              accept="application/pdf"
+              accept="application/pdf,image/*"
               className="hidden"
               onChange={handleFileChange}
             />
