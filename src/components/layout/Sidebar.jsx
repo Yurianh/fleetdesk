@@ -50,7 +50,9 @@ export default function Sidebar({ open, onToggle }) {
   const { t } = useTranslation();
   const { reopenChecklist, accountType } = useOnboarding();
   const isDriver = accountType === 'driver';
-  const isAdmin = accountType === 'admin';
+  // Collaborators who aren't drivers (admin, membre) get a "Mon profil" entry to
+  // complete their own conducteur record. Drivers have it in their main nav.
+  const showMyProfile = accountType === 'admin' || accountType === 'member';
 
   const navGroups = isDriver ? [
     {
@@ -243,7 +245,7 @@ export default function Sidebar({ open, onToggle }) {
               <span className={cn(isCollapsed && 'lg:hidden')}>{t('gettingStarted.navLabel')}</span>
             </button>
           )}
-          {isAdmin && (
+          {showMyProfile && (
             <Link
               to="/mon-profil"
               onClick={() => { if (window.innerWidth < 1024) onToggle() }}

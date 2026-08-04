@@ -25,9 +25,10 @@ export default function ProductTour() {
   const [idx, setIdx] = useState(0)
   const [rect, setRect] = useState(null)
 
-  // Finishing the first-run tour sends an admin to complete their own profile.
+  // Finishing the first-run tour sends a collaborator (admin/membre) to complete
+  // their own conducteur profile.
   const finishTour = useCallback(() => {
-    const nudgeProfile = tourAuto && accountType === 'admin'
+    const nudgeProfile = tourAuto && (accountType === 'admin' || accountType === 'member')
     endTour()
     if (nudgeProfile) navigate('/mon-profil')
   }, [tourAuto, accountType, endTour, navigate])

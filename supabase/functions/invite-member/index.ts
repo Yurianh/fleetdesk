@@ -68,12 +68,13 @@ Deno.serve(async (req) => {
       .insert({ org_id: orgId, email, role, status: 'pending', ...(role === 'driver' && vehicleId ? { vehicle_id: vehicleId } : {}) })
     if (insertErr) throw insertErr
 
-    // A chauffeur AND an admin are also conducteurs: ensure a drivers record
-    // exists (reuse by email, else create a pending one) so they show up in the
-    // fleet and can complete their own profile on first login. A chauffeur is
-    // additionally assigned to their vehicle; an admin has no vehicle at invite.
-    // Best-effort: never block the invitation if this fails.
-    if (role === 'driver' || role === 'admin') {
+    // Every invited collaborator (chauffeur, admin, membre) is also a conducteur:
+    // ensure a drivers record exists (reuse by email, else create a pending one)
+    // so they show up in the fleet and can complete their own profile on first
+    // login. A chauffeur is additionally assigned to their vehicle; admin/membre
+    // have no vehicle at invite. Best-effort: never block the invitation if this
+    // fails.
+    if (role === 'driver' || role === 'admin' || role === 'member') {
       try {
         let driverId: string | null = null
         const { data: existingDriver } = await supabaseAdmin

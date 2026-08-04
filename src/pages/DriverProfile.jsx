@@ -28,9 +28,10 @@ export default function DriverProfile() {
 
   const orgId = user?.user_metadata?.org_id
   const role = user?.user_metadata?.role
-  // A driver ("chauffeur") gets their record at invite. An admin may create their
-  // own conducteur profile here if they don't have one yet.
-  const canSelfCreate = !!orgId && role === 'admin'
+  // A driver ("chauffeur") gets their record at invite. Any other collaborator
+  // (admin, membre) may create their own conducteur profile here if they don't
+  // have one yet. The owner (no org_id) is not a conducteur.
+  const canSelfCreate = !!orgId && role !== 'driver' && role !== 'sub-member'
 
   useEffect(() => {
     let alive = true
