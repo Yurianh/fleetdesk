@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react'
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
-import { Plus, Gauge, Trash2, Search, Loader2, Paperclip, FileText, X } from 'lucide-react'
+import { Plus, Gauge, Trash2, Search, Loader2, Paperclip, FileText, X, Users, CreditCard } from 'lucide-react'
 import { compressImage } from '@/lib/compressImage'
 import { uploadReceipt } from '@/lib/receiptStorage'
 import { Input } from '@/components/ui/input'
@@ -18,9 +18,9 @@ import FormModal from '@/components/shared/FormModal'
 import DataError from '@/components/shared/DataError'
 import ConfirmDeleteDialog from '@/components/shared/ConfirmDeleteDialog'
 import {
-  useVehicles, useMileageEntries,
+  useVehicles, useMileageEntries, useDrivers, useAssignments,
   createMileageEntry, deleteMileageEntry, updateMileageEntry,
-  getLatestMileage, getVehicleById
+  getLatestMileage, getVehicleById, getLatestAssignments, getDriverById
 } from '@/lib/useFleetData'
 
 import { usePageTitle } from '@/lib/usePageTitle'
@@ -34,10 +34,17 @@ export default function Mileage() {
   const isDriver = ['driver', 'sub-member'].includes(user?.user_metadata?.role)
   const driverVehicleId = user?.user_metadata?.vehicle_id || ''
   const { data: vehicles }      = useVehicles()
+  const { data: drivers }       = useDrivers()
+  const { data: assignments }   = useAssignments()
   const mileageQ = useMileageEntries()
   const { data: mileageEntries } = mileageQ
   const queryClient = useQueryClient()
   const latestMileage = getLatestMileage(mileageEntries)
+  const latestAssignments = getLatestAssignments(assignments)
+
+  // Conducteur for an entry: the one stored on it, else the vehicle's current
+  // assignee (covers entries logged before driver_id existed).
+  const driverFor = (m) => getDriverById(drivers, m.driver_id || latestAssignments[m.vehicle_id]?.driver_id)
 
   const [modal, setModal]       = useState(false)
   const today                   = new Date().toISOString().split('T')[0]
@@ -84,6 +91,7 @@ export default function Mileage() {
         created_at: form.date ? new Date(form.date + 'T12:00:00').toISOString() : new Date().toISOString(),
         label: form.label?.trim() || null,
         receipt_url,
+        driver_id: latestAssignments[form.vehicle_id]?.driver_id || null,
       })
       queryClient.invalidateQueries({ queryKey: ['mileageEntries'] })
       toast.success(t('mileage.saved'))
@@ -168,6 +176,7 @@ export default function Mileage() {
                 <thead>
                   <tr className="bg-white border-b border-slate-200">
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Véhicule</th>
+                    <th className="text-left px-5 py-3 font-medium text-slate-500">Conducteur</th>
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Kilométrage</th>
                     <th className="text-left px-5 py-3 font-medium text-slate-500">Date</th>
                     <th className="px-5 py-3 w-16"></th>
@@ -181,6 +190,22 @@ export default function Mileage() {
                         <td className="px-5 py-3.5 font-medium text-slate-900">
                           {vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}
                           {m.label && <span className="block text-xs font-normal text-slate-400 mt-0.5 truncate max-w-[220px]">{m.label}</span>}
+                        </td>
+                        <td className="px-5 py-3.5">
+                          {(() => {
+                            const d = driverFor(m)
+                            if (!d) return <span className="text-slate-300">—</span>
+                            return (
+                              <div>
+                                <p className="text-slate-700">{d.name}</p>
+                                {d.dkv_card && (
+                                  <span className="inline-flex items-center gap-1 text-xs text-slate-400 mt-0.5">
+                                    <CreditCard className="w-3 h-3" /> DKV {d.dkv_card}
+                                  </span>
+                                )}
+                              </div>
+                            )
+                          })()}
                         </td>
                         <td className="px-5 py-3.5 font-semibold text-slate-800">{m.mileage?.toLocaleString('fr-FR') ?? '—'} km</td>
                         <td className="px-5 py-3.5 text-slate-500">{format(new Date(m.created_at), 'd MMM yyyy, HH:mm', { locale: dateLocale })}</td>
@@ -213,6 +238,11 @@ export default function Mileage() {
                     <div className="flex-1 min-w-0 mr-3">
                       <p className="font-medium text-slate-900 truncate">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</p>
                       <p className="text-sm font-semibold text-slate-800 mt-0.5">{m.mileage?.toLocaleString('fr-FR') ?? '—'} km</p>
+                      {(() => {
+                        const d = driverFor(m)
+                        if (!d) return null
+                        return <p className="text-xs text-slate-500 flex items-center gap-1"><Users className="w-3 h-3 text-slate-400" />{d.name}{d.dkv_card ? ` · DKV ${d.dkv_card}` : ''}</p>
+                      })()}
                       {m.label && <p className="text-xs text-slate-400 truncate">{m.label}</p>}
                       <div className="flex items-center gap-2 mt-0.5">
                         <p className="text-xs text-slate-400">{format(new Date(m.created_at), 'd MMM yyyy', { locale: dateLocale })}</p>
@@ -260,6 +290,20 @@ export default function Mileage() {
             />
           )}
         </div>
+        {(() => {
+          const vid = isDriver ? driverVehicleId : form.vehicle_id
+          const d = vid ? getDriverById(drivers, latestAssignments[vid]?.driver_id) : null
+          if (!d) return null
+          return (
+            <div className="flex items-center gap-2.5 rounded-lg bg-[#0066FF]/[0.04] border border-[#0066FF]/15 px-3 py-2 -mt-1">
+              <Users className="w-4 h-4 text-[#0066FF] flex-shrink-0" />
+              <p className="text-sm text-slate-600">
+                {d.name}
+                {d.dkv_card && <> · <span className="inline-flex items-center gap-1 font-medium text-slate-800"><CreditCard className="w-3.5 h-3.5 text-slate-400" />DKV {d.dkv_card}</span></>}
+              </p>
+            </div>
+          )
+        })()}
         {selectedCurrent != null && (
           <p className="text-sm text-slate-500 -mt-1">
             Actuel : <span className="font-semibold text-slate-700">{selectedCurrent.toLocaleString('fr-FR')} km</span>
