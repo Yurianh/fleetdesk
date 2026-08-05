@@ -25,15 +25,14 @@ Deno.serve(async (req) => {
     const siteUrl = Deno.env.get('SITE_URL') || 'https://app.fleetdesk.fr'
     const returnUrl = body.return_url || `${siteUrl}/Settings`
 
-    // Get customer ID from metadata, fallback to Stripe lookup by email
-    let customerId: string | null = user.user_metadata?.stripe_customer_id || null
-    if (!customerId) {
-      const customers = await stripe.customers.list({ email: user.email!, limit: 1 })
-      if (customers.data.length === 0) {
-        return new Response(JSON.stringify({ error: 'Aucun abonnement Stripe trouvé pour ce compte.' }), { status: 404, headers: corsHeaders })
-      }
-      customerId = customers.data[0].id
+    // Resolve the Stripe customer strictly by the authenticated email. Never
+    // trust user_metadata.stripe_customer_id (user-editable → IDOR into someone
+    // else's billing portal).
+    const customers = await stripe.customers.list({ email: user.email!, limit: 1 })
+    if (customers.data.length === 0) {
+      return new Response(JSON.stringify({ error: 'Aucun abonnement Stripe trouvé pour ce compte.' }), { status: 404, headers: corsHeaders })
     }
+    const customerId = customers.data[0].id
 
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,

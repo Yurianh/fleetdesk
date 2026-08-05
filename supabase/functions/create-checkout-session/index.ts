@@ -47,18 +47,24 @@ Deno.serve(async (req) => {
 
     console.log('[checkout] user:', user.id, 'email:', user.email)
 
-    // If user already has a Stripe customer, reuse it to prevent duplicate customers
-    const existingCustomerId = user.user_metadata?.stripe_customer_id || null
+    // Resolve the Stripe customer strictly by the authenticated email, never
+    // from user_metadata (user-editable → IDOR/portal takeover).
+    const existingCustomer = (await stripe.customers.list({ email: user.email!, limit: 1 })).data[0] || null
+    const existingCustomerId = existingCustomer?.id || null
 
-    // Guard: if already subscribed to a paid plan, redirect to portal instead
-    if (existingCustomerId && user.user_metadata?.onboarding_complete && user.user_metadata?.plan !== 'starter') {
-      const portalSession = await stripe.billingPortal.sessions.create({
-        customer: existingCustomerId,
-        return_url: return_url || Deno.env.get('SITE_URL') || 'https://app.fleetdesk.fr',
-      })
-      return new Response(JSON.stringify({ url: portalSession.url }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
+    // Guard: if already on an active paid subscription, send to the portal.
+    // Decide from Stripe state, not from user_metadata.
+    if (existingCustomerId) {
+      const activeSubs = await stripe.subscriptions.list({ customer: existingCustomerId, status: 'active', limit: 1 })
+      if (activeSubs.data.length > 0) {
+        const portalSession = await stripe.billingPortal.sessions.create({
+          customer: existingCustomerId,
+          return_url: return_url || Deno.env.get('SITE_URL') || 'https://app.fleetdesk.fr',
+        })
+        return new Response(JSON.stringify({ url: portalSession.url }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
     }
 
     const sessionParams: any = {

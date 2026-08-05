@@ -5,6 +5,7 @@ import { useDateLocale } from '@/lib/useDateLocale'
 import { Plus, Gauge, Trash2, Search, Loader2, Paperclip, FileText, X, Users, CreditCard } from 'lucide-react'
 import { compressImage } from '@/lib/compressImage'
 import { uploadReceipt } from '@/lib/receiptStorage'
+import { openSignedFile } from '@/lib/signedFile'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -212,10 +213,10 @@ export default function Mileage() {
                         <td className="px-5 py-3.5">
                           <div className="flex items-center justify-end gap-1">
                             {m.receipt_url && (
-                              <a href={m.receipt_url} target="_blank" rel="noopener noreferrer"
+                              <button type="button" onClick={() => openSignedFile(m.receipt_url)}
                                 className="inline-flex items-center gap-1 text-xs text-[#0066FF] hover:underline mr-1" title="Voir la facture">
                                 <Paperclip className="w-3.5 h-3.5" /> Facture
-                              </a>
+                              </button>
                             )}
                             <button onClick={() => setConfirmDeleteId(m.id)} disabled={deletingId === m.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
                               <Trash2 className="w-3.5 h-3.5" />
@@ -247,9 +248,9 @@ export default function Mileage() {
                       <div className="flex items-center gap-2 mt-0.5">
                         <p className="text-xs text-slate-400">{format(new Date(m.created_at), 'd MMM yyyy', { locale: dateLocale })}</p>
                         {m.receipt_url && (
-                          <a href={m.receipt_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[#0066FF]">
+                          <button type="button" onClick={() => openSignedFile(m.receipt_url)} className="inline-flex items-center gap-1 text-xs text-[#0066FF]">
                             <Paperclip className="w-3 h-3" /> Facture
-                          </a>
+                          </button>
                         )}
                       </div>
                     </div>

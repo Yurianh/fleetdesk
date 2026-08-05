@@ -15,6 +15,7 @@ import {
   deleteDriverDocument,
 } from '@/lib/useFleetData'
 import { uploadDriverDoc, deleteDriverDoc } from '@/lib/driverDocumentStorage'
+import { openSignedFile } from '@/lib/signedFile'
 import { compressImage } from '@/lib/compressImage'
 
 export const DOC_TYPE_CONFIG = {
@@ -371,10 +372,10 @@ export default function DriverDocuments({ driverId, driver }) {
             )}
             {doc?.notes && <span className="italic">· {doc.notes}</span>}
             {doc?.file_url && (
-              <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
+              <button type="button" onClick={() => openSignedFile(doc.file_url)}
                 className="inline-flex items-center gap-1 text-[#0066FF] hover:underline">
                 <ExternalLink className="w-3 h-3" />Voir
-              </a>
+              </button>
             )}
           </div>
         </div>
@@ -553,14 +554,13 @@ export default function DriverDocuments({ driverId, driver }) {
                 ) : editDoc?.file_url ? (
                   <>
                     <p className="text-sm text-slate-700">Document enregistré</p>
-                    <a
-                      href={editDoc.file_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      type="button"
+                      onClick={() => openSignedFile(editDoc.file_url)}
                       className="text-xs text-[#0066FF] hover:underline"
                     >
                       Voir le document →
-                    </a>
+                    </button>
                   </>
                 ) : (
                   <span className="text-sm text-slate-400">
