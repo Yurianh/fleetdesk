@@ -1,5 +1,18 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+// Find an auth user by email, paginating (no silent perPage:1000 cap).
+async function findUserByEmail(admin: any, email: string) {
+  const target = email.toLowerCase()
+  for (let page = 1; page <= 50; page++) {
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 1000 })
+    if (error || !data?.users?.length) return null
+    const u = data.users.find((x: any) => x.email?.toLowerCase() === target)
+    if (u) return u
+    if (data.users.length < 1000) return null
+  }
+  return null
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': Deno.env.get('ALLOWED_ORIGIN') || '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -10,6 +23,13 @@ Deno.serve(async (req) => {
 
   try {
     const { email, role = 'member', vehicleId = null } = await req.json()
+
+    // Only these roles may ever be assigned (never 'owner' or arbitrary strings).
+    const ALLOWED_ROLES = ['member', 'driver', 'admin']
+    if (!ALLOWED_ROLES.includes(role)) {
+      return new Response(JSON.stringify({ error: 'Rôle invalide.' }), { status: 400, headers: corsHeaders })
+    }
+
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) return new Response(JSON.stringify({ error: 'Missing auth' }), { status: 401, headers: corsHeaders })
 
@@ -116,8 +136,7 @@ Deno.serve(async (req) => {
 
     if (inviteErr) {
       // User already has a Supabase account — send them a magic link to /join
-      const { data: { users } } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 })
-      const existingUser = users.find((u: any) => u.email?.toLowerCase() === email.toLowerCase())
+      const existingUser = await findUserByEmail(supabaseAdmin, email)
 
       if (existingUser) {
         // Update metadata so /join page recognises the re-invite

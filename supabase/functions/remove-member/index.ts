@@ -1,5 +1,19 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+// Find an auth user by email, paginating (no silent perPage:1000 cap).
+async function findUserByEmail(admin: any, email: string) {
+  const target = (email || '').toLowerCase()
+  if (!target) return null
+  for (let page = 1; page <= 50; page++) {
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 1000 })
+    if (error || !data?.users?.length) return null
+    const u = data.users.find((x: any) => x.email?.toLowerCase() === target)
+    if (u) return u
+    if (data.users.length < 1000) return null
+  }
+  return null
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': Deno.env.get('ALLOWED_ORIGIN') || '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -71,8 +85,7 @@ Deno.serve(async (req) => {
     try {
       let authUserId = member.user_id
       if (!authUserId) {
-        const { data: { users } } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 })
-        const found = users.find((u: any) => u.email?.toLowerCase() === member.email?.toLowerCase())
+        const found = await findUserByEmail(supabaseAdmin, member.email)
         if (found) authUserId = found.id
       }
       if (authUserId) {

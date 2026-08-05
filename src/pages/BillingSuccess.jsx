@@ -24,12 +24,18 @@ export default function BillingSuccess() {
     async function confirm() {
       try {
         if (sessionId) {
-          // Direct verification via plain fetch — no auth needed, session_id is the secret
+          // Verify via the authenticated user — the function checks the caller
+          // owns this checkout session (session_id alone is not sufficient).
           const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim()
           const supabaseKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim()
+          const { data: { session } } = await supabase.auth.getSession()
           const resp = await fetch(`${supabaseUrl}/functions/v1/confirm-payment`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'apikey': supabaseKey },
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': supabaseKey,
+              ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+            },
             body: JSON.stringify({ session_id: sessionId }),
           })
           const data = await resp.json()

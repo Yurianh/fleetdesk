@@ -3,6 +3,20 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!)
 
+// Paginate through auth users to find the one whose metadata carries this Stripe
+// customer id. Avoids a fixed perPage:1000 cap that silently misses users past
+// the first page (lost plan updates / cancellations as the base grows).
+async function findUserByCustomer(admin: any, customerId: string) {
+  for (let page = 1; page <= 50; page++) {
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 1000 })
+    if (error || !data?.users?.length) return null
+    const u = data.users.find((x: any) => x.user_metadata?.stripe_customer_id === customerId)
+    if (u) return u
+    if (data.users.length < 1000) return null
+  }
+  return null
+}
+
 Deno.serve(async (req) => {
   const body = await req.text()
   const sig = req.headers.get('stripe-signature')
@@ -60,8 +74,7 @@ Deno.serve(async (req) => {
     const newPlan = PLAN_BY_PRICE[priceId] ?? null
     if (!newPlan) return new Response(JSON.stringify({ received: true }), { headers: { 'Content-Type': 'application/json' } })
 
-    const { data: { users } } = await supabase.auth.admin.listUsers({ perPage: 1000 })
-    const user = users.find((u: any) => u.user_metadata?.stripe_customer_id === customerId)
+    const user = await findUserByCustomer(supabase, customerId)
     if (user) {
       await supabase.auth.admin.updateUserById(user.id, {
         user_metadata: { ...user.user_metadata, plan: newPlan },
@@ -76,8 +89,7 @@ Deno.serve(async (req) => {
     const customerId = sub.customer as string
     console.log('[webhook] subscription cancelled, customer:', customerId)
 
-    const { data: { users } } = await supabase.auth.admin.listUsers({ perPage: 1000 })
-    const user = users.find((u: any) => u.user_metadata?.stripe_customer_id === customerId)
+    const user = await findUserByCustomer(supabase, customerId)
     if (user) {
       await supabase.auth.admin.updateUserById(user.id, {
         user_metadata: { ...user.user_metadata, plan: 'starter', stripe_customer_id: null },

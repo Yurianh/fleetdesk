@@ -17,7 +17,21 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'session_id requis' }), { status: 400, headers: corsHeaders })
     }
 
-    // Retrieve and verify session directly from Stripe — the session_id is the security token
+    // Authenticate the caller — the session_id must not be enough on its own
+    // (it leaks via success_url / referrers / logs).
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: 'Non autorisé' }), { status: 401, headers: corsHeaders })
+    }
+    const supabaseUser = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
+      global: { headers: { Authorization: authHeader } },
+    })
+    const { data: { user: caller }, error: authErr } = await supabaseUser.auth.getUser()
+    if (authErr || !caller) {
+      return new Response(JSON.stringify({ error: 'Non autorisé' }), { status: 401, headers: corsHeaders })
+    }
+
+    // Retrieve and verify the session from Stripe
     const session = await stripe.checkout.sessions.retrieve(session_id)
     console.log('[confirm-payment] status:', session.status, 'payment_status:', session.payment_status, 'metadata:', session.metadata)
 
@@ -28,6 +42,11 @@ Deno.serve(async (req) => {
     const { user_id, plan } = session.metadata ?? {}
     if (!user_id || !plan) {
       return new Response(JSON.stringify({ error: 'Métadonnées manquantes dans la session Stripe' }), { status: 400, headers: corsHeaders })
+    }
+
+    // The caller may only confirm their OWN checkout session.
+    if (caller.id !== user_id) {
+      return new Response(JSON.stringify({ error: 'Accès refusé' }), { status: 403, headers: corsHeaders })
     }
 
     // Update user — merge so we don't wipe full_name, company, etc.

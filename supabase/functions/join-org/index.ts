@@ -27,16 +27,25 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Non autorise' }), { status: 401, headers: corsHeaders })
     }
 
-    const orgId = user.user_metadata?.org_id
-    if (!orgId) {
-      return new Response(JSON.stringify({ error: 'Aucune organisation associee a ce compte.' }), { status: 400, headers: corsHeaders })
-    }
-
     // Use service role to bypass RLS — reliable for all clients
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     )
+
+    // Derive the org from the caller's PENDING invite (trusted, service-role
+    // written), NOT from user_metadata (user-editable → could claim any org).
+    const { data: invite } = await supabaseAdmin
+      .from('org_members')
+      .select('org_id, role, vehicle_id')
+      .eq('email', user.email)
+      .eq('status', 'pending')
+      .maybeSingle()
+
+    if (!invite) {
+      return new Response(JSON.stringify({ error: 'Aucune invitation en attente pour ce compte.' }), { status: 400, headers: corsHeaders })
+    }
+    const orgId = invite.org_id
 
     const { error: updateErr } = await supabaseAdmin
       .from('org_members')
@@ -51,11 +60,15 @@ Deno.serve(async (req) => {
 
     if (updateErr) throw updateErr
 
-    // Stamp org_id in user metadata via service role to guarantee orgUid() fast-path always works,
-    // even if the invite email metadata didn't propagate correctly (existing-user magic link edge case).
-    // Merge existing metadata so role / vehicle_id (chauffeur) and other keys are preserved.
+    // Stamp org_id + the invite's trusted role/vehicle in user metadata so the
+    // client fast-path is consistent. RLS still relies on org_members, not this.
     await supabaseAdmin.auth.admin.updateUserById(user.id, {
-      user_metadata: { ...user.user_metadata, org_id: orgId },
+      user_metadata: {
+        ...user.user_metadata,
+        org_id: orgId,
+        role: invite.role,
+        ...(invite.vehicle_id ? { vehicle_id: invite.vehicle_id } : {}),
+      },
     })
 
     // Link a chauffeur's account to their conducteur (drivers) record by email,
