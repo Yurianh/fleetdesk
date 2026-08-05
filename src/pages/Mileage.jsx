@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
-import { Plus, Gauge, Trash2, Search, Loader2 } from 'lucide-react'
+import { Plus, Gauge, Trash2, Search, Loader2, Paperclip, FileText, X } from 'lucide-react'
+import { compressImage } from '@/lib/compressImage'
+import { uploadReceipt } from '@/lib/receiptStorage'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -39,7 +41,9 @@ export default function Mileage() {
 
   const [modal, setModal]       = useState(false)
   const today                   = new Date().toISOString().split('T')[0]
-  const [form, setForm]         = useState({ vehicle_id: '', mileage: '', date: '' })
+  const [form, setForm]         = useState({ vehicle_id: '', mileage: '', date: '', label: '' })
+  const [receiptFile, setReceiptFile] = useState(null)
+  const receiptRef              = useRef(null)
   const [saving, setSaving]     = useState(false)
   const [deletingId, setDeletingId] = useState(null)
   const [editTarget, setEditTarget] = useState(null)
@@ -49,8 +53,16 @@ export default function Mileage() {
 
   const selectedCurrent = form.vehicle_id ? (latestMileage[form.vehicle_id]?.mileage ?? null) : null
 
-  const openCreate = () => { setForm({ vehicle_id: isDriver ? driverVehicleId : '', mileage: '', date: '' }); setModal(true) }
+  const openCreate = () => { setForm({ vehicle_id: isDriver ? driverVehicleId : '', mileage: '', date: '', label: '' }); setReceiptFile(null); setModal(true) }
   const closeModal = () => setModal(false)
+
+  const handleReceiptChange = (e) => {
+    const f = e.target.files?.[0] || null
+    if (f && f.size > 10 * 1024 * 1024) { toast.error('Fichier trop volumineux (max 10 Mo)'); e.target.value = ''; return }
+    const ok = f && (f.type === 'application/pdf' || f.type.startsWith('image/'))
+    if (f && !ok) { toast.error('Formats acceptés : PDF ou image'); e.target.value = ''; return }
+    setReceiptFile(f)
+  }
 
   const handleSubmit = async () => {
     if (!form.vehicle_id || !form.mileage) return
@@ -61,10 +73,17 @@ export default function Mileage() {
     }
     setSaving(true)
     try {
+      let receipt_url = null
+      if (receiptFile) {
+        // Images (a receipt photographed at the pump) are compressed client-side.
+        receipt_url = await uploadReceipt(await compressImage(receiptFile))
+      }
       await createMileageEntry({
         vehicle_id: form.vehicle_id,
         mileage: parseFloat(form.mileage),
         created_at: form.date ? new Date(form.date + 'T12:00:00').toISOString() : new Date().toISOString(),
+        label: form.label?.trim() || null,
+        receipt_url,
       })
       queryClient.invalidateQueries({ queryKey: ['mileageEntries'] })
       toast.success(t('mileage.saved'))
@@ -159,12 +178,21 @@ export default function Mileage() {
                     const vehicle = getVehicleById(vehicles, m.vehicle_id)
                     return (
                       <tr key={m.id} className="hover:bg-white transition-colors group">
-                        <td className="px-5 py-3.5 font-medium text-slate-900">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</td>
+                        <td className="px-5 py-3.5 font-medium text-slate-900">
+                          {vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}
+                          {m.label && <span className="block text-xs font-normal text-slate-400 mt-0.5 truncate max-w-[220px]">{m.label}</span>}
+                        </td>
                         <td className="px-5 py-3.5 font-semibold text-slate-800">{m.mileage?.toLocaleString('fr-FR') ?? '—'} km</td>
                         <td className="px-5 py-3.5 text-slate-500">{format(new Date(m.created_at), 'd MMM yyyy, HH:mm', { locale: dateLocale })}</td>
                         <td className="px-5 py-3.5">
-                          <div className="flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => setConfirmDeleteId(m.id)} disabled={deletingId === m.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors">
+                          <div className="flex items-center justify-end gap-1">
+                            {m.receipt_url && (
+                              <a href={m.receipt_url} target="_blank" rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-xs text-[#0066FF] hover:underline mr-1" title="Voir la facture">
+                                <Paperclip className="w-3.5 h-3.5" /> Facture
+                              </a>
+                            )}
+                            <button onClick={() => setConfirmDeleteId(m.id)} disabled={deletingId === m.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
@@ -185,7 +213,15 @@ export default function Mileage() {
                     <div className="flex-1 min-w-0 mr-3">
                       <p className="font-medium text-slate-900 truncate">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</p>
                       <p className="text-sm font-semibold text-slate-800 mt-0.5">{m.mileage?.toLocaleString('fr-FR') ?? '—'} km</p>
-                      <p className="text-xs text-slate-400">{format(new Date(m.created_at), 'd MMM yyyy', { locale: dateLocale })}</p>
+                      {m.label && <p className="text-xs text-slate-400 truncate">{m.label}</p>}
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <p className="text-xs text-slate-400">{format(new Date(m.created_at), 'd MMM yyyy', { locale: dateLocale })}</p>
+                        {m.receipt_url && (
+                          <a href={m.receipt_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[#0066FF]">
+                            <Paperclip className="w-3 h-3" /> Facture
+                          </a>
+                        )}
+                      </div>
                     </div>
                     <button onClick={() => setConfirmDeleteId(m.id)} disabled={deletingId === m.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 transition-colors flex-shrink-0">
                       <Trash2 className="w-4 h-4" />
@@ -236,6 +272,40 @@ export default function Mileage() {
         <div>
           <Label>Date d’effet <span className="text-slate-400 font-normal">(optionnel — maintenant par défaut)</span></Label>
           <Input type="date" value={form.date} max={today} onChange={e => setForm(f => ({...f, date: e.target.value}))} />
+        </div>
+        <div>
+          <Label>Libellé <span className="text-slate-400 font-normal">(optionnel)</span></Label>
+          <Input value={form.label} onChange={e => setForm(f => ({...f, label: e.target.value}))} placeholder="Ex : Plein Total A7, gasoil…" />
+        </div>
+        <div>
+          <Label>Facture / justificatif <span className="text-slate-400 font-normal">(optionnel)</span></Label>
+          <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50">
+            <div className="w-8 h-8 bg-white rounded-lg border border-slate-200 flex items-center justify-center shrink-0">
+              <FileText className={`w-4 h-4 ${receiptFile ? 'text-slate-600' : 'text-slate-300'}`} />
+            </div>
+            <div className="flex-1 min-w-0">
+              {receiptFile ? (
+                <p className="text-sm text-slate-700 truncate">{receiptFile.name}</p>
+              ) : (
+                <span className="text-sm text-slate-400">
+                  Joindre la facture
+                  <span className="block text-xs text-slate-300 mt-0.5">PDF ou photo · max 10 Mo · les photos sont compressées</span>
+                </span>
+              )}
+            </div>
+            {receiptFile ? (
+              <button type="button" onClick={() => { setReceiptFile(null); if (receiptRef.current) receiptRef.current.value = '' }}
+                className="p-1 rounded hover:bg-slate-200 text-slate-400 transition-colors shrink-0">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            ) : (
+              <button type="button" onClick={() => receiptRef.current?.click()}
+                className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors shrink-0" title="Joindre un fichier">
+                <Paperclip className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+          <input ref={receiptRef} type="file" accept="application/pdf,image/*" className="hidden" onChange={handleReceiptChange} />
         </div>
       </FormModal>
  
