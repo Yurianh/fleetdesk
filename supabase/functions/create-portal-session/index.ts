@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
     })
   } catch (err: any) {
     console.error('create-portal-session error:', err.message)
-    return new Response(JSON.stringify({ error: err.message }), {
+    return new Response(JSON.stringify({ error: 'Une erreur est survenue.' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })

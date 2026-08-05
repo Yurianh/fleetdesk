@@ -68,7 +68,7 @@ Deno.serve(async (req) => {
     })
   } catch (err: any) {
     console.error('[confirm-payment] error:', err.message)
-    return new Response(JSON.stringify({ error: err.message }), {
+    return new Response(JSON.stringify({ error: 'Une erreur est survenue lors de la confirmation.' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })

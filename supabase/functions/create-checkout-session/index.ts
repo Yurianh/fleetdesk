@@ -99,11 +99,7 @@ Deno.serve(async (req) => {
   } catch (err) {
     const stripeErr = err as any
     console.error('[checkout] error:', stripeErr.message, 'type:', stripeErr.type, 'code:', stripeErr.code)
-    return new Response(JSON.stringify({
-      error: stripeErr.message,
-      type: stripeErr.type,
-      code: stripeErr.code,
-    }), {
+    return new Response(JSON.stringify({ error: 'Une erreur est survenue lors de la création du paiement.' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
