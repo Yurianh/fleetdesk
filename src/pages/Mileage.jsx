@@ -97,7 +97,10 @@ export default function Mileage() {
       queryClient.invalidateQueries({ queryKey: ['mileageEntries'] })
       toast.success(t('mileage.saved'))
       closeModal()
-    } catch { toast.error(t('common.saveError')) }
+    } catch (e) {
+      console.error('mileage save error:', e)
+      toast.error(e?.message || t('common.saveError'))
+    }
     finally { setSaving(false) }
   }
 
