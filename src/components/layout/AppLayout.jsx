@@ -5,6 +5,7 @@ import Sidebar from './Sidebar'
 import AppLoader from './AppLoader'
 import { OnboardingProvider, useOnboarding } from '@/lib/OnboardingContext'
 import ProductTour from '@/components/onboarding/ProductTour'
+import SectionTour from '@/components/onboarding/SectionTour'
 import {
   useFleetRealtime,
   useVehicles, useDrivers, useAssignments,
@@ -77,6 +78,7 @@ export default function AppLayout() {
       </div>
 
       <ProductTour />
+      <SectionTour />
       <TourReadyBridge ready={loaderGone} />
 
       {/* Loader overlay — fades out once data is ready, then unmounts */}

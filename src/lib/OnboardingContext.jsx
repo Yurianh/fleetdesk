@@ -68,6 +68,12 @@ export function OnboardingProvider({ children }) {
 
   const startTour = useCallback(() => { setTourAuto(false); setTourOpen(true) }, [])
 
+  // Per-section coach-mark tour (launched from Settings → Tutoriels). Holds the
+  // section id; the global SectionTour component navigates + spotlights.
+  const [sectionTour, setSectionTour] = useState(null)
+  const startSectionTour = useCallback((id) => setSectionTour(id), [])
+  const endSectionTour = useCallback(() => setSectionTour(null), [])
+
   const endTour = useCallback(() => {
     setTourOpen(false)
     if (uid) localStorage.setItem(tourKey(uid), 'true')
@@ -84,6 +90,9 @@ export function OnboardingProvider({ children }) {
     startTour,
     endTour,
     markAppReady,
+    sectionTour,
+    startSectionTour,
+    endSectionTour,
   }
 
   return <OnboardingContext.Provider value={value}>{children}</OnboardingContext.Provider>

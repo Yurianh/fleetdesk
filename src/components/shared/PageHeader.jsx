@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function PageHeader({ title, description, children }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
+    <div data-tour="tut-header" className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
       <div>
         <h1 className="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 tracking-tight">{title}</h1>
         {description && <p className="text-sm text-zinc-400 mt-1">{description}</p>}
