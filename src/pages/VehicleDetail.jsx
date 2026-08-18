@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Truck, Plus, FileText, Paperclip, Camera, X, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Truck, Plus, FileText, Paperclip, Camera, X, ChevronRight, Pencil } from 'lucide-react'
 import { format, addYears } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
@@ -18,6 +18,26 @@ import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import { openSignedFile } from '@/lib/signedFile'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+
+// Compact document chip for the header: present → green "Voir", missing →
+// dashed "Ajouter". Keeps documents grouped without crowding the fact grid.
+function DocChip({ label, url, onView, onAdd }) {
+  if (url) return (
+    <button type="button" onClick={onView}
+      className="inline-flex items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50/60 px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 transition-colors">
+      <FileText className="w-3.5 h-3.5 text-emerald-600" />
+      <span className="font-medium">{label}</span>
+      <span className="text-xs font-semibold text-emerald-700">Voir →</span>
+    </button>
+  )
+  return (
+    <button type="button" onClick={onAdd}
+      className="inline-flex items-center gap-2 rounded-lg border border-dashed border-slate-200 bg-white px-3 py-2 text-sm text-slate-500 hover:border-[#0066FF] hover:text-[#0066FF] transition-colors">
+      <Plus className="w-3.5 h-3.5" />
+      <span className="font-medium">{label}</span>
+    </button>
+  )
+}
 
 // A single vehicle document field: file/camera pick, clear, and a signed link
 // to the stored document (the "invoices" bucket is private).
@@ -294,82 +314,70 @@ export default function VehicleDetail() {
       </Link>
 
       <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 mb-6">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-            <Truck className="w-6 h-6 text-[#0052D6]" />
+        {/* Identity */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-4 min-w-0">
+            <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Truck className="w-6 h-6 text-[#0052D6]" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold text-slate-900 whitespace-nowrap">{vehicle.plate_number}</h1>
+              <p className="text-slate-500 truncate">{vehicle.model}</p>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-bold text-slate-900">{vehicle.plate_number}</h1>
-            <p className="text-slate-500">{vehicle.model}</p>
-          </div>
-          <div className="flex flex-wrap gap-6 sm:gap-8 mt-1 sm:mt-0">
-            <div>
-              <p className="text-sm text-slate-500">{t('assignments.driver')}</p>
-              {currentDriver ? (
-                <div className="flex items-center gap-2">
-                  <Link
-                    to={`/Drivers/${currentDriver.id}`}
-                    className="inline-flex items-center gap-1 font-semibold text-slate-900 hover:text-[#0052D6] transition-colors"
-                  >
-                    {currentDriver.name} <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
-                  </Link>
-                  <button
-                    onClick={() => setAssignDriverOpen(true)}
-                    className="text-xs font-medium text-[#0066FF] hover:text-[#0052D6] transition-colors"
-                  >
-                    Changer
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setAssignDriverOpen(true)}
-                  className="text-sm font-medium text-[#0066FF] hover:text-[#0052D6] transition-colors"
-                >
-                  + Affecter
+          <button
+            onClick={openVehicleInfo}
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-[#0066FF] px-3 py-1.5 rounded-lg border border-slate-200 hover:border-[#0066FF] transition-colors flex-shrink-0"
+          >
+            <Pencil className="w-3.5 h-3.5" /> Modifier
+          </button>
+        </div>
+
+        {/* Facts */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-8 gap-y-4 mt-5 pt-5 border-t border-slate-100">
+          <div>
+            <p className="text-sm text-slate-500">{t('assignments.driver')}</p>
+            {currentDriver ? (
+              <div className="flex items-center gap-2 flex-wrap">
+                <Link to={`/Drivers/${currentDriver.id}`}
+                  className="inline-flex items-center gap-1 font-semibold text-slate-900 hover:text-[#0052D6] transition-colors">
+                  {currentDriver.name} <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
+                </Link>
+                <button onClick={() => setAssignDriverOpen(true)}
+                  className="text-xs font-medium text-[#0066FF] hover:text-[#0052D6] transition-colors">
+                  Changer
                 </button>
-              )}
-            </div>
-            <div>
-              <p className="text-sm text-slate-500">{t('mileage.title')}</p>
-              <p className="font-semibold text-slate-900">{latestMileage ? `${latestMileage.mileage?.toLocaleString('fr-FR') ?? '—'} km` : '—'}</p>
-            </div>
-            <div>
-              <p className="text-sm text-slate-500">Mise en circulation</p>
-              {vehicle.mec_date
-                ? <p className="font-semibold text-slate-900">{format(new Date(vehicle.mec_date), 'd MMM yyyy', { locale: dateLocale })}</p>
-                : <button onClick={openVehicleInfo} className="text-sm font-medium text-slate-300 hover:text-[#0066FF] transition-colors">Ajouter →</button>
-              }
-            </div>
-            <div>
-              <p className="text-sm text-slate-500">Carte grise</p>
-              {vehicle.registration_card_url
-                ? <button onClick={() => openSignedFile(vehicle.registration_card_url)}
-                    className="inline-flex items-center gap-1 text-sm font-semibold text-[#0066FF] hover:text-[#0052D6] transition-colors">
-                    <FileText className="w-3.5 h-3.5" /> Voir →
-                  </button>
-                : <button onClick={openVehicleInfo} className="text-sm font-medium text-slate-300 hover:text-[#0066FF] transition-colors">Ajouter →</button>
-              }
-            </div>
-            <div>
-              <p className="text-sm text-slate-500">Assurance</p>
-              {vehicle.insurance_url
-                ? <button onClick={() => openSignedFile(vehicle.insurance_url)}
-                    className="inline-flex items-center gap-1 text-sm font-semibold text-[#0066FF] hover:text-[#0052D6] transition-colors">
-                    <FileText className="w-3.5 h-3.5" /> Voir →
-                  </button>
-                : <button onClick={openVehicleInfo} className="text-sm font-medium text-slate-300 hover:text-[#0066FF] transition-colors">Ajouter →</button>
-              }
-            </div>
-            <div>
-              <p className="text-sm text-slate-500">Licence de transport</p>
-              {vehicle.transport_license_url
-                ? <button onClick={() => openSignedFile(vehicle.transport_license_url)}
-                    className="inline-flex items-center gap-1 text-sm font-semibold text-[#0066FF] hover:text-[#0052D6] transition-colors">
-                    <FileText className="w-3.5 h-3.5" /> Voir →
-                  </button>
-                : <button onClick={openVehicleInfo} className="text-sm font-medium text-slate-300 hover:text-[#0066FF] transition-colors">Ajouter →</button>
-              }
-            </div>
+              </div>
+            ) : (
+              <button onClick={() => setAssignDriverOpen(true)}
+                className="text-sm font-medium text-[#0066FF] hover:text-[#0052D6] transition-colors">
+                + Affecter
+              </button>
+            )}
+          </div>
+          <div>
+            <p className="text-sm text-slate-500">{t('mileage.title')}</p>
+            <p className="font-semibold text-slate-900">{latestMileage ? `${latestMileage.mileage?.toLocaleString('fr-FR') ?? '—'} km` : '—'}</p>
+          </div>
+          <div>
+            <p className="text-sm text-slate-500">Mise en circulation</p>
+            {vehicle.mec_date
+              ? <p className="font-semibold text-slate-900">{format(new Date(vehicle.mec_date), 'd MMM yyyy', { locale: dateLocale })}</p>
+              : <button onClick={openVehicleInfo} className="text-sm font-medium text-slate-300 hover:text-[#0066FF] transition-colors">Ajouter →</button>
+            }
+          </div>
+        </div>
+
+        {/* Documents */}
+        <div className="mt-5 pt-5 border-t border-slate-100">
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Documents</p>
+          <div className="flex flex-wrap gap-2">
+            <DocChip label="Carte grise" url={vehicle.registration_card_url}
+              onView={() => openSignedFile(vehicle.registration_card_url)} onAdd={openVehicleInfo} />
+            <DocChip label="Assurance" url={vehicle.insurance_url}
+              onView={() => openSignedFile(vehicle.insurance_url)} onAdd={openVehicleInfo} />
+            <DocChip label="Licence de transport" url={vehicle.transport_license_url}
+              onView={() => openSignedFile(vehicle.transport_license_url)} onAdd={openVehicleInfo} />
           </div>
         </div>
       </div>
