@@ -15,15 +15,16 @@ export async function uploadInvoice(file, entityType) {
     .from('invoices')
     .upload(path, file, { cacheControl: '3600', upsert: false })
   if (error) throw error
-  const { data } = supabase.storage.from('invoices').getPublicUrl(path)
-  return data.publicUrl
+  // Bucket is private — store the path; a signed URL is minted at view time.
+  return path
 }
 
-export async function deleteInvoice(publicUrl) {
-  if (!publicUrl) return
-  const marker = '/object/public/invoices/'
-  const idx = publicUrl.indexOf(marker)
-  if (idx === -1) return
-  const path = publicUrl.slice(idx + marker.length)
+export async function deleteInvoice(stored) {
+  if (!stored) return
+  let path = stored
+  for (const m of ['/object/public/invoices/', '/object/sign/invoices/', '/invoices/']) {
+    const i = stored.indexOf(m)
+    if (i !== -1) { path = stored.slice(i + m.length).split('?')[0]; break }
+  }
   await supabase.storage.from('invoices').remove([path])
 }

@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { openSignedFile } from '@/lib/signedFile'
 import PageHeader from '@/components/shared/PageHeader'
 import EmptyState from '@/components/shared/EmptyState'
 import FormModal from '@/components/shared/FormModal'
@@ -183,11 +184,11 @@ export default function Inspections() {
                         <td className="px-5 py-3.5">
                           <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             {ins.invoice_url && (
-                              <a href={ins.invoice_url} target="_blank" rel="noopener noreferrer"
+                              <button type="button" onClick={() => openSignedFile(ins.invoice_url)}
                                 className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
                                 title="Voir la facture">
                                 <Paperclip className="w-3.5 h-3.5" />
-                              </a>
+                              </button>
                             )}
                             <button onClick={() => openEdit(ins)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
                             <button onClick={() => setConfirmDeleteId(ins.id)} disabled={deletingId === ins.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
@@ -217,10 +218,10 @@ export default function Inspections() {
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0">
                         {ins.invoice_url && (
-                          <a href={ins.invoice_url} target="_blank" rel="noopener noreferrer"
+                          <button type="button" onClick={() => openSignedFile(ins.invoice_url)}
                             className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700">
                             <Paperclip className="w-4 h-4" />
-                          </a>
+                          </button>
                         )}
                         <button onClick={() => openEdit(ins)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700"><Pencil className="w-4 h-4" /></button>
                         <button onClick={() => setConfirmDeleteId(ins.id)} disabled={deletingId === ins.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>

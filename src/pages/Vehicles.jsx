@@ -23,6 +23,7 @@ import {
   createMaintenanceRecord, createTechnicalInspection, createWashRecord,
 } from '@/lib/useFleetData'
 import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
+import { openSignedFile } from '@/lib/signedFile'
 import { usePageTitle } from '@/lib/usePageTitle'
 import { useTranslation } from 'react-i18next'
 import { usePlanLimits } from '@/lib/usePlanLimits'
@@ -49,9 +50,9 @@ function RegistrationUpload({ file, existingUrl, onFileChange, onClear }) {
           {file ? (
             <span className="text-slate-700 truncate block">{file.name}</span>
           ) : existingUrl ? (
-            <a href={existingUrl} target="_blank" rel="noopener noreferrer" className="text-[#0066FF] hover:underline text-sm">
+            <button type="button" onClick={() => openSignedFile(existingUrl)} className="text-[#0066FF] hover:underline text-sm">
               Voir la carte grise →
-            </a>
+            </button>
           ) : (
             <span className="text-slate-400">
               Joindre la carte grise

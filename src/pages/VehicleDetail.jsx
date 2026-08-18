@@ -15,8 +15,56 @@ import { InvoiceUpload } from '@/components/shared/InvoiceUpload'
 import EmptyState from '@/components/shared/EmptyState'
 import AssignDriverDialog from '@/components/shared/AssignDriverDialog'
 import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
+import { openSignedFile } from '@/lib/signedFile'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+
+// A single vehicle document field: file/camera pick, clear, and a signed link
+// to the stored document (the "invoices" bucket is private).
+function VehicleDocField({ label, file, setFile, existingUrl, placeholder }) {
+  const fileRef = useRef(null)
+  const camRef = useRef(null)
+  const onPick = (e) => {
+    const f = e.target.files?.[0]
+    if (f && f.size > 10 * 1024 * 1024) { toast.error('Fichier trop volumineux (max 10 Mo)'); return }
+    setFile(f || null)
+  }
+  return (
+    <div>
+      <Label>{label} <span className="text-slate-400 font-normal">(optionnel)</span></Label>
+      <div className="flex items-center gap-2 mt-1.5 p-2.5 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden">
+        <div className="w-7 h-7 bg-white rounded-lg border border-slate-200 flex items-center justify-center shrink-0">
+          <FileText className={`w-3.5 h-3.5 ${file || existingUrl ? 'text-slate-400' : 'text-slate-300'}`} />
+        </div>
+        <div className="flex-1 min-w-0 text-sm">
+          {file ? (
+            <span className="text-slate-700 truncate block">{file.name}</span>
+          ) : existingUrl ? (
+            <button type="button" onClick={() => openSignedFile(existingUrl)} className="text-[#0066FF] hover:underline text-sm">Voir →</button>
+          ) : (
+            <span className="text-slate-400">{placeholder || 'Joindre un fichier'}<span className="block text-xs text-slate-300 mt-0.5">JPG, PNG ou PDF · max 10 Mo</span></span>
+          )}
+        </div>
+        {file ? (
+          <button type="button" onClick={() => { setFile(null); if (fileRef.current) fileRef.current.value = '' }} className="p-1 rounded hover:bg-slate-200 text-slate-400 hover:text-slate-700 transition-colors shrink-0">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        ) : (
+          <div className="flex items-center gap-1 shrink-0">
+            <button type="button" onClick={() => fileRef.current?.click()} title="Choisir un fichier" className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
+              <Paperclip className="w-3.5 h-3.5" />
+            </button>
+            <button type="button" onClick={() => camRef.current?.click()} title="Prendre une photo" className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
+              <Camera className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+      </div>
+      <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden" onChange={onPick} />
+      <input ref={camRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={onPick} />
+    </div>
+  )
+}
 import {
   useVehicles, useDrivers, useAssignments, useMileageEntries,
   useMaintenanceRecords, useTechnicalInspections, useWashRecords,
@@ -72,9 +120,9 @@ export default function VehicleDetail() {
   const [vehicleInfoModal, setVehicleInfoModal] = useState(false)
   const [vehicleInfoForm,  setVehicleInfoForm]  = useState({ mec_date: '' })
   const [regFile,          setRegFile]          = useState(null)
+  const [insuranceFile,    setInsuranceFile]    = useState(null)
+  const [licenseFile,      setLicenseFile]      = useState(null)
   const [savingVehicleInfo, setSavingVehicleInfo] = useState(false)
-  const regFileRef   = useRef(null)
-  const regCameraRef = useRef(null)
 
   // ── Assign driver ──
   const [assignDriverOpen, setAssignDriverOpen] = useState(false)
@@ -184,27 +232,41 @@ export default function VehicleDetail() {
   const openVehicleInfo = () => {
     setVehicleInfoForm({ mec_date: vehicle.mec_date || '' })
     setRegFile(null)
+    setInsuranceFile(null)
+    setLicenseFile(null)
     setVehicleInfoModal(true)
   }
   const handleSaveVehicleInfo = async () => {
     setSavingVehicleInfo(true)
     try {
       let registration_card_url = vehicle.registration_card_url || null
+      let insurance_url = vehicle.insurance_url || null
+      let transport_license_url = vehicle.transport_license_url || null
       if (regFile) {
         if (vehicle.registration_card_url) await deleteInvoice(vehicle.registration_card_url)
         registration_card_url = await uploadInvoice(regFile, 'registration')
+      }
+      if (insuranceFile) {
+        if (vehicle.insurance_url) await deleteInvoice(vehicle.insurance_url)
+        insurance_url = await uploadInvoice(insuranceFile, 'insurance')
+      }
+      if (licenseFile) {
+        if (vehicle.transport_license_url) await deleteInvoice(vehicle.transport_license_url)
+        transport_license_url = await uploadInvoice(licenseFile, 'transport-license')
       }
       await updateVehicle(id, {
         plate_number: vehicle.plate_number,
         model: vehicle.model,
         mec_date: vehicleInfoForm.mec_date || null,
         registration_card_url,
+        insurance_url,
+        transport_license_url,
       })
       queryClient.invalidateQueries({ queryKey: ['vehicles'] })
       toast.success('Informations mises à jour.')
       setVehicleInfoModal(false)
-      setRegFile(null)
-    } catch { toast.error('Erreur lors de la mise à jour.') }
+      setRegFile(null); setInsuranceFile(null); setLicenseFile(null)
+    } catch (e) { toast.error(e?.message || 'Erreur lors de la mise à jour.') }
     finally { setSavingVehicleInfo(false) }
   }
 
@@ -281,10 +343,30 @@ export default function VehicleDetail() {
             <div>
               <p className="text-sm text-slate-500">Carte grise</p>
               {vehicle.registration_card_url
-                ? <a href={vehicle.registration_card_url} target="_blank" rel="noopener noreferrer"
+                ? <button onClick={() => openSignedFile(vehicle.registration_card_url)}
                     className="inline-flex items-center gap-1 text-sm font-semibold text-[#0066FF] hover:text-[#0052D6] transition-colors">
                     <FileText className="w-3.5 h-3.5" /> Voir →
-                  </a>
+                  </button>
+                : <button onClick={openVehicleInfo} className="text-sm font-medium text-slate-300 hover:text-[#0066FF] transition-colors">Ajouter →</button>
+              }
+            </div>
+            <div>
+              <p className="text-sm text-slate-500">Assurance</p>
+              {vehicle.insurance_url
+                ? <button onClick={() => openSignedFile(vehicle.insurance_url)}
+                    className="inline-flex items-center gap-1 text-sm font-semibold text-[#0066FF] hover:text-[#0052D6] transition-colors">
+                    <FileText className="w-3.5 h-3.5" /> Voir →
+                  </button>
+                : <button onClick={openVehicleInfo} className="text-sm font-medium text-slate-300 hover:text-[#0066FF] transition-colors">Ajouter →</button>
+              }
+            </div>
+            <div>
+              <p className="text-sm text-slate-500">Licence de transport</p>
+              {vehicle.transport_license_url
+                ? <button onClick={() => openSignedFile(vehicle.transport_license_url)}
+                    className="inline-flex items-center gap-1 text-sm font-semibold text-[#0066FF] hover:text-[#0052D6] transition-colors">
+                    <FileText className="w-3.5 h-3.5" /> Voir →
+                  </button>
                 : <button onClick={openVehicleInfo} className="text-sm font-medium text-slate-300 hover:text-[#0066FF] transition-colors">Ajouter →</button>
               }
             </div>
@@ -515,44 +597,12 @@ export default function VehicleDetail() {
           <Label>Date de mise en circulation <span className="text-slate-400 font-normal">(optionnel)</span></Label>
           <Input type="date" value={vehicleInfoForm.mec_date} onChange={e => setVehicleInfoForm(f => ({ ...f, mec_date: e.target.value }))} />
         </div>
-        <div>
-          <Label>Carte grise <span className="text-slate-400 font-normal">(optionnel)</span></Label>
-          <div className="flex items-center gap-2 mt-1.5 p-2.5 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden">
-            <div className="w-7 h-7 bg-white rounded-lg border border-slate-200 flex items-center justify-center shrink-0">
-              <FileText className={`w-3.5 h-3.5 ${regFile || vehicle.registration_card_url ? 'text-slate-400' : 'text-slate-300'}`} />
-            </div>
-            <div className="flex-1 min-w-0 text-sm">
-              {regFile ? (
-                <span className="text-slate-700 truncate block">{regFile.name}</span>
-              ) : vehicle.registration_card_url ? (
-                <a href={vehicle.registration_card_url} target="_blank" rel="noopener noreferrer" className="text-[#0066FF] hover:underline text-sm">Voir la carte grise →</a>
-              ) : (
-                <span className="text-slate-400">Joindre la carte grise<span className="block text-xs text-slate-300 mt-0.5">JPG, PNG ou PDF · max 10 Mo</span></span>
-              )}
-            </div>
-            {regFile ? (
-              <button type="button" onClick={() => { setRegFile(null); if (regFileRef.current) regFileRef.current.value = '' }}
-                className="p-1 rounded hover:bg-slate-200 text-slate-400 hover:text-slate-700 transition-colors shrink-0">
-                <X className="w-3.5 h-3.5" />
-              </button>
-            ) : (
-              <div className="flex items-center gap-1 shrink-0">
-                <button type="button" onClick={() => regFileRef.current?.click()} title="Choisir un fichier"
-                  className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
-                  <Paperclip className="w-3.5 h-3.5" />
-                </button>
-                <button type="button" onClick={() => regCameraRef.current?.click()} title="Prendre une photo"
-                  className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
-                  <Camera className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            )}
-          </div>
-          <input ref={regFileRef} type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden"
-            onChange={e => { const f = e.target.files?.[0]; if (f && f.size > 10*1024*1024) { toast.error('Fichier trop volumineux (max 10 Mo)'); return } setRegFile(f || null) }} />
-          <input ref={regCameraRef} type="file" accept="image/*" capture="environment" className="hidden"
-            onChange={e => { const f = e.target.files?.[0]; if (f && f.size > 10*1024*1024) { toast.error('Fichier trop volumineux (max 10 Mo)'); return } setRegFile(f || null) }} />
-        </div>
+        <VehicleDocField label="Carte grise" file={regFile} setFile={setRegFile}
+          existingUrl={vehicle.registration_card_url} placeholder="Joindre la carte grise" />
+        <VehicleDocField label="Assurance" file={insuranceFile} setFile={setInsuranceFile}
+          existingUrl={vehicle.insurance_url} placeholder="Joindre l'attestation d'assurance" />
+        <VehicleDocField label="Licence de transport" file={licenseFile} setFile={setLicenseFile}
+          existingUrl={vehicle.transport_license_url} placeholder="Joindre la licence de transport" />
       </FormModal>
 
       {/* Maintenance */}

@@ -3,6 +3,7 @@ import { Paperclip, X, FileText, ImageIcon, Camera } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
+import { openSignedFile } from '@/lib/signedFile'
 
 function isImage(fileOrUrl) {
   const name = fileOrUrl instanceof File ? fileOrUrl.name : typeof fileOrUrl === 'string' ? fileOrUrl : ''
@@ -53,10 +54,10 @@ export function InvoiceUpload({ file, existingUrl, amount, onFileChange, onAmoun
                 {file ? file.name : 'Facture enregistrée'}
               </p>
               {existingUrl && !file && (
-                <a href={existingUrl} target="_blank" rel="noopener noreferrer"
+                <button type="button" onClick={() => openSignedFile(existingUrl)}
                   className="text-xs text-[#0066FF] hover:underline">
                   Voir la facture →
-                </a>
+                </button>
               )}
             </>
           ) : (
