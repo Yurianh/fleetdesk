@@ -13,14 +13,14 @@ const plans = [
     annualPrice: '7',
     period: '/mois',
     annualTotal: '86',
-    desc: 'Pour les artisans et indépendants qui veulent une flotte enfin organisée.',
+    desc: 'Pour les artisans et indépendants : piloter sa flotte et rester conforme, sans tableur.',
     badge: null,
     trialNote: null,
     features: [
       { text: 'Jusqu\'à 5 véhicules et 3 conducteurs', highlight: false },
-      { text: 'Fiches conducteurs avec coordonnées complètes', highlight: false },
-      { text: 'Suivi kilométrique et enregistrements maintenance', highlight: false },
-      { text: '6 documents réglementaires suivis par conducteur', highlight: false },
+      { text: 'Documents conducteurs (7) et véhicule suivis', highlight: false },
+      { text: 'Alertes contrôles techniques et échéances', highlight: false },
+      { text: 'Prévisions d\'entretien et tableau de bord', highlight: false },
       { text: 'Support par email', highlight: false },
     ],
     cta: 'Choisir Starter',
@@ -38,12 +38,11 @@ const plans = [
     badge: 'Le plus populaire',
     trialNote: '14 jours gratuits · Sans carte bancaire',
     features: [
-      { text: 'Jusqu\'à 25 véhicules · conducteurs illimités', highlight: false },
-      { text: 'Zéro contrôle technique raté : alertes 30 jours avant', highlight: false },
-      { text: 'Alertes documents expirés avant les contrôles', highlight: false },
-      { text: 'Prévisions de maintenance basées sur le kilométrage', highlight: false },
-      { text: 'Tableau de bord analytique complet', highlight: false },
-      { text: 'Suivi des lavages', highlight: false },
+      { text: 'Jusqu\'à 25 véhicules · conducteurs illimités', highlight: true },
+      { text: 'Tout Starter, sans la limite de flotte', highlight: false },
+      { text: 'Alertes 30 jours avant chaque échéance', highlight: false },
+      { text: 'Prévisions de maintenance et analytics complets', highlight: false },
+      { text: 'Suivi des lavages et justificatifs', highlight: false },
       { text: 'Support prioritaire', highlight: false },
     ],
     cta: 'Démarrer l\'essai gratuit',
@@ -57,16 +56,16 @@ const plans = [
     annualPrice: '63',
     period: '/mois',
     annualTotal: '758',
-    desc: 'Pour les flottes multi-gestionnaires avec des exigences de traçabilité et d\'audit.',
+    desc: 'Pour les flottes qui font saisir le terrain : chauffeurs, équipe et traçabilité.',
     badge: null,
     trialNote: null,
     features: [
       { text: 'Véhicules et conducteurs illimités', highlight: false },
-      { text: 'Jusqu\'à 10 gestionnaires avec rôles Admin / Membre', highlight: false },
+      { text: 'Invitez votre équipe : admins et membres', highlight: true },
+      { text: 'Accès chauffeur : saisie km, pleins et factures depuis le terrain', highlight: true },
+      { text: 'Rôles et permissions appliqués côté serveur', highlight: false },
       { text: 'Journal d\'activité complet, prêt pour les audits', highlight: false },
       { text: 'Onboarding personnalisé et SLA garanti', highlight: false },
-      { text: 'Intégrations personnalisées', highlight: false },
-      { text: 'Facturation sur mesure', highlight: false },
     ],
     cta: 'Contacter l\'équipe',
     ctaHref: '/contact',
@@ -89,14 +88,22 @@ const faq = [
     a: 'Vous êtes averti avant d\'atteindre la limite. Nous ne coupons jamais l\'accès sans prévenir : vous aurez toujours le temps de passer à une formule supérieure.'
   },
   {
+    q: 'Mes chauffeurs peuvent-ils saisir eux-mêmes ?',
+    a: 'Oui, avec la formule Enterprise. Vous invitez chaque chauffeur, qui reçoit un accès dédié limité à son véhicule pour saisir kilométrage, pleins et lavages depuis son téléphone. Les invitations d\'équipe (admins, membres, chauffeurs) sont incluses sur Enterprise.'
+  },
+  {
+    q: 'Puis-je stocker les permis, assurances et cartes grises ?',
+    a: 'Oui, sur toutes les formules. FleetDesk conserve les documents de vos conducteurs et véhicules, calcule leurs échéances et vous alerte avant expiration. Les fichiers sont stockés en privé, jamais en accès public.'
+  },
+  {
     q: 'La facturation annuelle est-elle disponible ?',
     a: 'Oui, avec une remise de 20 %. Activez-la depuis vos paramètres ou contactez-nous pour la configurer. Vous payez en une fois pour l\'année et économisez 2 mois.'
   },
 ]
 ---
 <Layout
-  title="Tarifs"
-  description="9 €/mois pour démarrer, 14 jours d'essai gratuit sur Pro. Sans engagement, sans carte bancaire. FleetDesk s'adapte à votre flotte."
+  title="Tarifs · FleetDesk"
+  description="Dès 9 €/mois, 14 jours d'essai sur Pro sans carte. Piloter et rester conforme sur toutes les formules ; équipe et saisie chauffeur sur Enterprise."
 >
   <Navbar client:load currentPath="/pricing" />
 
