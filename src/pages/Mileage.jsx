@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react'
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
-import { Plus, Gauge, Trash2, Search, Loader2, Paperclip, FileText, X, Users, CreditCard } from 'lucide-react'
+import { Plus, Gauge, Trash2, Pencil, Search, Loader2, Paperclip, FileText, X, Users, CreditCard } from 'lucide-react'
 import { compressImage } from '@/lib/compressImage'
 import { uploadReceipt } from '@/lib/receiptStorage'
 import { openSignedFile } from '@/lib/signedFile'
@@ -48,8 +48,7 @@ export default function Mileage() {
   const driverFor = (m) => getDriverById(drivers, m.driver_id || latestAssignments[m.vehicle_id]?.driver_id)
 
   const [modal, setModal]       = useState(false)
-  const today                   = new Date().toISOString().split('T')[0]
-  const [form, setForm]         = useState({ vehicle_id: '', mileage: '', date: '', label: '' })
+  const [form, setForm]         = useState({ vehicle_id: '', mileage: '', label: '' })
   const [receiptFile, setReceiptFile] = useState(null)
   const receiptRef              = useRef(null)
   const [saving, setSaving]     = useState(false)
@@ -61,7 +60,8 @@ export default function Mileage() {
 
   const selectedCurrent = form.vehicle_id ? (latestMileage[form.vehicle_id]?.mileage ?? null) : null
 
-  const openCreate = () => { setForm({ vehicle_id: isDriver ? driverVehicleId : '', mileage: '', date: '', label: '' }); setReceiptFile(null); setModal(true) }
+  const openCreate = () => { setForm({ vehicle_id: isDriver ? driverVehicleId : '', mileage: '', label: '' }); setReceiptFile(null); setModal(true) }
+  const openEdit = (m) => { setEditTarget(m); setEditForm({ mileage: String(m.mileage ?? ''), vehicle_id: m.vehicle_id }) }
   const closeModal = () => setModal(false)
 
   const handleReceiptChange = (e) => {
@@ -89,7 +89,8 @@ export default function Mileage() {
       await createMileageEntry({
         vehicle_id: form.vehicle_id,
         mileage: parseFloat(form.mileage),
-        created_at: form.date ? new Date(form.date + 'T12:00:00').toISOString() : new Date().toISOString(),
+        // created_at left to the server (real time of entry) → list keeps the
+        // true saisie order, not an artificial 12:00.
         label: form.label?.trim() || null,
         receipt_url,
         driver_id: latestAssignments[form.vehicle_id]?.driver_id || null,
@@ -221,6 +222,9 @@ export default function Mileage() {
                                 <Paperclip className="w-3.5 h-3.5" /> Facture
                               </button>
                             )}
+                            <button onClick={() => openEdit(m)} title="Modifier" className="p-1.5 rounded-lg hover:bg-blue-50 text-slate-400 hover:text-[#0066FF] transition-colors opacity-0 group-hover:opacity-100">
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
                             <button onClick={() => setConfirmDeleteId(m.id)} disabled={deletingId === m.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -257,9 +261,14 @@ export default function Mileage() {
                         )}
                       </div>
                     </div>
-                    <button onClick={() => setConfirmDeleteId(m.id)} disabled={deletingId === m.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 transition-colors flex-shrink-0">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <button onClick={() => openEdit(m)} title="Modifier" className="p-1.5 rounded-lg hover:bg-blue-50 text-slate-300 hover:text-[#0066FF] transition-colors">
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => setConfirmDeleteId(m.id)} disabled={deletingId === m.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 transition-colors">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 )
               })}
@@ -316,10 +325,6 @@ export default function Mileage() {
         <div>
           <Label>Nouveau kilométrage (km)</Label>
           <Input type="number" value={form.mileage} onChange={e => setForm(f => ({...f, mileage: e.target.value}))} placeholder="Ex : 125 000" />
-        </div>
-        <div>
-          <Label>Date d’effet <span className="text-slate-400 font-normal">(optionnel — maintenant par défaut)</span></Label>
-          <Input type="date" value={form.date} max={today} onChange={e => setForm(f => ({...f, date: e.target.value}))} />
         </div>
         <div>
           <Label>Libellé <span className="text-slate-400 font-normal">(optionnel)</span></Label>
