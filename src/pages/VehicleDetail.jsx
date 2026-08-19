@@ -90,7 +90,7 @@ import {
   useMaintenanceRecords, useTechnicalInspections, useWashRecords,
   getDriverById, getLatestAssignments,
   createMileageEntry, createMaintenanceRecord, createTechnicalInspection, createWashRecord,
-  updateVehicle
+  updateMileageEntry, updateVehicle
 } from '@/lib/useFleetData'
 import { usePageTitle } from '@/lib/usePageTitle'
 
@@ -126,7 +126,10 @@ export default function VehicleDetail() {
   const [washModal,        setWashModal]        = useState(false)
   const [saving,           setSaving]           = useState(false)
 
-  const [mileageForm,     setMileageForm]     = useState({ mileage: '', date: '' })
+  const [mileageForm,     setMileageForm]     = useState({ mileage: '' })
+  const [editMileageTarget, setEditMileageTarget] = useState(null)
+  const [editMileageValue,  setEditMileageValue]  = useState('')
+  const [savingEditMileage, setSavingEditMileage] = useState(false)
   const [maintenanceForm, setMaintenanceForm] = useState({ date: '', mileage: '', status: 'OK', issue_description: '' })
   const [maintInvoiceFile,   setMaintInvoiceFile]   = useState(null)
   const [maintInvoiceAmount, setMaintInvoiceAmount] = useState('')
@@ -167,19 +170,39 @@ export default function VehicleDetail() {
   // ── Submit handlers ───────────────────────────────────────────────
   const handleMileage = async () => {
     if (!mileageForm.mileage) return
+    // An odometer never decreases: block a value below the current reading.
+    const cur = latestMileage?.mileage
+    if (cur != null && parseFloat(mileageForm.mileage) < cur) {
+      toast.error(`Le kilométrage ne peut pas être inférieur à ${cur.toLocaleString('fr-FR')} km.`)
+      return
+    }
     setSaving(true)
     try {
-      await createMileageEntry({
-        vehicle_id: id,
-        mileage: parseFloat(mileageForm.mileage),
-        ...(mileageForm.date && { created_at: new Date(mileageForm.date + 'T12:00:00').toISOString() }),
-      })
+      // created_at is left to the server (real time of entry) so the list keeps
+      // the true saisie order, not an artificial 12:00.
+      await createMileageEntry({ vehicle_id: id, mileage: parseFloat(mileageForm.mileage) })
       queryClient.invalidateQueries({ queryKey: ['mileageEntries'] })
       toast.success('Kilométrage enregistré')
       setMileageModal(false)
-      setMileageForm({ mileage: '', date: '' })
+      setMileageForm({ mileage: '' })
     } catch { toast.error("Erreur lors de l'enregistrement") }
     finally { setSaving(false) }
+  }
+
+  const openEditMileage = (m) => {
+    setEditMileageTarget(m)
+    setEditMileageValue(String(m.mileage ?? ''))
+  }
+  const handleEditMileage = async () => {
+    if (!editMileageTarget || !editMileageValue) return
+    setSavingEditMileage(true)
+    try {
+      await updateMileageEntry(editMileageTarget.id, { mileage: Number(editMileageValue) })
+      queryClient.invalidateQueries({ queryKey: ['mileageEntries'] })
+      toast.success('Kilométrage mis à jour.')
+      setEditMileageTarget(null)
+    } catch (e) { toast.error(e?.message || 'Erreur lors de la mise à jour.') }
+    finally { setSavingEditMileage(false) }
   }
 
   const handleMaintenance = async () => {
@@ -403,19 +426,34 @@ export default function VehicleDetail() {
                 <>
                   <div className="hidden sm:block overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead><tr className="bg-white border-b"><th className="text-left px-5 py-3 text-slate-500 font-medium">Kilométrage</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Date</th></tr></thead>
+                      <thead><tr className="bg-white border-b"><th className="text-left px-5 py-3 text-slate-500 font-medium">Kilométrage</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Date</th><th className="px-5 py-3 w-16"></th></tr></thead>
                       <tbody className="divide-y divide-slate-100">
                         {vehicleMileage.map(m => (
-                          <tr key={m.id}><td className="px-5 py-3 font-medium">{m.mileage?.toLocaleString('fr-FR') ?? '—'} km</td><td className="px-5 py-3 text-slate-500">{format(new Date(m.created_at), 'd MMM yyyy, HH:mm', { locale: dateLocale })}</td></tr>
+                          <tr key={m.id} className="group hover:bg-slate-50/60 transition-colors">
+                            <td className="px-5 py-3 font-medium">{m.mileage?.toLocaleString('fr-FR') ?? '—'} km</td>
+                            <td className="px-5 py-3 text-slate-500">{format(new Date(m.created_at), 'd MMM yyyy, HH:mm', { locale: dateLocale })}</td>
+                            <td className="px-5 py-3 text-right">
+                              <button onClick={() => openEditMileage(m)} title="Modifier"
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-[#0066FF] hover:bg-blue-50 transition-colors opacity-0 group-hover:opacity-100">
+                                <Pencil className="w-3.5 h-3.5" />
+                              </button>
+                            </td>
+                          </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
                   <div className="sm:hidden divide-y divide-slate-100">
                     {vehicleMileage.map(m => (
-                      <div key={m.id} className="px-4 py-3">
-                        <p className="font-semibold text-slate-900">{m.mileage?.toLocaleString('fr-FR') ?? '—'} km</p>
-                        <p className="text-xs text-slate-400">{format(new Date(m.created_at), 'd MMM yyyy, HH:mm', { locale: dateLocale })}</p>
+                      <div key={m.id} className="flex items-center justify-between px-4 py-3">
+                        <div>
+                          <p className="font-semibold text-slate-900">{m.mileage?.toLocaleString('fr-FR') ?? '—'} km</p>
+                          <p className="text-xs text-slate-400">{format(new Date(m.created_at), 'd MMM yyyy, HH:mm', { locale: dateLocale })}</p>
+                        </div>
+                        <button onClick={() => openEditMileage(m)} title="Modifier"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-[#0066FF] hover:bg-blue-50 transition-colors flex-shrink-0">
+                          <Pencil className="w-4 h-4" />
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -594,10 +632,18 @@ export default function VehicleDetail() {
         <div>
           <Label>Nouveau kilométrage (km)</Label>
           <Input type="number" value={mileageForm.mileage} onChange={e => setMileageForm(f => ({ ...f, mileage: e.target.value }))} placeholder="Ex : 125 000" />
+          {latestMileage?.mileage != null && (
+            <p className="text-xs text-slate-400 mt-1.5">Actuel : {latestMileage.mileage.toLocaleString('fr-FR')} km — la nouvelle valeur ne peut pas être inférieure.</p>
+          )}
         </div>
+      </FormModal>
+
+      {/* Modifier un relevé */}
+      <FormModal open={!!editMileageTarget} onClose={() => setEditMileageTarget(null)} title="Modifier le kilométrage"
+        onSubmit={handleEditMileage} saving={savingEditMileage} submitLabel="Enregistrer">
         <div>
-          <Label>Date <span className="text-slate-400 font-normal">(optionnel — aujourd'hui par défaut)</span></Label>
-          <Input type="date" value={mileageForm.date} onChange={e => setMileageForm(f => ({ ...f, date: e.target.value }))} />
+          <Label>Kilométrage (km)</Label>
+          <Input type="number" value={editMileageValue} onChange={e => setEditMileageValue(e.target.value)} />
         </div>
       </FormModal>
 
