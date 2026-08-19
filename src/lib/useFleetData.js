@@ -512,9 +512,15 @@ export function getLatestAssignments(assignments) {
 }
 
 export function getLatestMileage(entries) {
+  // Current odometer = the HIGHEST reading (an odometer never decreases), not the
+  // most recent by date — a back-dated entry must not hide a higher value.
+  // Tie-break on the most recent effective date.
   const map = {}
   for (const e of entries) {
-    if (!map[e.vehicle_id] || new Date(e.created_at) > new Date(map[e.vehicle_id].created_at)) {
+    const cur = map[e.vehicle_id]
+    const em = e.mileage ?? 0
+    const cm = cur?.mileage ?? 0
+    if (!cur || em > cm || (em === cm && new Date(e.created_at) > new Date(cur.created_at))) {
       map[e.vehicle_id] = e
     }
   }
