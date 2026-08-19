@@ -11,7 +11,7 @@ const sections = [
   { id: 'cookies',       label: 'Cookies'              },
 ]
 
-const updated = '4 août 2026'
+const updated = '19 août 2026'
 ---
 
 <Layout
@@ -149,9 +149,11 @@ const updated = '4 août 2026'
             <ul class="list-disc list-inside mt-2 space-y-1 ml-2">
               <li><strong>Données de compte :</strong> adresse e-mail, nom d'affichage, organisation ;</li>
               <li><strong>Données de flotte :</strong> véhicules, conducteurs, kilométrages, entretiens, contrôles techniques, lavages, affectations ;</li>
+              <li><strong>Documents et pièces justificatives :</strong> documents conducteurs (permis, aptitude à la conduite, casier judiciaire, formations, visite médicale) et véhicules (carte grise, assurance, licence de transport), factures et justificatifs. Certains de ces documents relèvent de catégories particulières de données ; ils sont traités pour la seule finalité de conformité de la flotte ;</li>
               <li><strong>Données techniques :</strong> adresse IP, type de navigateur, logs d'accès ;</li>
               <li><strong>Données de facturation :</strong> gérées par notre prestataire de paiement sécurisé (Stripe). FleetDesk ne stocke jamais les coordonnées bancaires.</li>
             </ul>
+            <p class="mt-2">Pour les données relatives à vos conducteurs, vous agissez en qualité de responsable de traitement et FleetDesk en qualité de sous-traitant, au sens du RGPD.</p>
           </div>
 
           <div>
@@ -160,7 +162,7 @@ const updated = '4 août 2026'
             <ul class="list-disc list-inside mt-2 space-y-1 ml-2">
               <li>fournir et améliorer le service FleetDesk ;</li>
               <li>gérer les comptes utilisateurs et la facturation ;</li>
-              <li>envoyer des notifications liées au service (alertes, renouvellements) ;</li>
+              <li>envoyer les e-mails liés au service (invitations d'équipe, authentification, alertes, renouvellements) ;</li>
               <li>respecter les obligations légales applicables.</li>
             </ul>
           </div>
@@ -169,8 +171,9 @@ const updated = '4 août 2026'
             <h3 class="font-semibold text-zinc-800 mb-1">Partage des données</h3>
             <p>FleetDesk ne vend ni ne loue les données personnelles. Elles ne sont partagées qu'avec les sous-traitants techniques strictement nécessaires à la fourniture du service, tous soumis à des obligations contractuelles de confidentialité :</p>
             <ul class="list-disc list-inside mt-2 space-y-1 ml-2">
-              <li><strong>Supabase</strong> — base de données et authentification (région UE) ;</li>
+              <li><strong>Supabase</strong> — base de données, authentification et stockage des documents (région UE) ;</li>
               <li><strong>Vercel</strong> — hébergement et diffusion de l'application (région UE) ;</li>
+              <li><strong>Resend</strong> — acheminement des e-mails transactionnels, invitations et authentification (États-Unis) ;</li>
               <li><strong>Stripe</strong> — traitement des paiements (États-Unis) ;</li>
               <li><strong>Web3Forms</strong> — acheminement des messages du formulaire de contact (États-Unis).</li>
             </ul>
@@ -183,7 +186,7 @@ const updated = '4 août 2026'
 
           <div>
             <h3 class="font-semibold text-zinc-800 mb-1">Sécurité</h3>
-            <p>FleetDesk met en œuvre des mesures techniques et organisationnelles appropriées pour protéger les données contre tout accès non autorisé, perte, destruction ou altération : chiffrement en transit (TLS), chiffrement au repos, contrôle d'accès, authentification sécurisée.</p>
+            <p>FleetDesk met en œuvre des mesures techniques et organisationnelles appropriées pour protéger les données contre tout accès non autorisé, perte, destruction ou altération : chiffrement en transit (TLS), chiffrement au repos, authentification sécurisée, et isolation stricte des données entre organisations. Les documents (permis, assurances, cartes grises, factures) sont stockés dans un espace privé ; ils ne sont jamais accessibles publiquement et ne sont servis qu'au moyen de liens temporaires signés, à durée de validité limitée.</p>
           </div>
         </div>
       </section>
@@ -231,7 +234,7 @@ const updated = '4 août 2026'
 
           <div>
             <h3 class="font-semibold text-zinc-800 mb-1">Transferts hors UE</h3>
-            <p>Certains de nos sous-traitants (Stripe, Web3Forms) sont établis aux États-Unis et peuvent traiter des données en dehors de l'Union européenne. Ces transferts sont encadrés par des garanties appropriées (Clauses Contractuelles Types de la Commission européenne ou décision d'adéquation).</p>
+            <p>Certains de nos sous-traitants (Resend, Stripe, Web3Forms) sont établis aux États-Unis et peuvent traiter des données en dehors de l'Union européenne. Ces transferts sont encadrés par des garanties appropriées (Clauses Contractuelles Types de la Commission européenne ou décision d'adéquation).</p>
           </div>
         </div>
       </section>
