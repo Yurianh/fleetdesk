@@ -5,8 +5,8 @@ import ContactForm from '../components/ContactForm.jsx'
 import Footer from '../components/Footer.astro'
 ---
 <Layout
-  title="Contact"
-  description="Une question sur FleetDesk ? Vous voulez une démo ou de l'aide pour choisir une formule ? Contactez-nous."
+  title="Contact · FleetDesk"
+  description="Une question sur FleetDesk ? Démo, aide pour rester conforme ou pour équiper vos chauffeurs : écrivez-nous, réponse sous 24h ouvrées."
 >
   <Navbar client:load currentPath="/contact" />
 
@@ -19,14 +19,14 @@ import Footer from '../components/Footer.astro'
           <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Contact</p>
           <h1 class="font-display text-4xl font-semibold text-zinc-900 tracking-tight mb-5">On vous répond sous 24h.</h1>
           <p class="text-lg text-zinc-500 mb-10">
-            Question sur le produit, demande de démo ou besoin d'aide pour choisir votre formule ? Écrivez-nous.
+            Piloter votre flotte, rester conforme, équiper vos chauffeurs : dites-nous où vous en êtes, on vous oriente.
           </p>
 
           <div class="space-y-6">
             {[
-              { title: 'Ventes et démos',    desc: 'Vous souhaitez voir FleetDesk en action ? Nous vous guidons.' },
-              { title: 'Demandes générales', desc: 'Questions sur le produit, la facturation ou votre compte.' },
-              { title: 'Temps de réponse',   desc: 'Nous répondons généralement sous 24h ouvrées.' },
+              { title: 'Démo du produit',        desc: 'Voir FleetDesk en action et savoir s\'il colle à votre flotte.' },
+              { title: 'Conformité & documents', desc: 'De l\'aide pour suivre contrôles techniques, permis et échéances.' },
+              { title: 'Équiper vos chauffeurs', desc: 'Mettre en place l\'accès terrain, les rôles et les invitations d\'équipe.' },
             ].map(item => (
               <div class="flex gap-4">
                 <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
