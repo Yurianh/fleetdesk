@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 
 const LINKS = [
-  { label: 'Fonctionnalités', href: '/features' },
-  { label: 'Tarifs',          href: '/pricing'  },
-  { label: 'Contact',         href: '/contact'  },
+  { label: 'Fonctionnalités', href: '/features'   },
+  { label: 'Conformité',      href: '/conformite' },
+  { label: 'Tarifs',          href: '/pricing'    },
+  { label: 'Contact',         href: '/contact'    },
 ]
 
 const APP_URL = 'https://app.fleetdesk.fr'
