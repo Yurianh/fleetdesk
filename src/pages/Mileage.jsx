@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react'
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
-import { Plus, Gauge, Trash2, Pencil, Search, Loader2, Paperclip, FileText, X, Users, CreditCard } from 'lucide-react'
+import { Plus, Gauge, Trash2, Pencil, Search, Loader2, Paperclip, FileText, Camera, X, Users, CreditCard } from 'lucide-react'
 import { compressImage } from '@/lib/compressImage'
 import { uploadReceipt } from '@/lib/receiptStorage'
 import { openSignedFile } from '@/lib/signedFile'
@@ -26,6 +26,56 @@ import {
 
 import { usePageTitle } from '@/lib/usePageTitle'
 import { useAuth } from '@/lib/AuthContext'
+
+// A single photo field (file pick or camera), used for the odometer + fuel
+// ticket proofs a chauffeur must attach.
+function PhotoField({ label, hint, required, file, setFile }) {
+  const fileRef = useRef(null)
+  const camRef = useRef(null)
+  const onPick = (e) => {
+    const f = e.target.files?.[0] || null
+    if (f && f.size > 10 * 1024 * 1024) { toast.error('Fichier trop volumineux (max 10 Mo)'); e.target.value = ''; return }
+    if (f && !(f.type === 'application/pdf' || f.type.startsWith('image/'))) { toast.error('Photo ou PDF uniquement'); e.target.value = ''; return }
+    setFile(f)
+  }
+  return (
+    <div>
+      <Label>{label}{required && <span className="text-red-500"> *</span>}</Label>
+      <div className={`flex items-center gap-3 p-3 rounded-xl border bg-slate-50 ${required && !file ? 'border-slate-300' : 'border-slate-200'}`}>
+        <div className="w-8 h-8 bg-white rounded-lg border border-slate-200 flex items-center justify-center shrink-0">
+          <FileText className={`w-4 h-4 ${file ? 'text-slate-600' : 'text-slate-300'}`} />
+        </div>
+        <div className="flex-1 min-w-0">
+          {file ? (
+            <p className="text-sm text-slate-700 truncate">{file.name}</p>
+          ) : (
+            <span className="text-sm text-slate-400">{hint}<span className="block text-xs text-slate-300 mt-0.5">Photo ou PDF · max 10 Mo</span></span>
+          )}
+        </div>
+        {file ? (
+          <button type="button" onClick={() => { setFile(null); if (fileRef.current) fileRef.current.value = '' }}
+            className="p-1 rounded hover:bg-slate-200 text-slate-400 transition-colors shrink-0">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        ) : (
+          <div className="flex items-center gap-1 shrink-0">
+            <button type="button" onClick={() => camRef.current?.click()} title="Prendre une photo"
+              className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
+              <Camera className="w-4 h-4" />
+            </button>
+            <button type="button" onClick={() => fileRef.current?.click()} title="Choisir un fichier"
+              className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
+              <Paperclip className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+      </div>
+      <input ref={fileRef} type="file" accept="application/pdf,image/*" className="hidden" onChange={onPick} />
+      <input ref={camRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={onPick} />
+    </div>
+  )
+}
+
 export default function Mileage() {
   usePageTitle('Kilométrage')
   const { t } = useTranslation()
@@ -50,7 +100,7 @@ export default function Mileage() {
   const [modal, setModal]       = useState(false)
   const [form, setForm]         = useState({ vehicle_id: '', mileage: '', label: '' })
   const [receiptFile, setReceiptFile] = useState(null)
-  const receiptRef              = useRef(null)
+  const [odometerFile, setOdometerFile] = useState(null)
   const [saving, setSaving]     = useState(false)
   const [deletingId, setDeletingId] = useState(null)
   const [editTarget, setEditTarget] = useState(null)
@@ -60,20 +110,18 @@ export default function Mileage() {
 
   const selectedCurrent = form.vehicle_id ? (latestMileage[form.vehicle_id]?.mileage ?? null) : null
 
-  const openCreate = () => { setForm({ vehicle_id: isDriver ? driverVehicleId : '', mileage: '', label: '' }); setReceiptFile(null); setModal(true) }
+  const openCreate = () => { setForm({ vehicle_id: isDriver ? driverVehicleId : '', mileage: '', label: '' }); setReceiptFile(null); setOdometerFile(null); setModal(true) }
   const openEdit = (m) => { setEditTarget(m); setEditForm({ mileage: String(m.mileage ?? ''), vehicle_id: m.vehicle_id }) }
   const closeModal = () => setModal(false)
 
-  const handleReceiptChange = (e) => {
-    const f = e.target.files?.[0] || null
-    if (f && f.size > 10 * 1024 * 1024) { toast.error('Fichier trop volumineux (max 10 Mo)'); e.target.value = ''; return }
-    const ok = f && (f.type === 'application/pdf' || f.type.startsWith('image/'))
-    if (f && !ok) { toast.error('Formats acceptés : PDF ou image'); e.target.value = ''; return }
-    setReceiptFile(f)
-  }
-
   const handleSubmit = async () => {
     if (!form.vehicle_id || !form.mileage) return
+    // Chauffeurs must prove the reading: a photo of the odometer AND a photo of
+    // the fuel ticket / gauge.
+    if (isDriver && (!odometerFile || !receiptFile)) {
+      toast.error('Ajoutez la photo du compteur et celle du ticket / compteur essence.')
+      return
+    }
     const current = latestMileage[form.vehicle_id]?.mileage
     if (current && parseFloat(form.mileage) < current) {
       toast.error(t('mileage.decreaseError'))
@@ -81,11 +129,10 @@ export default function Mileage() {
     }
     setSaving(true)
     try {
-      let receipt_url = null
-      if (receiptFile) {
-        // Images (a receipt photographed at the pump) are compressed client-side.
-        receipt_url = await uploadReceipt(await compressImage(receiptFile))
-      }
+      // Photos are compressed client-side before upload.
+      let receipt_url = null, odometer_url = null
+      if (odometerFile) odometer_url = await uploadReceipt(await compressImage(odometerFile))
+      if (receiptFile)  receipt_url  = await uploadReceipt(await compressImage(receiptFile))
       await createMileageEntry({
         vehicle_id: form.vehicle_id,
         mileage: parseFloat(form.mileage),
@@ -93,6 +140,7 @@ export default function Mileage() {
         // true saisie order, not an artificial 12:00.
         label: form.label?.trim() || null,
         receipt_url,
+        odometer_url,
         driver_id: latestAssignments[form.vehicle_id]?.driver_id || null,
       })
       queryClient.invalidateQueries({ queryKey: ['mileageEntries'] })
@@ -216,10 +264,16 @@ export default function Mileage() {
                         <td className="px-5 py-3.5 text-slate-500">{format(new Date(m.created_at), 'd MMM yyyy, HH:mm', { locale: dateLocale })}</td>
                         <td className="px-5 py-3.5">
                           <div className="flex items-center justify-end gap-1">
+                            {m.odometer_url && (
+                              <button type="button" onClick={() => openSignedFile(m.odometer_url)}
+                                className="inline-flex items-center gap-1 text-xs text-[#0066FF] hover:underline mr-1" title="Voir la photo du compteur">
+                                <Gauge className="w-3.5 h-3.5" /> Compteur
+                              </button>
+                            )}
                             {m.receipt_url && (
                               <button type="button" onClick={() => openSignedFile(m.receipt_url)}
-                                className="inline-flex items-center gap-1 text-xs text-[#0066FF] hover:underline mr-1" title="Voir la facture">
-                                <Paperclip className="w-3.5 h-3.5" /> Facture
+                                className="inline-flex items-center gap-1 text-xs text-[#0066FF] hover:underline mr-1" title="Voir le ticket">
+                                <Paperclip className="w-3.5 h-3.5" /> Ticket
                               </button>
                             )}
                             <button onClick={() => openEdit(m)} title="Modifier" className="p-1.5 rounded-lg hover:bg-blue-50 text-slate-400 hover:text-[#0066FF] transition-colors opacity-0 group-hover:opacity-100">
@@ -254,9 +308,14 @@ export default function Mileage() {
                       {m.label && <p className="text-xs text-slate-400 truncate">{m.label}</p>}
                       <div className="flex items-center gap-2 mt-0.5">
                         <p className="text-xs text-slate-400">{format(new Date(m.created_at), 'd MMM yyyy', { locale: dateLocale })}</p>
+                        {m.odometer_url && (
+                          <button type="button" onClick={() => openSignedFile(m.odometer_url)} className="inline-flex items-center gap-1 text-xs text-[#0066FF]">
+                            <Gauge className="w-3 h-3" /> Compteur
+                          </button>
+                        )}
                         {m.receipt_url && (
                           <button type="button" onClick={() => openSignedFile(m.receipt_url)} className="inline-flex items-center gap-1 text-xs text-[#0066FF]">
-                            <Paperclip className="w-3 h-3" /> Facture
+                            <Paperclip className="w-3 h-3" /> Ticket
                           </button>
                         )}
                       </div>
@@ -330,36 +389,25 @@ export default function Mileage() {
           <Label>Libellé <span className="text-slate-400 font-normal">(optionnel)</span></Label>
           <Input value={form.label} onChange={e => setForm(f => ({...f, label: e.target.value}))} placeholder="Ex : Plein Total A7, gasoil…" />
         </div>
-        <div>
-          <Label>Facture / justificatif <span className="text-slate-400 font-normal">(optionnel)</span></Label>
-          <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50">
-            <div className="w-8 h-8 bg-white rounded-lg border border-slate-200 flex items-center justify-center shrink-0">
-              <FileText className={`w-4 h-4 ${receiptFile ? 'text-slate-600' : 'text-slate-300'}`} />
-            </div>
-            <div className="flex-1 min-w-0">
-              {receiptFile ? (
-                <p className="text-sm text-slate-700 truncate">{receiptFile.name}</p>
-              ) : (
-                <span className="text-sm text-slate-400">
-                  Joindre la facture
-                  <span className="block text-xs text-slate-300 mt-0.5">PDF ou photo · max 10 Mo · les photos sont compressées</span>
-                </span>
-              )}
-            </div>
-            {receiptFile ? (
-              <button type="button" onClick={() => { setReceiptFile(null); if (receiptRef.current) receiptRef.current.value = '' }}
-                className="p-1 rounded hover:bg-slate-200 text-slate-400 transition-colors shrink-0">
-                <X className="w-3.5 h-3.5" />
-              </button>
-            ) : (
-              <button type="button" onClick={() => receiptRef.current?.click()}
-                className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors shrink-0" title="Joindre un fichier">
-                <Paperclip className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-          <input ref={receiptRef} type="file" accept="application/pdf,image/*" className="hidden" onChange={handleReceiptChange} />
-        </div>
+        {isDriver && (
+          <p className="text-xs text-[#0066FF] bg-[#0066FF]/[0.05] border border-[#0066FF]/15 rounded-lg px-3 py-2">
+            Deux photos sont requises : le compteur kilométrique et le ticket (ou le compteur d'essence).
+          </p>
+        )}
+        <PhotoField
+          label="Photo du compteur (km)"
+          hint="Prendre le compteur en photo"
+          required={isDriver}
+          file={odometerFile}
+          setFile={setOdometerFile}
+        />
+        <PhotoField
+          label="Photo du ticket / compteur essence"
+          hint="Ticket de carburant ou compteur d'essence"
+          required={isDriver}
+          file={receiptFile}
+          setFile={setReceiptFile}
+        />
       </FormModal>
  
       {/* Edit dialog */}
