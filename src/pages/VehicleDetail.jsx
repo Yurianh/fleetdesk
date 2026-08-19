@@ -159,7 +159,10 @@ export default function VehicleDetail() {
   // show the last driver even after unassignment
   const activeAssignment = getLatestAssignments(assignments)[id]
   const currentDriver    = activeAssignment ? getDriverById(drivers, activeAssignment.driver_id) : null
-  const latestMileage    = vehicleMileage[0]
+  // Current odometer = highest reading (never decreases), not first-by-date.
+  const latestMileage    = vehicleMileage.reduce(
+    (best, e) => ((e.mileage ?? 0) > (best?.mileage ?? -1) ? e : best), null
+  )
 
   // ── Submit handlers ───────────────────────────────────────────────
   const handleMileage = async () => {
