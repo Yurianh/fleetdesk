@@ -23,7 +23,7 @@ export default function HeroSection() {
           </h1>
 
           <p className="text-lg text-zinc-500 leading-relaxed mb-8">
-            FleetDesk surveille chaque véhicule et chaque conducteur à votre place, et vous alerte avant l'échéance. Toute votre flotte, dans un seul outil.
+            FleetDesk surveille chaque véhicule et chaque conducteur, et vous alerte avant l'échéance. Vos chauffeurs saisissent kilométrage et pleins depuis le terrain. Vous pilotez, d'un seul tableau de bord.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 mb-6">

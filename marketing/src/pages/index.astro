@@ -102,6 +102,14 @@ const faq = [
     a: 'De 2 à 50 véhicules selon la formule : jusqu\'à 5 sur Starter, 25 sur Pro, illimité sur Enterprise. Vous êtes prévenu avant d\'atteindre la limite, jamais coupé sans avertissement.',
   },
   {
+    q: 'Mes chauffeurs peuvent-ils saisir eux-mêmes ?',
+    a: 'Oui. Chaque chauffeur reçoit un accès dédié, limité à son véhicule. Il enregistre kilométrage, pleins et lavages depuis son téléphone, avec photo de facture. Vous récupérez la donnée sans la ressaisir.',
+  },
+  {
+    q: 'Puis-je stocker les permis, assurances et cartes grises ?',
+    a: 'Oui. FleetDesk conserve les documents de vos conducteurs et véhicules, calcule leurs échéances et vous alerte avant expiration. Les fichiers sont stockés en privé, jamais en accès public.',
+  },
+  {
     q: 'Où sont hébergées mes données ?',
     a: 'En Union européenne. Vos données sont conformes au RGPD et exportables à tout moment. Elles vous appartiennent.',
   },
@@ -118,12 +126,69 @@ const teaserPlans = [
 ]
 ---
 <Layout
-  title="FleetDesk · Gestion de flotte pour PME"
-  description="Zéro contrôle technique raté, zéro document expiré, zéro panne surprise. FleetDesk surveille votre flotte à votre place."
+  title="FleetDesk · Gestion de flotte et conformité pour PME de transport"
+  description="Pilotez votre flotte, restez conforme, laissez vos chauffeurs saisir depuis le terrain. Alertes contrôle technique et documents, suivi kilométrage et pleins, prévisions d'entretien."
 >
   <Navbar client:load currentPath="/" />
 
   <HeroSection client:load />
+
+  <!-- 3 pillars -->
+  <section class="py-24 bg-zinc-50 border-b border-zinc-100">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="mb-14 max-w-2xl">
+        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Une flotte, trois métiers</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
+          Piloter, rester conforme, faire saisir le terrain
+        </h2>
+        <p class="text-lg text-zinc-500 leading-relaxed">
+          FleetDesk réunit les trois choses qui vous coûtent du temps et de l'argent aujourd'hui, dans un seul outil.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-5">
+        {[
+          {
+            tint: 'bg-[#E5EEFF]', stroke: '#0066FF',
+            icon: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
+            title: 'Piloter votre flotte',
+            desc: 'Véhicules, conducteurs, coûts et kilométrages dans un seul tableau de bord. Vous décidez sur des données, plus sur des souvenirs.',
+            points: ['Fiches véhicules et historiques', 'Affectations et suivi kilométrique', 'Coûts et utilisation par véhicule'],
+          },
+          {
+            tint: 'bg-emerald-50', stroke: '#059669',
+            icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
+            title: 'Rester conforme',
+            desc: 'Contrôles techniques, documents conducteurs et véhicules suivis avec leurs échéances. Alerté avant l\'amende, prêt pour le contrôle.',
+            points: ['Contrôles techniques et alertes', 'Permis, visite médicale, formations', 'Carte grise, assurance, licence de transport'],
+          },
+          {
+            tint: 'bg-[#E0F5FE]', stroke: '#0EA5E9',
+            icon: '<path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>',
+            title: 'Faire saisir le terrain',
+            desc: 'Vos chauffeurs enregistrent kilométrage et pleins depuis leur téléphone, facture à l\'appui. Vous récupérez la donnée sans la ressaisir.',
+            points: ['Accès chauffeur restreint à son véhicule', 'Kilométrage et lavages en un geste', 'Preuve de facture et carte carburant'],
+          },
+        ].map(p => (
+          <div class="bg-white border border-zinc-200 rounded-2xl p-6 flex flex-col">
+            <div class={`w-11 h-11 rounded-xl flex items-center justify-center mb-5 ${p.tint}`}>
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={p.stroke} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={p.icon} />
+            </div>
+            <h3 class="text-lg font-semibold text-zinc-900 mb-2">{p.title}</h3>
+            <p class="text-sm text-zinc-500 leading-relaxed mb-5">{p.desc}</p>
+            <ul class="space-y-2 mt-auto">
+              {p.points.map(pt => (
+                <li class="flex items-start gap-2 text-sm text-zinc-600">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  {pt}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
 
   <!-- Problem section -->
   <section class="py-24 bg-white border-b border-zinc-100">
@@ -305,7 +370,7 @@ const teaserPlans = [
               <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </div>
             <h3 class="text-2xl font-semibold text-zinc-900 mb-3">Zéro document expiré</h3>
-            <p class="text-lg text-zinc-500 leading-relaxed">Visite médicale, permis, formation : FleetDesk vous alerte avant que votre conducteur reprenne le volant.</p>
+            <p class="text-lg text-zinc-500 leading-relaxed">Permis, visite médicale, formations côté conducteur ; carte grise, assurance, licence de transport côté véhicule. FleetDesk calcule les échéances et vous alerte avant qu'un conducteur ou un véhicule soit hors la loi.</p>
           </div>
           <div class="lg:order-1 rounded-xl border border-zinc-200 shadow-xl shadow-zinc-200/50 overflow-hidden bg-white">
             <div class="flex items-center gap-1.5 bg-zinc-100 border-b border-zinc-200 px-4 py-2.5">
@@ -370,6 +435,38 @@ const teaserPlans = [
           </div>
         </div>
 
+        <!-- Row 5: Terrain / chauffeurs (text left, mockup right) -->
+        <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div class="max-w-md">
+            <div class="w-11 h-11 rounded-xl bg-[#E0F5FE] flex items-center justify-center mb-5">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg>
+            </div>
+            <h3 class="text-2xl font-semibold text-zinc-900 mb-3">Vos chauffeurs saisissent au volant</h3>
+            <p class="text-lg text-zinc-500 leading-relaxed">Un accès dédié, limité à leur véhicule. Ils notent le kilométrage et le plein en un geste, photo de facture à l'appui. Vous récupérez la donnée sans la ressaisir.</p>
+          </div>
+          <div class="rounded-xl border border-zinc-200 shadow-xl shadow-zinc-200/50 overflow-hidden bg-white">
+            <div class="flex items-center gap-1.5 bg-zinc-100 border-b border-zinc-200 px-4 py-2.5">
+              <div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div>
+              <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-400">app.fleetdesk.fr/kilometrage</div>
+            </div>
+            <div class="bg-zinc-50 p-5 space-y-3">
+              <div class="bg-white border border-zinc-100 rounded-lg px-3 py-2.5">
+                <p class="text-[10px] text-zinc-400 mb-0.5">Véhicule</p>
+                <div class="flex items-center gap-2"><span class="text-xs font-medium text-zinc-800">GY-578-KX — MG3 Hybride</span><span class="text-[9px] bg-zinc-100 text-zinc-500 px-1.5 py-0.5 rounded">verrouillé</span></div>
+              </div>
+              <div class="flex items-center gap-2 bg-[#0066FF]/[0.04] border border-[#0066FF]/15 rounded-lg px-3 py-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                <span class="text-[11px] text-zinc-600">Khuy Julian · <span class="font-medium text-zinc-800">Carte DKV 009</span></span>
+              </div>
+              <div class="bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><p class="text-[10px] text-zinc-400 mb-0.5">Nouveau kilométrage</p><p class="text-sm font-semibold text-zinc-800">51 177 km</p></div>
+              <div class="flex items-center gap-2 bg-white border border-dashed border-zinc-200 rounded-lg px-3 py-2.5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                <span class="text-[11px] text-zinc-500">Plein Total · facture jointe</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
       <div class="mt-16 text-center">
         <a href="/features" class="inline-flex items-center gap-2 text-sm font-medium text-[#0066FF] hover:text-[#0052D6] transition-colors">
@@ -378,6 +475,34 @@ const teaserPlans = [
             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
           </svg>
         </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roles -->
+  <section class="py-24 bg-white border-b border-zinc-100">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="mb-12 max-w-2xl">
+        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Chacun son accès</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
+          Un accès adapté à chaque rôle
+        </h2>
+        <p class="text-lg text-zinc-500 leading-relaxed">
+          Le gérant pilote, l'équipe gère, les chauffeurs saisissent. Chacun voit ce qui le concerne, ni plus, ni moins.
+        </p>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { role: 'Propriétaire', tint: 'bg-[#E5EEFF] text-[#0066FF]', desc: 'Contrôle total : flotte, équipe, facturation. Le pilote de l\'organisation.' },
+          { role: 'Administrateur', tint: 'bg-violet-50 text-violet-600', desc: 'Gère la flotte et invite l\'équipe. Toutes les opérations, sans la facturation.' },
+          { role: 'Membre', tint: 'bg-emerald-50 text-emerald-600', desc: 'Saisit et suit l\'exploitation au quotidien sur l\'ensemble de la flotte.' },
+          { role: 'Chauffeur', tint: 'bg-[#E0F5FE] text-[#0EA5E9]', desc: 'Accès restreint à son véhicule : kilométrage, pleins et lavages, depuis son téléphone.' },
+        ].map(r => (
+          <div class="bg-zinc-50 border border-zinc-100 rounded-2xl p-5">
+            <span class={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full mb-3 ${r.tint}`}>{r.role}</span>
+            <p class="text-sm text-zinc-500 leading-relaxed">{r.desc}</p>
+          </div>
+        ))}
       </div>
     </div>
   </section>
@@ -392,7 +517,7 @@ const teaserPlans = [
             Hébergé en Europe,<br />conforme dès le premier jour
           </h2>
           <p class="text-lg text-zinc-500 leading-relaxed">
-            Vos données de flotte et de conducteurs sont sensibles. Elles restent dans l'Union européenne, chiffrées, et vous appartiennent, exportables à tout moment.
+            Permis, assurances, cartes grises : vos documents sont sensibles. Ils sont stockés en privé, jamais en accès public, sur des serveurs situés dans l'Union européenne. Vos données restent chiffrées, et vous appartiennent, exportables à tout moment.
           </p>
         </div>
         <div class="grid sm:grid-cols-2 gap-4">
