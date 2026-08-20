@@ -52,7 +52,11 @@ export default function Washings() {
   const [invoiceFile, setInvoiceFile] = useState(null)
   const [invoiceExistingUrl, setInvoiceExistingUrl] = useState('')
 
-  const totalAmount = washRecords.reduce((s, w) => s + (Number(w.amount) || 0), 0)
+  // A chauffeur only sees washes for their own assigned vehicle.
+  const visibleWashes = isDriver && driverVehicleId
+    ? washRecords.filter(w => w.vehicle_id === driverVehicleId)
+    : washRecords
+  const totalAmount = visibleWashes.reduce((s, w) => s + (Number(w.amount) || 0), 0)
 
   const openCreate = () => {
     setEditing(null)
@@ -126,7 +130,7 @@ export default function Washings() {
     <div className="p-5 sm:p-8">
       <PageHeader
         title="Lavages"
-        description={washRecords.length > 0 ? `${washRecords.length} lavage${washRecords.length !== 1 ? 's' : ''} · Total : ${totalAmount.toFixed(2)} €` : 'Aucun lavage enregistré'}
+        description={visibleWashes.length > 0 ? `${visibleWashes.length} lavage${visibleWashes.length !== 1 ? 's' : ''} · Total : ${totalAmount.toFixed(2)} €` : 'Aucun lavage enregistré'}
       >
         <Button onClick={openCreate} className="bg-[#0066FF] hover:bg-[#0052D6]">
           <Plus className="w-4 h-4 mr-2" /> Ajouter un lavage
@@ -136,7 +140,7 @@ export default function Washings() {
       <DataError queries={[washQ]} />
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        {washRecords.length === 0 ? (
+        {visibleWashes.length === 0 ? (
           <EmptyState
             icon={Droplets}
             title="Aucun lavage enregistré"
@@ -157,7 +161,7 @@ export default function Washings() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {washRecords.map(w => {
+                  {visibleWashes.map(w => {
                     const vehicle = getVehicleById(vehicles, w.vehicle_id)
                     const driver  = getDriverById(drivers, w.driver_id)
                     return (
@@ -187,7 +191,7 @@ export default function Washings() {
             </div>
 
             <div className="sm:hidden divide-y divide-slate-100">
-              {washRecords.map(w => {
+              {visibleWashes.map(w => {
                 const vehicle = getVehicleById(vehicles, w.vehicle_id)
                 const driver  = getDriverById(drivers, w.driver_id)
                 return (

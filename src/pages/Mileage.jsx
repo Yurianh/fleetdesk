@@ -176,7 +176,12 @@ export default function Mileage() {
     finally { setDeletingId(null); setConfirmDeleteId(null) }
   }
 
-  const filtered = mileageEntries.filter(m => {
+  // A chauffeur only sees entries for their own assigned vehicle.
+  const visibleEntries = isDriver && driverVehicleId
+    ? mileageEntries.filter(m => m.vehicle_id === driverVehicleId)
+    : mileageEntries
+
+  const filtered = visibleEntries.filter(m => {
     if (!search) return true
     const v = getVehicleById(vehicles, m.vehicle_id)
     return v && (v.plate_number.toLowerCase().includes(search.toLowerCase()) || v.model.toLowerCase().includes(search.toLowerCase()))
@@ -186,7 +191,7 @@ export default function Mileage() {
     <div className="p-5 sm:p-8">
       <PageHeader
         title="Kilométrage"
-        description={`${mileageEntries.length} entrée${mileageEntries.length !== 1 ? 's' : ''} enregistrée${mileageEntries.length !== 1 ? 's' : ''}`}
+        description={`${visibleEntries.length} entrée${visibleEntries.length !== 1 ? 's' : ''} enregistrée${visibleEntries.length !== 1 ? 's' : ''}`}
       >
         <Button onClick={openCreate} className="bg-[#0066FF] hover:bg-[#0052D6]">
           <Plus className="w-4 h-4 mr-2" /> Enregistrer un kilométrage
@@ -195,7 +200,7 @@ export default function Mileage() {
 
       <DataError queries={[mileageQ]} />
 
-      {mileageEntries.length > 0 && (
+      {visibleEntries.length > 0 && (
         <div className="relative mb-5 max-w-full sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <Input
@@ -208,7 +213,7 @@ export default function Mileage() {
       )}
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        {mileageEntries.length === 0 ? (
+        {visibleEntries.length === 0 ? (
           <EmptyState
             icon={Gauge}
             title="Aucun kilométrage enregistré"
