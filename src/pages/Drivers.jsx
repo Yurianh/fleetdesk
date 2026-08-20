@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import PageHeader from '@/components/shared/PageHeader'
@@ -45,6 +46,7 @@ export default function Drivers() {
   const queryClient = useQueryClient()
 
   const [search, setSearch] = useState('')
+  const [sort, setSort] = useState('az')
   const [showAdd, setShowAdd] = useState(false)
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({ name: '', phone: '', email: '', employee_id: '', date_of_birth: '', address: '', dkv_card: '', highway_badge: '', wash_card: '' })
@@ -54,7 +56,15 @@ export default function Drivers() {
   const driverVehicleMap = {}
   Object.entries(latestAssignments).forEach(([vehicleId, a]) => { driverVehicleMap[a.driver_id] = vehicleId })
 
-  const filtered = drivers.filter(d => d.name.toLowerCase().includes(search.toLowerCase()))
+  // Alphabetical by default; the user can flip the order or show recent first.
+  const filtered = useMemo(() => {
+    const arr = drivers.filter(d => d.name.toLowerCase().includes(search.toLowerCase()))
+    const byName = (a, b) => (a.name || '').localeCompare(b.name || '', 'fr', { sensitivity: 'base' })
+    if (sort === 'za') arr.sort((a, b) => byName(b, a))
+    else if (sort === 'recent') arr.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+    else arr.sort(byName)
+    return arr
+  }, [drivers, search, sort])
 
   const handleCreate = async () => {
     if (!form.name) return
@@ -103,9 +113,19 @@ export default function Drivers() {
 
       <DataError queries={[driversQ]} />
 
-      <div className="relative mb-6 max-w-full sm:max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-        <Input placeholder="Rechercher un conducteur..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
+        <div className="relative flex-1 max-w-full sm:max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Input placeholder="Rechercher un conducteur..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
+        </div>
+        <Select value={sort} onValueChange={setSort}>
+          <SelectTrigger className="w-full sm:w-[190px] flex-shrink-0"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="az">Nom (A → Z)</SelectItem>
+            <SelectItem value="za">Nom (Z → A)</SelectItem>
+            <SelectItem value="recent">Récemment ajoutés</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">

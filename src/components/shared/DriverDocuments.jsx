@@ -156,6 +156,52 @@ function DocStatusBadge({ doc }) {
   )
 }
 
+// A single file slot (PDF or image), with a link to the stored file. Used for
+// the document itself and, for the permis, a second slot (recto / verso).
+function FileSlot({ label, file, setFile, existingUrl }) {
+  const ref = useRef(null)
+  const onPick = (e) => {
+    const f = e.target.files?.[0] || null
+    if (f && f.size > 10 * 1024 * 1024) { toast.error('Fichier trop volumineux (max 10 Mo)'); e.target.value = ''; return }
+    if (f && !(f.type === 'application/pdf' || f.type.startsWith('image/'))) { toast.error('PDF ou image uniquement'); e.target.value = ''; return }
+    setFile(f)
+  }
+  return (
+    <div>
+      {label && <p className="text-xs font-medium text-slate-500 mb-1.5">{label}</p>}
+      <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50">
+        <div className="w-8 h-8 bg-white rounded-lg border border-slate-200 flex items-center justify-center shrink-0">
+          <FileText className={`w-4 h-4 ${file || existingUrl ? 'text-slate-600' : 'text-slate-300'}`} />
+        </div>
+        <div className="flex-1 min-w-0">
+          {file ? (
+            <p className="text-sm text-slate-700 truncate">{file.name}</p>
+          ) : existingUrl ? (
+            <>
+              <p className="text-sm text-slate-700">Document enregistré</p>
+              <button type="button" onClick={() => openSignedFile(existingUrl)} className="text-xs text-[#0066FF] hover:underline">Voir →</button>
+            </>
+          ) : (
+            <span className="text-sm text-slate-400">Joindre un fichier<span className="block text-xs text-slate-300 mt-0.5">PDF ou image · max 10 Mo</span></span>
+          )}
+        </div>
+        {file ? (
+          <button type="button" onClick={() => { setFile(null); if (ref.current) ref.current.value = '' }}
+            className="p-1 rounded hover:bg-slate-200 text-slate-400 transition-colors shrink-0">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        ) : (
+          <button type="button" onClick={() => ref.current?.click()} title="Choisir un fichier"
+            className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors shrink-0">
+            <Upload className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
+      <input ref={ref} type="file" accept="application/pdf,image/*" className="hidden" onChange={onPick} />
+    </div>
+  )
+}
+
 export default function DriverDocuments({ driverId, driver }) {
   const { data: documents = [] } = useDriverDocuments(driverId)
   const queryClient = useQueryClient()
@@ -165,10 +211,10 @@ export default function DriverDocuments({ driverId, driver }) {
   const [form, setForm] = useState({ type: '', validation_date: '', expiry_date: '', notes: '' })
   const [customLabel, setCustomLabel] = useState('')
   const [file, setFile] = useState(null)
+  const [fileVerso, setFileVerso] = useState(null)
   const [saving, setSaving] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [deleting, setDeleting] = useState(false)
-  const fileRef = useRef(null)
 
   const docsByType = {}
   for (const d of documents) {
@@ -183,6 +229,7 @@ export default function DriverDocuments({ driverId, driver }) {
   const openAdd = (type) => {
     setEditDoc(null)
     setFile(null)
+    setFileVerso(null)
     setCustomLabel('')
     setForm({ type, validation_date: '', expiry_date: '', notes: '' })
     setDialogOpen(true)
@@ -192,6 +239,7 @@ export default function DriverDocuments({ driverId, driver }) {
   const openAddCustom = () => {
     setEditDoc(null)
     setFile(null)
+    setFileVerso(null)
     setCustomLabel('')
     setForm({ type: CUSTOM_PREFIX, validation_date: '', expiry_date: '', notes: '' })
     setDialogOpen(true)
@@ -200,6 +248,7 @@ export default function DriverDocuments({ driverId, driver }) {
   const openEdit = (doc) => {
     setEditDoc(doc)
     setFile(null)
+    setFileVerso(null)
     setCustomLabel(isCustomType(doc.type) ? doc.type.slice(CUSTOM_PREFIX.length) : '')
     setForm({
       type: doc.type,
@@ -211,26 +260,11 @@ export default function DriverDocuments({ driverId, driver }) {
   }
 
   const isCustomForm = form.type === CUSTOM_PREFIX || isCustomType(form.type)
+  const isPermisForm = form.type === 'permis_conduire'
 
   const handleValidationDateChange = (date) => {
     const expiry = calcDocExpiry(form.type, date, driver?.date_of_birth)
     setForm(f => ({ ...f, validation_date: date, expiry_date: expiry || f.expiry_date }))
-  }
-
-  const handleFileChange = (e) => {
-    const f = e.target.files?.[0] || null
-    if (f && f.size > 10 * 1024 * 1024) {
-      toast.error('Fichier trop volumineux (max 10 Mo)')
-      e.target.value = ''
-      return
-    }
-    const isAllowed = f && (f.type === 'application/pdf' || f.type.startsWith('image/'))
-    if (f && !isAllowed) {
-      toast.error('Formats acceptés : PDF ou image')
-      e.target.value = ''
-      return
-    }
-    setFile(f)
   }
 
   const handleSave = async () => {
@@ -251,14 +285,20 @@ export default function DriverDocuments({ driverId, driver }) {
       toast.error('Renseignez une date de validation ou d\'expiration')
       return
     }
+    const isPermis = resolvedType === 'permis_conduire'
     setSaving(true)
     try {
       let fileUrl = editDoc?.file_url || null
       if (file) {
         if (editDoc?.file_url) await deleteDriverDoc(editDoc.file_url)
         // Images are compressed client-side before upload; PDFs pass through.
-        const toUpload = await compressImage(file)
-        fileUrl = await uploadDriverDoc(toUpload)
+        fileUrl = await uploadDriverDoc(await compressImage(file))
+      }
+      // Permis: a second file for the back (verso).
+      let fileUrlVerso = editDoc?.file_url_verso || null
+      if (isPermis && fileVerso) {
+        if (editDoc?.file_url_verso) await deleteDriverDoc(editDoc.file_url_verso)
+        fileUrlVerso = await uploadDriverDoc(await compressImage(fileVerso))
       }
       const docData = {
         driver_id: driverId,
@@ -267,6 +307,7 @@ export default function DriverDocuments({ driverId, driver }) {
         expiry_date: form.expiry_date || null,
         notes: form.notes || null,
         file_url: fileUrl,
+        ...(isPermis ? { file_url_verso: fileUrlVerso } : {}),
       }
       if (editDoc) {
         await updateDriverDocument(editDoc.id, docData)
@@ -290,6 +331,7 @@ export default function DriverDocuments({ driverId, driver }) {
     setDeleting(true)
     try {
       if (deleteTarget.file_url) await deleteDriverDoc(deleteTarget.file_url)
+      if (deleteTarget.file_url_verso) await deleteDriverDoc(deleteTarget.file_url_verso)
       await deleteDriverDocument(deleteTarget.id)
       invalidate()
       toast.success('Document supprimé')
@@ -374,7 +416,13 @@ export default function DriverDocuments({ driverId, driver }) {
             {doc?.file_url && (
               <button type="button" onClick={() => openSignedFile(doc.file_url)}
                 className="inline-flex items-center gap-1 text-[#0066FF] hover:underline">
-                <ExternalLink className="w-3 h-3" />Voir
+                <ExternalLink className="w-3 h-3" />{doc.file_url_verso ? 'Recto' : 'Voir'}
+              </button>
+            )}
+            {doc?.file_url_verso && (
+              <button type="button" onClick={() => openSignedFile(doc.file_url_verso)}
+                className="inline-flex items-center gap-1 text-[#0066FF] hover:underline">
+                <ExternalLink className="w-3 h-3" />Verso
               </button>
             )}
           </div>
@@ -539,62 +587,15 @@ export default function DriverDocuments({ driverId, driver }) {
             />
           </div>
 
-          {/* File upload (PDF or image) */}
-          <div className="border-t border-slate-100 pt-4">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
-              Document <span className="font-normal normal-case">— optionnel</span>
+          {/* File upload — one slot, or recto/verso for the permis */}
+          <div className="border-t border-slate-100 pt-4 space-y-3">
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+              {isPermisForm ? 'Permis — recto / verso' : 'Document'} <span className="font-normal normal-case">— optionnel</span>
             </p>
-            <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50">
-              <div className="w-8 h-8 bg-white rounded-lg border border-slate-200 flex items-center justify-center shrink-0">
-                <FileText className={`w-4 h-4 ${file || editDoc?.file_url ? 'text-slate-600' : 'text-slate-300'}`} />
-              </div>
-              <div className="flex-1 min-w-0">
-                {file ? (
-                  <p className="text-sm text-slate-700 truncate">{file.name}</p>
-                ) : editDoc?.file_url ? (
-                  <>
-                    <p className="text-sm text-slate-700">Document enregistré</p>
-                    <button
-                      type="button"
-                      onClick={() => openSignedFile(editDoc.file_url)}
-                      className="text-xs text-[#0066FF] hover:underline"
-                    >
-                      Voir le document →
-                    </button>
-                  </>
-                ) : (
-                  <span className="text-sm text-slate-400">
-                    Joindre un fichier
-                    <span className="block text-xs text-slate-300 mt-0.5">PDF ou image · max 10 Mo · les photos sont compressées</span>
-                  </span>
-                )}
-              </div>
-              {file ? (
-                <button
-                  type="button"
-                  onClick={() => { setFile(null); if (fileRef.current) fileRef.current.value = '' }}
-                  className="p-1 rounded hover:bg-slate-200 text-slate-400 transition-colors shrink-0"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => fileRef.current?.click()}
-                  className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors shrink-0"
-                  title="Choisir un fichier"
-                >
-                  <Upload className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="application/pdf,image/*"
-              className="hidden"
-              onChange={handleFileChange}
-            />
+            <FileSlot label={isPermisForm ? 'Recto' : null} file={file} setFile={setFile} existingUrl={editDoc?.file_url} />
+            {isPermisForm && (
+              <FileSlot label="Verso" file={fileVerso} setFile={setFileVerso} existingUrl={editDoc?.file_url_verso} />
+            )}
           </div>
 
           <Button
