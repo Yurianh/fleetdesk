@@ -77,7 +77,7 @@ function PhotoField({ label, hint, required, file, setFile }) {
 }
 
 export default function Mileage() {
-  usePageTitle('Kilométrage')
+  usePageTitle('Carburant & Kilométrage')
   const { t } = useTranslation()
   const dateLocale = useDateLocale()
   const { user } = useAuth()
@@ -190,7 +190,7 @@ export default function Mileage() {
   return (
     <div className="p-5 sm:p-8">
       <PageHeader
-        title="Kilométrage"
+        title="Carburant & Kilométrage"
         description={`${visibleEntries.length} entrée${visibleEntries.length !== 1 ? 's' : ''} enregistrée${visibleEntries.length !== 1 ? 's' : ''}`}
       >
         <Button onClick={openCreate} className="bg-[#0066FF] hover:bg-[#0052D6]">
