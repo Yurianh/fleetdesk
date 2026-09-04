@@ -12,10 +12,6 @@ import {
 } from 'date-fns'
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/lib/AuthContext'
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer
-} from 'recharts'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -44,36 +40,10 @@ import { usePlanLimits } from '@/lib/usePlanLimits'
 import { useDateLocale } from '@/lib/useDateLocale'
 import { supabase } from '@/lib/supabase'
 
-// ─── Vehicle Usage Analytics ─────────────────────────────────────────
-
-const CHART_COLORS = ['#0066FF', '#10b981', '#f59e0b', '#ef4444', '#64748b', '#06b6d4']
-
-function UsageTooltip({ active, payload, vehicles }) {
-  if (!active || !payload?.length) return null
-  const point = payload[0]?.payload
-  const rows  = payload.filter(p => p.value != null).sort((a, b) => (b.value ?? 0) - (a.value ?? 0))
-  return (
-    <div className="bg-[#0f172a] text-white text-xs rounded-xl px-3 py-2.5 shadow-2xl border border-white/10 min-w-[160px]">
-      <p className="text-zinc-400 font-medium mb-2 capitalize">{point?.month}</p>
-      {rows.map(p => {
-        const v = vehicles.find(v => v.id === p.dataKey)
-        return (
-          <div key={p.dataKey} className="flex items-center justify-between gap-4 mb-1 last:mb-0">
-            <div className="flex items-center gap-1.5 min-w-0">
-              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
-              <span className="text-zinc-300 truncate">{v?.plate_number ?? p.dataKey}</span>
-            </div>
-            <span className="font-semibold flex-shrink-0">{p.value.toLocaleString()} km</span>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
+// ─── Vehicle Usage Analytics — ranked km per vehicle ─────────────────
 
 function VehicleUsageAnalytics({ vehicles, mileageEntries }) {
   const [timeRange, setTimeRange] = useState(3)
-  const dateLocale = useDateLocale()
 
   const allMonths = useMemo(
     () => eachMonthOfInterval({ start: subMonths(new Date(), 11), end: new Date() }),
@@ -109,32 +79,25 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries }) {
     return result
   }, [vehicles, mileageEntries, allMonths])
 
-  const colorMap = useMemo(() => {
-    const m = {}
-    vehicles.forEach((v, i) => { m[v.id] = CHART_COLORS[i % CHART_COLORS.length] })
-    return m
-  }, [vehicles])
+  // Total km per vehicle over the selected window, sorted most-used first.
+  const ranked = useMemo(() => {
+    return vehicles.map(v => {
+      const total = months.reduce((s, month) =>
+        s + (vehicleMonthlyKm[v.id]?.[format(month, 'yyyy-MM')] ?? 0), 0)
+      return { id: v.id, plate: v.plate_number, model: v.model, total }
+    }).filter(r => r.total > 0).sort((a, b) => b.total - a.total)
+  }, [vehicles, months, vehicleMonthlyKm])
 
-  const chartData = useMemo(() =>
-    months.map(month => {
-      const monthKey = format(month, 'yyyy-MM')
-      const row = { month: format(month, 'MMM', { locale: dateLocale }), monthKey }
-      for (const v of vehicles) {
-        row[v.id] = vehicleMonthlyKm[v.id]?.[monthKey] ?? null
-      }
-      return row
-    }),
-    [months, vehicles, vehicleMonthlyKm, dateLocale]
-  )
-
-  const hasData = mileageEntries.length >= 2
+  const maxTotal = ranked[0]?.total || 1
+  const fleetTotal = ranked.reduce((s, r) => s + r.total, 0)
+  const hasData = ranked.length > 0
 
   return (
     <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm mb-8">
       <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
         <div>
           <h2 className="text-base font-bold text-zinc-900">Utilisation des véhicules</h2>
-          <p className="text-sm text-zinc-400 mt-0.5">Kilométrage mensuel parcouru</p>
+          <p className="text-sm text-zinc-400 mt-0.5">Kilométrage total parcouru, par véhicule</p>
         </div>
         <div className="flex items-center gap-1 bg-zinc-100 rounded-lg p-[3px]">
           {[3, 6, 12].map(n => (
@@ -156,40 +119,24 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries }) {
           <div className="text-center">
             <Gauge className="w-8 h-8 text-zinc-200 mx-auto mb-2" />
             <p className="text-sm text-zinc-400">Pas encore assez de données</p>
-            <p className="text-xs text-zinc-300 mt-0.5">Enregistrez au moins 2 kilométrages pour voir le graphique</p>
+            <p className="text-xs text-zinc-300 mt-0.5">Enregistrez au moins 2 kilométrages pour voir l'utilisation</p>
           </div>
         </div>
       ) : (
         <>
-          <div className="h-48 sm:h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="0" stroke="#f1f5f9" vertical={false} />
-                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }}
-                  tickFormatter={v => v >= 1000 ? Math.round(v / 1000) + 'k' : v} />
-                <Tooltip content={<UsageTooltip vehicles={vehicles} />} cursor={{ stroke: '#e2e8f0', strokeWidth: 1 }} />
-                {vehicles.map(v => (
-                  <Line
-                    key={v.id}
-                    type="monotone"
-                    dataKey={v.id}
-                    stroke={colorMap[v.id]}
-                    strokeWidth={2}
-                    dot={false}
-                    activeDot={{ r: 4, strokeWidth: 0 }}
-                    connectNulls={false}
-                  />
-                ))}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3 pt-3 border-t border-zinc-100">
-            {vehicles.map(v => (
-              <div key={v.id} className="flex items-center gap-1.5 text-xs text-zinc-600">
-                <span className="w-3 h-[2px] rounded-full" style={{ backgroundColor: colorMap[v.id] }} />
-                {v.plate_number}
+          <p className="text-xs text-zinc-400 mb-3">
+            Total flotte : <span className="font-semibold text-zinc-700">{fleetTotal.toLocaleString('fr-FR')} km</span>
+            {' · '}{ranked.length} véhicule{ranked.length !== 1 ? 's' : ''} actif{ranked.length !== 1 ? 's' : ''}
+          </p>
+          <div className="space-y-2 max-h-[22rem] overflow-y-auto pr-1">
+            {ranked.map(r => (
+              <div key={r.id} className="flex items-center gap-3">
+                <div className="w-24 flex-shrink-0 text-xs font-semibold text-zinc-700 truncate" title={`${r.plate}${r.model ? ` — ${r.model}` : ''}`}>{r.plate}</div>
+                <div className="flex-1 h-4 bg-zinc-100 rounded-md overflow-hidden">
+                  <div className="h-full rounded-md bg-gradient-to-r from-[#2f7bff] to-[#0066FF]"
+                    style={{ width: `${Math.max(3, (r.total / maxTotal) * 100)}%` }} />
+                </div>
+                <div className="w-20 flex-shrink-0 text-right text-xs tabular-nums text-zinc-800">{r.total.toLocaleString('fr-FR')} km</div>
               </div>
             ))}
           </div>
