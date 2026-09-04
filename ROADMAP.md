@@ -34,9 +34,17 @@ on ne révoque jamais l'accès aux membres/données déjà créés (client start
 
 ---
 
+## Phase B — Résilience facturation
+
+- [x] **T-B01** — Webhook `invoice.payment_failed` → `app_metadata.billing_status='past_due'` ; `invoice.payment_succeeded` → `active`. Déployé. _(2026-09-04)_
+- [x] **T-B02** — `BillingBanner` global (owner only) : alerte past_due + lien portail Stripe, monté dans AppLayout. _(2026-09-04)_
+- [ ] **T-B03** — Activer les events `invoice.payment_failed` + `invoice.payment_succeeded` sur l'endpoint webhook Stripe (dashboard). _(côté Julian)_
+- [ ] **T-B04** — Test : simuler échec (carte test `4000000000000341`) → bannière apparaît ; recovery → disparaît.
+
+---
+
 ## Backlog (proposé, non planifié)
 
-- Paiement échoué (`invoice.payment_failed` / `past_due`) : relance + bannière.
 - Monitoring erreurs prod (Sentry edge + front) + alerte keep-alive cron.
 - Activation premier run : empty states + checklist onboarding + welcome email.
 - Preuve sociale réelle (1er client → logo + verbatim, publier CASE_STUDY).

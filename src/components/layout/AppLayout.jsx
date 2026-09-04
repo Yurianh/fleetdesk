@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import Sidebar from './Sidebar'
 import AppLoader from './AppLoader'
+import BillingBanner from './BillingBanner'
 import { OnboardingProvider, useOnboarding } from '@/lib/OnboardingContext'
 import ProductTour from '@/components/onboarding/ProductTour'
 import SectionTour from '@/components/onboarding/SectionTour'
@@ -72,6 +73,7 @@ export default function AppLayout() {
           </header>
 
           <main className="flex-1 overflow-y-auto bg-background">
+            <BillingBanner />
             <Outlet />
           </main>
         </div>

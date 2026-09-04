@@ -98,9 +98,37 @@ Deno.serve(async (req) => {
     if (user) {
       await supabase.auth.admin.updateUserById(user.id, {
         user_metadata: { ...user.user_metadata, plan: 'starter', stripe_customer_id: null },
-        app_metadata: { ...user.app_metadata, plan: 'starter' },
+        app_metadata: { ...user.app_metadata, plan: 'starter', billing_status: 'active' },
       })
       console.log('[webhook] user downgraded to starter:', user.id)
+    }
+  }
+
+  // ── invoice.payment_failed (card declined on renewal) ──────────
+  // Stripe keeps retrying (dunning) before it eventually cancels. Flag the org
+  // so the app can warn without cutting access during the retry window.
+  if (event.type === 'invoice.payment_failed') {
+    const invoice = event.data.object as Stripe.Invoice
+    const customerId = invoice.customer as string
+    const user = await findUserByCustomer(supabase, customerId)
+    if (user) {
+      await supabase.auth.admin.updateUserById(user.id, {
+        app_metadata: { ...user.app_metadata, billing_status: 'past_due' },
+      })
+      console.log('[webhook] payment failed, marked past_due:', user.id)
+    }
+  }
+
+  // ── invoice.payment_succeeded (recovered / normal renewal) ─────
+  if (event.type === 'invoice.payment_succeeded') {
+    const invoice = event.data.object as Stripe.Invoice
+    const customerId = invoice.customer as string
+    const user = await findUserByCustomer(supabase, customerId)
+    if (user && user.app_metadata?.billing_status === 'past_due') {
+      await supabase.auth.admin.updateUserById(user.id, {
+        app_metadata: { ...user.app_metadata, billing_status: 'active' },
+      })
+      console.log('[webhook] payment recovered, cleared past_due:', user.id)
     }
   }
 
