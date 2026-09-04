@@ -13,16 +13,14 @@ export default function ContactForm() {
     e.preventDefault()
     setSending(true)
     try {
-      const res = await fetch('https://api.web3forms.com/submit', {
+      const res = await fetch('https://cigxngzdnhqrbhshrpgj.supabase.co/functions/v1/contact-form', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
-          access_key: '9c20f57d-a94d-46db-ad2b-a0f9b3185ee4',
           name: form.name,
           email: form.email,
           company: form.company,
           message: form.message,
-          subject: `Nouveau message FleetDesk de ${form.name}`,
         }),
       })
       const data = await res.json()
