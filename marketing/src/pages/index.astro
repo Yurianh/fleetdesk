@@ -61,30 +61,28 @@ const steps = [
   },
 ]
 
-const testimonials = [
+// Honest trust signals (no fabricated testimonials): every point below is
+// verifiable. Real customer quotes go here once consented.
+const trust = [
   {
-    name: 'Marc Lefebvre',
-    role: 'Gérant · Lefebvre Express',
-    sector: 'Livraison · 8 véhicules',
-    initials: 'ML',
-    avatarBg: 'bg-[#E5EEFF] text-[#0066FF]',
-    quote: 'Le premier mois, FleetDesk m\'a rappelé 3 contrôles techniques que j\'avais complètement oubliés. Trois immobilisations évitées dès le départ.',
+    title: 'Conçu pour la réglementation française',
+    text: 'Carte grise, contrôle technique, documents conducteurs : les échéances propres aux flottes françaises, suivies nativement.',
+    icon: '<path d="M3 21V5a2 2 0 0 1 2-2h9l-1.5 4L14 11H5"/><path d="M5 21h14"/>',
   },
   {
-    name: 'Sophie Renard',
-    role: 'Responsable flotte · BTP Renard',
-    sector: 'BTP · 12 véhicules',
-    initials: 'SR',
-    avatarBg: 'bg-[#E0F5FE] text-[#0EA5E9]',
-    quote: 'Le suivi des documents conducteurs était un cauchemar sur Excel. Maintenant j\'ai une alerte dès qu\'une visite médicale approche. Fini les mauvaises surprises.',
+    title: 'Vos données hébergées dans l\'Union européenne',
+    text: 'Infrastructure en région UE, conforme au RGPD. Vous restez propriétaire de vos données, exportables à tout moment.',
+    icon: '<path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9.5 12l1.8 1.8 3.5-3.6"/>',
   },
   {
-    name: 'Karim Aïssa',
-    role: 'Gérant · AK Plomberie',
-    sector: 'Artisan · 5 véhicules',
-    initials: 'KA',
-    avatarBg: 'bg-emerald-100 text-emerald-600',
-    quote: 'Je cherchais quelque chose de simple, pas un ERP à configurer pendant 3 semaines. FleetDesk s\'apprend en une heure. Mes maintenances sont planifiées 3 mois à l\'avance.',
+    title: 'Paiements sécurisés par Stripe',
+    text: 'Aucune donnée bancaire ne transite par nos serveurs. Facturation et abonnement gérés par Stripe.',
+    icon: '<rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+  },
+  {
+    title: '14 jours d\'essai, sans carte bancaire',
+    text: 'Testez la formule Pro sans engagement. Vous ne renseignez un moyen de paiement que si vous décidez de continuer.',
+    icon: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/>',
   },
 ]
 
@@ -540,38 +538,33 @@ const teaserPlans = [
     </div>
   </section>
 
-  <!-- Testimonials -->
+  <!-- Trust (honest early-adopter signals, no fabricated testimonials) -->
   <section class="py-24 bg-zinc-50 border-y border-zinc-100">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6">
-      <div class="text-center mb-14">
-        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Ils ont arrêté Excel</p>
-        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900">
-          Ils en parlent mieux que nous
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 grid md:grid-cols-[0.85fr_1fr] gap-12 md:gap-16 items-start">
+      <div class="md:sticky md:top-28">
+        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Nouveau · Parmi les premières flottes</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 leading-tight mb-4">
+          Jeune produit,<br />fondations sérieuses.
         </h2>
+        <p class="text-zinc-500 leading-relaxed mb-6">
+          FleetDesk démarre. Plutôt que d'inventer des avis, voici ce sur quoi vous pouvez déjà nous juger : conformité, sécurité et transparence, dès le premier jour.
+        </p>
+        <a href={`${APP_URL}/login?plan=pro`} class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0066FF] hover:text-[#0052D6]">
+          Commencer l'essai gratuit
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <p class="text-xs text-zinc-400 mt-8">Conçu et développé en France par Strelizia Creative Studio.</p>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {testimonials.map(t => (
-          <div class="bg-white border border-zinc-100 rounded-2xl p-7 flex flex-col">
-            <!-- Decorative quote mark -->
-            <div class="text-6xl font-black text-zinc-100 leading-none mb-1 -ml-1 select-none">"</div>
-            <!-- Stars -->
-            <div class="flex gap-0.5 mb-4">
-              {Array.from({ length: 5 }).map(() => (
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="#FBBF24" stroke="none">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                </svg>
-              ))}
-            </div>
-            <p class="text-sm text-zinc-600 leading-relaxed flex-1 mb-6">{t.quote}"</p>
-            <div class="flex items-center gap-3">
-              <div class={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${t.avatarBg}`}>
-                {t.initials}
-              </div>
-              <div>
-                <p class="text-sm font-semibold text-zinc-900">{t.name}</p>
-                <p class="text-xs text-zinc-400">{t.role}</p>
-                <p class="text-xs text-zinc-400">{t.sector}</p>
-              </div>
+
+      <div class="divide-y divide-zinc-200">
+        {trust.map(item => (
+          <div class="flex gap-4 py-6 first:pt-0">
+            <span class="flex-shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white border border-zinc-200">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={item.icon} />
+            </span>
+            <div>
+              <h3 class="text-[15px] font-semibold text-zinc-900 mb-1">{item.title}</h3>
+              <p class="text-sm text-zinc-500 leading-relaxed">{item.text}</p>
             </div>
           </div>
         ))}
