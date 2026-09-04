@@ -42,8 +42,17 @@ import { supabase } from '@/lib/supabase'
 
 // ─── Vehicle Usage Analytics — ranked km per vehicle ─────────────────
 
-function VehicleUsageAnalytics({ vehicles, mileageEntries }) {
+const RANGE_OPTIONS = [{ v: 3, l: '3 mois' }, { v: 6, l: '6 mois' }, { v: 12, l: '1 an' }]
+const LABEL_MODES = [
+  { k: 'plate',  l: 'Plaque' },
+  { k: 'model',  l: 'Modèle' },
+  { k: 'driver', l: 'Conducteur' },
+]
+
+function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestAssignments = {} }) {
   const [timeRange, setTimeRange] = useState(3)
+  const [labelMode, setLabelMode] = useState('plate')
+  const dateLocale = useDateLocale()
 
   const allMonths = useMemo(
     () => eachMonthOfInterval({ start: subMonths(new Date(), 11), end: new Date() }),
@@ -84,9 +93,15 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries }) {
     return vehicles.map(v => {
       const total = months.reduce((s, month) =>
         s + (vehicleMonthlyKm[v.id]?.[format(month, 'yyyy-MM')] ?? 0), 0)
-      return { id: v.id, plate: v.plate_number, model: v.model, total }
+      const driver = getDriverById(drivers, latestAssignments[v.id]?.driver_id)?.name || null
+      return { id: v.id, plate: v.plate_number, model: v.model, driver, total }
     }).filter(r => r.total > 0).sort((a, b) => b.total - a.total)
-  }, [vehicles, months, vehicleMonthlyKm])
+  }, [vehicles, months, vehicleMonthlyKm, drivers, latestAssignments])
+
+  const rowLabel = (r) =>
+    labelMode === 'model' ? (r.model || r.plate)
+    : labelMode === 'driver' ? (r.driver || '—')
+    : r.plate
 
   const maxTotal = ranked[0]?.total || 1
   const fleetTotal = ranked.reduce((s, r) => s + r.total, 0)
@@ -119,18 +134,24 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries }) {
       <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
         <div>
           <h2 className="text-base font-bold text-zinc-900">Utilisation des véhicules</h2>
-          <p className="text-sm text-zinc-400 mt-0.5">Kilométrage total parcouru, par véhicule</p>
+          <p className="text-sm text-zinc-400 mt-0.5">
+            Kilométrage total parcouru
+            <span className="text-zinc-300"> · </span>
+            <span className="capitalize">{format(months[0], 'MMM yyyy', { locale: dateLocale })}</span>
+            {' → '}
+            <span className="capitalize">{format(months[months.length - 1], 'MMM yyyy', { locale: dateLocale })}</span>
+          </p>
         </div>
         <div className="flex items-center gap-1 bg-zinc-100 rounded-lg p-[3px]">
-          {[3, 6, 12].map(n => (
+          {RANGE_OPTIONS.map(o => (
             <button
-              key={n}
-              onClick={() => setTimeRange(n)}
+              key={o.v}
+              onClick={() => setTimeRange(o.v)}
               className={'px-3 py-1 text-xs font-semibold rounded-md transition-all duration-150 ' + (
-                timeRange === n ? 'bg-slate-900 text-white' : 'text-zinc-500 hover:text-zinc-700'
+                timeRange === o.v ? 'bg-slate-900 text-white' : 'text-zinc-500 hover:text-zinc-700'
               )}
             >
-              {n}M
+              {o.l}
             </button>
           ))}
         </div>
@@ -156,10 +177,19 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries }) {
               </div>
             ))}
           </div>
+          <button
+            onClick={() => setLabelMode(m => LABEL_MODES[(LABEL_MODES.findIndex(x => x.k === m) + 1) % LABEL_MODES.length].k)}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-[#0066FF] transition-colors mb-2"
+            title="Changer l'affichage des libellés"
+          >
+            <ArrowLeftRight className="w-3.5 h-3.5" />
+            Afficher : <span className="font-semibold text-zinc-700">{LABEL_MODES.find(x => x.k === labelMode)?.l}</span>
+          </button>
           <div className="space-y-2 max-h-[22rem] overflow-y-auto pr-1">
             {ranked.map(r => (
               <div key={r.id} className="flex items-center gap-3">
-                <div className="w-24 flex-shrink-0 text-xs font-semibold text-zinc-700 truncate" title={`${r.plate}${r.model ? ` — ${r.model}` : ''}`}>{r.plate}</div>
+                <div className="w-28 flex-shrink-0 text-xs font-semibold text-zinc-700 truncate"
+                  title={`${r.plate}${r.model ? ` — ${r.model}` : ''}${r.driver ? ` · ${r.driver}` : ''}`}>{rowLabel(r)}</div>
                 <div className="flex-1 h-4 bg-zinc-100 rounded-md overflow-hidden">
                   <div className="h-full rounded-md bg-gradient-to-r from-[#2f7bff] to-[#0066FF]"
                     style={{ width: `${Math.max(3, (r.total / maxTotal) * 100)}%` }} />
@@ -1092,7 +1122,7 @@ export default function Dashboard() {
         </div>
 
         {/* Vehicle Usage Analytics */}
-        <VehicleUsageAnalytics vehicles={vehicles} mileageEntries={mileageEntries} />
+        <VehicleUsageAnalytics vehicles={vehicles} mileageEntries={mileageEntries} drivers={drivers} latestAssignments={latestAssignments} />
 
         {/* ── Activity Timeline ────────────────────────────────────── */}
         <div className="bg-white rounded-xl border border-zinc-100 overflow-hidden">
