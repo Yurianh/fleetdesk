@@ -6,7 +6,9 @@ import Footer from '../components/Footer.astro'
 
 const categories = [
   {
+    num: '01',
     title: 'Piloter votre flotte',
+    promise: 'Chaque véhicule, conducteur et euro dépensé réunis dans une seule source de vérité, mise à jour en temps réel.',
     features: [
       {
         title: 'Registre des véhicules',
@@ -53,7 +55,9 @@ const categories = [
     ],
   },
   {
+    num: '02',
     title: 'Rester conforme',
+    promise: 'Les échéances réglementaires calculées pour vous, alertées à l\'avance. Plus jamais d\'immobilisation surprise ni de document expiré.',
     features: [
       {
         title: 'Documents conducteurs',
@@ -93,7 +97,9 @@ const categories = [
     ],
   },
   {
+    num: '03',
     title: 'Faire saisir le terrain',
+    promise: 'Vos chauffeurs saisissent kilométrage, pleins et lavages depuis leur téléphone. Vous récupérez tout, sans ressaisie.',
     features: [
       {
         title: 'Accès chauffeur',
@@ -134,65 +140,54 @@ const categories = [
   <Navbar client:load currentPath="/features" />
 
   <!-- Header -->
-  <section class="bg-white border-b border-zinc-100 py-20">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-      <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Fonctionnalités</p>
-      <h1 class="font-display text-4xl sm:text-5xl font-semibold text-zinc-900 tracking-tight mb-5">
-        Piloter, rester conforme, faire saisir le terrain
+  <section class="bg-white border-b border-zinc-100 pt-20 pb-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-4">Fonctionnalités</p>
+      <h1 class="font-display text-4xl sm:text-5xl md:text-6xl font-semibold text-zinc-900 tracking-tight leading-[1.05] max-w-3xl mb-6">
+        Piloter, rester conforme,<br class="hidden sm:block" /> faire saisir le terrain.
       </h1>
-      <p class="text-lg text-zinc-500 max-w-2xl mx-auto">
+      <p class="text-lg text-zinc-500 max-w-2xl leading-relaxed">
         Tout le cycle de gestion de flotte, de la fiche véhicule à la conformité réglementaire, jusqu'à la saisie par vos chauffeurs. Sans formation, sans intégration.
       </p>
     </div>
   </section>
 
-  <!-- Feature categories -->
-  <section class="py-20">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 space-y-20">
-      {categories.map(cat => (
-        <div>
-          <h2 class="text-xs font-semibold uppercase tracking-[0.1em] text-[#0066FF] mb-8">{cat.title}</h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cat.features.map(f => (
-              <div class="group relative bg-white border border-zinc-100 rounded-xl p-6 hover:-translate-y-1 hover:shadow-xl hover:border-zinc-200 transition-all duration-150 cursor-default overflow-hidden">
-                <!-- accent line top -->
-                <div class={`absolute inset-x-0 top-0 h-[2px] scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left rounded-t-xl ${f.accentBg}`} />
-
-                <!-- icon -->
-                <div class={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-transform duration-150 group-hover:scale-110 ${f.bg}`}>
-                  <svg class={`w-5 h-5 ${f.color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={f.icon} />
-                </div>
-
-                <!-- title + desc -->
-                <h3 class="text-sm font-semibold text-zinc-900 mb-2">{f.title}</h3>
-                <p class="text-sm text-zinc-500 leading-relaxed">{f.desc}</p>
-
-                <!-- expanded details on hover -->
-                <div class="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-all duration-200">
-                  <div class="overflow-hidden">
-                    <div class="pt-4 mt-4 border-t border-zinc-100">
-                      <ul class="space-y-2">
-                        {f.details.map(d => (
-                          <li class="flex items-start gap-2 text-xs text-zinc-500">
-                            <span class={`mt-0.5 shrink-0 w-1.5 h-1.5 rounded-full ${f.accentBg}`} />
-                            {d}
-                          </li>
-                        ))}
-                      </ul>
-                      <a href="https://app.fleetdesk.fr/login" class={`inline-flex items-center gap-1 mt-4 text-xs font-semibold ${f.color} hover:underline`}>
-                        Essayer gratuitement
-                        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+  <!-- Feature pillars — editorial index -->
+  {categories.map((cat, i) => (
+    <section class={i % 2 === 1 ? 'bg-zinc-50' : 'bg-white'}>
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-20 md:py-24 grid md:grid-cols-[0.55fr_1fr] gap-x-16 gap-y-10">
+        <!-- Pillar label (sticky on desktop) -->
+        <div class="md:sticky md:top-28 self-start">
+          <span class="block font-display text-7xl sm:text-8xl font-semibold text-zinc-900/[0.07] leading-none select-none tabular-nums">{cat.num}</span>
+          <h2 class="font-display text-3xl font-semibold text-zinc-900 tracking-tight mt-3 mb-4">{cat.title}</h2>
+          <p class="text-[15px] text-zinc-500 leading-relaxed max-w-sm">{cat.promise}</p>
         </div>
-      ))}
-    </div>
-  </section>
+
+        <!-- Feature rows -->
+        <div class="divide-y divide-zinc-200/70">
+          {cat.features.map(f => (
+            <div class="py-7 first:md:pt-0 flex gap-5">
+              <span class="flex-shrink-0 inline-flex items-center justify-center w-11 h-11 rounded-xl bg-[#0066FF]/[0.06]">
+                <svg class="w-[22px] h-[22px] text-[#0066FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={f.icon} />
+              </span>
+              <div class="min-w-0">
+                <h3 class="text-lg font-semibold text-zinc-900 tracking-tight mb-1.5">{f.title}</h3>
+                <p class="text-sm text-zinc-500 leading-relaxed mb-3">{f.desc}</p>
+                <ul class="flex flex-wrap gap-x-5 gap-y-1.5">
+                  {f.details.map(d => (
+                    <li class="flex items-center gap-1.5 text-xs text-zinc-400">
+                      <svg class="w-3.5 h-3.5 text-[#0066FF] flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      {d}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  ))}
 
   <CTASection />
   <Footer />
