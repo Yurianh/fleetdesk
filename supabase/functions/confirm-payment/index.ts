@@ -38,6 +38,12 @@ Deno.serve(async (req) => {
     if (session.status !== 'complete') {
       return new Response(JSON.stringify({ error: `Paiement non finalisé (status: ${session.status})` }), { status: 402, headers: corsHeaders })
     }
+    // A completed checkout can still be unpaid (card declined after redirect).
+    // Only activate when the invoice is actually paid, or when no payment is due
+    // yet (Pro free trial).
+    if (!(session.payment_status === 'paid' || session.payment_status === 'no_payment_required')) {
+      return new Response(JSON.stringify({ error: 'Le paiement n\'a pas abouti. Réessayez ou changez de moyen de paiement.' }), { status: 402, headers: corsHeaders })
+    }
 
     const { user_id, plan } = session.metadata ?? {}
     if (!user_id || !plan) {

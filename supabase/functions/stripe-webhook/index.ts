@@ -39,9 +39,11 @@ Deno.serve(async (req) => {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
     const { user_id, plan } = session.metadata ?? {}
-    console.log('[webhook] checkout.session.completed — user_id:', user_id, 'plan:', plan)
+    const paidOk = session.payment_status === 'paid' || session.payment_status === 'no_payment_required'
+    console.log('[webhook] checkout.session.completed — user_id:', user_id, 'plan:', plan, 'payment_status:', session.payment_status)
 
-    if (user_id && plan) {
+    // Only activate on an actually-paid session (or a trial with nothing due).
+    if (user_id && plan && paidOk) {
       const { data: { user }, error: fetchErr } = await supabase.auth.admin.getUserById(user_id)
       if (fetchErr) {
         console.error('[webhook] failed to fetch user:', fetchErr.message)
