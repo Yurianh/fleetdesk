@@ -92,6 +92,28 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries }) {
   const fleetTotal = ranked.reduce((s, r) => s + r.total, 0)
   const hasData = ranked.length > 0
 
+  // Fleet synthesis (banner)
+  const kpis = useMemo(() => {
+    if (!ranked.length) return []
+    const monthTotal = (month) => vehicles.reduce((s, v) =>
+      s + (vehicleMonthlyKm[v.id]?.[format(month, 'yyyy-MM')] ?? 0), 0)
+    const first = monthTotal(months[0])
+    const last = monthTotal(months[months.length - 1])
+    const trend = first ? Math.round((last - first) / first * 100) : 0
+    const avg = Math.round(fleetTotal / ranked.length)
+    const most = ranked[0]
+    const least = ranked[ranked.length - 1]
+    const idle = vehicles.length - ranked.length
+    return [
+      { l: 'Km flotte', n: `${fleetTotal.toLocaleString('fr-FR')} km`, s: 'sur la période' },
+      { l: 'Moy./véhicule', n: `${avg.toLocaleString('fr-FR')} km`, s: 'véhicules actifs' },
+      { l: 'Tendance', n: `${trend >= 0 ? '▲' : '▼'} ${Math.abs(trend)}%`, s: 'dernier vs 1er mois', color: trend >= 0 ? 'text-emerald-600' : 'text-red-500' },
+      { l: 'Plus utilisé', n: most.plate, s: `${most.total.toLocaleString('fr-FR')} km` },
+      { l: 'Moins utilisé', n: least.plate, s: `${least.total.toLocaleString('fr-FR')} km` },
+      { l: 'Inactifs', n: idle, s: 'aucun km' },
+    ]
+  }, [ranked, vehicles, months, vehicleMonthlyKm, fleetTotal])
+
   return (
     <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm mb-8">
       <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
@@ -124,10 +146,16 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries }) {
         </div>
       ) : (
         <>
-          <p className="text-xs text-zinc-400 mb-3">
-            Total flotte : <span className="font-semibold text-zinc-700">{fleetTotal.toLocaleString('fr-FR')} km</span>
-            {' · '}{ranked.length} véhicule{ranked.length !== 1 ? 's' : ''} actif{ranked.length !== 1 ? 's' : ''}
-          </p>
+          {/* Fleet synthesis banner */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-5">
+            {kpis.map(k => (
+              <div key={k.l} className="rounded-lg border border-zinc-100 bg-zinc-50/70 px-3 py-2.5">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 truncate">{k.l}</p>
+                <p className={`text-sm font-bold mt-0.5 truncate ${k.color || 'text-zinc-900'}`} title={String(k.n)}>{k.n}</p>
+                <p className="text-[11px] text-zinc-400 truncate">{k.s}</p>
+              </div>
+            ))}
+          </div>
           <div className="space-y-2 max-h-[22rem] overflow-y-auto pr-1">
             {ranked.map(r => (
               <div key={r.id} className="flex items-center gap-3">
