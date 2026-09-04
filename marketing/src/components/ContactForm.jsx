@@ -38,14 +38,20 @@ export default function ContactForm() {
 
   if (sent) {
     return (
-      <div class="text-center py-12">
-        <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
+      <div className="py-8">
+        <div className="flex items-center gap-2 mb-5">
+          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#0066FF]">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </span>
+          <span className="text-xs font-semibold uppercase tracking-wide text-[#0066FF]">C'est envoyé</span>
         </div>
-        <h3 className="text-lg font-semibold text-zinc-900 mb-2">Message envoyé</h3>
-        <p className="text-sm text-zinc-500">Merci de nous avoir contactés. Nous vous répondons sous 24h ouvrées.</p>
+        <h3 className="text-2xl font-semibold text-zinc-900 tracking-tight mb-3">On revient vers vous très vite.</h3>
+        <p className="text-sm text-zinc-500 leading-relaxed max-w-md">
+          Un accusé de réception vient de partir vers{' '}
+          <span className="font-medium text-zinc-900">{form.email}</span>. Notre équipe vous répond sous 24h ouvrées.
+        </p>
       </div>
     )
   }
