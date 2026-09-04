@@ -12,6 +12,8 @@ import {
 } from 'date-fns'
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/lib/AuthContext'
+import { useCan } from '@/lib/capabilities'
+import UpgradePrompt from '@/components/shared/UpgradePrompt'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -863,6 +865,9 @@ function SmartNotepad({ userId }) {
 // ─── Main Dashboard ───────────────────────────────────────────────
 export default function Dashboard() {
   const { user } = useAuth()
+  // Advanced analytics (ranked-bar usage) is a Pro feature; starter keeps the
+  // basic KPIs, timeline and alerts below.
+  const canAnalytics = useCan('advancedAnalytics').allowed
     const { t } = useTranslation()
   const dateLocale = useDateLocale()
   usePageTitle(t('nav.dashboard'))
@@ -1170,8 +1175,16 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* Vehicle Usage Analytics */}
-        <VehicleUsageAnalytics vehicles={vehicles} mileageEntries={mileageEntries} drivers={drivers} latestAssignments={latestAssignments} />
+        {/* Vehicle Usage Analytics — Pro feature */}
+        {canAnalytics ? (
+          <VehicleUsageAnalytics vehicles={vehicles} mileageEntries={mileageEntries} drivers={drivers} latestAssignments={latestAssignments} />
+        ) : (
+          <UpgradePrompt
+            requiredPlan="pro"
+            title="Analysez l'utilisation de votre flotte"
+            description="Kilométrage classé par véhicule, périodes personnalisées et synthèse de flotte. Disponible à partir de la formule Pro."
+          />
+        )}
 
         {/* ── Activity Timeline ────────────────────────────────────── */}
         <div className="bg-white rounded-xl border border-zinc-100 overflow-hidden">

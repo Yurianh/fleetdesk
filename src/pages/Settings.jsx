@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { User, CreditCard, Globe, Shield, ChevronRight, Check, Loader2, Truck, Zap, Users, UserPlus, Trash2, Mail, Sparkles, GraduationCap } from 'lucide-react'
 import SectionTutorials from '@/components/onboarding/SectionTutorials'
 import { useAuth } from '@/lib/AuthContext'
@@ -13,6 +13,8 @@ import PageHeader from '@/components/shared/PageHeader'
 import { usePageTitle } from '@/lib/usePageTitle'
 import { useOnboarding } from '@/lib/OnboardingContext'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useCan } from '@/lib/capabilities'
+import UpgradePrompt from '@/components/shared/UpgradePrompt'
 
 const SECTIONS = [
   { id: 'profile',  icon: User,          labelKey: 'settings.profile' },
@@ -59,8 +61,15 @@ export default function Settings() {
   const [inviteRole, setInviteRole] = useState('member')
   const [inviteVehicle, setInviteVehicle] = useState('')
   const [inviteVehicle2, setInviteVehicle2] = useState('')
+  // Team management is Enterprise-only. Server enforces it too (invite-member);
+  // this gates the UI and shows an upsell.
+  const canTeam = useCan('team').allowed
 
-  const [section, setSection] = useState('profile')
+  const [searchParams] = useSearchParams()
+  const [section, setSection] = useState(() => {
+    const s = searchParams.get('section')
+    return SECTIONS.some(x => x.id === s) ? s : 'profile'
+  })
   const [saving, setSaving] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
 
@@ -387,19 +396,12 @@ export default function Settings() {
           {/* ── Team ── */}
           {section === 'team' && (
             <div className="space-y-4">
-              {plan !== 'enterprise' && !isCollaborator ? (
-                <div className="bg-white border border-zinc-200 rounded-xl p-8 text-center">
-                  <div className="w-12 h-12 bg-violet-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Users className="w-6 h-6 text-violet-600" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-zinc-900 mb-2">Collaboration — Formule Enterprise</h3>
-                  <p className="text-xs text-zinc-500 mb-5 max-w-xs mx-auto">Invitez votre équipe, gérez les rôles et suivez toutes les actions dans un journal d'activité partagé.</p>
-                  <button onClick={() => handleUpgrade('enterprise')} disabled={saving}
-                    className="inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold rounded-lg px-4 py-2 transition-colors">
-                    {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-                    Passer à Enterprise <ChevronRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+              {!canTeam ? (
+                <UpgradePrompt
+                  requiredPlan="enterprise"
+                  title="Invitez et gérez votre équipe"
+                  description="Ajoutez des administrateurs, des membres et des comptes chauffeur, avec les rôles et permissions appliqués côté serveur."
+                />
               ) : !canManageTeam ? (
                 <div className="bg-white border border-zinc-200 rounded-xl p-5">
                   <p className="text-sm text-zinc-500">Vous êtes membre d'une organisation. Seul le propriétaire ou un administrateur peut gérer l'équipe.</p>

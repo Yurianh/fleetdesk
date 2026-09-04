@@ -1,4 +1,5 @@
 import { useAuth } from './AuthContext'
+import { resolvePlan } from './capabilities'
 
 const LIMITS = {
   starter:    { vehicles: 5,        drivers: 3        },
@@ -12,8 +13,8 @@ const LIMITS = {
  */
 export function usePlanLimits(vehicleCount = 0, driverCount = 0) {
   const { user } = useAuth()
-  // Collaborators inherit the org owner's plan (enterprise is the only plan with invites)
-  const plan = user?.user_metadata?.org_id ? 'enterprise' : (user?.user_metadata?.plan ?? 'starter')
+  // Single source of truth: the trusted plan (app_metadata), collaborators = enterprise.
+  const plan = resolvePlan(user)
   const limits = LIMITS[plan] ?? LIMITS.starter
 
   return {

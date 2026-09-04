@@ -72,6 +72,18 @@ Deno.serve(async (req) => {
     const { data: ownerData } = await supabaseAdmin.auth.admin.getUserById(orgId)
     const orgOwnerName = ownerData?.user?.user_metadata?.full_name || ownerData?.user?.email || 'votre organisation'
 
+    // Plan gate — inviting team members and chauffeurs is Enterprise-only. Read
+    // the plan from app_metadata (service-role written, not user-editable), never
+    // from user_metadata which the owner could spoof to unlock invites for free.
+    const ownerPlan = ownerData?.user?.app_metadata?.plan ?? 'starter'
+    if (ownerPlan !== 'enterprise') {
+      return new Response(JSON.stringify({
+        error: "Les invitations d'équipe et de chauffeurs sont réservées à la formule Enterprise.",
+        code: 'plan_required',
+        required_plan: 'enterprise',
+      }), { status: 403, headers: corsHeaders })
+    }
+
     // Check for existing invite
     const { data: existing } = await supabaseAdmin
       .from('org_members')

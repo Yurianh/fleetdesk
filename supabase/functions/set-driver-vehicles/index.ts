@@ -36,6 +36,18 @@ Deno.serve(async (req) => {
       orgId = callerOrgId
     }
 
+    // Plan gate — chauffeur accounts are Enterprise-only. Read the plan from the
+    // owner's app_metadata (service-role written, not spoofable).
+    const { data: ownerData } = await supabaseAdmin.auth.admin.getUserById(orgId)
+    const ownerPlan = ownerData?.user?.app_metadata?.plan ?? 'starter'
+    if (ownerPlan !== 'enterprise') {
+      return new Response(JSON.stringify({
+        error: 'La gestion des chauffeurs est réservée à la formule Enterprise.',
+        code: 'plan_required',
+        required_plan: 'enterprise',
+      }), { status: 403, headers: corsHeaders })
+    }
+
     // Target must be a chauffeur of this org.
     const { data: member } = await supabaseAdmin.from('org_members')
       .select('id, vehicle_ids, role, org_id').eq('user_id', member_user_id).eq('org_id', orgId).maybeSingle()

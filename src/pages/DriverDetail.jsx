@@ -18,6 +18,7 @@ import {
 } from '@/lib/useFleetData'
 import { useAssignDriver } from '@/lib/useAssignDriver'
 import { useOrgMembers, useSetDriverVehicles } from '@/lib/useOrg'
+import { useCan } from '@/lib/capabilities'
 import { useAuth } from '@/lib/AuthContext'
 import { usePageTitle } from '@/lib/usePageTitle'
 
@@ -44,6 +45,7 @@ export default function DriverDetail() {
   const { data: orgMembers = [] } = useOrgMembers()
   const { user } = useAuth()
   const setDriverVehicles = useSetDriverVehicles()
+  const canDrivers = useCan('driverAccounts').allowed
   const queryClient = useQueryClient()
 
   const [editing, setEditing]             = useState(false)
@@ -247,8 +249,8 @@ export default function DriverDetail() {
         <DriverDocuments driverId={id} driver={driver} />
       </div>
 
-      {/* ── Chauffeur vehicles ── */}
-      {isChauffeur && canManageTeam && (
+      {/* ── Chauffeur vehicles ── (Enterprise-only; server-enforced) */}
+      {isChauffeur && canManageTeam && canDrivers && (
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden mb-4">
           <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
             <div>

@@ -17,6 +17,8 @@ import FormModal from '@/components/shared/FormModal'
 import { InvoiceUpload } from '@/components/shared/InvoiceUpload'
 import DataError from '@/components/shared/DataError'
 import ConfirmDeleteDialog from '@/components/shared/ConfirmDeleteDialog'
+import UpgradePrompt from '@/components/shared/UpgradePrompt'
+import { useCan } from '@/lib/capabilities'
 import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import {
   useVehicles, useDrivers, useWashRecords, useAssignments,
@@ -42,6 +44,10 @@ export default function Washings() {
   // Chauffeur: vehicle locked to their account; driver auto-filled from the
   // vehicle's active assignment (they aren't a driver record themselves).
   const isDriver = ['driver', 'sub-member'].includes(user?.user_metadata?.role)
+  // Wash tracking is a Pro feature. Chauffeurs belong to an Enterprise org so
+  // they always pass; only starter owners are gated. Existing records stay
+  // visible (grandfathered) — we only block adding new ones.
+  const canWashings = useCan('washings').allowed
   const driverVehicleId = user?.user_metadata?.vehicle_id || ''
   // A chauffeur can have up to two vehicles and pick one per wash.
   const driverVehicleIds = user?.user_metadata?.vehicle_ids?.length
@@ -139,20 +145,32 @@ export default function Washings() {
         title="Lavages"
         description={visibleWashes.length > 0 ? `${visibleWashes.length} lavage${visibleWashes.length !== 1 ? 's' : ''} · Total : ${totalAmount.toFixed(2)} €` : 'Aucun lavage enregistré'}
       >
-        <Button onClick={openCreate} className="bg-[#0066FF] hover:bg-[#0052D6]">
-          <Plus className="w-4 h-4 mr-2" /> Ajouter un lavage
-        </Button>
+        {canWashings && (
+          <Button onClick={openCreate} className="bg-[#0066FF] hover:bg-[#0052D6]">
+            <Plus className="w-4 h-4 mr-2" /> Ajouter un lavage
+          </Button>
+        )}
       </PageHeader>
 
       <DataError queries={[washQ]} />
+
+      {!canWashings && (
+        <div className="mb-4">
+          <UpgradePrompt
+            requiredPlan="pro"
+            title="Suivez les lavages et leurs justificatifs"
+            description="Enregistrez chaque lavage avec son montant et sa facture, et gardez l'historique par véhicule. Disponible à partir de la formule Pro."
+          />
+        </div>
+      )}
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         {visibleWashes.length === 0 ? (
           <EmptyState
             icon={Droplets}
             title="Aucun lavage enregistré"
-            description="Enregistrez le premier lavage d'un véhicule pour commencer le suivi."
-            action={{ label: 'Ajouter un lavage', onClick: openCreate }}
+            description={canWashings ? "Enregistrez le premier lavage d'un véhicule pour commencer le suivi." : "Passez à la formule Pro pour enregistrer les lavages de vos véhicules."}
+            action={canWashings ? { label: 'Ajouter un lavage', onClick: openCreate } : undefined}
           />
         ) : (
           <>

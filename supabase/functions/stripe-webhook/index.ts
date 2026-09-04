@@ -55,6 +55,8 @@ Deno.serve(async (req) => {
             onboarding_complete: true,
             stripe_customer_id: session.customer as string,
           },
+          // Trusted plan for feature gates (service-role only, not spoofable).
+          app_metadata: { ...user?.app_metadata, plan },
         })
         if (error) console.error('[webhook] failed to update user:', error.message)
         else console.log('[webhook] user activated:', user_id, 'plan:', plan)
@@ -80,6 +82,7 @@ Deno.serve(async (req) => {
     if (user) {
       await supabase.auth.admin.updateUserById(user.id, {
         user_metadata: { ...user.user_metadata, plan: newPlan },
+        app_metadata: { ...user.app_metadata, plan: newPlan },
       })
       console.log('[webhook] plan updated:', user.id, '->', newPlan)
     }
@@ -95,6 +98,7 @@ Deno.serve(async (req) => {
     if (user) {
       await supabase.auth.admin.updateUserById(user.id, {
         user_metadata: { ...user.user_metadata, plan: 'starter', stripe_customer_id: null },
+        app_metadata: { ...user.app_metadata, plan: 'starter' },
       })
       console.log('[webhook] user downgraded to starter:', user.id)
     }
