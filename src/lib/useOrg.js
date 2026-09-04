@@ -79,6 +79,18 @@ export function useInviteMember() {
   })
 }
 
+export function useSetDriverVehicles() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ memberUserId, driverId, vehicleIds }) =>
+      invokeWithAuth('set-driver-vehicles', { member_user_id: memberUserId, driver_id: driverId, vehicle_ids: vehicleIds }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['orgMembers'] })
+      qc.invalidateQueries({ queryKey: ['assignments'] })
+    },
+  })
+}
+
 export function useRemoveMember() {
   const qc = useQueryClient()
   return useMutation({

@@ -7,6 +7,7 @@ import { format, differenceInCalendarDays } from 'date-fns'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import EmptyState from '@/components/shared/EmptyState'
@@ -16,6 +17,8 @@ import {
   updateDriver, unassignVehicle, getVehicleById, getLatestAssignments, getDriverById
 } from '@/lib/useFleetData'
 import { useAssignDriver } from '@/lib/useAssignDriver'
+import { useOrgMembers, useSetDriverVehicles } from '@/lib/useOrg'
+import { useAuth } from '@/lib/AuthContext'
 import { usePageTitle } from '@/lib/usePageTitle'
 
 function CardBadge({ icon: Icon, label, value, color }) {
@@ -38,6 +41,9 @@ export default function DriverDetail() {
   const { data: drivers }     = useDrivers()
   const { data: vehicles }    = useVehicles()
   const { data: assignments } = useAssignments()
+  const { data: orgMembers = [] } = useOrgMembers()
+  const { user } = useAuth()
+  const setDriverVehicles = useSetDriverVehicles()
   const queryClient = useQueryClient()
 
   const [editing, setEditing]             = useState(false)
@@ -49,9 +55,31 @@ export default function DriverDetail() {
   const [unassigning, setUnassigning]     = useState(false)
   const [vehicleSearch, setVehicleSearch] = useState('')
   const searchRef = useRef(null)
+  const [editVeh, setEditVeh]   = useState(false)
+  const [veh1, setVeh1]         = useState('')
+  const [veh2, setVeh2]         = useState('')
 
   const driver = drivers.find(d => d.id === id)
   if (!driver) return <div className="p-8 text-center text-slate-400">Conducteur introuvable</div>
+
+  // Chauffeur management: the linked org_member holds the driver's vehicle set.
+  const isCollaborator = !!user?.user_metadata?.org_id
+  const isAdmin = isCollaborator && user?.user_metadata?.role === 'admin'
+  const canManageTeam = !isCollaborator || isAdmin
+  const linkedMember = driver.member_user_id ? orgMembers.find(m => m.user_id === driver.member_user_id) : null
+  const isChauffeur = linkedMember?.role === 'driver'
+  const chauffeurVehicleIds = linkedMember?.vehicle_ids || (linkedMember?.vehicle_id ? [linkedMember.vehicle_id] : [])
+
+  const openEditVeh = () => { setVeh1(chauffeurVehicleIds[0] || ''); setVeh2(chauffeurVehicleIds[1] || ''); setEditVeh(true) }
+  const saveVeh = async () => {
+    const vehicleIds = [...new Set([veh1, veh2].filter(Boolean))]
+    if (!vehicleIds.length) { toast.error('Sélectionnez au moins un véhicule.'); return }
+    try {
+      await setDriverVehicles.mutateAsync({ memberUserId: driver.member_user_id, driverId: driver.id, vehicleIds })
+      toast.success('Véhicules du chauffeur mis à jour.')
+      setEditVeh(false)
+    } catch (e) { toast.error(e.message) }
+  }
 
   const latestAssignments = getLatestAssignments(assignments)
   const driverAssignments = assignments.filter(a => a.driver_id === id)
@@ -218,6 +246,73 @@ export default function DriverDetail() {
       <div className="mb-4">
         <DriverDocuments driverId={id} driver={driver} />
       </div>
+
+      {/* ── Chauffeur vehicles ── */}
+      {isChauffeur && canManageTeam && (
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden mb-4">
+          <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div>
+              <h2 className="font-semibold text-slate-900 text-sm">Véhicules du chauffeur</h2>
+              <p className="text-xs text-slate-400 mt-0.5">Ce chauffeur ne peut saisir que le kilométrage et les lavages de ces véhicules (jusqu'à deux).</p>
+            </div>
+            {!editVeh && (
+              <button onClick={openEditVeh}
+                className="text-xs font-medium text-[#0066FF] hover:text-[#0052D6] bg-[#0066FF]/5 hover:bg-[#0066FF]/10 px-3 py-1.5 rounded-lg transition-colors">
+                Modifier
+              </button>
+            )}
+          </div>
+          <div className="px-5 py-4">
+            {!editVeh ? (
+              chauffeurVehicleIds.length ? (
+                <div className="flex flex-wrap gap-2">
+                  {chauffeurVehicleIds.map(vid => {
+                    const v = getVehicleById(vehicles, vid)
+                    return (
+                      <span key={vid} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                        <Truck className="w-3.5 h-3.5 text-slate-400" />
+                        {v ? `${v.plate_number}${v.model ? ` — ${v.model}` : ''}` : 'Véhicule'}
+                      </span>
+                    )
+                  })}
+                </div>
+              ) : <p className="text-sm text-slate-400">Aucun véhicule affecté.</p>
+            ) : (
+              <div className="space-y-3 max-w-md">
+                <div>
+                  <Label>Véhicule principal</Label>
+                  <Select value={veh1} onValueChange={setVeh1}>
+                    <SelectTrigger><SelectValue placeholder="Choisir un véhicule" /></SelectTrigger>
+                    <SelectContent>
+                      {vehicles.filter(v => v.id !== veh2).map(v => (
+                        <SelectItem key={v.id} value={v.id}>{v.plate_number}{v.model ? ` — ${v.model}` : ''}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Second véhicule <span className="text-slate-400 font-normal">(optionnel)</span></Label>
+                  <Select value={veh2 || '__none__'} onValueChange={v => setVeh2(v === '__none__' ? '' : v)} disabled={!veh1}>
+                    <SelectTrigger><SelectValue placeholder="Aucun" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__none__">Aucun</SelectItem>
+                      {vehicles.filter(v => v.id !== veh1).map(v => (
+                        <SelectItem key={v.id} value={v.id}>{v.plate_number}{v.model ? ` — ${v.model}` : ''}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex gap-2 pt-1">
+                  <Button onClick={saveVeh} disabled={setDriverVehicles.isPending} className="bg-[#0066FF] hover:bg-[#0052D6]">
+                    <Check className="w-4 h-4 mr-1.5" />{setDriverVehicles.isPending ? 'Enregistrement...' : 'Enregistrer'}
+                  </Button>
+                  <Button variant="outline" onClick={() => setEditVeh(false)}><X className="w-4 h-4 mr-1.5" />Annuler</Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ── Assignment section ── */}
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden mb-4">
