@@ -52,13 +52,29 @@ const LABEL_MODES = [
 function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestAssignments = {} }) {
   const [timeRange, setTimeRange] = useState(3)
   const [labelMode, setLabelMode] = useState('plate')
+  const [showCustom, setShowCustom] = useState(false)
+  const [customFrom, setCustomFrom] = useState('')
+  const [customTo, setCustomTo] = useState('')
   const dateLocale = useDateLocale()
 
+  const thisMonth = format(new Date(), 'yyyy-MM')
+  const isCustom = !!(customFrom && customTo)
+
   const allMonths = useMemo(
-    () => eachMonthOfInterval({ start: subMonths(new Date(), 11), end: new Date() }),
+    () => eachMonthOfInterval({ start: subMonths(new Date(), 23), end: new Date() }),
     []
   )
-  const months = useMemo(() => allMonths.slice(-timeRange), [allMonths, timeRange])
+  const months = useMemo(() => {
+    if (isCustom) {
+      let [a, b] = [customFrom, customTo].sort()
+      const start = new Date(+a.slice(0, 4), +a.slice(5, 7) - 1, 1)
+      const end = new Date(+b.slice(0, 4), +b.slice(5, 7) - 1, 1)
+      return eachMonthOfInterval({ start, end }).slice(-24)
+    }
+    return allMonths.slice(-timeRange)
+  }, [allMonths, timeRange, isCustom, customFrom, customTo])
+
+  const selectPreset = (n) => { setTimeRange(n); setCustomFrom(''); setCustomTo(''); setShowCustom(false) }
 
   const vehicleMonthlyKm = useMemo(() => {
     const byVehicle = {}
@@ -73,7 +89,7 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
     for (const v of vehicles) {
       result[v.id] = {}
       const entries = byVehicle[v.id] || []
-      for (const month of allMonths) {
+      for (const month of months) {
         const monthKey = format(month, 'yyyy-MM')
         const mEnd     = endOfMonth(month)
         const mStart   = new Date(month.getFullYear(), month.getMonth(), 1)
@@ -86,7 +102,7 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
       }
     }
     return result
-  }, [vehicles, mileageEntries, allMonths])
+  }, [vehicles, mileageEntries, months])
 
   // Total km per vehicle over the selected window, sorted most-used first.
   const ranked = useMemo(() => {
@@ -131,31 +147,64 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
 
   return (
     <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm mb-8">
-      <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
         <div>
           <h2 className="text-base font-bold text-zinc-900">Utilisation des véhicules</h2>
           <p className="text-sm text-zinc-400 mt-0.5">
             Kilométrage total parcouru
-            <span className="text-zinc-300"> · </span>
-            <span className="capitalize">{format(months[0], 'MMM yyyy', { locale: dateLocale })}</span>
-            {' → '}
-            <span className="capitalize">{format(months[months.length - 1], 'MMM yyyy', { locale: dateLocale })}</span>
+            {months.length > 0 && (
+              <>
+                <span className="text-zinc-300"> · </span>
+                <span className="capitalize">{format(months[0], 'MMM yyyy', { locale: dateLocale })}</span>
+                {' → '}
+                <span className="capitalize">{format(months[months.length - 1], 'MMM yyyy', { locale: dateLocale })}</span>
+              </>
+            )}
           </p>
         </div>
         <div className="flex items-center gap-1 bg-zinc-100 rounded-lg p-[3px]">
           {RANGE_OPTIONS.map(o => (
             <button
               key={o.v}
-              onClick={() => setTimeRange(o.v)}
+              onClick={() => selectPreset(o.v)}
               className={'px-3 py-1 text-xs font-semibold rounded-md transition-all duration-150 ' + (
-                timeRange === o.v ? 'bg-slate-900 text-white' : 'text-zinc-500 hover:text-zinc-700'
+                !isCustom && !showCustom && timeRange === o.v ? 'bg-slate-900 text-white' : 'text-zinc-500 hover:text-zinc-700'
               )}
             >
               {o.l}
             </button>
           ))}
+          <button
+            onClick={() => setShowCustom(s => !s)}
+            className={'px-3 py-1 text-xs font-semibold rounded-md transition-all duration-150 ' + (
+              isCustom || showCustom ? 'bg-slate-900 text-white' : 'text-zinc-500 hover:text-zinc-700'
+            )}
+          >
+            Perso
+          </button>
         </div>
       </div>
+
+      {showCustom && (
+        <div className="flex flex-wrap items-end gap-3 mb-5 pb-4 border-b border-zinc-100">
+          <div>
+            <label className="block text-[11px] font-medium text-zinc-500 mb-1">Du (mois)</label>
+            <input type="month" value={customFrom} max={customTo || thisMonth}
+              onChange={e => setCustomFrom(e.target.value)}
+              className="border border-zinc-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30" />
+          </div>
+          <div>
+            <label className="block text-[11px] font-medium text-zinc-500 mb-1">Au (mois)</label>
+            <input type="month" value={customTo} min={customFrom} max={thisMonth}
+              onChange={e => setCustomTo(e.target.value)}
+              className="border border-zinc-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30" />
+          </div>
+          {isCustom && (
+            <button onClick={() => selectPreset(3)} className="text-xs font-medium text-zinc-500 hover:text-red-500 py-1.5">Réinitialiser</button>
+          )}
+          {!isCustom && <p className="text-xs text-zinc-400 py-1.5">Choisissez un mois de début et de fin.</p>}
+        </div>
+      )}
 
       {!hasData ? (
         <div className="h-52 flex items-center justify-center">
