@@ -180,7 +180,7 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
               isCustom || showCustom ? 'bg-slate-900 text-white' : 'text-zinc-500 hover:text-zinc-700'
             )}
           >
-            Perso
+            Custom
           </button>
         </div>
       </div>
