@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Truck, Plus, FileText, Paperclip, Camera, X, ChevronRight, Pencil } from 'lucide-react'
+import { ArrowLeft, Truck, Plus, FileText, Paperclip, Camera, X, ChevronRight, Pencil, Gauge } from 'lucide-react'
 import { format, addYears } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
@@ -18,6 +18,17 @@ import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import { openSignedFile } from '@/lib/signedFile'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+
+// Inline link to a stored file (signed URL). Renders nothing when there's no file.
+function FileLink({ url, label = 'Voir', icon: Icon = Paperclip }) {
+  if (!url) return null
+  return (
+    <button type="button" onClick={() => openSignedFile(url)}
+      className="inline-flex items-center gap-1 text-xs text-[#0066FF] hover:underline">
+      <Icon className="w-3.5 h-3.5" /> {label}
+    </button>
+  )
+}
 
 // Compact document chip for the header: present → green "Voir", missing →
 // dashed "Ajouter". Keeps documents grouped without crowding the fact grid.
@@ -426,12 +437,19 @@ export default function VehicleDetail() {
                 <>
                   <div className="hidden sm:block overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead><tr className="bg-white border-b"><th className="text-left px-5 py-3 text-slate-500 font-medium">Kilométrage</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Date</th><th className="px-5 py-3 w-16"></th></tr></thead>
+                      <thead><tr className="bg-white border-b"><th className="text-left px-5 py-3 text-slate-500 font-medium">Kilométrage</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Date</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Justificatifs</th><th className="px-5 py-3 w-16"></th></tr></thead>
                       <tbody className="divide-y divide-slate-100">
                         {vehicleMileage.map(m => (
                           <tr key={m.id} className="group hover:bg-slate-50/60 transition-colors">
                             <td className="px-5 py-3 font-medium">{m.mileage?.toLocaleString('fr-FR') ?? '—'} km</td>
                             <td className="px-5 py-3 text-slate-500">{format(new Date(m.created_at), 'd MMM yyyy, HH:mm', { locale: dateLocale })}</td>
+                            <td className="px-5 py-3">
+                              <div className="flex items-center gap-3">
+                                <FileLink url={m.odometer_url} label="Compteur" icon={Gauge} />
+                                <FileLink url={m.receipt_url} label="Ticket" />
+                                {!m.odometer_url && !m.receipt_url && <span className="text-xs text-slate-300">—</span>}
+                              </div>
+                            </td>
                             <td className="px-5 py-3 text-right">
                               <button onClick={() => openEditMileage(m)} title="Modifier"
                                 className="p-1.5 rounded-lg text-slate-400 hover:text-[#0066FF] hover:bg-blue-50 transition-colors opacity-0 group-hover:opacity-100">
@@ -449,6 +467,12 @@ export default function VehicleDetail() {
                         <div>
                           <p className="font-semibold text-slate-900">{m.mileage?.toLocaleString('fr-FR') ?? '—'} km</p>
                           <p className="text-xs text-slate-400">{format(new Date(m.created_at), 'd MMM yyyy, HH:mm', { locale: dateLocale })}</p>
+                          {(m.odometer_url || m.receipt_url) && (
+                            <div className="flex items-center gap-3 mt-1">
+                              <FileLink url={m.odometer_url} label="Compteur" icon={Gauge} />
+                              <FileLink url={m.receipt_url} label="Ticket" />
+                            </div>
+                          )}
                         </div>
                         <button onClick={() => openEditMileage(m)} title="Modifier"
                           className="p-1.5 rounded-lg text-slate-400 hover:text-[#0066FF] hover:bg-blue-50 transition-colors flex-shrink-0">
@@ -470,7 +494,7 @@ export default function VehicleDetail() {
                 <>
                   <div className="hidden sm:block overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead><tr className="bg-white border-b"><th className="text-left px-5 py-3 text-slate-500 font-medium">Date</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Kilométrage</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Notes</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Résultat</th></tr></thead>
+                      <thead><tr className="bg-white border-b"><th className="text-left px-5 py-3 text-slate-500 font-medium">Date</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Kilométrage</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Notes</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Résultat</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Justificatif</th></tr></thead>
                       <tbody className="divide-y divide-slate-100">
                         {vehicleMaintenance.map(m => (
                           <tr key={m.id}>
@@ -478,6 +502,7 @@ export default function VehicleDetail() {
                             <td className="px-5 py-3">{m.mileage?.toLocaleString('fr-FR') ?? '—'} km</td>
                             <td className="px-5 py-3 text-slate-600 max-w-xs truncate">{m.issue_description || '—'}</td>
                             <td className="px-5 py-3"><StatusBadge status={m.status} /></td>
+                            <td className="px-5 py-3"><FileLink url={m.invoice_url} label="Facture" /></td>
                           </tr>
                         ))}
                       </tbody>
@@ -491,6 +516,7 @@ export default function VehicleDetail() {
                           <StatusBadge status={m.status} />
                         </div>
                         <p className="text-sm text-slate-700">{m.issue_description || '—'}</p>
+                        {m.invoice_url && <div className="mt-1"><FileLink url={m.invoice_url} label="Facture" /></div>}
                       </div>
                     ))}
                   </div>
@@ -507,12 +533,13 @@ export default function VehicleDetail() {
                 <>
                   <div className="hidden sm:block overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead><tr className="bg-white border-b"><th className="text-left px-5 py-3 text-slate-500 font-medium">Date du contrôle</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Date d'expiration</th></tr></thead>
+                      <thead><tr className="bg-white border-b"><th className="text-left px-5 py-3 text-slate-500 font-medium">Date du contrôle</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Date d'expiration</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Justificatif</th></tr></thead>
                       <tbody className="divide-y divide-slate-100">
                         {vehicleInspections.map(i => (
                           <tr key={i.id}>
                             <td className="px-5 py-3">{format(new Date(i.inspection_date), 'd MMM yyyy', { locale: dateLocale })}</td>
                             <td className="px-5 py-3">{format(new Date(i.expiration_date), 'd MMM yyyy', { locale: dateLocale })}</td>
+                            <td className="px-5 py-3"><FileLink url={i.invoice_url} /></td>
                           </tr>
                         ))}
                       </tbody>
@@ -523,6 +550,7 @@ export default function VehicleDetail() {
                       <div key={i.id} className="px-4 py-3">
                         <p className="text-sm text-slate-700">Contrôle : {format(new Date(i.inspection_date), 'd MMM yyyy', { locale: dateLocale })}</p>
                         <p className="text-sm text-slate-500">Expire : {format(new Date(i.expiration_date), 'd MMM yyyy', { locale: dateLocale })}</p>
+                        {i.invoice_url && <div className="mt-1"><FileLink url={i.invoice_url} /></div>}
                       </div>
                     ))}
                   </div>
@@ -539,7 +567,7 @@ export default function VehicleDetail() {
                 <>
                   <div className="hidden sm:block overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead><tr className="bg-white border-b"><th className="text-left px-5 py-3 text-slate-500 font-medium">Date</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Conducteur</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Montant</th></tr></thead>
+                      <thead><tr className="bg-white border-b"><th className="text-left px-5 py-3 text-slate-500 font-medium">Date</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Conducteur</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Montant</th><th className="text-left px-5 py-3 text-slate-500 font-medium">Justificatif</th></tr></thead>
                       <tbody className="divide-y divide-slate-100">
                         {vehicleWashes.map(w => {
                           const driver = getDriverById(drivers, w.driver_id)
@@ -548,6 +576,7 @@ export default function VehicleDetail() {
                               <td className="px-5 py-3">{format(new Date(w.date), 'd MMM yyyy', { locale: dateLocale })}</td>
                               <td className="px-5 py-3">{driver?.name || '—'}</td>
                               <td className="px-5 py-3 font-medium">{Number(w.amount).toFixed(2)} €</td>
+                              <td className="px-5 py-3"><FileLink url={w.invoice_url} /></td>
                             </tr>
                           )
                         })}
@@ -562,6 +591,7 @@ export default function VehicleDetail() {
                           <div>
                             <p className="text-sm text-slate-700">{driver?.name || '—'}</p>
                             <p className="text-xs text-slate-400">{format(new Date(w.date), 'd MMM yyyy', { locale: dateLocale })}</p>
+                            {w.invoice_url && <div className="mt-1"><FileLink url={w.invoice_url} /></div>}
                           </div>
                           <p className="font-semibold text-slate-800">{Number(w.amount).toFixed(2)} €</p>
                         </div>
