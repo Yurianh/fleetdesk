@@ -54,7 +54,22 @@ on ne révoque jamais l'accès aux membres/données déjà créés (client start
 
 ---
 
+## Phase A — Activation premier run
+
+- [x] **T-A01** — Checklist onboarding (`GettingStarted`) : auto-complète depuis données réelles, flow guidé, dismissible, replay. _(pré-existant, vérifié 2026-09-04)_
+- [x] **T-A02** — Empty states Véhicules / Conducteurs (`EmptyState`). _(pré-existant, vérifié 2026-09-04)_
+- [x] **T-A03** — Welcome email post-paiement : envoyé à la 1re activation (dédupe), branded Resend `contact@fleetdesk.fr`, 3 étapes + CTA dashboard. Déployé. _(2026-09-04)_
+- [ ] **T-A04** — Test : 1er checkout réel → welcome email reçu (dédupe sur re-appel confirm-payment).
+
+---
+
+## Phase P — Preuve sociale _(fait 2026-09-04)_
+
+- [x] **T-P01** — Retirer les faux témoignages (risque pratique trompeuse) → section signaux de confiance honnêtes sur la home. _(2026-09-04)_
+- [ ] **T-P02** — Brancher un vrai témoignage client (consentement + citation + logo) quand disponible.
+
+---
+
 ## Backlog (proposé, non planifié)
 
-- Activation premier run : empty states + checklist onboarding + welcome email.
-- Preuve sociale réelle (1er client → logo + verbatim, publier CASE_STUDY).
+- (rien pour l'instant — proposer la suite : dunning avancé, exports, i18n, SEO)

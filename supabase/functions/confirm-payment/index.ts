@@ -8,6 +8,55 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const RESEND_API_KEY = (Deno.env.get('RESEND_API_KEY') || '').trim()
+const WELCOME_FROM = Deno.env.get('CONTACT_FROM') || 'FleetDesk <contact@fleetdesk.fr>'
+const APP_URL = Deno.env.get('SITE_URL') || 'https://app.fleetdesk.fr'
+const PLAN_LABEL: Record<string, string> = { starter: 'Starter', pro: 'Pro', enterprise: 'Enterprise' }
+
+function esc(s: unknown) {
+  return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
+
+// Post-payment welcome email — sent once on first activation. Best-effort:
+// failures never block the activation response.
+async function sendWelcomeEmail(to: string, fullName: string, plan: string) {
+  if (!RESEND_API_KEY || !to) return
+  const first = esc((fullName || '').split(' ')[0] || 'et bienvenue')
+  const label = PLAN_LABEL[plan] ?? 'Pro'
+  const BRAND = '#0066FF', INK = '#18181b', MUTE = '#71717a', LINE = '#e4e4e7', SOFT = '#f4f4f5'
+  const step = (n: string, title: string, text: string) =>
+    `<tr>
+       <td style="padding:0 12px 14px 0;vertical-align:top"><span style="display:inline-flex;width:26px;height:26px;border-radius:8px;background:${SOFT};color:${BRAND};font-weight:700;font-size:13px;align-items:center;justify-content:center;text-align:center;line-height:26px">${n}</span></td>
+       <td style="padding:0 0 14px;vertical-align:top"><strong style="font-size:14px;color:${INK}">${title}</strong><br><span style="font-size:13px;color:${MUTE}">${text}</span></td>
+     </tr>`
+  const html = `<!doctype html><html><body style="margin:0;padding:0;background:#f4f4f5">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:32px 12px"><tr><td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#fff;border:1px solid ${LINE};border-radius:14px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+        <tr><td style="background:${BRAND};padding:18px 28px"><span style="color:#fff;font-size:17px;font-weight:700;letter-spacing:-0.02em">FleetDesk</span></td></tr>
+        <tr><td style="padding:28px">
+          <h1 style="margin:0 0 12px;font-size:20px;font-weight:700;color:${INK};letter-spacing:-0.02em">Bonjour ${first},</h1>
+          <p style="margin:0 0 20px;font-size:14px;color:${INK};line-height:1.65">Votre formule <strong>${label}</strong> est active. Voici comment mettre votre flotte en route en trois étapes :</p>
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+            ${step('1', 'Ajoutez votre premier véhicule', 'Marque, plaque, kilométrage — la fiche se crée en une minute.')}
+            ${step('2', 'Créez un conducteur', 'Coordonnées et documents réglementaires, suivis automatiquement.')}
+            ${step('3', 'Affectez le véhicule', 'Reliez conducteur et véhicule pour commencer le suivi.')}
+          </table>
+          <a href="${APP_URL}/Dashboard" style="display:inline-block;margin-top:8px;background:${BRAND};color:#fff;font-size:14px;font-weight:600;text-decoration:none;padding:11px 20px;border-radius:10px">Ouvrir mon tableau de bord</a>
+        </td></tr>
+        <tr><td style="padding:18px 28px;border-top:1px solid ${LINE};background:#fafafa">
+          <p style="margin:0;font-size:12px;color:${MUTE};line-height:1.5">Une question ? Répondez simplement à cet e-mail.<br><a href="https://fleetdesk.fr" style="color:${BRAND};text-decoration:none">fleetdesk.fr</a></p>
+        </td></tr>
+      </table>
+    </td></tr></table></body></html>`
+
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: WELCOME_FROM, to: [to], subject: 'Bienvenue sur FleetDesk', html }),
+  })
+  if (!res.ok) console.error('[confirm-payment] welcome email failed:', res.status, await res.text())
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
@@ -63,6 +112,9 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Utilisateur introuvable' }), { status: 404, headers: corsHeaders })
     }
 
+    // Send the welcome email only on the first activation (dedupe on retries).
+    const firstActivation = !existing.user_metadata?.onboarding_complete
+
     const { error: updateErr } = await supabaseAdmin.auth.admin.updateUserById(user_id, {
       user_metadata: { ...existing.user_metadata, plan, onboarding_complete: true, stripe_customer_id: session.customer as string },
       // Trusted copy of the plan — app_metadata is service-role only, so feature
@@ -72,6 +124,11 @@ Deno.serve(async (req) => {
     if (updateErr) throw updateErr
 
     console.log('[confirm-payment] activated user:', user_id, 'plan:', plan)
+
+    if (firstActivation) {
+      await sendWelcomeEmail(existing.email ?? '', existing.user_metadata?.full_name ?? '', plan)
+        .catch((e) => console.error('[confirm-payment] welcome email error:', e?.message))
+    }
     return new Response(JSON.stringify({ success: true, plan }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
