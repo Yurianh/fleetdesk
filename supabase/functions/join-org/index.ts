@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
     // written), NOT from user_metadata (user-editable → could claim any org).
     const { data: invite } = await supabaseAdmin
       .from('org_members')
-      .select('org_id, role, vehicle_id')
+      .select('org_id, role, vehicle_id, vehicle_ids')
       .eq('email', user.email)
       .eq('status', 'pending')
       .maybeSingle()
@@ -68,6 +68,7 @@ Deno.serve(async (req) => {
         org_id: orgId,
         role: invite.role,
         ...(invite.vehicle_id ? { vehicle_id: invite.vehicle_id } : {}),
+        ...(invite.vehicle_ids ? { vehicle_ids: invite.vehicle_ids } : {}),
       },
     })
 

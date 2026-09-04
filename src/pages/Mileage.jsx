@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { SearchableSelect } from '@/components/ui/searchable-select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -84,6 +85,10 @@ export default function Mileage() {
   // Chauffeur: their account is tied to one vehicle, pre-selected and locked.
   const isDriver = ['driver', 'sub-member'].includes(user?.user_metadata?.role)
   const driverVehicleId = user?.user_metadata?.vehicle_id || ''
+  // A chauffeur can have up to two vehicles and pick one per entry.
+  const driverVehicleIds = user?.user_metadata?.vehicle_ids?.length
+    ? user.user_metadata.vehicle_ids
+    : (driverVehicleId ? [driverVehicleId] : [])
   const { data: vehicles }      = useVehicles()
   const { data: drivers }       = useDrivers()
   const { data: assignments }   = useAssignments()
@@ -110,7 +115,7 @@ export default function Mileage() {
 
   const selectedCurrent = form.vehicle_id ? (latestMileage[form.vehicle_id]?.mileage ?? null) : null
 
-  const openCreate = () => { setForm({ vehicle_id: isDriver ? driverVehicleId : '', mileage: '', label: '' }); setReceiptFile(null); setOdometerFile(null); setModal(true) }
+  const openCreate = () => { setForm({ vehicle_id: isDriver ? (driverVehicleIds[0] || '') : '', mileage: '', label: '' }); setReceiptFile(null); setOdometerFile(null); setModal(true) }
   const openEdit = (m) => { setEditTarget(m); setEditForm({ mileage: String(m.mileage ?? ''), vehicle_id: m.vehicle_id }) }
   const closeModal = () => setModal(false)
 
@@ -177,8 +182,8 @@ export default function Mileage() {
   }
 
   // A chauffeur only sees entries for their own assigned vehicle.
-  const visibleEntries = isDriver && driverVehicleId
-    ? mileageEntries.filter(m => m.vehicle_id === driverVehicleId)
+  const visibleEntries = isDriver && driverVehicleIds.length
+    ? mileageEntries.filter(m => driverVehicleIds.includes(m.vehicle_id))
     : mileageEntries
 
   const filtered = visibleEntries.filter(m => {
@@ -351,10 +356,22 @@ export default function Mileage() {
         <div>
           <Label>Véhicule</Label>
           {isDriver ? (
-            <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-700">
-              <Gauge className="w-4 h-4 text-slate-400" />
-              {(() => { const v = getVehicleById(vehicles, driverVehicleId); return v ? `${v.plate_number}${v.model ? ` — ${v.model}` : ''}` : 'Votre véhicule' })()}
-            </div>
+            driverVehicleIds.length > 1 ? (
+              <Select value={form.vehicle_id} onValueChange={v => setForm(f => ({...f, vehicle_id: v}))}>
+                <SelectTrigger><SelectValue placeholder="Choisir un véhicule" /></SelectTrigger>
+                <SelectContent>
+                  {driverVehicleIds.map(id => {
+                    const v = getVehicleById(vehicles, id)
+                    return <SelectItem key={id} value={id}>{v ? `${v.plate_number}${v.model ? ` — ${v.model}` : ''}` : 'Véhicule'}</SelectItem>
+                  })}
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-700">
+                <Gauge className="w-4 h-4 text-slate-400" />
+                {(() => { const v = getVehicleById(vehicles, driverVehicleIds[0]); return v ? `${v.plate_number}${v.model ? ` — ${v.model}` : ''}` : 'Votre véhicule' })()}
+              </div>
+            )
           ) : (
             <SearchableSelect
               value={form.vehicle_id}
@@ -368,7 +385,7 @@ export default function Mileage() {
           )}
         </div>
         {(() => {
-          const vid = isDriver ? driverVehicleId : form.vehicle_id
+          const vid = form.vehicle_id
           const d = vid ? getDriverById(drivers, latestAssignments[vid]?.driver_id) : null
           if (!d) return null
           return (

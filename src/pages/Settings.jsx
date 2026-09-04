@@ -58,6 +58,7 @@ export default function Settings() {
   const [inviteEmail, setInviteEmail] = useState('')
   const [inviteRole, setInviteRole] = useState('member')
   const [inviteVehicle, setInviteVehicle] = useState('')
+  const [inviteVehicle2, setInviteVehicle2] = useState('')
 
   const [section, setSection] = useState('profile')
   const [saving, setSaving] = useState(false)
@@ -421,7 +422,7 @@ export default function Settings() {
                           className="w-full pl-8 pr-3 py-2 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30"
                         />
                       </div>
-                      <Select value={inviteRole} onValueChange={(v) => { setInviteRole(v); if (v !== 'driver') setInviteVehicle('') }}>
+                      <Select value={inviteRole} onValueChange={(v) => { setInviteRole(v); if (v !== 'driver') { setInviteVehicle(''); setInviteVehicle2('') } }}>
                         <SelectTrigger className="w-[130px] border-zinc-200 text-sm text-zinc-700 rounded-lg h-[38px] focus:ring-[#0066FF]/30">
                           <SelectValue />
                         </SelectTrigger>
@@ -434,15 +435,18 @@ export default function Settings() {
                       <button
                         onClick={async () => {
                           if (!inviteEmail) return
-                          if (inviteRole === 'driver' && !inviteVehicle) { toast.error('Sélectionnez le véhicule du chauffeur.'); return }
+                          if (inviteRole === 'driver' && !inviteVehicle) { toast.error('Sélectionnez au moins un véhicule pour le chauffeur.'); return }
                           try {
-                            const result = await inviteMember.mutateAsync({ email: inviteEmail, role: inviteRole, vehicleId: inviteRole === 'driver' ? inviteVehicle : null })
+                            const vehicleIds = inviteRole === 'driver'
+                              ? [...new Set([inviteVehicle, inviteVehicle2].filter(Boolean))]
+                              : []
+                            const result = await inviteMember.mutateAsync({ email: inviteEmail, role: inviteRole, vehicleIds })
                             if (result?.existing_user) {
                               toast.success('Lien de connexion envoyé — cet utilisateur a déjà un compte.')
                             } else {
                               toast.success('Invitation envoyée.')
                             }
-                            setInviteEmail(''); setInviteVehicle('')
+                            setInviteEmail(''); setInviteVehicle(''); setInviteVehicle2('')
                           } catch (e) { toast.error(e.message) }
                         }}
                         disabled={inviteMember.isPending || !inviteEmail}
@@ -453,20 +457,31 @@ export default function Settings() {
                       </button>
                     </div>
 
-                    {/* Chauffeur: pick the vehicle their account is tied to */}
+                    {/* Chauffeur: pick up to two vehicles their account is tied to */}
                     {inviteRole === 'driver' && (
-                      <div className="max-w-md mt-2">
+                      <div className="max-w-md mt-2 space-y-2">
                         <Select value={inviteVehicle} onValueChange={setInviteVehicle}>
                           <SelectTrigger className="w-full border-zinc-200 text-sm text-zinc-700 rounded-lg h-[38px] focus:ring-[#0066FF]/30">
-                            <SelectValue placeholder="Véhicule associé au chauffeur" />
+                            <SelectValue placeholder="Véhicule principal" />
                           </SelectTrigger>
                           <SelectContent>
-                            {vehicles.map(v => (
+                            {vehicles.filter(v => v.id !== inviteVehicle2).map(v => (
                               <SelectItem key={v.id} value={v.id}>{v.plate_number}{v.model ? ` — ${v.model}` : ''}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
-                        <p className="text-[11px] text-zinc-400 mt-1.5">Le chauffeur ne pourra saisir que le kilométrage et les lavages de ce véhicule.</p>
+                        <Select value={inviteVehicle2} onValueChange={(v) => setInviteVehicle2(v === '__none__' ? '' : v)} disabled={!inviteVehicle}>
+                          <SelectTrigger className="w-full border-zinc-200 text-sm text-zinc-700 rounded-lg h-[38px] focus:ring-[#0066FF]/30">
+                            <SelectValue placeholder="Second véhicule (optionnel)" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="__none__">Aucun</SelectItem>
+                            {vehicles.filter(v => v.id !== inviteVehicle).map(v => (
+                              <SelectItem key={v.id} value={v.id}>{v.plate_number}{v.model ? ` — ${v.model}` : ''}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <p className="text-[11px] text-zinc-400">Le chauffeur ne pourra saisir que le kilométrage et les lavages de ces véhicules (jusqu'à deux).</p>
                       </div>
                     )}
                     <p className="text-[11px] text-zinc-400 mt-2">L'invité recevra un email pour rejoindre votre organisation.</p>

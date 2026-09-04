@@ -6,6 +6,7 @@ import { Plus, Droplets, Pencil, Trash2, Paperclip } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { SearchableSelect } from '@/components/ui/searchable-select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -42,7 +43,12 @@ export default function Washings() {
   // vehicle's active assignment (they aren't a driver record themselves).
   const isDriver = ['driver', 'sub-member'].includes(user?.user_metadata?.role)
   const driverVehicleId = user?.user_metadata?.vehicle_id || ''
-  const driverAutoDriverId = isDriver ? (getLatestAssignments(assignments)[driverVehicleId]?.driver_id || '') : ''
+  // A chauffeur can have up to two vehicles and pick one per wash.
+  const driverVehicleIds = user?.user_metadata?.vehicle_ids?.length
+    ? user.user_metadata.vehicle_ids
+    : (driverVehicleId ? [driverVehicleId] : [])
+  const latestAssignments = getLatestAssignments(assignments)
+  const driverIdForVehicle = (vid) => latestAssignments[vid]?.driver_id || ''
 
   const [modal, setModal]   = useState(false)
   const [editing, setEditing] = useState(null)
@@ -52,15 +58,16 @@ export default function Washings() {
   const [invoiceFile, setInvoiceFile] = useState(null)
   const [invoiceExistingUrl, setInvoiceExistingUrl] = useState('')
 
-  // A chauffeur only sees washes for their own assigned vehicle.
-  const visibleWashes = isDriver && driverVehicleId
-    ? washRecords.filter(w => w.vehicle_id === driverVehicleId)
+  // A chauffeur only sees washes for their own assigned vehicles.
+  const visibleWashes = isDriver && driverVehicleIds.length
+    ? washRecords.filter(w => driverVehicleIds.includes(w.vehicle_id))
     : washRecords
   const totalAmount = visibleWashes.reduce((s, w) => s + (Number(w.amount) || 0), 0)
 
   const openCreate = () => {
     setEditing(null)
-    setForm(isDriver ? { ...EMPTY_FORM, vehicle_id: driverVehicleId, driver_id: driverAutoDriverId } : EMPTY_FORM)
+    const vid = isDriver ? (driverVehicleIds[0] || '') : ''
+    setForm(isDriver ? { ...EMPTY_FORM, vehicle_id: vid, driver_id: driverIdForVehicle(vid) } : EMPTY_FORM)
     setInvoiceFile(null)
     setInvoiceExistingUrl('')
     setModal(true)
@@ -235,10 +242,22 @@ export default function Washings() {
         <div>
           <Label>Véhicule</Label>
           {isDriver ? (
-            <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-700">
-              <Droplets className="w-4 h-4 text-slate-400" />
-              {(() => { const v = getVehicleById(vehicles, driverVehicleId); return v ? `${v.plate_number}${v.model ? ` — ${v.model}` : ''}` : 'Votre véhicule' })()}
-            </div>
+            driverVehicleIds.length > 1 ? (
+              <Select value={form.vehicle_id} onValueChange={v => setForm(f => ({...f, vehicle_id: v, driver_id: driverIdForVehicle(v)}))}>
+                <SelectTrigger><SelectValue placeholder="Choisir un véhicule" /></SelectTrigger>
+                <SelectContent>
+                  {driverVehicleIds.map(id => {
+                    const v = getVehicleById(vehicles, id)
+                    return <SelectItem key={id} value={id}>{v ? `${v.plate_number}${v.model ? ` — ${v.model}` : ''}` : 'Véhicule'}</SelectItem>
+                  })}
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-700">
+                <Droplets className="w-4 h-4 text-slate-400" />
+                {(() => { const v = getVehicleById(vehicles, driverVehicleIds[0]); return v ? `${v.plate_number}${v.model ? ` — ${v.model}` : ''}` : 'Votre véhicule' })()}
+              </div>
+            )
           ) : (
             <SearchableSelect
               value={form.vehicle_id}

@@ -22,7 +22,13 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
   try {
-    const { email, role = 'member', vehicleId = null } = await req.json()
+    const body = await req.json()
+    const { email, role = 'member', vehicleId = null } = body
+    // A chauffeur can be assigned up to two vehicles. Accept an array, fall back
+    // to the single vehicleId, dedupe and cap at two.
+    const vehicleIds: string[] = [...new Set(
+      (Array.isArray(body.vehicleIds) ? body.vehicleIds : [vehicleId]).filter(Boolean)
+    )].slice(0, 2)
 
     // Only these roles may ever be assigned (never 'owner' or arbitrary strings).
     const ALLOWED_ROLES = ['member', 'driver', 'admin']
@@ -83,9 +89,11 @@ Deno.serve(async (req) => {
     // Insert pending member record first. Store the driver's vehicle here
     // (service-role only) — this is the trusted source for RLS, not the
     // user-editable user_metadata.
+    const driverVehicles = role === 'driver' ? vehicleIds : []
     const { error: insertErr } = await supabaseAdmin
       .from('org_members')
-      .insert({ org_id: orgId, email, role, status: 'pending', ...(role === 'driver' && vehicleId ? { vehicle_id: vehicleId } : {}) })
+      .insert({ org_id: orgId, email, role, status: 'pending',
+        ...(driverVehicles.length ? { vehicle_id: driverVehicles[0], vehicle_ids: driverVehicles } : {}) })
     if (insertErr) throw insertErr
 
     // Every invited collaborator (chauffeur, admin, membre) is also a conducteur:
@@ -109,13 +117,15 @@ Deno.serve(async (req) => {
           if (dErr) throw dErr
           driverId = newDriver.id
         }
-        // Auto-assign to the vehicle — chauffeur only (admins have no vehicle).
-        if (role === 'driver' && vehicleId) {
+        // Auto-assign to each vehicle — chauffeur only (admins have no vehicle).
+        if (role === 'driver' && driverVehicles.length) {
           const nowTs = new Date().toISOString()
-          await supabaseAdmin.from('assignments').update({ ended_at: nowTs })
-            .eq('user_id', orgId).eq('vehicle_id', vehicleId).is('ended_at', null)
-          await supabaseAdmin.from('assignments')
-            .insert({ user_id: orgId, vehicle_id: vehicleId, driver_id: driverId, assigned_at: nowTs })
+          for (const vId of driverVehicles) {
+            await supabaseAdmin.from('assignments').update({ ended_at: nowTs })
+              .eq('user_id', orgId).eq('vehicle_id', vId).is('ended_at', null)
+            await supabaseAdmin.from('assignments')
+              .insert({ user_id: orgId, vehicle_id: vId, driver_id: driverId, assigned_at: nowTs })
+          }
         }
       } catch (e) {
         console.error('conductor/assignment setup failed:', (e as Error).message)
@@ -126,7 +136,8 @@ Deno.serve(async (req) => {
     const orgCompany = ownerData?.user?.user_metadata?.company || ''
     // For a driver ("chauffeur"), stamp the vehicle their account is tied to so
     // the app can pre-select and lock it in the mileage/wash forms.
-    const inviteMeta = { org_id: orgId, role, org_owner_name: orgOwnerName, org_company: orgCompany, ...(role === 'driver' && vehicleId ? { vehicle_id: vehicleId } : {}) }
+    const inviteMeta = { org_id: orgId, role, org_owner_name: orgOwnerName, org_company: orgCompany,
+      ...(driverVehicles.length ? { vehicle_id: driverVehicles[0], vehicle_ids: driverVehicles } : {}) }
 
     // Try to send invite email (works for brand new Supabase users)
     const { error: inviteErr } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
