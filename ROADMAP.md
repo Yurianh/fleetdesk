@@ -38,13 +38,23 @@ on ne révoque jamais l'accès aux membres/données déjà créés (client start
 
 - [x] **T-B01** — Webhook `invoice.payment_failed` → `app_metadata.billing_status='past_due'` ; `invoice.payment_succeeded` → `active`. Déployé. _(2026-09-04)_
 - [x] **T-B02** — `BillingBanner` global (owner only) : alerte past_due + lien portail Stripe, monté dans AppLayout. _(2026-09-04)_
-- [ ] **T-B03** — Activer les events `invoice.payment_failed` + `invoice.payment_succeeded` sur l'endpoint webhook Stripe (dashboard). _(côté Julian)_
+- [x] **T-B03** — Events `invoice.payment_failed` + `invoice.payment_succeeded` activés sur l'endpoint webhook Stripe. _(2026-09-04)_
 - [ ] **T-B04** — Test : simuler échec (carte test `4000000000000341`) → bannière apparaît ; recovery → disparaît.
+
+---
+
+## Phase M — Monitoring (Vercel-native + logs Supabase)
+
+- [x] **T-M01** — `ErrorBoundary` global : crash React → écran gracieux + reload, au lieu du white screen. _(2026-09-04)_
+- [x] **T-M02** — Listeners globaux `window.error` / `unhandledrejection` → `console.error` (visibles browser + logs Vercel). _(2026-09-04)_
+- [x] **T-M03** — Keep-alive durci : logs explicites, échec en 500 (déclenche l'alerte cron Vercel). _(2026-09-04)_
+- [ ] **T-M04** — Activer les notifications Vercel : Settings → Notifications → cron failures + deployment failures (email). _(côté Julian)_
+- [ ] **T-M05** — Repérer les logs Supabase Edge : Dashboard → Edge Functions → Logs (filtrer `[webhook]`, `[contact-form]`, etc.). _(ref)_
+- [ ] **T-M06** — (Optionnel) Vercel Web Analytics / Speed Insights (natif, sans compte tiers) pour la visibilité usage.
 
 ---
 
 ## Backlog (proposé, non planifié)
 
-- Monitoring erreurs prod (Sentry edge + front) + alerte keep-alive cron.
 - Activation premier run : empty states + checklist onboarding + welcome email.
 - Preuve sociale réelle (1er client → logo + verbatim, publier CASE_STUDY).

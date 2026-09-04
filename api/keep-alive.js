@@ -12,6 +12,8 @@ export default async function handler(req, res) {
   ).trim()
 
   if (!url || !key) {
+    // 500 marks the cron invocation failed in Vercel → triggers failure alerts.
+    console.error('[keep-alive] missing Supabase env vars')
     return res.status(500).json({ ok: false, error: 'Missing Supabase env vars' })
   }
 
@@ -23,8 +25,11 @@ export default async function handler(req, res) {
       .select('id', { count: 'exact', head: true })
 
     // An RLS/permission error still reached the DB → project stays active.
+    console.log('[keep-alive] ok', { count: count ?? null, dbError: error?.message ?? null })
     return res.status(200).json({ ok: true, pinged: true, count: count ?? null, dbError: error?.message ?? null })
   } catch (e) {
+    // Loud log so the failed invocation is easy to spot in Vercel logs/alerts.
+    console.error('[keep-alive] FAILED', String(e?.message || e))
     return res.status(500).json({ ok: false, error: String(e?.message || e) })
   }
 }
