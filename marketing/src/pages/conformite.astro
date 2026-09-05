@@ -303,6 +303,23 @@ const breadcrumb = {
           </details>
         ))}
       </div>
+
+      <!-- Cluster links to the guides -->
+      <div class="mt-14 pt-10 border-t border-zinc-200">
+        <p class="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-400 mb-5 text-center">Guides pratiques</p>
+        <div class="grid sm:grid-cols-3 gap-4">
+          {[
+            { title: 'Contrôle technique de flotte', href: '/guides/controle-technique-flotte' },
+            { title: 'Documents du conducteur', href: '/guides/documents-conducteur' },
+            { title: 'Assurance de flotte', href: '/guides/assurance-flotte' },
+          ].map(g => (
+            <a href={g.href} class="group flex items-center justify-between gap-3 bg-white border border-zinc-200 rounded-xl px-4 py-3.5 hover:border-[#0066FF]/40 transition-colors">
+              <span class="text-sm font-medium text-zinc-800 group-hover:text-[#0066FF] transition-colors">{g.title}</span>
+              <svg class="w-4 h-4 text-zinc-300 group-hover:text-[#0066FF] flex-shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          ))}
+        </div>
+      </div>
     </div>
   </section>
 

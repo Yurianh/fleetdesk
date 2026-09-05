@@ -1,0 +1,127 @@
+---
+import Layout from './Layout.astro'
+import Navbar from '../components/Navbar.jsx'
+import Footer from '../components/Footer.astro'
+
+const APP_URL = 'https://app.fleetdesk.fr'
+
+interface Props {
+  title: string
+  description: string
+  heading: string
+  intro: string
+  updated?: string
+  faq?: { q: string; a: string }[]
+  related?: { title: string; href: string }[]
+}
+
+const { title, description, heading, intro, updated = '5 septembre 2026', faq = [], related = [] } = Astro.props
+const canonicalPath = Astro.url.pathname
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: heading,
+  description,
+  datePublished: '2026-09-05',
+  dateModified: '2026-09-05',
+  author: { '@type': 'Organization', name: 'FleetDesk' },
+  publisher: { '@type': 'Organization', name: 'FleetDesk', logo: { '@type': 'ImageObject', url: 'https://fleetdesk.fr/logo-mark.png' } },
+  mainEntityOfPage: 'https://fleetdesk.fr' + canonicalPath,
+}
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://fleetdesk.fr/' },
+    { '@type': 'ListItem', position: 2, name: 'Guides', item: 'https://fleetdesk.fr/guides' },
+    { '@type': 'ListItem', position: 3, name: heading, item: 'https://fleetdesk.fr' + canonicalPath },
+  ],
+}
+const faqSchema = faq.length ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+} : null
+
+const jsonLd = [articleSchema, breadcrumb, ...(faqSchema ? [faqSchema] : [])]
+---
+<Layout title={title} description={description} jsonLd={jsonLd}>
+  <Navbar client:load currentPath="/guides" />
+
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 pt-16 pb-24">
+    <!-- Breadcrumb -->
+    <nav class="text-xs text-zinc-400 mb-8 flex items-center gap-1.5" aria-label="Fil d'ariane">
+      <a href="/" class="hover:text-[#0066FF]">Accueil</a><span>/</span>
+      <a href="/guides" class="hover:text-[#0066FF]">Guides</a><span>/</span>
+      <span class="text-zinc-500">{heading}</span>
+    </nav>
+
+    <!-- Header -->
+    <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Guide conformité</p>
+    <h1 class="font-display text-3xl sm:text-4xl md:text-[2.75rem] font-semibold text-zinc-900 tracking-tight leading-[1.1] mb-5">{heading}</h1>
+    <p class="text-lg text-zinc-500 leading-relaxed mb-4">{intro}</p>
+    <p class="text-xs text-zinc-400 mb-10">Mis à jour le {updated}</p>
+
+    <!-- Prose -->
+    <div class="guide-prose">
+      <slot />
+    </div>
+
+    <!-- FAQ -->
+    {faq.length > 0 && (
+      <section class="mt-14 pt-10 border-t border-zinc-100">
+        <h2 class="font-display text-2xl font-semibold text-zinc-900 mb-6">Questions fréquentes</h2>
+        <div class="space-y-6">
+          {faq.map(f => (
+            <div>
+              <h3 class="text-base font-semibold text-zinc-900 mb-1.5">{f.q}</h3>
+              <p class="text-sm text-zinc-500 leading-relaxed">{f.a}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- CTA -->
+    <div class="mt-14 rounded-2xl bg-[#0066FF] px-8 py-10 text-center">
+      <h2 class="font-display text-2xl font-semibold text-white mb-2">Suivez toutes vos échéances au même endroit</h2>
+      <p class="text-white/80 text-sm max-w-md mx-auto mb-6">FleetDesk calcule les dates d'expiration et vous alerte avant qu'il soit trop tard. Essai Pro 14 jours, sans carte.</p>
+      <a href={`${APP_URL}/login?plan=pro`} class="inline-flex items-center gap-1.5 bg-white text-[#0066FF] text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-zinc-100 transition-colors">
+        Commencer gratuitement
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <!-- Related -->
+    {related.length > 0 && (
+      <section class="mt-14">
+        <h2 class="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-400 mb-4">À lire aussi</h2>
+        <div class="divide-y divide-zinc-100 border-t border-zinc-100">
+          {related.map(r => (
+            <a href={r.href} class="flex items-center justify-between py-4 group">
+              <span class="text-sm font-medium text-zinc-800 group-hover:text-[#0066FF] transition-colors">{r.title}</span>
+              <svg class="w-4 h-4 text-zinc-300 group-hover:text-[#0066FF] transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </article>
+
+  <Footer />
+</Layout>
+
+<style is:global>
+  .guide-prose { color: #3f3f46; font-size: 1rem; line-height: 1.75; }
+  .guide-prose h2 { font-family: 'Spectral', Georgia, serif; font-size: 1.5rem; font-weight: 600; color: #18181b; letter-spacing: -0.01em; margin: 2.25rem 0 0.9rem; }
+  .guide-prose h3 { font-size: 1.1rem; font-weight: 600; color: #18181b; margin: 1.75rem 0 0.6rem; }
+  .guide-prose p { margin: 0 0 1.1rem; }
+  .guide-prose ul { margin: 0 0 1.2rem; padding: 0; list-style: none; }
+  .guide-prose ul li { position: relative; padding-left: 1.4rem; margin-bottom: 0.55rem; }
+  .guide-prose ul li::before { content: ''; position: absolute; left: 0; top: 0.6rem; width: 6px; height: 6px; border-radius: 9999px; background: #0066FF; }
+  .guide-prose a { color: #0066FF; text-decoration: none; font-weight: 500; }
+  .guide-prose a:hover { text-decoration: underline; }
+  .guide-prose strong { color: #18181b; font-weight: 600; }
+  .guide-prose .note { font-size: 0.85rem; color: #71717a; background: #f4f4f5; border-radius: 10px; padding: 0.9rem 1.1rem; margin: 1.5rem 0; }
+</style>

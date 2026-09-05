@@ -1,0 +1,71 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import Navbar from '../../components/Navbar.jsx'
+import Footer from '../../components/Footer.astro'
+
+const guides = [
+  {
+    title: 'Contrôle technique des véhicules d\'entreprise',
+    desc: 'Périodicité selon la catégorie, risques en cas d\'oubli, et méthode pour ne manquer aucune échéance.',
+    href: '/guides/controle-technique-flotte',
+    tag: 'Véhicules',
+  },
+  {
+    title: 'Les documents obligatoires du conducteur professionnel',
+    desc: 'Permis, aptitude médicale, formations : quels documents suivre et comment garder chaque conducteur en règle.',
+    href: '/guides/documents-conducteur',
+    tag: 'Conducteurs',
+  },
+  {
+    title: 'Assurance de flotte automobile',
+    desc: 'Contrat de flotte, garanties, attestations à jour : les repères pour un parc bien couvert.',
+    href: '/guides/assurance-flotte',
+    tag: 'Véhicules',
+  },
+]
+
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  itemListElement: guides.map((g, i) => ({
+    '@type': 'ListItem', position: i + 1, name: g.title, url: 'https://fleetdesk.fr' + g.href,
+  })),
+}
+---
+<Layout
+  title="Guides conformité de flotte · FleetDesk"
+  description="Guides pratiques pour gérer la conformité de votre flotte : contrôle technique, documents conducteurs, assurance. Restez en règle sans y passer vos journées."
+  jsonLd={[itemList]}
+>
+  <Navbar client:load currentPath="/guides" />
+
+  <section class="bg-white border-b border-zinc-100 pt-20 pb-16">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-4">Guides</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-semibold text-zinc-900 tracking-tight leading-[1.05] max-w-2xl mb-5">
+        La conformité de flotte, expliquée simplement.
+      </h1>
+      <p class="text-lg text-zinc-500 max-w-2xl leading-relaxed">
+        Ce qu'un gestionnaire doit savoir pour garder ses véhicules et ses conducteurs en règle, sans y passer ses journées. Pour aller plus loin, voir la <a href="/conformite" class="text-[#0066FF] font-medium hover:underline">page conformité</a>.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-16 sm:py-20">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      {guides.map(g => (
+        <a href={g.href} class="group flex flex-col border border-zinc-200 rounded-2xl p-6 hover:border-[#0066FF]/40 hover:shadow-sm transition-all">
+          <span class="text-xs font-semibold uppercase tracking-wide text-[#0066FF] mb-3">{g.tag}</span>
+          <h2 class="font-display text-lg font-semibold text-zinc-900 tracking-tight leading-snug mb-2 group-hover:text-[#0066FF] transition-colors">{g.title}</h2>
+          <p class="text-sm text-zinc-500 leading-relaxed flex-1">{g.desc}</p>
+          <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0066FF] mt-4">
+            Lire le guide
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <Footer />
+</Layout>

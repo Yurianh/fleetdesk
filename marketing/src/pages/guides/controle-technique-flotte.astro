@@ -1,0 +1,61 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro'
+
+const faq = [
+  {
+    q: 'Tous les combien de temps un utilitaire doit-il passer le contrôle technique ?',
+    a: 'Pour un véhicule léger ou un utilitaire de moins de 3,5 tonnes, le premier contrôle technique intervient généralement 4 ans après la première immatriculation, puis tous les 2 ans. Les poids lourds relèvent d\'une visite technique annuelle. Vérifiez toujours la règle applicable à votre catégorie de véhicule.',
+  },
+  {
+    q: 'Que risque une entreprise dont un véhicule roule avec un contrôle technique expiré ?',
+    a: 'Rouler sans contrôle technique valide expose à une amende, à l\'immobilisation possible du véhicule et à des difficultés en cas de sinistre. Pour une flotte, c\'est aussi un risque d\'exploitation : un véhicule immobilisé, c\'est une tournée en moins.',
+  },
+  {
+    q: 'Comment ne pas oublier une échéance de contrôle technique sur toute une flotte ?',
+    a: 'La seule méthode fiable est de centraliser les dates et d\'être alerté à l\'avance. Un tableur oublie de vous prévenir ; un outil de gestion de flotte comme FleetDesk calcule la prochaine échéance et remonte une alerte avant expiration.',
+  },
+]
+
+const related = [
+  { title: 'Les documents obligatoires du conducteur professionnel', href: '/guides/documents-conducteur' },
+  { title: 'Assurance de flotte automobile : obligations et bonnes pratiques', href: '/guides/assurance-flotte' },
+  { title: 'La conformité de flotte, sans zone d\'ombre', href: '/conformite' },
+]
+---
+<GuideLayout
+  title="Contrôle technique des véhicules d'entreprise : obligations et périodicité"
+  description="Périodicité du contrôle technique selon la catégorie de véhicule, risques en cas d'oubli, et méthode pour ne manquer aucune échéance sur toute une flotte."
+  heading="Contrôle technique des véhicules d'entreprise : obligations et périodicité"
+  intro="Le contrôle technique conditionne le droit de circuler. Sur une flotte, une échéance manquée immobilise un véhicule et coûte une tournée. Voici l'essentiel pour rester en règle."
+  faq={faq}
+  related={related}
+>
+  <h2>À quoi sert le contrôle technique</h2>
+  <p>Le contrôle technique vérifie l'état d'un véhicule au regard de la sécurité et de la pollution. Sans procès-verbal valide, un véhicule n'est pas autorisé à circuler. Pour une entreprise, ce n'est pas seulement une contrainte administrative : c'est la condition pour que chaque véhicule reste exploitable et couvert.</p>
+
+  <h2>Quelle périodicité selon le véhicule</h2>
+  <p>La fréquence dépend de la catégorie du véhicule. En France, les grandes lignes sont les suivantes :</p>
+  <ul>
+    <li><strong>Véhicules légers et utilitaires de moins de 3,5 tonnes</strong> : premier contrôle en général 4 ans après la première immatriculation, puis tous les 2 ans.</li>
+    <li><strong>Poids lourds (plus de 3,5 tonnes)</strong> : visite technique annuelle, avec des contrôles complémentaires selon l'usage.</li>
+    <li><strong>Cas particuliers</strong> : certains véhicules (transport de personnes, matières dangereuses, taxis, VTC selon les cas) suivent des règles propres, parfois plus strictes.</li>
+  </ul>
+  <p class="note">Les périodicités évoluent avec la réglementation. Considérez ces repères comme une base, et confirmez la règle exacte applicable à chaque véhicule de votre parc.</p>
+
+  <h2>Le vrai risque : l'oubli à l'échelle de la flotte</h2>
+  <p>Sur un seul véhicule, retenir une date est simple. Sur dix, vingt ou cinquante, chacun avec sa propre date d'immatriculation et donc sa propre échéance, l'oubli devient une question de temps. Les conséquences s'additionnent :</p>
+  <ul>
+    <li>Amende et immobilisation possible du véhicule en cas de contrôle routier.</li>
+    <li>Couverture d'assurance fragilisée en cas de sinistre sur un véhicule non conforme.</li>
+    <li>Interruption d'exploitation : un véhicule à l'arrêt, c'est du chiffre d'affaires en moins.</li>
+  </ul>
+
+  <h2>La méthode pour ne rien manquer</h2>
+  <p>Le tableur partagé montre vite ses limites : il ne prévient jamais tout seul. Une gestion fiable repose sur trois principes simples :</p>
+  <ul>
+    <li><strong>Centraliser</strong> toutes les dates de contrôle au même endroit, par véhicule.</li>
+    <li><strong>Calculer</strong> automatiquement la prochaine échéance à partir de la date du dernier contrôle.</li>
+    <li><strong>Alerter</strong> à l'avance, plusieurs semaines avant l'expiration, pour laisser le temps de prendre rendez-vous.</li>
+  </ul>
+  <p>C'est exactement ce que fait FleetDesk : chaque contrôle technique enregistré génère une prochaine échéance, et le <a href="/conformite">centre de conformité</a> remonte l'alerte avant qu'il ne soit trop tard. Vous voyez d'un coup d'œil les véhicules à renouveler.</p>
+</GuideLayout>

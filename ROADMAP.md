@@ -91,7 +91,8 @@ on ne révoque jamais l'accès aux membres/données déjà créés (client start
 - [x] **T-S02** — `robots.txt` + `sitemap.xml` statique (6 pages) dans `public/`. _(2026-09-05)_
 - [x] **T-S03** — JSON-LD : Organization + SoftwareApplication + FAQPage (home) ; FAQPage + BreadcrumbList (conformité) → éligible rich results. _(2026-09-05)_
 - [ ] **T-S04** — (suivi) Vraie image OG 1200×630 (`/og-image.png`) au lieu du logo. Mettre à jour `sitemap.xml` à chaque nouvelle page.
-- [ ] **T-S05** — (suivi) Cluster de contenu conformité (pages/articles ciblés : CT, assurance flotte, documents conducteurs) pour capter l'organique.
+- [x] **T-S05** — Cluster contenu conformité : hub `/guides` + 3 articles (CT flotte, documents conducteur, assurance flotte) via `GuideLayout` (schema Article + FAQPage + BreadcrumbList), liens internes croisés (pilier ↔ articles ↔ hub), lien footer site-wide, sitemap MAJ. _(2026-09-05)_
+- [ ] **T-S06** — (suivi) Soumettre `sitemap.xml` (apex, pas www) dans Search Console + étendre le cluster (nouveaux sujets) selon les mots-clés qui performent.
 
 ---
 

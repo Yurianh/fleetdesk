@@ -1,0 +1,58 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro'
+
+const faq = [
+  {
+    q: 'Quels documents un employeur doit-il suivre pour ses conducteurs ?',
+    a: 'Cela dépend de l\'activité, mais on retrouve généralement le permis de conduire valide et de la bonne catégorie, l\'aptitude médicale à la conduite quand elle est requise, et selon les métiers des formations spécifiques (premiers secours, transport de personnes à mobilité réduite, éco-conduite). FleetDesk permet d\'en suivre sept, plus des documents libres.',
+  },
+  {
+    q: 'La visite médicale est-elle obligatoire pour tous les conducteurs ?',
+    a: 'Non, elle dépend du type de permis, de l\'âge et de l\'activité. Certains conducteurs professionnels y sont soumis à intervalles réguliers. En cas de doute, référez-vous à la réglementation applicable au poste et à la catégorie de permis concernée.',
+  },
+  {
+    q: 'Comment suivre les dates d\'expiration de tous ces documents ?',
+    a: 'En centralisant chaque document par conducteur avec sa date de validité, et en étant alerté avant l\'expiration. FleetDesk calcule automatiquement les échéances à partir des durées de validité et les remonte au centre de conformité.',
+  },
+]
+
+const related = [
+  { title: 'Contrôle technique des véhicules d\'entreprise : obligations et périodicité', href: '/guides/controle-technique-flotte' },
+  { title: 'Assurance de flotte automobile : obligations et bonnes pratiques', href: '/guides/assurance-flotte' },
+  { title: 'La conformité de flotte, sans zone d\'ombre', href: '/conformite' },
+]
+---
+<GuideLayout
+  title="Les documents obligatoires du conducteur professionnel"
+  description="Permis, aptitude médicale, formations : quels documents suivre pour vos conducteurs, pourquoi leurs dates d'expiration comptent, et comment ne rien laisser passer."
+  heading="Les documents obligatoires du conducteur professionnel"
+  intro="Un conducteur qui prend le volant avec un document expiré, c'est un risque juridique et humain. Voici les documents à suivre et la méthode pour garder chaque conducteur en règle."
+  faq={faq}
+  related={related}
+>
+  <h2>Pourquoi suivre les documents des conducteurs</h2>
+  <p>La responsabilité de l'employeur ne s'arrête pas à la remise des clés. Confier un véhicule à un conducteur dont le permis est suspendu, expiré ou de la mauvaise catégorie engage l'entreprise. Suivre ces documents, c'est protéger le conducteur, l'entreprise et les tiers.</p>
+
+  <h2>Les documents à garder à jour</h2>
+  <p>Selon l'activité et le poste, plusieurs documents peuvent devoir être suivis. Les plus courants :</p>
+  <ul>
+    <li><strong>Permis de conduire</strong> : valide et de la catégorie correspondant au véhicule confié.</li>
+    <li><strong>Aptitude médicale à la conduite</strong> : requise pour certaines catégories ou certains âges, à renouveler à échéance.</li>
+    <li><strong>Formations de sécurité</strong> : premiers secours (SST, PSC1) selon le poste.</li>
+    <li><strong>Transport de personnes à mobilité réduite (TPMR)</strong> : pour les activités concernées.</li>
+    <li><strong>Éco-conduite</strong> et autres attestations propres à l'entreprise.</li>
+  </ul>
+  <p class="note">La liste exacte et les durées de validité dépendent du métier, du véhicule et de la réglementation en vigueur. Traitez ces repères comme un point de départ à adapter à votre activité.</p>
+
+  <h2>Le point faible : les dates d'expiration</h2>
+  <p>Un document n'est utile que s'il est valide. Or chaque conducteur a ses propres échéances, à des dates différentes. Sans suivi, une visite médicale oubliée ou un permis expiré passe inaperçu, jusqu'au contrôle ou à l'accident. C'est précisément là que la plupart des entreprises perdent le fil.</p>
+
+  <h2>Centraliser et automatiser le suivi</h2>
+  <p>Une gestion sereine repose sur quelques réflexes :</p>
+  <ul>
+    <li>Réunir tous les documents d'un conducteur au même endroit, avec leur date de validité.</li>
+    <li>Laisser l'outil calculer la date d'expiration à partir de la durée de validité réglementaire.</li>
+    <li>Recevoir une alerte à l'approche de chaque échéance, priorisée par urgence.</li>
+  </ul>
+  <p>FleetDesk suit sept documents conducteur, plus des documents libres, calcule les échéances et les regroupe dans le <a href="/conformite">centre de conformité</a>. Vous savez en permanence quel conducteur est en règle et lequel demande une action.</p>
+</GuideLayout>

@@ -1,0 +1,50 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro'
+
+const faq = [
+  {
+    q: 'Qu\'est-ce qu\'un contrat de flotte automobile ?',
+    a: 'C\'est un contrat d\'assurance unique qui couvre l\'ensemble des véhicules d\'une entreprise, plutôt qu\'un contrat par véhicule. Il simplifie la gestion et permet souvent de mutualiser les conditions à l\'échelle du parc.',
+  },
+  {
+    q: 'L\'assurance est-elle obligatoire pour les véhicules d\'entreprise ?',
+    a: 'Oui. Comme tout véhicule terrestre à moteur, un véhicule d\'entreprise doit au minimum être couvert par une garantie de responsabilité civile. Les entreprises souscrivent souvent des garanties plus larges selon l\'usage et la valeur des véhicules.',
+  },
+  {
+    q: 'Pourquoi garder les attestations d\'assurance à jour dans un outil ?',
+    a: 'Parce qu\'une attestation périmée ou introuvable au moment d\'un contrôle ou d\'un sinistre crée un vrai problème. Centraliser l\'attestation de chaque véhicule, avec sa date de validité, évite les mauvaises surprises.',
+  },
+]
+
+const related = [
+  { title: 'Contrôle technique des véhicules d\'entreprise : obligations et périodicité', href: '/guides/controle-technique-flotte' },
+  { title: 'Les documents obligatoires du conducteur professionnel', href: '/guides/documents-conducteur' },
+  { title: 'La conformité de flotte, sans zone d\'ombre', href: '/conformite' },
+]
+---
+<GuideLayout
+  title="Assurance de flotte automobile : obligations et bonnes pratiques"
+  description="Contrat de flotte, garanties, attestations à jour : ce qu'un gestionnaire doit savoir pour assurer son parc et garder chaque document accessible."
+  heading="Assurance de flotte automobile : obligations et bonnes pratiques"
+  intro="Assurer une flotte, ce n'est pas seulement souscrire un contrat : c'est garder chaque attestation valide et accessible. Voici les repères pour un parc bien couvert."
+  faq={faq}
+  related={related}
+>
+  <h2>Contrat par véhicule ou contrat de flotte</h2>
+  <p>Une entreprise qui multiplie les véhicules a intérêt à regrouper leur couverture. Le contrat de flotte assure l'ensemble du parc sous un seul contrat, au lieu d'un contrat isolé par véhicule. Résultat : moins de paperasse, des conditions harmonisées, et une vision d'ensemble plus simple à piloter.</p>
+
+  <h2>Les garanties à considérer</h2>
+  <p>Le socle minimal est la responsabilité civile, obligatoire pour tout véhicule qui circule. Au-delà, le niveau de couverture se choisit selon l'usage et la valeur des véhicules :</p>
+  <ul>
+    <li><strong>Responsabilité civile</strong> : couvre les dommages causés aux tiers. C'est le minimum légal.</li>
+    <li><strong>Dommages, vol, incendie, bris de glace</strong> : à arbitrer selon la valeur et l'exposition des véhicules.</li>
+    <li><strong>Garanties du conducteur et assistance</strong> : importantes pour limiter l'immobilisation en cas de sinistre.</li>
+  </ul>
+  <p class="note">Les besoins varient fortement d'une flotte à l'autre. Faites le point avec votre assureur pour ajuster les garanties à votre activité réelle.</p>
+
+  <h2>Le point souvent négligé : l'attestation à jour</h2>
+  <p>Souscrire une assurance ne suffit pas. Encore faut-il, en cas de contrôle ou de sinistre, retrouver immédiatement l'attestation valide du véhicule concerné. Une attestation périmée, égarée dans une boîte mail ou un tiroir, met l'entreprise en difficulté au pire moment.</p>
+
+  <h2>Centraliser les documents d'assurance</h2>
+  <p>La bonne pratique est simple : rattacher l'attestation d'assurance à chaque véhicule, dans un espace unique, et suivre sa date de validité au même titre que le contrôle technique. Avec FleetDesk, l'assurance figure parmi les documents du véhicule, aux côtés de la carte grise et de la licence de transport, stockée en privé et accessible en un clic. Combinée au <a href="/conformite">suivi des échéances</a>, elle ne peut plus vous échapper.</p>
+</GuideLayout>
