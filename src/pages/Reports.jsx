@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import { format } from 'date-fns'
-import { Download, FileText, TrendingUp, Truck, Users, Wrench, Droplets, Fuel, CalendarClock } from 'lucide-react'
+import { Download, Wrench, Droplets, Fuel, CalendarClock, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Gauge, Coins } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/AuthContext'
 import { useDateLocale } from '@/lib/useDateLocale'
@@ -40,6 +40,16 @@ export default function Reports() {
     const [y, m] = month.split('-').map(Number)
     const start = new Date(y, m - 1, 1, 0, 0, 0)
     const end = new Date(y, m, 0, 23, 59, 59)
+
+    // Total fleet spend over an arbitrary range — reused for the trend vs the
+    // previous month.
+    const spendInRange = (from, to) => {
+      const within = (v) => { if (!v) return false; const d = new Date(v); return d >= from && d <= to }
+      return maintenance.filter(r => r.invoice_amount != null && within(r.date)).reduce((s, r) => s + Number(r.invoice_amount), 0)
+        + washes.filter(w => w.amount != null && within(w.date)).reduce((s, w) => s + Number(w.amount), 0)
+        + mileage.filter(e => e.amount != null && within(e.created_at)).reduce((s, e) => s + Number(e.amount), 0)
+    }
+
     const inMonth = (v) => { if (!v) return false; const d = new Date(v); return d >= start && d <= end }
 
     const maintRows = maintenance.filter(r => r.invoice_amount != null && inMonth(r.date))
@@ -50,6 +60,28 @@ export default function Reports() {
     const washTotal  = washRows.reduce((s, w) => s + Number(w.amount), 0)
     const fuelTotal  = fuelRows.reduce((s, e) => s + Number(e.amount), 0)
     const total = maintTotal + washTotal + fuelTotal
+
+    // Trend vs the previous month.
+    const prevStart = new Date(y, m - 2, 1, 0, 0, 0)
+    const prevEnd = new Date(y, m - 1, 0, 23, 59, 59)
+    const prevTotal = spendInRange(prevStart, prevEnd)
+    const trendPct = prevTotal > 0 ? Math.round(((total - prevTotal) / prevTotal) * 100) : null
+
+    // Distance travelled this month — per vehicle, from the last reading before
+    // the month (baseline) to the last reading within it.
+    const readingsInMonth = mileage.filter(e => inMonth(e.created_at))
+    const byVeh = {}
+    mileage.forEach(e => { if (e.mileage != null) (byVeh[e.vehicle_id] ||= []).push(e) })
+    let distanceKm = 0
+    Object.values(byVeh).forEach(list => {
+      list.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+      const before = list.filter(e => new Date(e.created_at) < start)
+      const inM = list.filter(e => inMonth(e.created_at))
+      if (!inM.length) return
+      const baseline = before.length ? Number(before[before.length - 1].mileage) : Number(inM[0].mileage)
+      const endVal = Number(inM[inM.length - 1].mileage)
+      distanceKm += Math.max(0, endVal - baseline)
+    })
 
     // Spend per vehicle across all three sources → top 5.
     const perVehicle = {}
@@ -75,13 +107,28 @@ export default function Reports() {
     return {
       label: format(start, 'MMMM yyyy', { locale: dateLocale }),
       maintTotal, washTotal, fuelTotal, total,
-      readingsCount: mileage.filter(e => inMonth(e.created_at)).length,
+      prevTotal, trendPct,
+      distanceKm,
+      fuelCount: fuelRows.length,
+      maintCount: maintRows.length,
+      washCount: washRows.length,
+      readingsCount: readingsInMonth.length,
+      hasData: total > 0 || readingsInMonth.length > 0 || ctDeadlines.length > 0 || docDeadlines.length > 0,
       topVehicles, ctDeadlines, docDeadlines,
     }
   }, [month, vehicles, drivers, mileage, maintenance, washes, inspections, driverDocs, dateLocale])
 
   const company = user?.user_metadata?.company || user?.user_metadata?.full_name || 'Votre flotte'
   const pct = (part) => report.total > 0 ? Math.round((part / report.total) * 100) : 0
+  const euroShort = (n) => `${Math.round(Number(n) || 0).toLocaleString('fr-FR')} €`
+
+  // Shift the selected month by delta (±1), clamped to a real YYYY-MM.
+  const shiftMonth = (delta) => {
+    const [y, m] = month.split('-').map(Number)
+    const d = new Date(y, m - 1 + delta, 1)
+    setMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`)
+  }
+  const isCurrentMonth = month === `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
 
   const bars = [
     { key: 'maint', label: 'Maintenance', icon: Wrench,    value: report.maintTotal, color: '#0066FF' },
@@ -100,12 +147,22 @@ export default function Reports() {
         <div className="flex items-end gap-3">
           <div>
             <label className="block text-xs font-medium text-zinc-500 mb-1.5">Mois</label>
-            <input
-              type="month"
-              value={month}
-              onChange={e => setMonth(e.target.value)}
-              className="border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30"
-            />
+            <div className="flex items-center gap-1.5">
+              <button onClick={() => shiftMonth(-1)} aria-label="Mois précédent"
+                className="w-9 h-9 flex items-center justify-center rounded-lg border border-zinc-200 text-zinc-500 hover:text-zinc-900 hover:border-zinc-300 transition-colors">
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <input
+                type="month"
+                value={month}
+                onChange={e => setMonth(e.target.value)}
+                className="border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30"
+              />
+              <button onClick={() => shiftMonth(1)} disabled={isCurrentMonth} aria-label="Mois suivant"
+                className="w-9 h-9 flex items-center justify-center rounded-lg border border-zinc-200 text-zinc-500 hover:text-zinc-900 hover:border-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
           <Button onClick={() => window.print()} className="bg-[#0066FF] hover:bg-[#0052D6]">
             <Download className="w-4 h-4 mr-2" /> Télécharger le PDF
@@ -124,17 +181,37 @@ export default function Reports() {
           <div className="text-right">
             <p className="text-white font-semibold">{company}</p>
             <p className="text-white/70 text-sm capitalize">{report.label}</p>
+            <p className="text-white/60 text-xs mt-0.5">{vehicles.length} véhicule{vehicles.length !== 1 ? 's' : ''} · {drivers.length} conducteur{drivers.length !== 1 ? 's' : ''}</p>
           </div>
         </div>
 
         <div className="p-8 space-y-8">
+          {!report.hasData && (
+            <div className="text-center py-6">
+              <p className="text-sm text-zinc-400">Aucune activité enregistrée sur ce mois. Choisissez un autre mois ou saisissez vos premières données.</p>
+            </div>
+          )}
+
           {/* KPIs */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {/* Spend + trend vs previous month */}
+            <div className="border border-zinc-100 rounded-xl p-4">
+              <Coins className="w-4 h-4 text-[#0066FF] mb-2" />
+              <p className="text-xl font-bold text-zinc-900 tracking-tight leading-none">{euroShort(report.total)}</p>
+              <div className="flex items-center gap-1 mt-1.5">
+                <p className="text-xs text-zinc-400">Dépenses du mois</p>
+                {report.trendPct !== null && report.trendPct !== 0 && (
+                  <span className={`inline-flex items-center gap-0.5 text-[11px] font-semibold ${report.trendPct > 0 ? 'text-red-500' : 'text-emerald-600'}`}>
+                    {report.trendPct > 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                    {Math.abs(report.trendPct)}%
+                  </span>
+                )}
+              </div>
+            </div>
             {[
-              { icon: Truck, label: 'Véhicules', value: vehicles.length },
-              { icon: Users, label: 'Conducteurs', value: drivers.length },
-              { icon: TrendingUp, label: 'Dépenses du mois', value: euro(report.total) },
-              { icon: Fuel, label: 'Relevés km', value: report.readingsCount },
+              { icon: Gauge, label: 'Distance parcourue', value: `${report.distanceKm.toLocaleString('fr-FR')} km` },
+              { icon: Fuel, label: 'Pleins', value: report.fuelCount },
+              { icon: Wrench, label: 'Entretiens', value: report.maintCount },
             ].map(k => (
               <div key={k.label} className="border border-zinc-100 rounded-xl p-4">
                 <k.icon className="w-4 h-4 text-[#0066FF] mb-2" />
