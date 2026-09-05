@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Truck, Eye, EyeOff, Check, X } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
@@ -27,7 +27,17 @@ export default function Login() {
   const { signIn, signUp } = useAuth()
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const [mode, setMode] = useState('login')
+  // Arriving from a plan CTA (?plan=pro) means the visitor wants to sign up, not
+  // log in — default to the register form and remember the chosen plan so the
+  // profile setup + checkout apply it (SetupProfile reads selected_plan).
+  const planParam = typeof window !== 'undefined'
+    ? new URLSearchParams(window.location.search).get('plan')
+    : null
+  const [mode, setMode] = useState(planParam ? 'signup' : 'login')
+
+  useEffect(() => {
+    if (planParam) sessionStorage.setItem('selected_plan', planParam)
+  }, [planParam])
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
