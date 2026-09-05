@@ -23,6 +23,7 @@ import Assignments from '@/pages/Assignments'
 import Mileage from '@/pages/Mileage'
 import Maintenance from '@/pages/Maintenance'
 import Inspections from '@/pages/Inspections'
+import Reports from '@/pages/Reports'
 import Washings from '@/pages/Washings'
 import Settings from '@/pages/Settings'
 import ActivityLog from '@/pages/ActivityLog'
@@ -109,6 +110,7 @@ function AppRoutes() {
             <Route path="/Mileage" element={<Mileage />} />
             <Route path="/Maintenance" element={<Maintenance />} />
             <Route path="/Inspections" element={<Inspections />} />
+            <Route path="/Reports" element={<Reports />} />
             <Route path="/Washings" element={<Washings />} />
             <Route path="/Settings" element={<Settings />} />
             <Route path="/mon-profil" element={<DriverProfile />} />

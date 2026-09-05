@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Truck, Users, ArrowLeftRight,
   Gauge, Wrench, ClipboardCheck, Droplets,
-  X, ChevronLeft, ChevronRight, LogOut, Settings, History, Sparkles, IdCard,
+  X, ChevronLeft, ChevronRight, LogOut, Settings, History, Sparkles, IdCard, FileBarChart,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/AuthContext';
@@ -87,6 +87,7 @@ export default function Sidebar({ open, onToggle }) {
         { label: t('nav.maintenance'),  path: '/Maintenance', icon: Wrench },
         { label: t('nav.inspections'),  path: '/Inspections', icon: ClipboardCheck },
         { label: t('nav.washings'),     path: '/Washings',    icon: Droplets },
+        { label: 'Rapports',            path: '/Reports',     icon: FileBarChart },
       ],
     },
   ];
