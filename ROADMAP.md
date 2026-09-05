@@ -77,7 +77,9 @@ on ne révoque jamais l'accès aux membres/données déjà créés (client start
 - [x] **T-E01** — Helper `exportCsv.js` : CSV Excel-friendly (BOM UTF-8, CRLF, séparateur `;`, échappement RFC-4180), nom daté. _(2026-09-05)_
 - [x] **T-E02** — Export CSV Véhicules (modèle, plaque, conducteur affecté, km, mise en circulation). _(2026-09-05)_
 - [x] **T-E03** — Export CSV Conducteurs (nom, email, tél, naissance, adresse, cartes DKV/badge/lavage). _(2026-09-05)_
-- [ ] **T-E04** — (suivi) Export dépenses (maintenance + lavages + carburant) + rapport PDF mensuel.
+- [x] **T-E04** — Export CSV dépenses consolidé (maintenance `invoice_amount` + lavages `amount`), trié par date, total en toast. Sur page Maintenance. Carburant exclu (pas de montant en base). _(2026-09-05)_
+- [ ] **T-E05** — (suivi) Rapport PDF mensuel (KPI + coûts + échéances), imprimable/emailable.
+- [ ] **T-E06** — (option) Ajouter un montant carburant à la saisie km pour l'inclure aux dépenses.
 
 ---
 

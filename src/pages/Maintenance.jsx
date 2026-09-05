@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react'
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
-import { Plus, Wrench, Trash2, Pencil, Check, X, ChevronDown, ChevronRight, Info, Paperclip } from 'lucide-react'
+import { Plus, Wrench, Trash2, Pencil, Check, X, ChevronDown, ChevronRight, Info, Paperclip, Download } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -19,11 +19,12 @@ import DataError from '@/components/shared/DataError'
 import ConfirmDeleteDialog from '@/components/shared/ConfirmDeleteDialog'
 import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import {
-  useVehicles, useMaintenanceRecords, useMaintenanceSchedules, useMileageEntries,
+  useVehicles, useMaintenanceRecords, useMaintenanceSchedules, useMileageEntries, useWashRecords,
   createMaintenanceRecord, updateMaintenanceRecord, deleteMaintenanceRecord,
   createMaintenanceSchedule, updateMaintenanceSchedule, deleteMaintenanceSchedule,
   getVehicleById
 } from '@/lib/useFleetData'
+import { downloadCsv, datedName } from '@/lib/exportCsv'
 import { computeForecasts } from '@/lib/maintenanceForecast'
 import { usePageTitle } from '@/lib/usePageTitle'
 
@@ -372,7 +373,40 @@ export default function Maintenance() {
   const schedulesQ              = useMaintenanceSchedules()
   const { data: schedules, isError: schedulesError } = schedulesQ
   const { data: mileageEntries } = useMileageEntries()
+  const { data: washRecords } = useWashRecords()
   const queryClient = useQueryClient()
+
+  // Consolidated expenses export (maintenance costs + washes) for accounting.
+  // Fuel has no monetary amount in the data model, so it isn't included.
+  const exportExpensesCsv = () => {
+    const veh = (id) => {
+      const v = getVehicleById(vehicles, id)
+      return v ? `${v.plate_number}${v.model ? ' — ' + v.model : ''}` : ''
+    }
+    const rows = [
+      ...(records || []).filter(r => r.invoice_amount != null).map(r => ({
+        date: r.date, type: 'Maintenance', vehicle: veh(r.vehicle_id),
+        description: r.issue_description || '', amount: r.invoice_amount,
+      })),
+      ...(washRecords || []).map(w => ({
+        date: w.date, type: 'Lavage', vehicle: veh(w.vehicle_id),
+        description: '', amount: w.amount,
+      })),
+    ].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
+
+    if (rows.length === 0) { toast.error('Aucune dépense à exporter.'); return }
+
+    const total = rows.reduce((s, r) => s + (Number(r.amount) || 0), 0)
+    const cols = [
+      { label: 'Date', map: r => r.date || '' },
+      { label: 'Type', map: r => r.type },
+      { label: 'Véhicule', map: r => r.vehicle },
+      { label: 'Description', map: r => r.description },
+      { label: 'Montant (€)', map: r => (Number(r.amount) || 0).toFixed(2) },
+    ]
+    downloadCsv(datedName('depenses'), cols, rows)
+    toast.success(`Export de ${rows.length} dépense${rows.length !== 1 ? 's' : ''} · Total ${total.toFixed(2)} €`)
+  }
 
   const [recordModal, setRecordModal]     = useState(false)
   const [editingRecord, setEditingRecord] = useState(null)
@@ -573,6 +607,14 @@ export default function Maintenance() {
 
           {/* Action buttons */}
           <div className="flex items-center gap-2 shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={exportExpensesCsv}
+              className="border-zinc-200 text-zinc-600 hover:text-zinc-900"
+            >
+              <Download className="w-4 h-4 mr-1.5" /> Dépenses
+            </Button>
             <Button
               variant="outline"
               size="sm"
