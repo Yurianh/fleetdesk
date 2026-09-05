@@ -57,9 +57,11 @@ Deno.serve(async (req) => {
     // Determine the plan + trial end from the live subscription (default starter).
     let plan = 'starter'
     let trialEnd: number | null = null
+    let hasLiveSub = false
     if (customerId) {
       const subs = await stripe.subscriptions.list({ customer: customerId, status: 'all', limit: 10 })
       const live = subs.data.find(s => LIVE.has(s.status))
+      hasLiveSub = !!live
       const priceId = live?.items?.data?.[0]?.price?.id
       plan = (priceId && PLAN_BY_PRICE[priceId]) || 'starter'
       // Only expose the trial end while the sub is actually trialing and it's
@@ -67,22 +69,31 @@ Deno.serve(async (req) => {
       if (live?.status === 'trialing' && live.trial_end) trialEnd = live.trial_end
     }
 
+    // A live subscription means the account is set up — don't force it back
+    // through onboarding on login.
+    const onboarded = hasLiveSub || !!user.user_metadata?.onboarding_complete
+
     const current = user.app_metadata?.plan ?? null
     const currentTrial = user.app_metadata?.trial_end ?? null
     const changed = current !== plan
       || currentTrial !== trialEnd
       || (customerId && user.user_metadata?.stripe_customer_id !== customerId)
+      || (hasLiveSub && !user.user_metadata?.onboarding_complete)
 
     if (changed) {
       const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
       await admin.auth.admin.updateUserById(user.id, {
         app_metadata: { ...user.app_metadata, plan, trial_end: trialEnd },
-        user_metadata: { ...user.user_metadata, plan, ...(customerId ? { stripe_customer_id: customerId } : {}) },
+        user_metadata: {
+          ...user.user_metadata, plan,
+          ...(customerId ? { stripe_customer_id: customerId } : {}),
+          ...(hasLiveSub ? { onboarding_complete: true } : {}),
+        },
       })
-      console.log('[sync-plan] updated', user.id, current, '->', plan, 'trial_end:', trialEnd)
+      console.log('[sync-plan] updated', user.id, current, '->', plan, 'trial_end:', trialEnd, 'onboarded:', onboarded)
     }
 
-    return new Response(JSON.stringify({ plan, changed, trial_end: trialEnd }), {
+    return new Response(JSON.stringify({ plan, changed, trial_end: trialEnd, onboarded }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (err: any) {

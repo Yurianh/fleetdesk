@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Truck, ChevronRight, Building2, Users, CheckCircle2, Check, Zap, Shield, Briefcase } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
@@ -33,11 +33,31 @@ function StepIndicator({ current, total }) {
 }
 
 export default function SetupProfile() {
-  const { user } = useAuth()
+  const { user, applyPlan, applyOnboarded } = useAuth()
   const navigate = useNavigate()
   const { t } = useTranslation()
 
   const googleName = user?.user_metadata?.full_name || user?.user_metadata?.name || ''
+
+  // An account that already has a live subscription shouldn't be forced through
+  // onboarding on login. Reconcile once with Stripe; if it's already set up,
+  // mark it onboarded locally and routing sends it straight to the dashboard.
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        const { data } = await supabase.functions.invoke('sync-plan', {
+          headers: { Authorization: `Bearer ${session?.access_token}` },
+        })
+        if (!cancelled && data?.onboarded) {
+          if (data.plan) applyPlan(data.plan)
+          applyOnboarded()
+        }
+      } catch { /* stay on onboarding */ }
+    })()
+    return () => { cancelled = true }
+  }, [])
 
   const [step, setStep]           = useState(0)
   const [name, setName]           = useState(googleName)

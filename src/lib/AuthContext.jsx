@@ -63,6 +63,11 @@ export function AuthProvider({ children }) {
   const applyPlan = (plan) =>
     setUser(u => u ? { ...u, app_metadata: { ...u.app_metadata, plan } } : u)
 
+  // Mark onboarding complete locally so routing leaves the setup flow instantly
+  // (an already-subscribed account shouldn't be forced back through onboarding).
+  const applyOnboarded = () =>
+    setUser(u => u ? { ...u, user_metadata: { ...u.user_metadata, onboarding_complete: true } } : u)
+
   const setDisplayName = async (name) => {
     const { data, error } = await supabase.auth.updateUser({
       data: { full_name: name },
@@ -72,7 +77,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, setDisplayName, applyPlan }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, setDisplayName, applyPlan, applyOnboarded }}>
       {children}
     </AuthContext.Provider>
   )
