@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, ChevronRight, Loader2, Truck, Pencil, Trash2, User, UserMinus, Paperclip, FileText, X, Camera, Wrench, ClipboardCheck, Droplets } from 'lucide-react'
+import { Plus, Search, ChevronRight, Loader2, Truck, Pencil, Trash2, User, UserMinus, Paperclip, FileText, X, Camera, Wrench, ClipboardCheck, Droplets, Download } from 'lucide-react'
 import { format, addYears } from 'date-fns'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -17,6 +17,7 @@ import FormModal from '@/components/shared/FormModal'
 import { InvoiceUpload } from '@/components/shared/InvoiceUpload'
 import VehicleStatusBadge from '@/components/shared/VehicleStatusBadge'
 import DataError from '@/components/shared/DataError'
+import { downloadCsv, datedName } from '@/lib/exportCsv'
 import {
   useVehicles, useDrivers, useAssignments, useMileageEntries, useTechnicalInspections,
   createVehicle, updateVehicle, deleteVehicle, unassignVehicle, getLatestAssignments, getLatestMileage, getDriverById,
@@ -159,6 +160,23 @@ export default function Vehicles() {
     v.plate_number?.toLowerCase().includes(search.toLowerCase()) ||
     v.model?.toLowerCase().includes(search.toLowerCase())
   )
+
+  // CSV export of the full fleet (not the filtered view) for accounting / audits.
+  const exportVehiclesCsv = () => {
+    const cols = [
+      { label: 'Modèle', map: v => v.model },
+      { label: 'Plaque', map: v => v.plate_number },
+      { label: 'Conducteur affecté', map: v => {
+        const a = latestAssignments[v.id]
+        const d = a ? getDriverById(drivers, a.driver_id) : null
+        return d?.name || ''
+      } },
+      { label: 'Kilométrage', map: v => latestMileage[v.id]?.mileage ?? '' },
+      { label: 'Mise en circulation', map: v => v.mec_date || '' },
+    ]
+    downloadCsv(datedName('vehicules'), cols, vehicles)
+    toast.success(`Export de ${vehicles.length} véhicule${vehicles.length !== 1 ? 's' : ''} généré.`)
+  }
 
   const assigned   = filtered.filter(v => {
     const a = latestAssignments[v.id]
@@ -413,6 +431,11 @@ export default function Vehicles() {
         <div className="flex items-center gap-3">
           {limits.vehicles !== Infinity && (
             <span className="text-xs text-zinc-400">{t('plan.usageVehicles', { count: vehicles.length, max: limits.vehicles })}</span>
+          )}
+          {vehicles.length > 0 && (
+            <Button variant="outline" onClick={exportVehiclesCsv} className="border-zinc-200 text-zinc-600 hover:text-zinc-900">
+              <Download className="w-4 h-4 mr-2" /> Exporter
+            </Button>
           )}
           <Button
             onClick={() => canAddVehicle ? setShowAdd(true) : toast.error(t('plan.vehicleLimitReached') + ' ' + t('plan.upgradeHint'))}

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, ChevronRight, CreditCard, Users, Trash2, Loader2, MapPin, AlertTriangle, Clock } from 'lucide-react'
+import { Plus, Search, ChevronRight, CreditCard, Users, Trash2, Loader2, MapPin, AlertTriangle, Clock, Download } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -11,6 +11,7 @@ import { toast } from 'sonner'
 import PageHeader from '@/components/shared/PageHeader'
 import EmptyState from '@/components/shared/EmptyState'
 import DataError from '@/components/shared/DataError'
+import { downloadCsv, datedName } from '@/lib/exportCsv'
 import { differenceInDays } from 'date-fns'
 import {
   useDrivers, useVehicles, useAssignments, useAllDriverDocuments,
@@ -95,12 +96,33 @@ export default function Drivers() {
     finally { setSaving(false) }
   }
 
+  // CSV export of every driver (not the filtered view) for accounting / HR.
+  const exportDriversCsv = () => {
+    const cols = [
+      { label: 'Nom', map: d => d.name },
+      { label: 'Email', map: d => d.email || '' },
+      { label: 'Téléphone', map: d => d.phone || '' },
+      { label: 'Date de naissance', map: d => d.date_of_birth || '' },
+      { label: 'Adresse', map: d => d.address || '' },
+      { label: 'Carte DKV', map: d => d.dkv_card || '' },
+      { label: 'Badge autoroute', map: d => d.highway_badge || '' },
+      { label: 'Carte lavage', map: d => d.wash_card || '' },
+    ]
+    downloadCsv(datedName('conducteurs'), cols, drivers)
+    toast.success(`Export de ${drivers.length} conducteur${drivers.length !== 1 ? 's' : ''} généré.`)
+  }
+
   return (
     <div className="p-5 sm:p-8">
       <PageHeader title="Conducteurs" description={`${drivers.length} conducteur${drivers.length !== 1 ? 's' : ''}`}>
         <div className="flex items-center gap-3">
           {limits.drivers !== Infinity && (
             <span className="text-xs text-zinc-400">{t('plan.usageDrivers', { count: drivers.length, max: limits.drivers })}</span>
+          )}
+          {drivers.length > 0 && (
+            <Button variant="outline" onClick={exportDriversCsv} className="border-zinc-200 text-zinc-600 hover:text-zinc-900">
+              <Download className="w-4 h-4 mr-2" /> Exporter
+            </Button>
           )}
           <Button
             onClick={() => canAddDriver ? setShowAdd(true) : toast.error(t('plan.driverLimitReached') + ' ' + t('plan.upgradeHint'))}

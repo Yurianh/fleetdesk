@@ -72,6 +72,17 @@ on ne révoque jamais l'accès aux membres/données déjà créés (client start
 
 ---
 
+## Phase E — Exports
+
+- [x] **T-E01** — Helper `exportCsv.js` : CSV Excel-friendly (BOM UTF-8, CRLF, séparateur `;`, échappement RFC-4180), nom daté. _(2026-09-05)_
+- [x] **T-E02** — Export CSV Véhicules (modèle, plaque, conducteur affecté, km, mise en circulation). _(2026-09-05)_
+- [x] **T-E03** — Export CSV Conducteurs (nom, email, tél, naissance, adresse, cartes DKV/badge/lavage). _(2026-09-05)_
+- [ ] **T-E04** — (suivi) Export dépenses (maintenance + lavages + carburant) + rapport PDF mensuel.
+
+---
+
 ## Backlog (proposé, non planifié)
 
-- (rien pour l'instant — proposer la suite : dunning avancé, exports, i18n, SEO)
+- Exports dépenses + rapport PDF mensuel (T-E04).
+- SEO conformité (contenu organique CT / assurance / documents).
+- Vrai témoignage client (T-P02).
