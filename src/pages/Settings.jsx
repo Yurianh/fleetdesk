@@ -15,11 +15,15 @@ import { useOnboarding } from '@/lib/OnboardingContext'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useCan } from '@/lib/capabilities'
 import UpgradePrompt from '@/components/shared/UpgradePrompt'
+import { ACTIVITIES, MODULES, activityDefaults, useFeatures } from '@/lib/activity'
+import { SlidersHorizontal, Briefcase } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
 
 const SECTIONS = [
   { id: 'profile',  icon: User,          labelKey: 'settings.profile' },
   { id: 'tutorials',icon: GraduationCap, label: 'Tutoriels' },
   { id: 'team',     icon: Users,      labelKey: 'settings.team' },
+  { id: 'modules',  icon: SlidersHorizontal, label: 'Modules' },
   { id: 'plan',     icon: CreditCard, labelKey: 'settings.plan' },
   { id: 'language', icon: Globe,      labelKey: 'settings.language' },
   { id: 'account',  icon: Shield,     labelKey: 'settings.account' },
@@ -64,6 +68,28 @@ export default function Settings() {
   // Team management is Enterprise-only. Server enforces it too (invite-member);
   // this gates the UI and shows an upsell.
   const canTeam = useCan('team').allowed
+
+  // Activity-based modules (visibility of optional features). Owner-managed.
+  const { has: hasFeature, activity, overrides } = useFeatures()
+  const [savingModules, setSavingModules] = useState(false)
+  const updateActivity = async (next) => {
+    setSavingModules(true)
+    try {
+      const { error } = await supabase.auth.updateUser({ data: { activity: next } })
+      if (error) throw error
+      toast.success('Métier mis à jour.')
+    } catch (e) { toast.error(e.message || 'Erreur.') }
+    finally { setSavingModules(false) }
+  }
+  const toggleModule = async (key, value) => {
+    setSavingModules(true)
+    try {
+      const next = { ...overrides, [key]: value }
+      const { error } = await supabase.auth.updateUser({ data: { feature_overrides: next } })
+      if (error) throw error
+    } catch (e) { toast.error(e.message || 'Erreur.') }
+    finally { setSavingModules(false) }
+  }
 
   const [searchParams] = useSearchParams()
   const [section, setSection] = useState(() => {
@@ -231,6 +257,56 @@ export default function Settings() {
 
           {/* ── Tutoriels ── */}
           {section === 'tutorials' && <SectionTutorials />}
+
+          {/* ── Modules (activity-based feature visibility) ── */}
+          {section === 'modules' && (
+            <div className="space-y-4">
+              {isCollaborator ? (
+                <div className="bg-white border border-zinc-200 rounded-xl p-5">
+                  <p className="text-sm text-zinc-500">Les modules affichés sont gérés par le propriétaire de l'organisation.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="bg-white border border-zinc-200 rounded-xl p-5">
+                    <h2 className="text-sm font-semibold text-zinc-900 mb-1 flex items-center gap-2">
+                      <Briefcase className="w-4 h-4 text-[#0066FF]" /> Votre activité
+                    </h2>
+                    <p className="text-xs text-zinc-400 mb-4">FleetDesk adapte les modules affichés à votre métier.</p>
+                    <Select value={activity || 'autre'} onValueChange={updateActivity} disabled={savingModules}>
+                      <SelectTrigger className="max-w-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(ACTIVITIES).map(([key, a]) => (
+                          <SelectItem key={key} value={key}>{a.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="bg-white border border-zinc-200 rounded-xl p-5">
+                    <h2 className="text-sm font-semibold text-zinc-900 mb-1">Modules affichés</h2>
+                    <p className="text-xs text-zinc-400 mb-4">Activez ou masquez les fonctionnalités optionnelles. Les valeurs par défaut suivent votre métier.</p>
+                    <div className="divide-y divide-zinc-100">
+                      {MODULES.map(m => {
+                        const on = hasFeature(m.key)
+                        const isDefault = !(m.key in overrides)
+                        return (
+                          <div key={m.key} className="flex items-center justify-between gap-4 py-3.5 first:pt-0 last:pb-0">
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-zinc-900">{m.label}
+                                {isDefault && <span className="ml-2 text-[10px] text-zinc-400 font-normal">défaut métier</span>}
+                              </p>
+                              <p className="text-xs text-zinc-400">{m.desc}</p>
+                            </div>
+                            <Switch checked={on} onCheckedChange={(v) => toggleModule(m.key, v)} disabled={savingModules} />
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
           {/* ── Plan ── */}
           {section === 'plan' && (

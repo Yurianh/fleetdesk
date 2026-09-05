@@ -16,6 +16,7 @@ import EmptyState from '@/components/shared/EmptyState'
 import AssignDriverDialog from '@/components/shared/AssignDriverDialog'
 import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import { openSignedFile } from '@/lib/signedFile'
+import { useFeature } from '@/lib/activity'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
@@ -111,6 +112,7 @@ export default function VehicleDetail() {
   const dateLocale = useDateLocale()
   const { id } = useParams()
   const queryClient = useQueryClient()
+  const showLicense = useFeature('transportLicense')
 
   // Tab state lives in the URL so alerts and colleagues can deep-link
   // (e.g. /Vehicles/:id?tab=inspections)
@@ -413,8 +415,10 @@ export default function VehicleDetail() {
               onView={() => openSignedFile(vehicle.registration_card_url)} onAdd={openVehicleInfo} />
             <DocChip label="Assurance" url={vehicle.insurance_url}
               onView={() => openSignedFile(vehicle.insurance_url)} onAdd={openVehicleInfo} />
-            <DocChip label="Licence de transport" url={vehicle.transport_license_url}
-              onView={() => openSignedFile(vehicle.transport_license_url)} onAdd={openVehicleInfo} />
+            {showLicense && (
+              <DocChip label="Licence de transport" url={vehicle.transport_license_url}
+                onView={() => openSignedFile(vehicle.transport_license_url)} onAdd={openVehicleInfo} />
+            )}
           </div>
         </div>
       </div>
@@ -688,8 +692,10 @@ export default function VehicleDetail() {
           existingUrl={vehicle.registration_card_url} placeholder="Joindre la carte grise" />
         <VehicleDocField label="Assurance" file={insuranceFile} setFile={setInsuranceFile}
           existingUrl={vehicle.insurance_url} placeholder="Joindre l'attestation d'assurance" />
-        <VehicleDocField label="Licence de transport" file={licenseFile} setFile={setLicenseFile}
-          existingUrl={vehicle.transport_license_url} placeholder="Joindre la licence de transport" />
+        {showLicense && (
+          <VehicleDocField label="Licence de transport" file={licenseFile} setFile={setLicenseFile}
+            existingUrl={vehicle.transport_license_url} placeholder="Joindre la licence de transport" />
+        )}
       </FormModal>
 
       {/* Maintenance */}

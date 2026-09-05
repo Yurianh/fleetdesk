@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/AuthContext';
+import { useFeature } from '@/lib/activity';
 import { useTranslation } from 'react-i18next';
 import { useOnboarding } from '@/lib/OnboardingContext';
 
@@ -53,6 +54,7 @@ export default function Sidebar({ open, onToggle }) {
   // Collaborators who aren't drivers (admin, membre) get a "Mon profil" entry to
   // complete their own conducteur record. Drivers have it in their main nav.
   const showMyProfile = accountType === 'admin' || accountType === 'member';
+  const showWashings = useFeature('washings');
 
   const navGroups = isDriver ? [
     {
@@ -86,9 +88,9 @@ export default function Sidebar({ open, onToggle }) {
         { label: t('nav.mileage'),      path: '/Mileage',     icon: Gauge },
         { label: t('nav.maintenance'),  path: '/Maintenance', icon: Wrench },
         { label: t('nav.inspections'),  path: '/Inspections', icon: ClipboardCheck },
-        { label: t('nav.washings'),     path: '/Washings',    icon: Droplets },
+        showWashings && { label: t('nav.washings'), path: '/Washings', icon: Droplets },
         { label: 'Rapports',            path: '/Reports',     icon: FileBarChart },
-      ],
+      ].filter(Boolean),
     },
   ];
 

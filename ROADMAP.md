@@ -68,6 +68,19 @@ on ne révoque jamais l'accès aux membres/données déjà créés (client start
 
 ---
 
+## Phase X — Personnalisation par métier
+
+Adapter l'app au secteur du gestionnaire (moins de features inutiles). 5 secteurs,
+masquage réactivable.
+
+- [x] **T-X01** — `src/lib/activity.js` : 5 secteurs (transport/vtc/btp/services/autre), défauts par secteur, `useFeatures()`/`useFeature()`. Collaborateurs = tout affiché. _(2026-09-05)_
+- [x] **T-X02** — Onboarding : sélecteur "Votre activité" (étape flotte), stocké en `user_metadata.activity`. _(2026-09-05)_
+- [x] **T-X03** — Application : Sidebar masque Lavages ; VehicleDetail masque Licence de transport (affichage + upload) selon le métier. _(2026-09-05)_
+- [x] **T-X04** — Settings › Modules : changer le métier + toggles pour réactiver/masquer chaque module (override `feature_overrides`). _(2026-09-05)_
+- [ ] **T-X05** — (suivi) Câbler `proDriverDocs` (filtrer types de docs conducteur transport) + propager le secteur aux collaborateurs (invite) + adapter le dashboard.
+
+---
+
 ## Phase C — Conversion
 
 - [x] **T-C01** — Page récap par plan `souscrire/[plan]` (getStaticPaths starter/pro/enterprise) : prix, essai, **liste inclus ✓ / non inclus ✗**, CTA. Funnel `noindex`. _(2026-09-05)_

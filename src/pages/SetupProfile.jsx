@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Truck, ChevronRight, Building2, Users, CheckCircle2, Check, Zap, Shield } from 'lucide-react'
+import { Truck, ChevronRight, Building2, Users, CheckCircle2, Check, Zap, Shield, Briefcase } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
+import { ACTIVITIES } from '@/lib/activity'
 import { supabase } from '@/lib/supabase'
 import { useTranslation } from 'react-i18next'
 
@@ -42,6 +43,7 @@ export default function SetupProfile() {
   const [name, setName]           = useState(googleName)
   const [company, setCompany]     = useState('')
   const [fleetSize, setFleetSize] = useState('')
+  const [activity, setActivity]   = useState('')
   const [plan, setPlan]           = useState(() => sessionStorage.getItem('selected_plan') || 'starter')
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState('')
@@ -83,6 +85,7 @@ export default function SetupProfile() {
           full_name: name.trim(),
           company: company.trim(),
           fleet_size: fleetSize,
+          activity: activity || 'autre',
           plan,
         },
       })
@@ -198,6 +201,30 @@ export default function SetupProfile() {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              <div className="mb-6">
+                <label className="flex items-center gap-1.5 text-xs font-medium text-zinc-500 mb-2">
+                  <Briefcase className="w-3.5 h-3.5" /> Votre activité
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.entries(ACTIVITIES).map(([key, a]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setActivity(key)}
+                      className={`text-left px-3 py-2.5 rounded-xl border text-xs transition-all duration-150 ${
+                        activity === key
+                          ? 'border-[#0066FF] bg-[#0066FF]/5 text-zinc-900'
+                          : 'border-zinc-200 bg-zinc-50 text-zinc-500 hover:border-zinc-300 hover:text-zinc-700'
+                      }`}
+                    >
+                      <p className="font-semibold">{a.label}</p>
+                      <p className="text-[10px] opacity-60 mt-0.5">{a.desc}</p>
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-zinc-400 mt-2">On adapte l'app à votre métier. Modifiable à tout moment dans les paramètres.</p>
               </div>
 
               <div className="flex gap-2">
