@@ -62,6 +62,7 @@ export default function SetupProfile() {
       price: t('marketing.pricing.plans.pro.price'),
       period: t('marketing.pricing.plans.pro.period'),
       features: t('onboarding.proFeatures', { returnObjects: true }),
+      trial: true,
     },
     {
       id: 'enterprise',
@@ -263,8 +264,17 @@ export default function SetupProfile() {
                         <div className="text-right flex-shrink-0">
                           <span className="text-sm font-bold text-zinc-900">{p.price}</span>
                           {p.period && <span className="text-[11px] text-zinc-400">{p.period}</span>}
+                          {p.trial && (
+                            <span className="block text-[10px] font-semibold text-emerald-600 mt-0.5">14 j gratuits</span>
+                          )}
                         </div>
                       </div>
+                      {p.trial && (
+                        <div className="flex items-center gap-1.5 mb-2.5 text-[11px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg px-2.5 py-1.5">
+                          <Check className="w-3 h-3 flex-shrink-0" />
+                          14 jours d'essai gratuits, sans carte bancaire. Prélèvement seulement si vous continuez.
+                        </div>
+                      )}
                       <ul className="space-y-1">
                         {Array.isArray(p.features) && p.features.map((f, i) => (
                           <li key={i} className="flex items-center gap-1.5">
@@ -296,7 +306,7 @@ export default function SetupProfile() {
                 >
                   {loading
                     ? t('onboarding.saving')
-                    : <><span>{t('common.finish')}</span> <ChevronRight className="w-4 h-4" /></>
+                    : <><span>{plan === 'pro' ? 'Démarrer l\'essai gratuit' : t('common.finish')}</span> <ChevronRight className="w-4 h-4" /></>
                   }
                 </button>
               </div>
