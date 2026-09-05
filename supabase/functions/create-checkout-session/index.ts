@@ -77,10 +77,18 @@ Deno.serve(async (req) => {
       locale: 'fr',
     }
 
-    // 14-day free trial for Pro (portal guard above already blocks existing paid customers)
+    // 14-day free trial for Pro, without a card (matches the marketing promise).
+    // payment_method_collection:'if_required' → Stripe collects no card while
+    // nothing is due; at trial end, with no payment method, the subscription is
+    // cancelled (webhook downgrades to starter). The portal guard above already
+    // blocks existing paid customers.
     if (plan === 'pro') {
-      sessionParams.subscription_data = { trial_period_days: 14 }
-      console.log('[checkout] trial applied: 14 days for pro')
+      sessionParams.subscription_data = {
+        trial_period_days: 14,
+        trial_settings: { end_behavior: { missing_payment_method: 'cancel' } },
+      }
+      sessionParams.payment_method_collection = 'if_required'
+      console.log('[checkout] card-free 14-day trial applied for pro')
     }
 
     // Reuse existing customer or create by email
