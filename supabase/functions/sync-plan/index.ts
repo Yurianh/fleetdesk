@@ -54,28 +54,35 @@ Deno.serve(async (req) => {
       if (!customerId && found.data.length) customerId = found.data[0].id
     }
 
-    // Determine the plan from the live subscription (default starter).
+    // Determine the plan + trial end from the live subscription (default starter).
     let plan = 'starter'
+    let trialEnd: number | null = null
     if (customerId) {
       const subs = await stripe.subscriptions.list({ customer: customerId, status: 'all', limit: 10 })
       const live = subs.data.find(s => LIVE.has(s.status))
       const priceId = live?.items?.data?.[0]?.price?.id
       plan = (priceId && PLAN_BY_PRICE[priceId]) || 'starter'
+      // Only expose the trial end while the sub is actually trialing and it's
+      // still in the future (drives the discreet in-app countdown banner).
+      if (live?.status === 'trialing' && live.trial_end) trialEnd = live.trial_end
     }
 
     const current = user.app_metadata?.plan ?? null
-    const changed = current !== plan || (customerId && user.user_metadata?.stripe_customer_id !== customerId)
+    const currentTrial = user.app_metadata?.trial_end ?? null
+    const changed = current !== plan
+      || currentTrial !== trialEnd
+      || (customerId && user.user_metadata?.stripe_customer_id !== customerId)
 
     if (changed) {
       const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
       await admin.auth.admin.updateUserById(user.id, {
-        app_metadata: { ...user.app_metadata, plan },
+        app_metadata: { ...user.app_metadata, plan, trial_end: trialEnd },
         user_metadata: { ...user.user_metadata, plan, ...(customerId ? { stripe_customer_id: customerId } : {}) },
       })
-      console.log('[sync-plan] updated', user.id, current, '->', plan)
+      console.log('[sync-plan] updated', user.id, current, '->', plan, 'trial_end:', trialEnd)
     }
 
-    return new Response(JSON.stringify({ plan, changed }), {
+    return new Response(JSON.stringify({ plan, changed, trial_end: trialEnd }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (err: any) {

@@ -54,9 +54,19 @@ function cta(url: string, label: string, color = BRAND) {
   return `<a href="${esc(url)}" style="display:inline-block;margin-top:8px;background:${color};color:#fff;font-size:14px;font-weight:600;text-decoration:none;padding:11px 20px;border-radius:10px">${label}</a>`
 }
 
-// variant: 'failed' | 'final' | 'recovered' | 'cancelled'
+// variant: 'failed' | 'final' | 'recovered' | 'cancelled' | 'trial_ending'
 function dunningContent(variant: string, first: string, portalUrl: string, nextDate: string | null) {
   const RED = '#dc2626', GREEN = '#16a34a'
+  if (variant === 'trial_ending') {
+    return {
+      subject: 'Votre essai Pro se termine bientôt — FleetDesk',
+      accent: BRAND,
+      html: shell(BRAND, `<h1 style="margin:0 0 12px;font-size:20px;font-weight:700;color:${INK}">Plus que quelques jours, ${first}.</h1>
+        <p style="margin:0 0 16px;font-size:14px;color:${INK};line-height:1.65">Votre essai <strong>Pro</strong> se termine ${nextDate ? `le <strong>${esc(nextDate)}</strong>` : 'bientôt'}. Pour conserver vos véhicules, analytics et alertes sans interruption, ajoutez un moyen de paiement — <strong>rien n'a été prélevé jusqu'ici</strong>.</p>
+        <p style="margin:0 0 20px;font-size:13px;color:${MUTE};line-height:1.6">Sans action de votre part, votre compte repassera simplement sur la formule Starter. Vos données sont conservées.</p>
+        ${cta(portalUrl, 'Activer mon abonnement', BRAND)}`),
+    }
+  }
   if (variant === 'recovered') {
     return {
       subject: 'Paiement confirmé — FleetDesk',
@@ -247,6 +257,26 @@ Deno.serve(async (req) => {
         await sendDunning(user.email ?? '', user.user_metadata?.full_name ?? '', 'recovered', '', null)
       } catch (e) {
         console.error('[webhook] recovered email error:', (e as Error).message)
+      }
+    }
+  }
+
+  // ── customer.subscription.trial_will_end (Stripe fires ~3 days before) ──
+  // One discreet reminder to add a card before the card-free Pro trial ends.
+  if (event.type === 'customer.subscription.trial_will_end') {
+    const sub = event.data.object as Stripe.Subscription
+    const customerId = sub.customer as string
+    const user = await findUserByCustomer(supabase, customerId)
+    if (user) {
+      try {
+        const endDate = sub.trial_end
+          ? new Date(sub.trial_end * 1000).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
+          : null
+        const link = await portalLink(customerId)
+        await sendDunning(user.email ?? '', user.user_metadata?.full_name ?? '', 'trial_ending', link, endDate)
+        console.log('[webhook] trial_will_end reminder sent:', user.id)
+      } catch (e) {
+        console.error('[webhook] trial reminder error:', (e as Error).message)
       }
     }
   }

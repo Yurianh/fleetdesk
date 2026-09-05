@@ -72,7 +72,8 @@ on ne révoque jamais l'accès aux membres/données déjà créés (client start
 
 - [x] **T-C01** — Page récap par plan `souscrire/[plan]` (getStaticPaths starter/pro/enterprise) : prix, essai, **liste inclus ✓ / non inclus ✗**, CTA. Funnel `noindex`. _(2026-09-05)_
 - [x] **T-C02** — Reroute tous les CTA plan (home, pricing, hero, navbar, footer, CTASection, guides, conformité) → `/souscrire/<plan>` avant la création de compte. Flow : récap → signup app → SetupProfile → Stripe. _(2026-09-05)_
-- [ ] **T-C03** — (suivi) Email "essai bientôt fini" J-2 pour pousser la conversion Pro.
+- [x] **T-C03** — Rappel fin d'essai Pro, non-invasif : `sync-plan` expose `trial_end` (app_metadata) ; bannière in-app discrète (≤3j restants, dismissible/session, ton calme) → portail Stripe ; 1 email J-3 via webhook `customer.subscription.trial_will_end`. Déployé. _(2026-09-05)_
+- [ ] **T-C04** — Activer l'event `customer.subscription.trial_will_end` sur l'endpoint webhook Stripe (dashboard). _(côté Julian)_
 
 ---
 
