@@ -7,7 +7,7 @@ import { useAuth } from './AuthContext'
 // was changed directly in Stripe — no manual SQL. When the plan changed we
 // refresh the session so the new app_metadata lands in the JWT immediately.
 export function usePlanSync() {
-  const { user } = useAuth()
+  const { user, applyPlan } = useAuth()
   const userId = user?.id
   const isCollaborator = !!user?.user_metadata?.org_id
 
@@ -23,13 +23,16 @@ export function usePlanSync() {
         const { data, error } = await supabase.functions.invoke('sync-plan', {
           headers: { Authorization: `Bearer ${session?.access_token}` },
         })
-        if (!error && data?.changed) {
-          await supabase.auth.refreshSession()
+        if (!error && data?.changed && data?.plan) {
+          // Reflect the corrected plan in the UI immediately (gates re-read the
+          // local user), then refresh the JWT in the background so it catches up.
+          applyPlan(data.plan)
+          supabase.auth.refreshSession().catch(() => {})
         }
       } catch {
         // Best-effort — never block the app on a billing sync.
         sessionStorage.removeItem(key)
       }
     })()
-  }, [userId, isCollaborator])
+  }, [userId, isCollaborator, applyPlan])
 }

@@ -56,6 +56,13 @@ export function AuthProvider({ children }) {
 
   const signOut = () => supabase.auth.signOut()
 
+  // Patch the plan in the local user object so plan gates update instantly after
+  // a sync, without waiting for a token refresh (a refreshed JWT doesn't always
+  // re-bake app_metadata). The DB app_metadata is already authoritative and is
+  // what the server enforces — this only keeps the client UI in step.
+  const applyPlan = (plan) =>
+    setUser(u => u ? { ...u, app_metadata: { ...u.app_metadata, plan } } : u)
+
   const setDisplayName = async (name) => {
     const { data, error } = await supabase.auth.updateUser({
       data: { full_name: name },
@@ -65,7 +72,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, setDisplayName }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, setDisplayName, applyPlan }}>
       {children}
     </AuthContext.Provider>
   )

@@ -43,6 +43,7 @@ on ne révoque jamais l'accès aux membres/données déjà créés (client start
 - [x] **T-B05** — Dunning avancé : emails Resend escaladés (`failed` avec date de prochaine tentative → `final` sans retry → `recovered` / `cancelled`), lien portail Stripe généré serveur-side. Déployé. _(2026-09-05)_
 - [ ] **T-B06** — Test dunning : carte `4000000000000341` sur un renouvellement → email "Paiement échoué" ; échec final → email suspension.
 - [x] **T-B07** — Sync plan auto-réparateur : edge `sync-plan` lit l'abo Stripe live → écrit `app_metadata.plan` ; client `usePlanSync` l'appelle 1×/session + refresh token si changé. Fin des correctifs SQL manuels (pré-migration / changements Stripe dashboard). Déployé. _(2026-09-05)_
+- [x] **T-B08** — Seamless : `AuthContext.applyPlan` patche le plan local dès la réponse `sync-plan` → gates/UI à jour instant, sans déco/reco (le refresh JWT ne re-bake pas toujours `app_metadata`). _(2026-09-05)_
 
 ---
 
