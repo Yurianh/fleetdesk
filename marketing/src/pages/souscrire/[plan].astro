@@ -1,0 +1,158 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import Navbar from '../../components/Navbar.jsx'
+import Footer from '../../components/Footer.astro'
+
+const APP_URL = 'https://app.fleetdesk.fr'
+
+const PLANS = {
+  starter: {
+    name: 'Starter',
+    price: '9',
+    period: '/mois',
+    tagline: 'Piloter sa flotte et rester conforme, sans tableur.',
+    trial: null,
+    included: [
+      'Jusqu\'à 5 véhicules',
+      'Jusqu\'à 3 conducteurs',
+      'Documents véhicule et conducteur suivis',
+      'Alertes contrôle technique et échéances',
+      'Prévisions d\'entretien et tableau de bord',
+      'Rapport mensuel exportable',
+      'Support par email',
+    ],
+    excluded: [
+      'Suivi des lavages et justificatifs',
+      'Analytics avancés (utilisation par véhicule)',
+      'Invitations d\'équipe (admins, membres)',
+      'Comptes chauffeur (saisie depuis le terrain)',
+    ],
+    cta: { label: 'Créer mon compte', href: `${APP_URL}/login?plan=starter` },
+  },
+  pro: {
+    name: 'Pro',
+    price: '29',
+    period: '/mois',
+    tagline: 'Pour les flottes qui grandissent et ne peuvent pas rater une échéance.',
+    trial: '14 jours gratuits, sans carte bancaire',
+    included: [
+      'Jusqu\'à 25 véhicules',
+      'Conducteurs illimités',
+      'Tout Starter, sans la limite de flotte',
+      'Suivi des lavages et justificatifs',
+      'Analytics complets : utilisation par véhicule, coûts',
+      'Alertes 30 jours avant chaque échéance',
+      'Support prioritaire',
+    ],
+    excluded: [
+      'Invitations d\'équipe (admins, membres)',
+      'Comptes chauffeur (saisie depuis le terrain)',
+    ],
+    cta: { label: 'Démarrer l\'essai gratuit', href: `${APP_URL}/login?plan=pro` },
+  },
+  enterprise: {
+    name: 'Enterprise',
+    price: '79',
+    period: '/mois',
+    tagline: 'Pour les flottes qui font saisir le terrain : chauffeurs, équipe, traçabilité.',
+    trial: null,
+    included: [
+      'Véhicules et conducteurs illimités',
+      'Tout Pro, sans limite',
+      'Invitez votre équipe : admins et membres',
+      'Comptes chauffeur : saisie km, pleins et factures depuis le terrain',
+      'Rôles et permissions appliqués côté serveur',
+      'Journal d\'activité complet, prêt pour les audits',
+      'Onboarding personnalisé et SLA garanti',
+    ],
+    excluded: [],
+    cta: { label: 'Contacter l\'équipe', href: '/contact' },
+  },
+}
+
+export function getStaticPaths() {
+  return ['starter', 'pro', 'enterprise'].map(plan => ({ params: { plan } }))
+}
+
+const { plan } = Astro.params
+const p = PLANS[plan]
+if (!p) return Astro.redirect('/pricing')
+---
+<Layout
+  title={`Souscrire ${p.name} · FleetDesk`}
+  description={`Ce que comprend la formule ${p.name} de FleetDesk : ${p.tagline}`}
+  noindex={true}
+>
+  <Navbar client:load currentPath="/pricing" />
+
+  <section class="max-w-2xl mx-auto px-4 sm:px-6 pt-14 pb-24">
+    <a href="/pricing" class="inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-[#0066FF] mb-8">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Comparer les formules
+    </a>
+
+    <!-- Plan header -->
+    <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Formule {p.name}</p>
+    <div class="flex items-end gap-3 mb-3">
+      <span class="font-display text-5xl font-semibold text-zinc-900 tracking-tight leading-none">{p.price} €</span>
+      <span class="text-zinc-400 mb-1">{p.period} · HT</span>
+    </div>
+    <p class="text-lg text-zinc-500 leading-relaxed mb-4">{p.tagline}</p>
+    {p.trial && (
+      <div class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 text-sm font-medium rounded-full px-3.5 py-1.5 mb-2">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        {p.trial}
+      </div>
+    )}
+
+    <!-- Included / Excluded -->
+    <div class="mt-10 border border-zinc-200 rounded-2xl overflow-hidden">
+      <div class="px-6 py-5">
+        <h2 class="text-sm font-semibold text-zinc-900 mb-4">Ce que vous obtenez</h2>
+        <ul class="space-y-2.5">
+          {p.included.map(f => (
+            <li class="flex items-start gap-2.5 text-sm text-zinc-700">
+              <span class="flex-shrink-0 mt-0.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-emerald-100">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              {f}
+            </li>
+          ))}
+        </ul>
+      </div>
+      {p.excluded.length > 0 && (
+        <div class="px-6 py-5 border-t border-zinc-100 bg-zinc-50/60">
+          <h2 class="text-sm font-semibold text-zinc-500 mb-4">Non inclus dans cette formule</h2>
+          <ul class="space-y-2.5">
+            {p.excluded.map(f => (
+              <li class="flex items-start gap-2.5 text-sm text-zinc-400">
+                <span class="flex-shrink-0 mt-0.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-zinc-200">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </span>
+                {f}
+              </li>
+            ))}
+          </ul>
+          <p class="text-xs text-zinc-400 mt-4">Besoin de ces fonctions ? <a href="/pricing" class="text-[#0066FF] font-medium hover:underline">Voir les formules supérieures</a>.</p>
+        </div>
+      )}
+    </div>
+
+    <!-- CTA -->
+    <div class="mt-8">
+      <a href={p.cta.href} class="w-full inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white text-sm font-semibold py-3.5 rounded-xl transition-colors">
+        {p.cta.label}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <p class="text-xs text-zinc-400 text-center mt-3">
+        {plan === 'pro'
+          ? 'Vous créez votre compte, puis confirmez la formule. Aucun prélèvement pendant l\'essai.'
+          : plan === 'enterprise'
+          ? 'Nous vous recontactons pour cadrer votre déploiement.'
+          : 'Vous créez votre compte, puis finalisez le paiement sécurisé par Stripe.'}
+      </p>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>

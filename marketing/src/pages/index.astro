@@ -118,9 +118,9 @@ const faq = [
 ]
 
 const teaserPlans = [
-  { name: 'Starter', price: '9',  note: 'Jusqu\'à 5 véhicules',      highlighted: false, href: `${APP_URL}/login?plan=starter`, cta: 'Choisir' },
-  { name: 'Pro',     price: '29', note: '14 jours d\'essai gratuit', highlighted: true,  href: `${APP_URL}/login?plan=pro`,     cta: 'Essayer' },
-  { name: 'Enterprise', price: '79', note: 'Flottes illimitées',     highlighted: false, href: '/pricing',                      cta: 'Voir' },
+  { name: 'Starter', price: '9',  note: 'Jusqu\'à 5 véhicules',      highlighted: false, href: '/souscrire/starter', cta: 'Choisir' },
+  { name: 'Pro',     price: '29', note: '14 jours d\'essai gratuit', highlighted: true,  href: '/souscrire/pro',     cta: 'Essayer' },
+  { name: 'Enterprise', price: '79', note: 'Flottes illimitées',     highlighted: false, href: '/souscrire/enterprise', cta: 'Voir' },
 ]
 
 // Structured data for the homepage: organisation, product and the FAQ.
@@ -337,7 +337,7 @@ const faqSchema = {
         </div>
       </div>
       <div class="mt-14 text-center">
-        <a href={`${APP_URL}/login?plan=pro`}
+        <a href={"/souscrire/pro"}
           class="inline-flex items-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
           Essayer gratuitement
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -581,7 +581,7 @@ const faqSchema = {
         <p class="text-zinc-500 leading-relaxed mb-6">
           FleetDesk démarre. Plutôt que d'inventer des avis, voici ce sur quoi vous pouvez déjà nous juger : conformité, sécurité et transparence, dès le premier jour.
         </p>
-        <a href={`${APP_URL}/login?plan=pro`} class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0066FF] hover:text-[#0052D6]">
+        <a href={"/souscrire/pro"} class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0066FF] hover:text-[#0052D6]">
           Commencer l'essai gratuit
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
@@ -665,7 +665,7 @@ const faqSchema = {
   <CTASection />
 
   <!-- Sticky mobile CTA -->
-  <a href={`${APP_URL}/login?plan=pro`}
+  <a href={"/souscrire/pro"}
     class="md:hidden fixed bottom-4 inset-x-4 z-40 flex items-center justify-center gap-2 bg-[#0066FF] text-white font-semibold text-sm py-3.5 rounded-xl shadow-xl shadow-[#0066FF]/30">
     Essayer gratuitement
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>

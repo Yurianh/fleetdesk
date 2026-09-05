@@ -68,6 +68,14 @@ on ne révoque jamais l'accès aux membres/données déjà créés (client start
 
 ---
 
+## Phase C — Conversion
+
+- [x] **T-C01** — Page récap par plan `souscrire/[plan]` (getStaticPaths starter/pro/enterprise) : prix, essai, **liste inclus ✓ / non inclus ✗**, CTA. Funnel `noindex`. _(2026-09-05)_
+- [x] **T-C02** — Reroute tous les CTA plan (home, pricing, hero, navbar, footer, CTASection, guides, conformité) → `/souscrire/<plan>` avant la création de compte. Flow : récap → signup app → SetupProfile → Stripe. _(2026-09-05)_
+- [ ] **T-C03** — (suivi) Email "essai bientôt fini" J-2 pour pousser la conversion Pro.
+
+---
+
 ## Phase P — Preuve sociale _(fait 2026-09-04)_
 
 - [x] **T-P01** — Retirer les faux témoignages (risque pratique trompeuse) → section signaux de confiance honnêtes sur la home. _(2026-09-04)_

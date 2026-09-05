@@ -15,6 +15,7 @@ interface Props {
   ogTitle?: string
   ogImage?: string
   jsonLd?: object[]
+  noindex?: boolean
 }
 
 const APP_URL = 'https://app.fleetdesk.fr'
@@ -25,6 +26,7 @@ const {
   ogTitle = title + ' · FleetDesk',
   ogImage = '/logo-mark.png',
   jsonLd = [],
+  noindex = false,
 } = Astro.props
 const canonical = SITE_URL + Astro.url.pathname
 const ogImageUrl = ogImage.startsWith('http') ? ogImage : SITE_URL + ogImage
@@ -41,7 +43,7 @@ const ogImageUrl = ogImage.startsWith('http') ? ogImage : SITE_URL + ogImage
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>{ogTitle}</title>
     <meta name="description" content={description} />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow'} />
 
     <!-- Open Graph -->
     <meta property="og:title" content={ogTitle} />

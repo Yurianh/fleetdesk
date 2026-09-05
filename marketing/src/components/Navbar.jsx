@@ -67,7 +67,7 @@ export default function Navbar({ currentPath = '/' }) {
                 className="text-sm text-zinc-600 hover:text-zinc-900 font-medium transition-colors">
                 Se connecter
               </a>
-              <a href={`${APP_URL}/login?plan=pro`}
+              <a href={"/souscrire/pro"}
                 className="text-sm bg-[#0066FF] hover:bg-[#0052D6] text-white font-medium px-4 py-2 rounded-lg transition-colors">
                 Essayer gratuitement
               </a>
@@ -115,7 +115,7 @@ export default function Navbar({ currentPath = '/' }) {
                   className="block text-center text-sm text-zinc-600 font-medium py-2 hover:text-zinc-900">
                   Se connecter
                 </a>
-                <a href={`${APP_URL}/login?plan=pro`} onClick={() => setOpen(false)}
+                <a href={"/souscrire/pro"} onClick={() => setOpen(false)}
                   className="block text-center text-sm bg-[#0066FF] hover:bg-[#0052D6] text-white font-medium px-4 py-2.5 rounded-lg transition-colors">
                   Essayer gratuitement
                 </a>
