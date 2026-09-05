@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react'
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
-import { Plus, Gauge, Trash2, Pencil, Search, Loader2, Paperclip, FileText, Camera, X, Users, CreditCard } from 'lucide-react'
+import { Plus, Gauge, Trash2, Pencil, Search, Loader2, Paperclip, FileText, Camera, X, Users, CreditCard, Fuel } from 'lucide-react'
 import { compressImage } from '@/lib/compressImage'
 import { uploadReceipt } from '@/lib/receiptStorage'
 import { openSignedFile } from '@/lib/signedFile'
@@ -103,7 +103,7 @@ export default function Mileage() {
   const driverFor = (m) => getDriverById(drivers, m.driver_id || latestAssignments[m.vehicle_id]?.driver_id)
 
   const [modal, setModal]       = useState(false)
-  const [form, setForm]         = useState({ vehicle_id: '', mileage: '', label: '' })
+  const [form, setForm]         = useState({ vehicle_id: '', mileage: '', label: '', amount: '' })
   const [receiptFile, setReceiptFile] = useState(null)
   const [odometerFile, setOdometerFile] = useState(null)
   const [saving, setSaving]     = useState(false)
@@ -115,7 +115,7 @@ export default function Mileage() {
 
   const selectedCurrent = form.vehicle_id ? (latestMileage[form.vehicle_id]?.mileage ?? null) : null
 
-  const openCreate = () => { setForm({ vehicle_id: isDriver ? (driverVehicleIds[0] || '') : '', mileage: '', label: '' }); setReceiptFile(null); setOdometerFile(null); setModal(true) }
+  const openCreate = () => { setForm({ vehicle_id: isDriver ? (driverVehicleIds[0] || '') : '', mileage: '', label: '', amount: '' }); setReceiptFile(null); setOdometerFile(null); setModal(true) }
   const openEdit = (m) => { setEditTarget(m); setEditForm({ mileage: String(m.mileage ?? ''), vehicle_id: m.vehicle_id }) }
   const closeModal = () => setModal(false)
 
@@ -144,6 +144,7 @@ export default function Mileage() {
         // created_at left to the server (real time of entry) → list keeps the
         // true saisie order, not an artificial 12:00.
         label: form.label?.trim() || null,
+        amount: form.amount ? parseFloat(form.amount) : null,
         receipt_url,
         odometer_url,
         driver_id: latestAssignments[form.vehicle_id]?.driver_id || null,
@@ -253,6 +254,7 @@ export default function Mileage() {
                         <td className="px-5 py-3.5 font-medium text-slate-900">
                           {vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}
                           {m.label && <span className="block text-xs font-normal text-slate-400 mt-0.5 truncate max-w-[220px]">{m.label}</span>}
+                          {m.amount != null && <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 mt-0.5"><Fuel className="w-3 h-3" /> {Number(m.amount).toFixed(2)} €</span>}
                         </td>
                         <td className="px-5 py-3.5">
                           {(() => {
@@ -316,6 +318,7 @@ export default function Mileage() {
                         return <p className="text-xs text-slate-500 flex items-center gap-1"><Users className="w-3 h-3 text-slate-400" />{d.name}{d.dkv_card ? ` · DKV ${d.dkv_card}` : ''}</p>
                       })()}
                       {m.label && <p className="text-xs text-slate-400 truncate">{m.label}</p>}
+                      {m.amount != null && <p className="text-xs font-medium text-emerald-600 flex items-center gap-1"><Fuel className="w-3 h-3" /> {Number(m.amount).toFixed(2)} €</p>}
                       <div className="flex items-center gap-2 mt-0.5">
                         <p className="text-xs text-slate-400">{format(new Date(m.created_at), 'd MMM yyyy', { locale: dateLocale })}</p>
                         {m.odometer_url && (
@@ -410,6 +413,10 @@ export default function Mileage() {
         <div>
           <Label>Libellé <span className="text-slate-400 font-normal">(optionnel)</span></Label>
           <Input value={form.label} onChange={e => setForm(f => ({...f, label: e.target.value}))} placeholder="Ex : Plein Total A7, gasoil…" />
+        </div>
+        <div>
+          <Label>Montant du plein (€) <span className="text-slate-400 font-normal">(optionnel)</span></Label>
+          <Input type="number" step="0.01" min="0" inputMode="decimal" value={form.amount} onChange={e => setForm(f => ({...f, amount: e.target.value}))} placeholder="Ex : 78,50" />
         </div>
         {isDriver && (
           <p className="text-xs text-[#0066FF] bg-[#0066FF]/[0.05] border border-[#0066FF]/15 rounded-lg px-3 py-2">

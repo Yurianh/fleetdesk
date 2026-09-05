@@ -79,7 +79,7 @@ on ne révoque jamais l'accès aux membres/données déjà créés (client start
 - [x] **T-E03** — Export CSV Conducteurs (nom, email, tél, naissance, adresse, cartes DKV/badge/lavage). _(2026-09-05)_
 - [x] **T-E04** — Export CSV dépenses consolidé (maintenance `invoice_amount` + lavages `amount`), trié par date, total en toast. Sur page Maintenance. Carburant exclu (pas de montant en base). _(2026-09-05)_
 - [ ] **T-E05** — (suivi) Rapport PDF mensuel (KPI + coûts + échéances), imprimable/emailable.
-- [ ] **T-E06** — (option) Ajouter un montant carburant à la saisie km pour l'inclure aux dépenses.
+- [x] **T-E06** — Montant carburant sur la saisie km (colonne `mileage_entries.amount`, champ optionnel, affiché en liste, inclus à l'export dépenses type `Carburant`). SQL: `supabase/mileage_amount.sql`. _(2026-09-05)_ ⚠️ SQL à lancer.
 
 ---
 

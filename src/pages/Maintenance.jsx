@@ -376,8 +376,7 @@ export default function Maintenance() {
   const { data: washRecords } = useWashRecords()
   const queryClient = useQueryClient()
 
-  // Consolidated expenses export (maintenance costs + washes) for accounting.
-  // Fuel has no monetary amount in the data model, so it isn't included.
+  // Consolidated expenses export (maintenance + washes + fuel) for accounting.
   const exportExpensesCsv = () => {
     const veh = (id) => {
       const v = getVehicleById(vehicles, id)
@@ -391,6 +390,11 @@ export default function Maintenance() {
       ...(washRecords || []).map(w => ({
         date: w.date, type: 'Lavage', vehicle: veh(w.vehicle_id),
         description: '', amount: w.amount,
+      })),
+      // Fuel: mileage entries that carry a monetary amount. Date from created_at.
+      ...(mileageEntries || []).filter(m => m.amount != null).map(m => ({
+        date: (m.created_at || '').slice(0, 10), type: 'Carburant', vehicle: veh(m.vehicle_id),
+        description: m.label || '', amount: m.amount,
       })),
     ].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
 
