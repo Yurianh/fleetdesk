@@ -13,6 +13,7 @@ import {
   useMileageEntries, useMaintenanceRecords, useMaintenanceSchedules,
   useTechnicalInspections, useWashRecords, useAllDriverDocuments,
 } from '@/lib/useFleetData'
+import { usePlanSync } from '@/lib/usePlanSync'
 
 // Signals the onboarding context that the loading overlay has lifted, so the
 // first-run tour only auto-starts against a fully rendered page.
@@ -28,6 +29,7 @@ export default function AppLayout() {
   const [loaderGone, setLoaderGone] = useState(false)
   const mountedAt = useRef(Date.now())
   useFleetRealtime()
+  usePlanSync()  // reconcile plan with live Stripe subscription, once per session
 
   const { isSuccess: s1, isError: e1, isPlaceholderData: p1 } = useVehicles()
   const { isSuccess: s2, isError: e2, isPlaceholderData: p2 } = useDrivers()
