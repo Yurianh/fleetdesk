@@ -93,7 +93,7 @@ export default function SetupProfile() {
 
       const { data: { session } } = await supabase.auth.getSession()
       const { data, error: fnErr } = await supabase.functions.invoke('create-checkout-session', {
-        body: { plan, return_url: `${window.location.origin}/billing/success` },
+        body: { plan, return_url: `${window.location.origin}/billing/success`, onboarding: true },
         headers: { Authorization: `Bearer ${session?.access_token}` },
       })
       if (fnErr) {
@@ -103,6 +103,13 @@ export default function SetupProfile() {
           if (body?.error) detail = body.error
         } catch {}
         throw new Error(detail)
+      }
+      // Email already tied to a live subscription → account was provisioned
+      // server-side; skip Stripe and go straight in.
+      if (data?.already_subscribed) {
+        await supabase.auth.refreshSession()
+        window.location.href = '/Dashboard'
+        return
       }
       window.location.href = data.url
     } catch (e) {

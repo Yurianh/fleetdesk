@@ -20,7 +20,11 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json()
-    const { plan, return_url } = body
+    // `onboarding` marks the sign-up flow (SetupProfile). In that flow, an email
+    // that already maps to a live Stripe subscription must NOT be dropped into
+    // the billing portal — we provision the new account from the existing sub
+    // instead of charging again or trapping the user on billing/success.
+    const { plan, return_url, onboarding = false } = body
 
     console.log('[checkout] plan:', plan, 'key_prefix:', stripeKey.substring(0, 12))
 
@@ -52,11 +56,33 @@ Deno.serve(async (req) => {
     const existingCustomer = (await stripe.customers.list({ email: user.email!, limit: 1 })).data[0] || null
     const existingCustomerId = existingCustomer?.id || null
 
-    // Guard: if already on an active paid subscription, send to the portal.
-    // Decide from Stripe state, not from user_metadata.
+    // Guard: the email already maps to a live Stripe subscription.
     if (existingCustomerId) {
-      const activeSubs = await stripe.subscriptions.list({ customer: existingCustomerId, status: 'active', limit: 1 })
-      if (activeSubs.data.length > 0) {
+      const PLAN_BY_PRICE: Record<string, string> = {
+        [PRICE_IDS.starter]: 'starter', [PRICE_IDS.pro]: 'pro', [PRICE_IDS.enterprise]: 'enterprise',
+      }
+      const allSubs = await stripe.subscriptions.list({ customer: existingCustomerId, status: 'all', limit: 10 })
+      const live = allSubs.data.find(s => ['active', 'trialing', 'past_due'].includes(s.status))
+
+      if (live && onboarding) {
+        // Sign-up with an already-subscribed email → provision this account from
+        // the existing subscription instead of charging again. Never send them to
+        // the portal here (that caused a dead-end on billing/success).
+        const livePlan = PLAN_BY_PRICE[live.items.data[0]?.price?.id ?? ''] || plan
+        const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
+        const { data: { user: existing } } = await admin.auth.admin.getUserById(user.id)
+        await admin.auth.admin.updateUserById(user.id, {
+          user_metadata: { ...existing?.user_metadata, plan: livePlan, onboarding_complete: true, stripe_customer_id: existingCustomerId },
+          app_metadata: { ...existing?.app_metadata, plan: livePlan },
+        })
+        console.log('[checkout] onboarding with existing sub → provisioned:', user.id, livePlan)
+        return new Response(JSON.stringify({ already_subscribed: true, plan: livePlan }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+
+      // Outside onboarding (e.g. Settings), an active subscription → portal.
+      if (live && live.status === 'active') {
         const portalSession = await stripe.billingPortal.sessions.create({
           customer: existingCustomerId,
           return_url: return_url || Deno.env.get('SITE_URL') || 'https://app.fleetdesk.fr',
