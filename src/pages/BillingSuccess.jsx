@@ -29,6 +29,10 @@ export default function BillingSuccess() {
           const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim()
           const supabaseKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim()
           const { data: { session } } = await supabase.auth.getSession()
+          // Never let the confirmation hang forever — bound it so the UI can
+          // fall back to the recoverable "delayed" state instead of spinning.
+          const controller = new AbortController()
+          const timeout = setTimeout(() => controller.abort(), 20000)
           const resp = await fetch(`${supabaseUrl}/functions/v1/confirm-payment`, {
             method: 'POST',
             headers: {
@@ -37,7 +41,8 @@ export default function BillingSuccess() {
               ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
             },
             body: JSON.stringify({ session_id: sessionId }),
-          })
+            signal: controller.signal,
+          }).finally(() => clearTimeout(timeout))
           const data = await resp.json()
           if (!resp.ok) throw new Error(data.error || `Erreur ${resp.status}`)
 
@@ -100,6 +105,7 @@ export default function BillingSuccess() {
               <Loader2 className="w-10 h-10 text-[#0066FF] animate-spin mx-auto mb-4" />
               <h1 className="text-[17px] font-semibold text-zinc-900 mb-2">Activation de votre plan...</h1>
               <p className="text-sm text-zinc-400">Veuillez patienter pendant que nous confirmons votre paiement.</p>
+              <a href="/logout" className="inline-block mt-5 text-xs text-zinc-400 hover:text-zinc-600 transition-colors">Ça bloque ? Se déconnecter</a>
             </>
           )}
 
@@ -159,8 +165,14 @@ export default function BillingSuccess() {
               >
                 Vérifier à nouveau
               </button>
-              <a href="mailto:support@fleetdesk.app" className="block w-full text-center text-sm text-zinc-400 hover:text-zinc-600 transition-colors py-1">
-                Contacter le support
+              <button
+                onClick={() => navigate('/setup-profile', { replace: true })}
+                className="w-full text-center text-sm text-zinc-500 hover:text-zinc-800 transition-colors py-1 mb-1"
+              >
+                Revenir au choix de formule
+              </button>
+              <a href="/logout" className="block w-full text-center text-sm text-zinc-400 hover:text-zinc-600 transition-colors py-1">
+                Se déconnecter
               </a>
             </>
           )}
