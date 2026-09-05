@@ -85,8 +85,16 @@ on ne révoque jamais l'accès aux membres/données déjà créés (client start
 
 ---
 
+## Phase S — SEO
+
+- [x] **T-S01** — Layout : `robots` meta, `og:url`, `og:image`, `og:locale`, `twitter:image`, canonical propre + prop `jsonLd` (rendu `application/ld+json`). _(2026-09-05)_
+- [x] **T-S02** — `robots.txt` + `sitemap.xml` statique (6 pages) dans `public/`. _(2026-09-05)_
+- [x] **T-S03** — JSON-LD : Organization + SoftwareApplication + FAQPage (home) ; FAQPage + BreadcrumbList (conformité) → éligible rich results. _(2026-09-05)_
+- [ ] **T-S04** — (suivi) Vraie image OG 1200×630 (`/og-image.png`) au lieu du logo. Mettre à jour `sitemap.xml` à chaque nouvelle page.
+- [ ] **T-S05** — (suivi) Cluster de contenu conformité (pages/articles ciblés : CT, assurance flotte, documents conducteurs) pour capter l'organique.
+
+---
+
 ## Backlog (proposé, non planifié)
 
-- Exports dépenses + rapport PDF mensuel (T-E04).
-- SEO conformité (contenu organique CT / assurance / documents).
 - Vrai témoignage client (T-P02).

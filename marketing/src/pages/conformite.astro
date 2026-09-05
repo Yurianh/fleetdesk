@@ -67,10 +67,30 @@ const faq = [
     a: 'Dans un espace privé, jamais en accès public. Les fichiers ne sont servis qu\'au moyen de liens temporaires signés, à durée de validité limitée, sur des serveurs situés dans l\'Union européenne.',
   },
 ]
+
+// FAQPage structured data — eligible for FAQ rich results in Google.
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map(item => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+}
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://fleetdesk.fr/' },
+    { '@type': 'ListItem', position: 2, name: 'Conformité', item: 'https://fleetdesk.fr/conformite' },
+  ],
+}
 ---
 <Layout
   title="Conformité de flotte : contrôles techniques et documents suivis · FleetDesk"
   description="Suivez contrôles techniques, permis, visites médicales, assurances et licences de transport. Échéances calculées automatiquement, alertes avant expiration. Restez prêt pour le contrôle."
+  jsonLd={[faqSchema, breadcrumb]}
 >
   <Navbar client:load currentPath="/conformite" />
 

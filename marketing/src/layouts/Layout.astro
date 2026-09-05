@@ -13,6 +13,8 @@ interface Props {
   title: string
   description?: string
   ogTitle?: string
+  ogImage?: string
+  jsonLd?: object[]
 }
 
 const APP_URL = 'https://app.fleetdesk.fr'
@@ -21,7 +23,11 @@ const {
   title,
   description = 'FleetDesk, logiciel de gestion de flotte simple pour les équipes qui bougent.',
   ogTitle = title + ' · FleetDesk',
+  ogImage = '/logo-mark.png',
+  jsonLd = [],
 } = Astro.props
+const canonical = SITE_URL + Astro.url.pathname
+const ogImageUrl = ogImage.startsWith('http') ? ogImage : SITE_URL + ogImage
 ---
 <!doctype html>
 <html lang="fr">
@@ -35,21 +41,30 @@ const {
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>{ogTitle}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
 
     <!-- Open Graph -->
     <meta property="og:title" content={ogTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="FleetDesk" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={ogTitle} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
 
     <!-- Canonical -->
-    <link rel="canonical" href={SITE_URL + Astro.url.pathname} />
+    <link rel="canonical" href={canonical} />
 
+    <!-- Structured data (JSON-LD) -->
+    {jsonLd.map(obj => (
+      <script type="application/ld+json" set:html={JSON.stringify(obj)} />
+    ))}
   </head>
   <body class="bg-white text-zinc-900 font-sans">
     <slot />

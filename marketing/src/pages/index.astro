@@ -122,10 +122,42 @@ const teaserPlans = [
   { name: 'Pro',     price: '29', note: '14 jours d\'essai gratuit', highlighted: true,  href: `${APP_URL}/login?plan=pro`,     cta: 'Essayer' },
   { name: 'Enterprise', price: '79', note: 'Flottes illimitées',     highlighted: false, href: '/pricing',                      cta: 'Voir' },
 ]
+
+// Structured data for the homepage: organisation, product and the FAQ.
+const orgSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'FleetDesk',
+  url: 'https://fleetdesk.fr',
+  logo: 'https://fleetdesk.fr/logo-mark.png',
+  description: 'Logiciel de gestion de flotte et de conformité pour les PME de transport.',
+}
+const softwareSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'FleetDesk',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  offers: [
+    { '@type': 'Offer', name: 'Starter', price: '9', priceCurrency: 'EUR' },
+    { '@type': 'Offer', name: 'Pro', price: '29', priceCurrency: 'EUR' },
+    { '@type': 'Offer', name: 'Enterprise', price: '79', priceCurrency: 'EUR' },
+  ],
+}
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map(item => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+}
 ---
 <Layout
   title="FleetDesk · Gestion de flotte et conformité pour PME de transport"
   description="Pilotez votre flotte, restez conforme, laissez vos chauffeurs saisir depuis le terrain. Alertes contrôle technique et documents, suivi kilométrage et pleins, prévisions d'entretien."
+  jsonLd={[orgSchema, softwareSchema, faqSchema]}
 >
   <Navbar client:load currentPath="/" />
 
