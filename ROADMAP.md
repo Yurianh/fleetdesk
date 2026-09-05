@@ -40,6 +40,8 @@ on ne révoque jamais l'accès aux membres/données déjà créés (client start
 - [x] **T-B02** — `BillingBanner` global (owner only) : alerte past_due + lien portail Stripe, monté dans AppLayout. _(2026-09-04)_
 - [x] **T-B03** — Events `invoice.payment_failed` + `invoice.payment_succeeded` activés sur l'endpoint webhook Stripe. _(2026-09-04)_
 - [ ] **T-B04** — Test : simuler échec (carte test `4000000000000341`) → bannière apparaît ; recovery → disparaît.
+- [x] **T-B05** — Dunning avancé : emails Resend escaladés (`failed` avec date de prochaine tentative → `final` sans retry → `recovered` / `cancelled`), lien portail Stripe généré serveur-side. Déployé. _(2026-09-05)_
+- [ ] **T-B06** — Test dunning : carte `4000000000000341` sur un renouvellement → email "Paiement échoué" ; échec final → email suspension.
 
 ---
 
