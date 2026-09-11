@@ -20,6 +20,7 @@ import ConfirmDeleteDialog from '@/components/shared/ConfirmDeleteDialog'
 import UpgradePrompt from '@/components/shared/UpgradePrompt'
 import { useCan } from '@/lib/capabilities'
 import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
+import { compressImage } from '@/lib/compressImage'
 import {
   useVehicles, useDrivers, useWashRecords, useAssignments,
   createWashRecord, updateWashRecord, deleteWashRecord,
@@ -101,7 +102,9 @@ export default function Washings() {
       let finalInvoiceUrl = invoiceExistingUrl
       if (invoiceFile) {
         if (editing?.invoice_url) await deleteInvoice(editing.invoice_url)
-        finalInvoiceUrl = await uploadInvoice(invoiceFile, 'wash')
+        // Compress/convert (phone photos, incl. HEIC) before upload so the file
+        // is a broadly-accepted JPEG and stays small.
+        finalInvoiceUrl = await uploadInvoice(await compressImage(invoiceFile), 'wash')
       } else if (!invoiceExistingUrl && editing?.invoice_url) {
         await deleteInvoice(editing.invoice_url)
         finalInvoiceUrl = null
@@ -109,6 +112,10 @@ export default function Washings() {
 
       const payload = {
         ...form,
+        // Empty selects must become null — an empty string is not a valid uuid
+        // and makes the insert fail (a chauffeur whose vehicle has no linked
+        // driver_id would otherwise send driver_id: '').
+        driver_id: form.driver_id || null,
         amount: parseFloat(form.amount),
         date: form.date || new Date().toISOString().split('T')[0],
         invoice_url: finalInvoiceUrl || null,
@@ -122,7 +129,10 @@ export default function Washings() {
       }
       queryClient.invalidateQueries({ queryKey: ['washRecords'] })
       closeModal()
-    } catch { toast.error("Erreur lors de l'enregistrement") }
+    } catch (e) {
+      console.error('wash save error:', e)
+      toast.error(e?.message ? `Erreur : ${e.message}` : "Erreur lors de l'enregistrement")
+    }
     finally { setSaving(false) }
   }
 
