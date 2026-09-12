@@ -149,7 +149,7 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
 
   return (
     <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm mb-8">
-      <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+      <div data-land className="flex flex-wrap items-start justify-between gap-3 mb-3">
         <div>
           <h2 className="text-base font-bold text-zinc-900">Utilisation des véhicules</h2>
           <p className="text-sm text-zinc-400 mt-0.5">
@@ -221,7 +221,7 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
           {/* Fleet synthesis banner */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-5">
             {kpis.map(k => (
-              <div key={k.l} className="rounded-lg border border-zinc-100 bg-zinc-50/70 px-3 py-2.5">
+              <div key={k.l} data-land className="rounded-lg border border-zinc-100 bg-zinc-50/70 px-3 py-2.5">
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 truncate">{k.l}</p>
                 <p className={`text-sm font-bold mt-0.5 truncate ${k.color || 'text-zinc-900'}`} title={String(k.n)}>{k.n}</p>
                 <p className="text-[11px] text-zinc-400 truncate">{k.s}</p>
@@ -238,11 +238,11 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
           </button>
           <div className="space-y-2 max-h-[22rem] overflow-y-auto pr-1">
             {ranked.map(r => (
-              <div key={r.id} className="flex items-center gap-3">
+              <div key={r.id} data-land className="flex items-center gap-3">
                 <div className="w-28 flex-shrink-0 text-xs font-semibold text-zinc-700 truncate"
                   title={`${r.plate}${r.model ? ` — ${r.model}` : ''}${r.driver ? ` · ${r.driver}` : ''}`}>{rowLabel(r)}</div>
                 <div className="flex-1 h-4 bg-zinc-100 rounded-md overflow-hidden">
-                  <div className="h-full rounded-md bg-gradient-to-r from-[#2f7bff] to-[#0066FF]"
+                  <div data-land-bar className="h-full rounded-md bg-gradient-to-r from-[#2f7bff] to-[#0066FF]"
                     style={{ width: `${Math.max(3, (r.total / maxTotal) * 100)}%` }} />
                 </div>
                 <div className="w-20 flex-shrink-0 text-right text-xs tabular-nums text-zinc-800">{r.total.toLocaleString('fr-FR')} km</div>
@@ -455,7 +455,7 @@ function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, v
   const allClear = totalUrgent === 0 && totalWarning === 0 && !dataUnavailable
 
   return (
-    <div className="bg-white rounded-xl p-5 border border-zinc-100">
+    <div data-land className="bg-white rounded-xl p-5 border border-zinc-100">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Bell className="w-4 h-4 text-zinc-500" />
@@ -663,7 +663,7 @@ function FleetInsights({ vehicles, mileageEntries }) {
   if (!insights || vehicles.length === 0) return null
 
   return (
-    <div className="bg-white rounded-xl p-5 border border-zinc-100">
+    <div data-land className="bg-white rounded-xl p-5 border border-zinc-100">
       <div className="flex items-center gap-2 mb-4">
         <Activity className="w-4 h-4 text-zinc-500" />
         <h3 className="font-bold text-zinc-900">{t('insights.title')}</h3>
@@ -720,7 +720,7 @@ function FleetInsights({ vehicles, mileageEntries }) {
 // A single event in the activity timeline
 function TimelineItem({ icon: Icon, iconBg, iconColor, title, subtitle, time, isLast }) {
   return (
-    <div className="flex gap-4 group">
+    <div data-land className="flex gap-4 group">
       {/* Spine */}
       <div className="flex flex-col items-center flex-shrink-0">
         <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${iconBg}`}>
@@ -804,7 +804,7 @@ function SmartNotepad({ userId }) {
   const lines = text.split('\n').filter(Boolean).length
 
   return (
-    <div className="bg-white border border-zinc-100 rounded-xl overflow-hidden flex flex-col">
+    <div data-land className="bg-white border border-zinc-100 rounded-xl overflow-hidden flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-zinc-100">
         <div className="flex items-center gap-2">
@@ -1093,21 +1093,21 @@ export default function Dashboard() {
       <AssignDriverDialog open={showAssign} onClose={() => setShowAssign(false)} />
 
       {/* ── Main content ─────────────────────────────────────────── */}
-      <div className="app-stagger flex-1 p-5 sm:p-8 min-w-0">
+      <div className="flex-1 p-5 sm:p-8 min-w-0">
 
         {/* Header */}
         <div className="flex flex-wrap items-start gap-3 justify-between mb-6">
           <div>
-            <p className="text-xs font-medium text-zinc-400 mb-1 capitalize">
+            <p data-land className="text-xs font-medium text-zinc-400 mb-1 capitalize">
               {format(new Date(), 'EEEE d MMMM yyyy', { locale: dateLocale })}
             </p>
-            <h1 className="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 tracking-tight">
+            <h1 data-land className="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 tracking-tight">
               {t('dashboard.greeting', { name: user?.user_metadata?.full_name?.split(' ')[0] || user?.user_metadata?.name?.split(' ')[0] || '' })}
             </h1>
-            <p className="text-zinc-400 text-sm mt-0.5">{t('dashboard.subtitle')}</p>
+            <p data-land className="text-zinc-400 text-sm mt-0.5">{t('dashboard.subtitle')}</p>
           </div>
           {totalAlerts > 0 && (
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${
+            <div data-land className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${
               urgentInspections.length + urgentForecasts.filter(f => f.status === 'overdue').length > 0
                 ? 'bg-red-100 text-red-700'
                 : 'bg-amber-100 text-amber-700'
@@ -1153,6 +1153,7 @@ export default function Dashboard() {
           ].map(({ label, icon: Icon, onClick }) => (
             <button
               key={label}
+              data-land
               onClick={onClick}
               className="flex items-center gap-2 bg-white border border-zinc-200 rounded-lg px-4 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 hover:border-zinc-300 active:scale-[0.98] transition-all duration-150 w-full sm:w-auto"
             >
@@ -1168,7 +1169,7 @@ export default function Dashboard() {
         {/* Stat cards */}
         <div className="flex flex-col sm:flex-row bg-white border border-zinc-100 rounded-xl overflow-hidden mb-8">
           {statCards.map(({ label, sub, value, icon: Icon }, idx) => (
-            <div key={label} className={`flex-1 px-5 py-5 min-w-0 ${idx < statCards.length - 1 ? 'border-b sm:border-b-0 sm:border-r border-zinc-100' : ''}`}>
+            <div key={label} data-land className={`flex-1 px-5 py-5 min-w-0 ${idx < statCards.length - 1 ? 'border-b sm:border-b-0 sm:border-r border-zinc-100' : ''}`}>
               <p className="text-xs font-medium text-zinc-400 mb-3">{label}</p>
               <p className="text-[28px] font-bold text-zinc-900 leading-none tracking-tight">{value}</p>
             </div>
@@ -1188,7 +1189,7 @@ export default function Dashboard() {
 
         {/* ── Activity Timeline ────────────────────────────────────── */}
         <div className="bg-white rounded-xl border border-zinc-100 overflow-hidden">
-          <div className="px-4 sm:px-6 pt-6 pb-4 flex items-center justify-between">
+          <div data-land className="px-4 sm:px-6 pt-6 pb-4 flex items-center justify-between">
             <div>
               <h2 className="text-xl font-bold text-zinc-900">{t('dashboard.recentActivity')}</h2>
               <p className="text-sm text-zinc-400">{t('dashboard.recentActivitySub')}</p>
@@ -1226,10 +1227,10 @@ export default function Dashboard() {
       </div>
 
       {/* ── Right panel ──────────────────────────────────────────── */}
-      <div className="app-stagger app-stagger-late xl:w-80 flex-shrink-0 p-4 sm:p-7 xl:pl-0 flex flex-col gap-5">
+      <div className="xl:w-80 flex-shrink-0 p-4 sm:p-7 xl:pl-0 flex flex-col gap-5">
 
         {/* Fleet summary card */}
-        <div className="bg-white border border-zinc-100 rounded-xl p-5">
+        <div data-land className="bg-white border border-zinc-100 rounded-xl p-5">
           <div className="flex items-center gap-2.5 mb-4">
             <div className="w-8 h-8 bg-[#0066FF]/[0.08] rounded-lg flex items-center justify-center">
               <Truck className="w-4 h-4 text-[#0066FF]" strokeWidth={1.5} />

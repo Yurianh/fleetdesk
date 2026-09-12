@@ -15,7 +15,7 @@ import {
   useTechnicalInspections, useWashRecords, useAllDriverDocuments,
 } from '@/lib/useFleetData'
 import { usePlanSync } from '@/lib/usePlanSync'
-import { shouldLand, markLanded } from '@/lib/motion'
+import { shouldLand, markLanded, runLanding } from '@/lib/motion'
 
 // Signals the onboarding context that the loading overlay has lifted, so the
 // first-run tour only auto-starts against a fully rendered page.
@@ -66,11 +66,14 @@ export default function AppLayout() {
     if (!loaderGone || !shouldLand()) return
     // Rien à orchestrer sur un écran sans blocs à poser : on garde le drapeau
     // pour le premier passage sur le tableau de bord.
-    if (!document.querySelector('.app-stagger')) return
+    if (!document.querySelector('[data-land]')) return
     markLanded()
     const root = document.documentElement
+    // Les retards sont calculés sur la position réelle à l'écran : il faut donc
+    // mesurer après peinture, juste avant d'armer les animations.
+    const total = runLanding()
     root.classList.add('is-landing')
-    const t = setTimeout(() => root.classList.remove('is-landing'), 3600)
+    const t = setTimeout(() => root.classList.remove('is-landing'), total + 600)
     return () => { clearTimeout(t); root.classList.remove('is-landing') }
   }, [loaderGone, location.pathname])
 
