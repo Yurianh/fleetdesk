@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from './supabase'
 import { mockUser } from './mockData'
+import { clearLanding } from '@/lib/motion'
 
 const DEMO = import.meta.env.VITE_DEMO_MODE === 'true'
 
@@ -54,7 +55,8 @@ export function AuthProvider({ children }) {
     if (!res.ok) throw new Error(data.message || data.msg || 'Impossible de créer le compte.')
   }
 
-  const signOut = () => supabase.auth.signOut()
+  // La déconnexion réarme l'atterrissage : la prochaine connexion rejoue l'accueil.
+  const signOut = () => { clearLanding(); return supabase.auth.signOut() }
 
   // Patch the plan in the local user object so plan gates update instantly after
   // a sync, without waiting for a token refresh (a refreshed JWT doesn't always

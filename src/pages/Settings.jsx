@@ -319,8 +319,8 @@ export default function Settings() {
                   <Wand2 className="w-4 h-4 text-[#0066FF]" /> Animations
                 </h2>
                 <p className="text-xs text-zinc-500 mb-4">
-                  À chaque changement d'écran, la page et ses cartes se posent en fondu. Purement visuel : rien ne
-                  change dans vos données ni dans la vitesse de chargement.
+                  Au retour sur FleetDesk, le tableau de bord se pose bloc par bloc : une fois par connexion, jamais
+                  ensuite. Purement visuel : rien ne change dans vos données ni dans la vitesse de chargement.
                 </p>
 
                 <div className="flex items-center justify-between gap-4 py-3.5 border-t border-zinc-100">
@@ -328,8 +328,8 @@ export default function Settings() {
                     <p className="text-sm font-medium text-zinc-900">Animations d'arrivée</p>
                     <p className="text-xs text-zinc-500">
                       {motionOn
-                        ? 'Les écrans se posent en fondu à l\'ouverture.'
-                        : 'Les écrans s\'affichent instantanément, sans transition.'}
+                        ? 'Le tableau de bord se pose en fondu après la connexion.'
+                        : 'Tout s\'affiche instantanément, sans transition.'}
                     </p>
                   </div>
                   <Switch checked={motionOn} onCheckedChange={setMotion} />

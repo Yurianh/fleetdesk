@@ -15,6 +15,7 @@ import {
   useTechnicalInspections, useWashRecords, useAllDriverDocuments,
 } from '@/lib/useFleetData'
 import { usePlanSync } from '@/lib/usePlanSync'
+import { shouldLand, markLanded } from '@/lib/motion'
 
 // Signals the onboarding context that the loading overlay has lifted, so the
 // first-run tour only auto-starts against a fully rendered page.
@@ -58,6 +59,21 @@ export default function AppLayout() {
     return () => clearTimeout(t)
   }, [allSettled])
 
+  // Atterrissage : la chorégraphie démarre quand le voile de chargement se lève,
+  // pas avant — sinon elle se jouerait derrière lui. Une fois par session, donc
+  // une fois par connexion : les navigations suivantes sont instantanées.
+  useEffect(() => {
+    if (!loaderGone || !shouldLand()) return
+    // Rien à orchestrer sur un écran sans blocs à poser : on garde le drapeau
+    // pour le premier passage sur le tableau de bord.
+    if (!document.querySelector('.app-stagger')) return
+    markLanded()
+    const root = document.documentElement
+    root.classList.add('is-landing')
+    const t = setTimeout(() => root.classList.remove('is-landing'), 3600)
+    return () => { clearTimeout(t); root.classList.remove('is-landing') }
+  }, [loaderGone, location.pathname])
+
   return (
     <OnboardingProvider>
       {/* App always renders behind the loader — no zero-flash when overlay lifts */}
@@ -79,10 +95,7 @@ export default function AppLayout() {
           <main className="flex-1 overflow-y-auto bg-background">
             <BillingBanner />
             <TrialBanner />
-            {/* La clé de route relance l'atterrissage à chaque changement d'écran. */}
-            <div key={location.pathname} className="app-enter">
-              <Outlet />
-            </div>
+            <Outlet />
           </main>
         </div>
       </div>

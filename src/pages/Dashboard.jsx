@@ -1226,7 +1226,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── Right panel ──────────────────────────────────────────── */}
-      <div className="app-stagger xl:w-80 flex-shrink-0 p-4 sm:p-7 xl:pl-0 flex flex-col gap-5">
+      <div className="app-stagger app-stagger-late xl:w-80 flex-shrink-0 p-4 sm:p-7 xl:pl-0 flex flex-col gap-5">
 
         {/* Fleet summary card */}
         <div className="bg-white border border-zinc-100 rounded-xl p-5">

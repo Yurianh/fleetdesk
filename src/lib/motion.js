@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react'
 // Réglages › Affichage, et son choix est conservé sur l'appareil.
 
 const KEY = 'fd-motion'
+const LANDED = 'fd-landed'
 
 export function prefersReducedMotion() {
   return typeof window !== 'undefined'
@@ -43,4 +44,22 @@ export function useMotionSetting() {
   }, [])
 
   return { enabled, setMotion, systemReduced: prefersReducedMotion() }
+}
+
+// ── Atterrissage : une seule fois par session, juste après la connexion ──────
+// La chorégraphie du tableau de bord est un moment d'accueil, pas un effet à
+// rejouer à chaque navigation. Le drapeau vit en sessionStorage : il disparaît
+// avec l'onglet, et signOut() le remet à zéro pour la connexion suivante.
+
+export function shouldLand() {
+  if (!motionEnabled()) return false
+  try { return window.sessionStorage.getItem(LANDED) !== '1' } catch { return false }
+}
+
+export function markLanded() {
+  try { window.sessionStorage.setItem(LANDED, '1') } catch { /* stockage indisponible */ }
+}
+
+export function clearLanding() {
+  try { window.sessionStorage.removeItem(LANDED) } catch { /* stockage indisponible */ }
 }
