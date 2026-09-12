@@ -555,8 +555,17 @@ export default function Settings() {
                               ? [...new Set([inviteVehicle, inviteVehicle2].filter(Boolean))]
                               : []
                             const result = await inviteMember.mutateAsync({ email: inviteEmail, role: inviteRole, vehicleIds })
-                            if (result?.existing_user) {
-                              toast.success('Lien de connexion envoyé — cet utilisateur a déjà un compte.')
+                            if (result?.existing_user && !result?.email_sent) {
+                              // L'e-mail n'est pas parti : on ne prétend pas le contraire,
+                              // on met le lien dans le presse-papiers pour le transmettre.
+                              if (result?.join_link) {
+                                try { await navigator.clipboard.writeText(result.join_link) } catch { /* presse-papiers refusé */ }
+                                toast.warning('Ce compte existe déjà. Le lien de connexion a été copié : envoyez-le à la personne invitée.', { duration: 8000 })
+                              } else {
+                                toast.error("Ce compte existe déjà et le lien n'a pas pu être généré. Réessayez dans un instant.")
+                              }
+                            } else if (result?.existing_user) {
+                              toast.success('Ce compte existe déjà : un lien de connexion vient de lui être envoyé.')
                             } else {
                               toast.success('Invitation envoyée.')
                             }
