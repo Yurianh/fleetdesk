@@ -4,31 +4,32 @@ import Navbar from '../components/Navbar.jsx'
 import HeroSection from '../components/HeroSection.jsx'
 import CTASection from '../components/CTASection.astro'
 import Footer from '../components/Footer.astro'
+import { ICONS } from '../lib/icons.js'
 
 const APP_URL = 'https://app.fleetdesk.fr'
 
 const pains = [
   {
-    icon: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
-    iconCls: 'bg-red-50 text-red-500',
+    icon: ICONS.calendarClock,
+    iconCls: 'bg-zinc-100 text-zinc-600',
     title: 'CT manqué, véhicule à l\'arrêt',
     desc: 'Un oubli de date = immobilisation immédiate, amende, client non livré. FleetDesk alerte 30 jours avant l\'échéance.',
   },
   {
-    icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>',
-    iconCls: 'bg-orange-50 text-orange-500',
+    icon: ICONS.idCard,
+    iconCls: 'bg-zinc-100 text-zinc-600',
     title: 'Conducteur hors conformité',
     desc: 'Visite médicale périmée, formation SST expirée : votre chauffeur roule illégalement, sans que personne le sache.',
   },
   {
-    icon: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
-    iconCls: 'bg-amber-50 text-amber-600',
+    icon: ICONS.wrench,
+    iconCls: 'bg-zinc-100 text-zinc-600',
     title: 'La panne qu\'on aurait pu éviter',
     desc: 'La vidange oubliée qui finit en moteur HS. Sans suivi kilométrique, les maintenances préventives ne se font jamais.',
   },
   {
-    icon: '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/>',
-    iconCls: 'bg-zinc-100 text-zinc-500',
+    icon: ICONS.spreadsheet,
+    iconCls: 'bg-zinc-100 text-zinc-600',
     title: 'Excel n\'est pas un outil de flotte',
     desc: 'Formules cassées, onglets divergents, données perdues. Dès 5 véhicules, un tableur devient un problème.',
   },
@@ -67,22 +68,22 @@ const trust = [
   {
     title: 'Conçu pour la réglementation française',
     text: 'Carte grise, contrôle technique, documents conducteurs : les échéances propres aux flottes françaises, suivies nativement.',
-    icon: '<path d="M3 21V5a2 2 0 0 1 2-2h9l-1.5 4L14 11H5"/><path d="M5 21h14"/>',
+    icon: ICONS.shield,
   },
   {
     title: 'Vos données hébergées dans l\'Union européenne',
     text: 'Infrastructure en région UE, conforme au RGPD. Vous restez propriétaire de vos données, exportables à tout moment.',
-    icon: '<path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9.5 12l1.8 1.8 3.5-3.6"/>',
+    icon: ICONS.building,
   },
   {
     title: 'Paiements sécurisés par Stripe',
     text: 'Aucune donnée bancaire ne transite par nos serveurs. Facturation et abonnement gérés par Stripe.',
-    icon: '<rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+    icon: ICONS.lock,
   },
   {
     title: '14 jours d\'essai, sans carte bancaire',
     text: 'Testez la formule Pro sans engagement. Vous ne renseignez un moyen de paiement que si vous décidez de continuer.',
-    icon: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/>',
+    icon: ICONS.clock,
   },
 ]
 
@@ -155,8 +156,8 @@ const faqSchema = {
 }
 ---
 <Layout
-  title="FleetDesk · Gestion de flotte et conformité pour PME de transport"
-  description="Pilotez votre flotte, restez conforme, laissez vos chauffeurs saisir depuis le terrain. Alertes contrôle technique et documents, suivi kilométrage et pleins, prévisions d'entretien."
+  title="Logiciel de gestion de flotte et de conformité pour PME"
+  description="Pilotez votre flotte et restez conforme : alertes contrôle technique et documents, suivi du kilométrage et des pleins, prévisions d'entretien. Dès 9 €/mois."
   jsonLd={[orgSchema, softwareSchema, faqSchema]}
 >
   <Navbar client:load currentPath="/" />
@@ -171,7 +172,7 @@ const faqSchema = {
         <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
           Piloter, rester conforme, faire saisir le terrain
         </h2>
-        <p class="text-lg text-zinc-500 leading-relaxed">
+        <p class="text-lg text-zinc-600 leading-relaxed">
           FleetDesk réunit les trois choses qui vous coûtent du temps et de l'argent aujourd'hui, dans un seul outil.
         </p>
       </div>
@@ -180,21 +181,21 @@ const faqSchema = {
         {[
           {
             tint: 'bg-[#E5EEFF]', stroke: '#0066FF',
-            icon: '<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+            icon: ICONS.dashboard,
             title: 'Piloter votre flotte',
             desc: 'Véhicules, conducteurs, coûts et kilométrages dans un seul tableau de bord. Vous décidez sur des données, plus sur des souvenirs.',
             points: ['Fiches véhicules et historiques', 'Affectations et suivi kilométrique', 'Coûts et utilisation par véhicule'],
           },
           {
             tint: 'bg-[#0066FF]/10', stroke: '#0066FF',
-            icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
+            icon: ICONS.shield,
             title: 'Rester conforme',
             desc: 'Contrôles techniques, documents conducteurs et véhicules suivis avec leurs échéances. Alerté avant l\'amende, prêt pour le contrôle.',
             points: ['Contrôles techniques et alertes', 'Permis, visite médicale, formations', 'Carte grise, assurance, licence de transport'],
           },
           {
             tint: 'bg-[#0066FF]/10', stroke: '#0066FF',
-            icon: '<path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>',
+            icon: ICONS.smartphone,
             title: 'Faire saisir le terrain',
             desc: 'Vos chauffeurs enregistrent kilométrage et pleins depuis leur téléphone, facture à l\'appui. Vous récupérez la donnée sans la ressaisir.',
             points: ['Accès chauffeur restreint à son véhicule', 'Kilométrage et lavages en un geste', 'Preuve de facture et carte carburant'],
@@ -202,10 +203,10 @@ const faqSchema = {
         ].map(p => (
           <div class="bg-white border border-zinc-200 rounded-2xl p-6 flex flex-col">
             <div class={`w-11 h-11 rounded-xl flex items-center justify-center mb-5 ${p.tint}`}>
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={p.stroke} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={p.icon} />
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={p.stroke} stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={p.icon} />
             </div>
             <h3 class="text-lg font-semibold text-zinc-900 mb-2">{p.title}</h3>
-            <p class="text-sm text-zinc-500 leading-relaxed mb-5">{p.desc}</p>
+            <p class="text-sm text-zinc-600 leading-relaxed mb-5">{p.desc}</p>
             <ul class="space-y-2 mt-auto">
               {p.points.map(pt => (
                 <li class="flex items-start gap-2 text-sm text-zinc-600">
@@ -225,11 +226,11 @@ const faqSchema = {
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       <div class="grid lg:grid-cols-[0.85fr_1.15fr] gap-12 lg:gap-20">
         <div class="lg:sticky lg:top-24 self-start">
-          <p class="text-sm font-semibold text-red-500 tracking-wide mb-3">Le vrai coût de l'oubli</p>
+          <p class="text-sm font-semibold text-zinc-600 tracking-wide mb-3">Le vrai coût de l'oubli</p>
           <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
             Ce que coûte vraiment une flotte mal suivie
           </h2>
-          <p class="text-lg text-zinc-500 leading-relaxed">
+          <p class="text-lg text-zinc-600 leading-relaxed">
             Un CT manqué, une visite médicale oubliée, une vidange trop tardive : les petits oublis finissent toujours par coûter cher.
           </p>
         </div>
@@ -237,11 +238,11 @@ const faqSchema = {
           {pains.map(p => (
             <div class="flex items-start gap-5 py-6 border-b border-zinc-100">
               <div class={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${p.iconCls}`}>
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={p.icon} />
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={p.icon} />
               </div>
               <div>
                 <h3 class="text-base font-semibold text-zinc-900 mb-1">{p.title}</h3>
-                <p class="text-sm text-zinc-500 leading-relaxed">{p.desc}</p>
+                <p class="text-sm text-zinc-600 leading-relaxed">{p.desc}</p>
               </div>
             </div>
           ))}
@@ -258,7 +259,7 @@ const faqSchema = {
         <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4">
           Le juste milieu que vous cherchiez
         </h2>
-        <p class="text-lg text-zinc-500">
+        <p class="text-lg text-zinc-600">
           Le tableur ne suit rien tout seul. L'ERP demande des semaines et un budget. FleetDesk fait le travail, sans la complexité.
         </p>
       </div>
@@ -268,8 +269,8 @@ const faqSchema = {
           <thead>
             <tr>
               <th class="text-left align-bottom pb-4 pr-4 w-[34%]"></th>
-              <th class="text-center align-bottom pb-4 px-4 text-sm font-medium text-zinc-400">Tableur Excel</th>
-              <th class="text-center align-bottom pb-4 px-4 text-sm font-medium text-zinc-400">Logiciel ERP</th>
+              <th class="text-center align-bottom pb-4 px-4 text-sm font-medium text-zinc-500">Tableur Excel</th>
+              <th class="text-center align-bottom pb-4 px-4 text-sm font-medium text-zinc-500">Logiciel ERP</th>
               <th class="text-center align-bottom pb-3 px-4">
                 <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0066FF] bg-[#E5EEFF] px-3 py-1 rounded-full">FleetDesk</span>
               </th>
@@ -287,9 +288,9 @@ const faqSchema = {
               <tr>
                 <td class={`py-4 pr-4 text-sm font-medium text-zinc-700 ${i < arr.length - 1 ? 'border-b border-zinc-100' : ''}`}>{row.label}</td>
                 {[row.excel, row.erp].map(cell => (
-                  <td class={`py-4 px-4 text-center text-sm text-zinc-400 ${i < arr.length - 1 ? 'border-b border-zinc-100' : ''}`}>
+                  <td class={`py-4 px-4 text-center text-sm text-zinc-500 ${i < arr.length - 1 ? 'border-b border-zinc-100' : ''}`}>
                     {cell === false
-                      ? <svg class="w-4 h-4 mx-auto text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      ? <svg class="w-4 h-4 mx-auto text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                       : <span>{cell}</span>}
                   </td>
                 ))}
@@ -315,7 +316,7 @@ const faqSchema = {
           <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
             Opérationnel en 5 minutes
           </h2>
-          <p class="text-lg text-zinc-500 leading-relaxed">
+          <p class="text-lg text-zinc-600 leading-relaxed">
             Aucune intégration, aucune formation. Vous êtes prêt avant la fin de votre café.
           </p>
         </div>
@@ -330,7 +331,7 @@ const faqSchema = {
               </div>
               <div class="pt-1.5">
                 <h3 class="text-lg font-semibold text-zinc-900 mb-1.5">{s.title}</h3>
-                <p class="text-zinc-500 leading-relaxed">{s.desc}</p>
+                <p class="text-zinc-600 leading-relaxed">{s.desc}</p>
               </div>
             </div>
           ))}
@@ -344,7 +345,7 @@ const faqSchema = {
             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
           </svg>
         </a>
-        <p class="mt-3 text-xs text-zinc-400">14 jours d'essai sur Pro · sans carte bancaire</p>
+        <p class="mt-3 text-xs text-zinc-500">14 jours d'essai sur Pro · sans carte bancaire</p>
       </div>
     </div>
   </section>
@@ -357,7 +358,7 @@ const faqSchema = {
         <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
           Moins d'oublis. Moins de pannes. Plus de maîtrise.
         </h2>
-        <p class="text-lg text-zinc-500 leading-relaxed">
+        <p class="text-lg text-zinc-600 leading-relaxed">
           Des fiches véhicules aux prévisions de maintenance : sans tableur, sans formation, sans prise de tête.
         </p>
       </div>
@@ -371,23 +372,23 @@ const faqSchema = {
               <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg>
             </div>
             <h3 class="text-2xl font-semibold text-zinc-900 mb-3">Vos véhicules, d'un coup d'œil</h3>
-            <p class="text-lg text-zinc-500 leading-relaxed">Statut, kilométrage, historique de chaque véhicule au même endroit. Vous savez, sans chercher.</p>
+            <p class="text-lg text-zinc-600 leading-relaxed">Statut, kilométrage, historique de chaque véhicule au même endroit. Vous savez, sans chercher.</p>
           </div>
           <div class="rounded-xl border border-zinc-200 shadow-xl shadow-zinc-200/50 overflow-hidden bg-white">
             <div class="flex items-center gap-1.5 bg-zinc-100 border-b border-zinc-200 px-4 py-2.5">
               <div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div>
-              <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-400">app.fleetdesk.fr/vehicules</div>
+              <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-500">app.fleetdesk.fr/vehicules</div>
             </div>
             <div class="bg-zinc-50 p-5">
               <div class="flex items-center px-3 py-1 mb-2 border-b border-zinc-200">
-                <span class="text-[10px] font-medium text-zinc-400 uppercase tracking-wide flex-1">Immatriculation</span>
-                <span class="text-[10px] font-medium text-zinc-400 uppercase tracking-wide w-24 text-center">Statut</span>
-                <span class="text-[10px] font-medium text-zinc-400 uppercase tracking-wide w-24 text-right">Kilométrage</span>
+                <span class="text-[10px] font-medium text-zinc-500 uppercase tracking-wide flex-1">Immatriculation</span>
+                <span class="text-[10px] font-medium text-zinc-500 uppercase tracking-wide w-24 text-center">Statut</span>
+                <span class="text-[10px] font-medium text-zinc-500 uppercase tracking-wide w-24 text-right">Kilométrage</span>
               </div>
               <div class="space-y-1.5">
-                <div class="flex items-center bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><span class="text-xs text-zinc-700 flex-1">AB-123-CD</span><span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full w-24 text-center">Actif</span><span class="text-xs text-zinc-400 w-24 text-right">45 200 km</span></div>
-                <div class="flex items-center bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><span class="text-xs text-zinc-700 flex-1">EF-456-GH</span><span class="text-[10px] bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full w-24 text-center">Révision</span><span class="text-xs text-zinc-400 w-24 text-right">31 800 km</span></div>
-                <div class="flex items-center bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><span class="text-xs text-zinc-700 flex-1">IJ-789-KL</span><span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full w-24 text-center">Actif</span><span class="text-xs text-zinc-400 w-24 text-right">78 400 km</span></div>
+                <div class="flex items-center bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><span class="text-xs text-zinc-700 flex-1">AB-123-CD</span><span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full w-24 text-center">Actif</span><span class="text-xs text-zinc-500 w-24 text-right">45 200 km</span></div>
+                <div class="flex items-center bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><span class="text-xs text-zinc-700 flex-1">EF-456-GH</span><span class="text-[10px] bg-amber-50 text-amber-800 px-2 py-0.5 rounded-full w-24 text-center">Révision</span><span class="text-xs text-zinc-500 w-24 text-right">31 800 km</span></div>
+                <div class="flex items-center bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><span class="text-xs text-zinc-700 flex-1">IJ-789-KL</span><span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full w-24 text-center">Actif</span><span class="text-xs text-zinc-500 w-24 text-right">78 400 km</span></div>
               </div>
             </div>
           </div>
@@ -400,17 +401,17 @@ const faqSchema = {
               <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </div>
             <h3 class="text-2xl font-semibold text-zinc-900 mb-3">Zéro document expiré</h3>
-            <p class="text-lg text-zinc-500 leading-relaxed">Permis, visite médicale, formations côté conducteur ; carte grise, assurance, licence de transport côté véhicule. FleetDesk calcule les échéances et vous alerte avant qu'un conducteur ou un véhicule soit hors la loi.</p>
+            <p class="text-lg text-zinc-600 leading-relaxed">Permis, visite médicale, formations côté conducteur ; carte grise, assurance, licence de transport côté véhicule. FleetDesk calcule les échéances et vous alerte avant qu'un conducteur ou un véhicule soit hors la loi.</p>
           </div>
           <div class="lg:order-1 rounded-xl border border-zinc-200 shadow-xl shadow-zinc-200/50 overflow-hidden bg-white">
             <div class="flex items-center gap-1.5 bg-zinc-100 border-b border-zinc-200 px-4 py-2.5">
               <div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div>
-              <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-400">app.fleetdesk.fr/conducteurs</div>
+              <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-500">app.fleetdesk.fr/conducteurs</div>
             </div>
             <div class="bg-zinc-50 p-5 space-y-2">
-              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-7 h-7 rounded-full bg-[#E5EEFF] flex items-center justify-center text-[10px] font-bold text-[#0066FF] flex-shrink-0">ML</div><span class="text-xs text-zinc-700 flex-1">Marc Lefebvre</span><span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full">Conforme</span></div>
-              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-7 h-7 rounded-full bg-amber-50 flex items-center justify-center text-[10px] font-bold text-amber-600 flex-shrink-0">SR</div><span class="text-xs text-zinc-700 flex-1">Sophie Renard</span><span class="text-[10px] bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full">⚠ Expire 15j</span></div>
-              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-7 h-7 rounded-full bg-[#E5EEFF] flex items-center justify-center text-[10px] font-bold text-[#0066FF] flex-shrink-0">KA</div><span class="text-xs text-zinc-700 flex-1">Karim Aïssa</span><span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full">Conforme</span></div>
+              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-7 h-7 rounded-full bg-[#E5EEFF] flex items-center justify-center text-[10px] font-bold text-[#0066FF] flex-shrink-0">ML</div><span class="text-xs text-zinc-700 flex-1">Marc Lefebvre</span><span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">Conforme</span></div>
+              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-7 h-7 rounded-full bg-amber-50 flex items-center justify-center text-[10px] font-bold text-amber-800 flex-shrink-0">SR</div><span class="text-xs text-zinc-700 flex-1">Sophie Renard</span><span class="text-[10px] bg-amber-50 text-amber-800 px-2 py-0.5 rounded-full">Expire 15 j</span></div>
+              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-7 h-7 rounded-full bg-[#E5EEFF] flex items-center justify-center text-[10px] font-bold text-[#0066FF] flex-shrink-0">KA</div><span class="text-xs text-zinc-700 flex-1">Karim Aïssa</span><span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">Conforme</span></div>
             </div>
           </div>
         </div>
@@ -422,17 +423,17 @@ const faqSchema = {
               <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
             </div>
             <h3 class="text-2xl font-semibold text-zinc-900 mb-3">Anticipez les pannes</h3>
-            <p class="text-lg text-zinc-500 leading-relaxed">Par intervalle kilométrique ou temporel, FleetDesk prévoit l'entretien et vous prévient avant la casse.</p>
+            <p class="text-lg text-zinc-600 leading-relaxed">Par intervalle kilométrique ou temporel, FleetDesk prévoit l'entretien et vous prévient avant la casse.</p>
           </div>
           <div class="rounded-xl border border-zinc-200 shadow-xl shadow-zinc-200/50 overflow-hidden bg-white">
             <div class="flex items-center gap-1.5 bg-zinc-100 border-b border-zinc-200 px-4 py-2.5">
               <div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div>
-              <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-400">app.fleetdesk.fr/maintenance</div>
+              <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-500">app.fleetdesk.fr/maintenance</div>
             </div>
             <div class="bg-zinc-50 p-5 space-y-2">
-              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-2 h-2 rounded-full bg-red-500 flex-shrink-0"></div><span class="text-xs text-zinc-700 flex-1">CT · AB-123-CD</span><span class="text-[10px] text-red-500 font-medium">Dans 3 j</span></div>
-              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></div><span class="text-xs text-zinc-700 flex-1">Vidange · EF-456-GH</span><span class="text-[10px] text-amber-600 font-medium">Dans 12 j</span></div>
-              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></div><span class="text-xs text-zinc-700 flex-1">Freins · IJ-789-KL</span><span class="text-[10px] text-zinc-400">Dans 28 j</span></div>
+              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></div><span class="text-xs text-zinc-700 flex-1">CT · AB-123-CD</span><span class="text-[10px] font-semibold text-amber-900 bg-amber-100 px-2 py-0.5 rounded-full">Dans 3 j</span></div>
+              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></div><span class="text-xs text-zinc-700 flex-1">Vidange · EF-456-GH</span><span class="text-[10px] font-medium text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full">Dans 12 j</span></div>
+              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></div><span class="text-xs text-zinc-700 flex-1">Freins · IJ-789-KL</span><span class="text-[10px] font-medium text-zinc-600 bg-zinc-100 px-2 py-0.5 rounded-full">Dans 28 j</span></div>
             </div>
           </div>
         </div>
@@ -444,17 +445,17 @@ const faqSchema = {
               <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
             </div>
             <h3 class="text-2xl font-semibold text-zinc-900 mb-3">Comprenez vos coûts réels</h3>
-            <p class="text-lg text-zinc-500 leading-relaxed">Coûts, kilométrages, tendances : pas dans un tableur, dans un vrai tableau de bord qui décide pour vous.</p>
+            <p class="text-lg text-zinc-600 leading-relaxed">Coûts, kilométrages, tendances : pas dans un tableur, dans un vrai tableau de bord qui décide pour vous.</p>
           </div>
           <div class="lg:order-1 rounded-xl border border-zinc-200 shadow-xl shadow-zinc-200/50 overflow-hidden bg-white">
             <div class="flex items-center gap-1.5 bg-zinc-100 border-b border-zinc-200 px-4 py-2.5">
               <div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div>
-              <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-400">app.fleetdesk.fr/analytique</div>
+              <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-500">app.fleetdesk.fr/analytique</div>
             </div>
             <div class="bg-zinc-50 p-5">
               <div class="flex gap-2 mb-3">
-                <div class="flex-1 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><p class="text-[10px] text-zinc-400 mb-0.5">Km ce mois</p><p class="text-base font-bold text-zinc-800">12 450</p></div>
-                <div class="flex-1 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><p class="text-[10px] text-zinc-400 mb-0.5">Coût entretien</p><p class="text-base font-bold text-emerald-600">↓ 18%</p></div>
+                <div class="flex-1 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><p class="text-[10px] text-zinc-500 mb-0.5">Km ce mois</p><p class="text-base font-bold text-zinc-800">12 450</p></div>
+                <div class="flex-1 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><p class="text-[10px] text-zinc-500 mb-0.5">Coût entretien</p><p class="text-base font-bold text-emerald-700">↓ 18%</p></div>
               </div>
               <div class="bg-white border border-zinc-100 rounded-lg px-3 py-3">
                 <div class="flex items-end gap-1.5 h-16">
@@ -472,26 +473,26 @@ const faqSchema = {
               <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg>
             </div>
             <h3 class="text-2xl font-semibold text-zinc-900 mb-3">Vos chauffeurs saisissent au volant</h3>
-            <p class="text-lg text-zinc-500 leading-relaxed">Un accès dédié, limité à leur véhicule. Ils notent le kilométrage et le plein en un geste, photo de facture à l'appui. Vous récupérez la donnée sans la ressaisir.</p>
+            <p class="text-lg text-zinc-600 leading-relaxed">Un accès dédié, limité à leur véhicule. Ils notent le kilométrage et le plein en un geste, photo de facture à l'appui. Vous récupérez la donnée sans la ressaisir.</p>
           </div>
           <div class="rounded-xl border border-zinc-200 shadow-xl shadow-zinc-200/50 overflow-hidden bg-white">
             <div class="flex items-center gap-1.5 bg-zinc-100 border-b border-zinc-200 px-4 py-2.5">
               <div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div>
-              <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-400">app.fleetdesk.fr/kilometrage</div>
+              <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-500">app.fleetdesk.fr/kilometrage</div>
             </div>
             <div class="bg-zinc-50 p-5 space-y-3">
               <div class="bg-white border border-zinc-100 rounded-lg px-3 py-2.5">
-                <p class="text-[10px] text-zinc-400 mb-0.5">Véhicule</p>
-                <div class="flex items-center gap-2"><span class="text-xs font-medium text-zinc-800">GY-578-KX — MG3 Hybride</span><span class="text-[9px] bg-zinc-100 text-zinc-500 px-1.5 py-0.5 rounded">verrouillé</span></div>
+                <p class="text-[10px] text-zinc-500 mb-0.5">Véhicule</p>
+                <div class="flex items-center gap-2"><span class="text-xs font-medium text-zinc-800">GY-578-KX — MG3 Hybride</span><span class="text-[9px] bg-zinc-100 text-zinc-600 px-1.5 py-0.5 rounded">verrouillé</span></div>
               </div>
               <div class="flex items-center gap-2 bg-[#0066FF]/[0.04] border border-[#0066FF]/15 rounded-lg px-3 py-2">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
                 <span class="text-[11px] text-zinc-600">Karim Aïssa · <span class="font-medium text-zinc-800">Carte DKV 009</span></span>
               </div>
-              <div class="bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><p class="text-[10px] text-zinc-400 mb-0.5">Nouveau kilométrage</p><p class="text-sm font-semibold text-zinc-800">51 177 km</p></div>
+              <div class="bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><p class="text-[10px] text-zinc-500 mb-0.5">Nouveau kilométrage</p><p class="text-sm font-semibold text-zinc-800">51 177 km</p></div>
               <div class="flex items-center gap-2 bg-white border border-dashed border-zinc-200 rounded-lg px-3 py-2.5">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                <span class="text-[11px] text-zinc-500">Plein Total · facture jointe</span>
+                <span class="text-[11px] text-zinc-600">Plein Total · facture jointe</span>
               </div>
             </div>
           </div>
@@ -517,7 +518,7 @@ const faqSchema = {
         <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
           Un accès adapté à chaque rôle
         </h2>
-        <p class="text-lg text-zinc-500 leading-relaxed">
+        <p class="text-lg text-zinc-600 leading-relaxed">
           Le gérant pilote, l'équipe gère, les chauffeurs saisissent. Chacun voit ce qui le concerne, ni plus, ni moins.
         </p>
       </div>
@@ -530,7 +531,7 @@ const faqSchema = {
         ].map(r => (
           <div class="bg-zinc-50 border border-zinc-100 rounded-2xl p-5">
             <span class={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full mb-3 ${r.tint}`}>{r.role}</span>
-            <p class="text-sm text-zinc-500 leading-relaxed">{r.desc}</p>
+            <p class="text-sm text-zinc-600 leading-relaxed">{r.desc}</p>
           </div>
         ))}
       </div>
@@ -546,23 +547,23 @@ const faqSchema = {
           <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4">
             Hébergé en Europe,<br />conforme dès le premier jour
           </h2>
-          <p class="text-lg text-zinc-500 leading-relaxed">
+          <p class="text-lg text-zinc-600 leading-relaxed">
             Permis, assurances, cartes grises : vos documents sont sensibles. Ils sont stockés en privé, jamais en accès public, sur des serveurs situés dans l'Union européenne. Vos données restent chiffrées, et vous appartiennent, exportables à tout moment.
           </p>
         </div>
         <div class="grid sm:grid-cols-2 gap-4">
           {[
-            { t: 'Hébergement en Europe', d: 'Vos données sont stockées et traitées sur des serveurs situés en Union européenne.', icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' },
-            { t: 'Conforme RGPD', d: 'Traitement des données conducteurs conforme au règlement européen.', icon: '<path d="M9 12l2 2 4-4"/><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' },
-            { t: 'Paiement sécurisé Stripe', d: 'Aucune donnée bancaire ne transite ni n\'est stockée chez nous.', icon: '<rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>' },
-            { t: 'Vos données vous appartiennent', d: 'Export complet à tout moment. Résiliation en un clic, sans rétention.', icon: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>' },
+            { t: 'Hébergement en Europe', d: 'Vos données sont stockées et traitées sur des serveurs situés en Union européenne.', icon: ICONS.building },
+            { t: 'Conforme RGPD', d: 'Traitement des données conducteurs conforme au règlement européen.', icon: ICONS.shield },
+            { t: 'Paiement sécurisé Stripe', d: 'Aucune donnée bancaire ne transite ni n\'est stockée chez nous.', icon: ICONS.lock },
+            { t: 'Vos données vous appartiennent', d: 'Export complet à tout moment. Résiliation en un clic, sans rétention.', icon: ICONS.download },
           ].map(f => (
             <div class="bg-zinc-50 border border-zinc-100 rounded-xl p-5">
               <div class="w-9 h-9 rounded-lg bg-[#E5EEFF] flex items-center justify-center mb-3">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={f.icon} />
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={f.icon} />
               </div>
               <h3 class="text-sm font-semibold text-zinc-900 mb-1">{f.t}</h3>
-              <p class="text-sm text-zinc-500 leading-relaxed">{f.d}</p>
+              <p class="text-sm text-zinc-600 leading-relaxed">{f.d}</p>
             </div>
           ))}
         </div>
@@ -578,14 +579,14 @@ const faqSchema = {
         <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 leading-tight mb-4">
           Jeune produit,<br />fondations sérieuses.
         </h2>
-        <p class="text-zinc-500 leading-relaxed mb-6">
+        <p class="text-zinc-600 leading-relaxed mb-6">
           FleetDesk démarre. Plutôt que d'inventer des avis, voici ce sur quoi vous pouvez déjà nous juger : conformité, sécurité et transparence, dès le premier jour.
         </p>
         <a href={"/souscrire/pro"} class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0066FF] hover:text-[#0052D6]">
           Commencer l'essai gratuit
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
-        <p class="text-xs text-zinc-400 mt-8">Conçu et développé en France par Strelizia Creative Studio.</p>
+        <p class="text-xs text-zinc-500 mt-8">Conçu et développé en France par Strelizia Creative Studio.</p>
       </div>
 
       <div class="divide-y divide-zinc-200">
@@ -596,7 +597,7 @@ const faqSchema = {
             </span>
             <div>
               <h3 class="text-[15px] font-semibold text-zinc-900 mb-1">{item.title}</h3>
-              <p class="text-sm text-zinc-500 leading-relaxed">{item.text}</p>
+              <p class="text-sm text-zinc-600 leading-relaxed">{item.text}</p>
             </div>
           </div>
         ))}
@@ -616,15 +617,15 @@ const faqSchema = {
           <details class="group py-5">
             <summary class="flex items-center justify-between gap-4 cursor-pointer list-none">
               <span class="font-medium text-zinc-900">{item.q}</span>
-              <svg class="w-4 h-4 flex-shrink-0 text-zinc-400 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="w-4 h-4 flex-shrink-0 text-zinc-500 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="6 9 12 15 18 9"/>
               </svg>
             </summary>
-            <p class="text-sm text-zinc-500 leading-relaxed mt-3 pr-8">{item.a}</p>
+            <p class="text-sm text-zinc-600 leading-relaxed mt-3 pr-8">{item.a}</p>
           </details>
         ))}
       </div>
-      <p class="text-center text-sm text-zinc-400 mt-10">
+      <p class="text-center text-sm text-zinc-500 mt-10">
         Une autre question ? <a href="/contact" class="text-[#0066FF] font-medium hover:text-[#0052D6]">Écrivez-nous</a>, réponse sous 24h ouvrées.
       </p>
     </div>
@@ -636,19 +637,19 @@ const faqSchema = {
       <div class="mb-10 text-center">
         <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Tarifs transparents</p>
         <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-3">Un prix qui tient sur une ligne</h2>
-        <p class="text-lg text-zinc-500">Dès 9 €/mois. 14 jours d'essai sur Pro, sans carte.</p>
+        <p class="text-lg text-zinc-600">Dès 9 €/mois. 14 jours d'essai sur Pro, sans carte.</p>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {teaserPlans.map(p => (
           <a href={p.href}
             class={`group rounded-2xl p-6 transition-all ${p.highlighted ? 'bg-white border-2 border-[#0066FF] shadow-lg shadow-[#0066FF]/10' : 'bg-white border border-zinc-200 hover:border-zinc-300'}`}>
-            <p class={`text-xs font-semibold uppercase tracking-widest mb-3 ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-400'}`}>{p.name}</p>
+            <p class={`text-xs font-semibold uppercase tracking-widest mb-3 ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-500'}`}>{p.name}</p>
             <div class="flex items-end gap-1 mb-1">
               <span class="text-3xl font-bold text-zinc-900">{p.price}</span>
               <span class="text-base font-bold text-zinc-900 mb-0.5">€</span>
-              <span class="text-xs text-zinc-400 mb-1.5">/mois</span>
+              <span class="text-xs text-zinc-500 mb-1.5">/mois</span>
             </div>
-            <p class="text-sm text-zinc-500 mb-5">{p.note}</p>
+            <p class="text-sm text-zinc-600 mb-5">{p.note}</p>
             <span class={`inline-flex items-center gap-1.5 text-sm font-semibold ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-700'}`}>
               {p.cta}
               <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -659,6 +660,52 @@ const faqSchema = {
       <p class="text-center text-sm mt-8">
         <a href="/pricing" class="text-[#0066FF] font-medium hover:text-[#0052D6]">Comparer les formules en détail</a>
       </p>
+    </div>
+  </section>
+
+  <!-- Ressources : maillage vers les pages de fond -->
+  <section class="py-20 bg-white border-t border-zinc-100">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="max-w-2xl mb-10">
+        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Pour aller plus loin</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
+          Choisir, comprendre, se mettre en règle
+        </h2>
+        <p class="text-lg text-zinc-600 leading-relaxed">
+          Avant de changer d'outil, il faut savoir ce qu'on attend de lui. Trois ressources pour cadrer le sujet.
+        </p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-5">
+        {[
+          {
+            t: 'Logiciel de gestion de flotte : le guide d\'achat',
+            d: "Les six fonctions qui séparent un outil utile d'une base de données de plus, et l'approche adaptée à chaque taille de parc.",
+            h: '/logiciel-gestion-de-flotte',
+            cta: 'Lire le guide d\'achat',
+          },
+          {
+            t: 'Votre secteur, vos échéances',
+            d: 'Transport routier, BTP, VTC et taxi, véhicules de société : ce que FleetDesk suit pour chaque métier.',
+            h: '/secteurs',
+            cta: 'Voir les secteurs',
+          },
+          {
+            t: 'Modèle Excel de suivi de parc',
+            d: 'Quatre onglets prêts à l\'emploi pour structurer véhicules, conducteurs et échéances. Gratuit, sans inscription.',
+            h: '/outils/modele-suivi-parc-automobile-excel',
+            cta: 'Télécharger le modèle',
+          },
+        ].map(r => (
+          <a href={r.h} class="group flex flex-col border border-zinc-200 rounded-2xl p-6 hover:border-[#0066FF]/40 hover:shadow-sm transition-all">
+            <h3 class="font-display text-lg font-semibold text-zinc-900 tracking-tight leading-snug mb-2 group-hover:text-[#0066FF] transition-colors">{r.t}</h3>
+            <p class="text-sm text-zinc-600 leading-relaxed flex-1">{r.d}</p>
+            <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0066FF] mt-4">
+              {r.cta}
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </a>
+        ))}
+      </div>
     </div>
   </section>
 

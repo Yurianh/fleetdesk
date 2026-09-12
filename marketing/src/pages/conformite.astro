@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro'
 import Navbar from '../components/Navbar.jsx'
 import CTASection from '../components/CTASection.astro'
 import Footer from '../components/Footer.astro'
+import { ICONS } from '../lib/icons.js'
 
 const APP_URL = 'https://app.fleetdesk.fr'
 
@@ -24,20 +25,20 @@ const vehicleDocs = [
 
 const risks = [
   {
-    tint: 'bg-red-50 text-red-500',
-    icon: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+    tint: 'bg-zinc-100 text-zinc-600',
+    icon: ICONS.euro,
     title: 'Amende et immobilisation',
     desc: 'Un contrôle technique dépassé, c\'est le véhicule à l\'arrêt sur-le-champ, une amende, et un client non livré.',
   },
   {
-    tint: 'bg-orange-50 text-orange-500',
-    icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+    tint: 'bg-zinc-100 text-zinc-600',
+    icon: ICONS.shield,
     title: 'Responsabilité engagée',
     desc: 'Visite médicale périmée, formation expirée : votre conducteur roule hors la loi, et votre responsabilité est en jeu.',
   },
   {
-    tint: 'bg-amber-50 text-amber-600',
-    icon: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    tint: 'bg-zinc-100 text-zinc-600',
+    icon: ICONS.inspection,
     title: 'Contrôle à l\'improviste',
     desc: 'Un contrôle routier tombe sans prévenir. Les documents doivent être à jour et présentables, tout de suite.',
   },
@@ -88,8 +89,8 @@ const breadcrumb = {
 }
 ---
 <Layout
-  title="Conformité de flotte : contrôles techniques et documents suivis · FleetDesk"
-  description="Suivez contrôles techniques, permis, visites médicales, assurances et licences de transport. Échéances calculées automatiquement, alertes avant expiration. Restez prêt pour le contrôle."
+  title="Conformité de flotte : échéances et documents"
+  description="Suivez contrôles techniques, permis, visites médicales et assurances. Échéances calculées, alertes avant expiration, documents rangés par véhicule."
   jsonLd={[faqSchema, breadcrumb]}
 >
   <Navbar client:load currentPath="/conformite" />
@@ -106,7 +107,7 @@ const breadcrumb = {
           <h1 class="font-display text-4xl sm:text-5xl font-semibold text-zinc-900 tracking-tight leading-[1.08] mb-6">
             Prêt pour le contrôle,<br /><span class="text-[#0066FF]">chaque jour</span>
           </h1>
-          <p class="text-lg text-zinc-500 leading-relaxed mb-8">
+          <p class="text-lg text-zinc-600 leading-relaxed mb-8">
             Contrôles techniques, documents conducteurs et véhicules : FleetDesk calcule chaque échéance et vous alerte avant l'expiration. Zéro document périmé, zéro amende surprise.
           </p>
           <div class="flex flex-col sm:flex-row gap-3">
@@ -126,7 +127,7 @@ const breadcrumb = {
         <div class="rounded-xl border border-zinc-200 shadow-2xl shadow-zinc-200/60 overflow-hidden bg-white">
           <div class="flex items-center gap-1.5 bg-zinc-100 border-b border-zinc-200 px-4 py-2.5">
             <div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div>
-            <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-400">app.fleetdesk.fr/conducteurs</div>
+            <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-500">app.fleetdesk.fr/conducteurs</div>
           </div>
           <div class="bg-zinc-50 p-5">
             <div class="flex items-center justify-between mb-3">
@@ -138,7 +139,7 @@ const breadcrumb = {
               {[
                 { d: 'Permis de conduire',      s: 'Valide',        sc: 'text-emerald-700 bg-emerald-100', dot: 'bg-emerald-500' },
                 { d: 'Visite médecin travail',  s: 'Expire 15 j',   sc: 'text-amber-700 bg-amber-100',     dot: 'bg-amber-500' },
-                { d: 'Casier judiciaire',       s: 'Expiré',        sc: 'text-red-700 bg-red-100',         dot: 'bg-red-500' },
+                { d: 'Casier judiciaire',       s: 'Expiré',        sc: 'text-amber-900 bg-amber-200',         dot: 'bg-amber-500' },
                 { d: 'Formation SST / PSC1',    s: 'Valide',        sc: 'text-emerald-700 bg-emerald-100', dot: 'bg-emerald-500' },
               ].map(r => (
                 <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2">
@@ -158,11 +159,11 @@ const breadcrumb = {
   <section class="py-24 bg-zinc-50 border-b border-zinc-100">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       <div class="mb-12 max-w-2xl">
-        <p class="text-sm font-semibold text-red-500 tracking-wide mb-3">Ce que coûte un oubli</p>
+        <p class="text-sm font-semibold text-zinc-600 tracking-wide mb-3">Ce que coûte un oubli</p>
         <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
           La non-conformité coûte plus cher qu'un logiciel
         </h2>
-        <p class="text-lg text-zinc-500 leading-relaxed">
+        <p class="text-lg text-zinc-600 leading-relaxed">
           Un document périmé ne prévient pas. Il se rappelle à vous au pire moment : un contrôle, une amende, un véhicule cloué au sol.
         </p>
       </div>
@@ -170,10 +171,10 @@ const breadcrumb = {
         {risks.map(r => (
           <div class="bg-white border border-zinc-200 rounded-2xl p-6">
             <div class={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 ${r.tint}`}>
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={r.icon} />
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={r.icon} />
             </div>
             <h3 class="text-base font-semibold text-zinc-900 mb-1.5">{r.title}</h3>
-            <p class="text-sm text-zinc-500 leading-relaxed">{r.desc}</p>
+            <p class="text-sm text-zinc-600 leading-relaxed">{r.desc}</p>
           </div>
         ))}
       </div>
@@ -188,7 +189,7 @@ const breadcrumb = {
         <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
           Tous vos documents, une seule échéance à ne pas rater
         </h2>
-        <p class="text-lg text-zinc-500 leading-relaxed">
+        <p class="text-lg text-zinc-600 leading-relaxed">
           Conducteurs et véhicules réunis. Chaque pièce a sa date, chaque date a son alerte.
         </p>
       </div>
@@ -210,7 +211,7 @@ const breadcrumb = {
               </div>
             ))}
           </div>
-          <p class="text-xs text-zinc-400 mt-4">Durées réglementaires appliquées automatiquement, y compris la règle des 2 ans au-delà de 62 ans pour l'aptitude à la conduite.</p>
+          <p class="text-xs text-zinc-500 mt-4">Durées réglementaires appliquées automatiquement, y compris la règle des 2 ans au-delà de 62 ans pour l'aptitude à la conduite.</p>
         </div>
 
         <!-- Vehicle documents + CT -->
@@ -252,7 +253,7 @@ const breadcrumb = {
           <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
             Vous enregistrez, FleetDesk surveille
           </h2>
-          <p class="text-lg text-zinc-500 leading-relaxed">
+          <p class="text-lg text-zinc-600 leading-relaxed">
             Aucune date à retenir, aucun rappel à programmer. Le calcul et l'alerte se font pour vous.
           </p>
         </div>
@@ -263,7 +264,7 @@ const breadcrumb = {
               <div class="relative z-10 w-11 h-11 rounded-xl bg-[#E5EEFF] text-[#0066FF] font-bold flex items-center justify-center flex-shrink-0 ring-4 ring-zinc-50">{s.num}</div>
               <div class="pt-1.5">
                 <h3 class="text-lg font-semibold text-zinc-900 mb-1.5">{s.title}</h3>
-                <p class="text-zinc-500 leading-relaxed">{s.desc}</p>
+                <p class="text-zinc-600 leading-relaxed">{s.desc}</p>
               </div>
             </div>
           ))}
@@ -279,7 +280,7 @@ const breadcrumb = {
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       </div>
       <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4">Des documents sensibles, tenus au privé</h2>
-      <p class="text-lg text-zinc-500 leading-relaxed max-w-2xl mx-auto">
+      <p class="text-lg text-zinc-600 leading-relaxed max-w-2xl mx-auto">
         Permis, casier, visites médicales : ces pièces ne doivent jamais fuir. Elles sont stockées dans un espace privé, jamais accessibles publiquement, servies uniquement via des liens temporaires signés, sur des serveurs situés dans l'Union européenne.
       </p>
     </div>
@@ -297,16 +298,16 @@ const breadcrumb = {
           <details class="group py-5">
             <summary class="flex items-center justify-between gap-4 cursor-pointer list-none">
               <span class="font-medium text-zinc-900">{item.q}</span>
-              <svg class="w-4 h-4 flex-shrink-0 text-zinc-400 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              <svg class="w-4 h-4 flex-shrink-0 text-zinc-500 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
             </summary>
-            <p class="text-sm text-zinc-500 leading-relaxed mt-3 pr-8">{item.a}</p>
+            <p class="text-sm text-zinc-600 leading-relaxed mt-3 pr-8">{item.a}</p>
           </details>
         ))}
       </div>
 
       <!-- Cluster links to the guides -->
       <div class="mt-14 pt-10 border-t border-zinc-200">
-        <p class="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-400 mb-5 text-center">Guides pratiques</p>
+        <p class="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-5 text-center">Guides pratiques</p>
         <div class="grid sm:grid-cols-3 gap-4">
           {[
             { title: 'Contrôle technique de flotte', href: '/guides/controle-technique-flotte' },
@@ -315,7 +316,7 @@ const breadcrumb = {
           ].map(g => (
             <a href={g.href} class="group flex items-center justify-between gap-3 bg-white border border-zinc-200 rounded-xl px-4 py-3.5 hover:border-[#0066FF]/40 transition-colors">
               <span class="text-sm font-medium text-zinc-800 group-hover:text-[#0066FF] transition-colors">{g.title}</span>
-              <svg class="w-4 h-4 text-zinc-300 group-hover:text-[#0066FF] flex-shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              <svg class="w-4 h-4 text-zinc-400 group-hover:text-[#0066FF] flex-shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
           ))}
         </div>

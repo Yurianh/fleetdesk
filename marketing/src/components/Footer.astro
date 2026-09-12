@@ -6,16 +6,27 @@ const nav = [
   {
     title: 'Produit',
     links: [
-      { label: 'Fonctionnalités', href: '/features' },
-      { label: 'Tarifs',          href: '/pricing'  },
-      { label: 'Conformité',      href: '/conformite' },
-      { label: 'Guides',          href: '/guides' },
+      { label: 'Fonctionnalités',          href: '/features' },
+      { label: 'Logiciel de gestion de flotte', href: '/logiciel-gestion-de-flotte' },
+      { label: 'Conformité',               href: '/conformite' },
+      { label: 'Tarifs',                   href: '/pricing'  },
     ],
   },
   {
-    title: 'Entreprise',
+    title: 'Secteurs',
     links: [
-      { label: 'Contact', href: '/contact' },
+      { label: 'Transport routier',    href: '/secteurs/transport-routier' },
+      { label: 'BTP et artisans',      href: '/secteurs/btp' },
+      { label: 'VTC et taxi',          href: '/secteurs/vtc-taxi' },
+      { label: 'Véhicules de société', href: '/secteurs/vehicules-de-societe' },
+    ],
+  },
+  {
+    title: 'Ressources',
+    links: [
+      { label: 'Guides',              href: '/guides' },
+      { label: 'Modèle Excel gratuit', href: '/outils/modele-suivi-parc-automobile-excel' },
+      { label: 'Contact',             href: '/contact' },
     ],
   },
   {
@@ -38,7 +49,7 @@ const nav = [
 ---
 <footer class="bg-white border-t border-zinc-100">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-10">
+    <div class="grid grid-cols-2 md:grid-cols-6 gap-10">
 
       <!-- Brand -->
       <div class="col-span-2 md:col-span-1 md:col-start-1">
@@ -52,7 +63,7 @@ const nav = [
           </div>
           <span class="text-[15px] font-semibold text-zinc-900 tracking-tight">FleetDesk</span>
         </a>
-        <p class="text-sm leading-relaxed text-zinc-400">
+        <p class="text-sm leading-relaxed text-zinc-500">
           La gestion de flotte pour les équipes qui bougent.
         </p>
       </div>
@@ -60,11 +71,11 @@ const nav = [
       <!-- Nav columns -->
       {nav.map(col => (
         <div>
-          <p class="text-[10px] font-semibold uppercase tracking-[0.08em] text-zinc-400 mb-4">{col.title}</p>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.08em] text-zinc-500 mb-4">{col.title}</p>
           <ul class="space-y-2.5">
             {col.links.map(l => (
               <li>
-                <a href={l.href} class="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
+                <a href={l.href} class="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">
                   {l.label}
                 </a>
               </li>
@@ -75,11 +86,11 @@ const nav = [
     </div>
 
     <div class="mt-10 pt-6 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-3">
-      <p class="text-xs text-zinc-400">© {year} FleetDesk. Tous droits réservés.</p>
+      <p class="text-xs text-zinc-500">© {year} FleetDesk. Tous droits réservés.</p>
       <div class="flex items-center gap-4">
-        <a href="/legal#confidentialite" class="text-xs text-zinc-400 hover:text-zinc-600 transition-colors">Confidentialité</a>
-        <a href="/legal#cgu" class="text-xs text-zinc-400 hover:text-zinc-600 transition-colors">CGU</a>
-        <a href="/legal#rgpd" class="text-xs text-zinc-400 hover:text-zinc-600 transition-colors">RGPD</a>
+        <a href="/legal#confidentialite" class="text-xs text-zinc-500 hover:text-zinc-600 transition-colors">Confidentialité</a>
+        <a href="/legal#cgu" class="text-xs text-zinc-500 hover:text-zinc-600 transition-colors">CGU</a>
+        <a href="/legal#rgpd" class="text-xs text-zinc-500 hover:text-zinc-600 transition-colors">RGPD</a>
       </div>
     </div>
   </div>

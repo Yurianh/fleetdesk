@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 
 const LINKS = [
   { label: 'Fonctionnalités', href: '/features'   },
+  { label: 'Secteurs',        href: '/secteurs'   },
   { label: 'Conformité',      href: '/conformite' },
   { label: 'Tarifs',          href: '/pricing'    },
-  { label: 'Contact',         href: '/contact'    },
+  { label: 'Guides',          href: '/guides'     },
 ]
 
 const APP_URL = 'https://app.fleetdesk.fr'
@@ -23,7 +24,7 @@ export default function Navbar({ currentPath = '/' }) {
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-zinc-200/80">
+    <header className="enter-soft sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-zinc-200/80">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
 
         {/* Logo */}
