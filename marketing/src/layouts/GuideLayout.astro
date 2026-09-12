@@ -10,24 +10,33 @@ interface Props {
   description: string
   heading: string
   intro: string
+  published?: string
   updated?: string
   faq?: { q: string; a: string }[]
   related?: { title: string; href: string }[]
+  sources?: { label: string; href: string }[]
 }
 
-const { title, description, heading, intro, updated = '5 septembre 2026', faq = [], related = [] } = Astro.props
-const canonicalPath = Astro.url.pathname
+const {
+  title, description, heading, intro,
+  published = '2026-09-05', updated = '2026-09-05',
+  faq = [], related = [], sources = [],
+} = Astro.props
+const canonicalPath = Astro.url.pathname.replace(/\/$/, '') || '/'
+const updatedLabel = new Date(updated).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
 
 const articleSchema = {
   '@context': 'https://schema.org',
   '@type': 'Article',
   headline: heading,
   description,
-  datePublished: '2026-09-05',
-  dateModified: '2026-09-05',
+  datePublished: published,
+  dateModified: updated,
   author: { '@type': 'Organization', name: 'FleetDesk' },
   publisher: { '@type': 'Organization', name: 'FleetDesk', logo: { '@type': 'ImageObject', url: 'https://fleetdesk.fr/logo-mark.png' } },
   mainEntityOfPage: 'https://fleetdesk.fr' + canonicalPath,
+  inLanguage: 'fr-FR',
+  image: 'https://fleetdesk.fr/og-default.png',
 }
 const breadcrumb = {
   '@context': 'https://schema.org',
@@ -51,17 +60,19 @@ const jsonLd = [articleSchema, breadcrumb, ...(faqSchema ? [faqSchema] : [])]
 
   <article class="max-w-3xl mx-auto px-4 sm:px-6 pt-16 pb-24">
     <!-- Breadcrumb -->
-    <nav class="text-xs text-zinc-400 mb-8 flex items-center gap-1.5" aria-label="Fil d'ariane">
+    <nav class="text-xs text-zinc-500 mb-8 flex items-center gap-1.5" aria-label="Fil d'ariane">
       <a href="/" class="hover:text-[#0066FF]">Accueil</a><span>/</span>
       <a href="/guides" class="hover:text-[#0066FF]">Guides</a><span>/</span>
-      <span class="text-zinc-500">{heading}</span>
+      <span class="text-zinc-600">{heading}</span>
     </nav>
 
     <!-- Header -->
     <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Guide conformité</p>
     <h1 class="font-display text-3xl sm:text-4xl md:text-[2.75rem] font-semibold text-zinc-900 tracking-tight leading-[1.1] mb-5">{heading}</h1>
-    <p class="text-lg text-zinc-500 leading-relaxed mb-4">{intro}</p>
-    <p class="text-xs text-zinc-400 mb-10">Mis à jour le {updated}</p>
+    <p class="text-lg text-zinc-600 leading-relaxed mb-4">{intro}</p>
+    <p class="text-xs text-zinc-500 mb-10">
+      Mis à jour le <time datetime={updated}>{updatedLabel}</time>
+    </p>
 
     <!-- Prose -->
     <div class="guide-prose">
@@ -76,10 +87,26 @@ const jsonLd = [articleSchema, breadcrumb, ...(faqSchema ? [faqSchema] : [])]
           {faq.map(f => (
             <div>
               <h3 class="text-base font-semibold text-zinc-900 mb-1.5">{f.q}</h3>
-              <p class="text-sm text-zinc-500 leading-relaxed">{f.a}</p>
+              <p class="text-sm text-zinc-600 leading-relaxed">{f.a}</p>
             </div>
           ))}
         </div>
+      </section>
+    )}
+
+    {sources.length > 0 && (
+      <section class="mt-12 rounded-xl bg-zinc-50 border border-zinc-100 px-6 py-5">
+        <h2 class="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-3">Sources officielles</h2>
+        <ul class="space-y-1.5">
+          {sources.map(src => (
+            <li>
+              <a href={src.href} rel="nofollow noopener" target="_blank"
+                 class="text-sm text-zinc-600 hover:text-[#0066FF] underline decoration-zinc-300 underline-offset-2">
+                {src.label}
+              </a>
+            </li>
+          ))}
+        </ul>
       </section>
     )}
 
@@ -96,12 +123,12 @@ const jsonLd = [articleSchema, breadcrumb, ...(faqSchema ? [faqSchema] : [])]
     <!-- Related -->
     {related.length > 0 && (
       <section class="mt-14">
-        <h2 class="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-400 mb-4">À lire aussi</h2>
+        <h2 class="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-4">À lire aussi</h2>
         <div class="divide-y divide-zinc-100 border-t border-zinc-100">
           {related.map(r => (
             <a href={r.href} class="flex items-center justify-between py-4 group">
               <span class="text-sm font-medium text-zinc-800 group-hover:text-[#0066FF] transition-colors">{r.title}</span>
-              <svg class="w-4 h-4 text-zinc-300 group-hover:text-[#0066FF] transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              <svg class="w-4 h-4 text-zinc-400 group-hover:text-[#0066FF] transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
           ))}
         </div>
@@ -123,5 +150,12 @@ const jsonLd = [articleSchema, breadcrumb, ...(faqSchema ? [faqSchema] : [])]
   .guide-prose a { color: #0066FF; text-decoration: none; font-weight: 500; }
   .guide-prose a:hover { text-decoration: underline; }
   .guide-prose strong { color: #18181b; font-weight: 600; }
+  .guide-prose .table-wrap, .guide-prose table { width: 100%; }
+  .guide-prose table { border-collapse: collapse; margin: 1.5rem 0; font-size: 0.875rem; table-layout: auto; }
+  .guide-prose thead th { text-align: left; font-weight: 600; color: #18181b; border-bottom: 1px solid #e4e4e7; padding: 0.6rem 0.75rem; white-space: nowrap; }
+  .guide-prose tbody td { border-bottom: 1px solid #f4f4f5; padding: 0.6rem 0.75rem; vertical-align: top; }
+  .guide-prose ol { margin: 0 0 1.2rem; padding-left: 1.25rem; list-style: decimal; }
+  .guide-prose ol li { margin-bottom: 0.55rem; padding-left: 0.25rem; }
+  .guide-prose ol li::marker { color: #a1a1aa; font-variant-numeric: tabular-nums; }
   .guide-prose .note { font-size: 0.85rem; color: #71717a; background: #f4f4f5; border-radius: 10px; padding: 0.9rem 1.1rem; margin: 1.5rem 0; }
 </style>

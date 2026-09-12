@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /souscrire/
 
-Sitemap: https://fleetdesk.fr/sitemap.xml
+Sitemap: https://fleetdesk.fr/sitemap-index.xml

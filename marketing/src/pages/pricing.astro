@@ -100,9 +100,43 @@ const faq = [
     a: 'Oui, avec une remise de 20 %. Activez-la depuis vos paramètres ou contactez-nous pour la configurer. Vous payez en une fois pour l\'année et économisez 2 mois.'
   },
 ]
+
+// Données structurées : offres tarifaires + FAQ, pour les résultats enrichis.
+const productSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: 'FleetDesk',
+  description: 'Logiciel de gestion de flotte et de conformité pour les PME.',
+  brand: { '@type': 'Brand', name: 'FleetDesk' },
+  offers: plans.map(pl => ({
+    '@type': 'Offer',
+    name: pl.name,
+    price: pl.monthlyPrice,
+    priceCurrency: 'EUR',
+    url: 'https://fleetdesk.fr' + pl.ctaHref,
+    availability: 'https://schema.org/InStock',
+  })),
+}
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map(item => ({
+    '@type': 'Question', name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+}
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://fleetdesk.fr/' },
+    { '@type': 'ListItem', position: 2, name: 'Tarifs', item: 'https://fleetdesk.fr/pricing' },
+  ],
+}
 ---
 <Layout
-  title="Tarifs · FleetDesk"
+  title="Tarifs d'un logiciel de gestion de flotte"
+  jsonLd={[productSchema, faqSchema, breadcrumb]}
   description="Dès 9 €/mois, 14 jours d'essai sur Pro sans carte. Piloter et rester conforme sur toutes les formules ; équipe et saisie chauffeur sur Enterprise."
 >
   <Navbar client:load currentPath="/pricing" />
@@ -114,7 +148,7 @@ const faq = [
       <h1 class="font-display text-4xl sm:text-5xl font-semibold text-zinc-900 tracking-tight mb-5">
         Simple. Transparent. Sans surprise.
       </h1>
-      <p class="text-lg text-zinc-500 max-w-xl mx-auto">
+      <p class="text-lg text-zinc-600 max-w-xl mx-auto">
         Démarrez en 5 minutes. Évoluez quand vous voulez. Résiliez en un clic.
       </p>
     </div>
@@ -135,10 +169,10 @@ const faq = [
           </button>
           <button
             id="btn-annual"
-            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-zinc-500 hover:text-zinc-700 flex items-center gap-2"
+            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-zinc-600 hover:text-zinc-700 flex items-center gap-2"
           >
             Annuel
-            <span class="text-[11px] font-bold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded-full">-20%</span>
+            <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">-20%</span>
           </button>
         </div>
       </div>
@@ -156,7 +190,7 @@ const faq = [
 
             {/* Plan name + price */}
             <div class="mb-5">
-              <p class={`text-xs font-semibold uppercase tracking-widest mb-2 ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-400'}`}>{p.name}</p>
+              <p class={`text-xs font-semibold uppercase tracking-widest mb-2 ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-500'}`}>{p.name}</p>
               <div class="flex items-end gap-1 mb-1">
                 <span
                   class="price-amount text-4xl font-bold tracking-tight text-zinc-900 font-mono"
@@ -166,28 +200,28 @@ const faq = [
                   {p.monthlyPrice}
                 </span>
                 <span class="text-xl font-bold text-zinc-900 mb-0.5">€</span>
-                <span class="text-sm mb-1.5 text-zinc-400">{p.period}</span>
+                <span class="text-sm mb-1.5 text-zinc-500">{p.period}</span>
               </div>
               {/* Annual subtotal line */}
               <p
-                class="annual-total text-xs text-zinc-400 hidden"
+                class="annual-total text-xs text-zinc-500 hidden"
                 data-total={p.annualTotal}
               >
                 soit {p.annualTotal} € / an
               </p>
               {p.trialNote && (
-                <p class="text-xs font-semibold text-emerald-600 mt-1">{p.trialNote}</p>
+                <p class="text-xs font-semibold text-emerald-700 mt-1">{p.trialNote}</p>
               )}
             </div>
 
             {/* Description */}
-            <p class="text-sm text-zinc-500 leading-relaxed mb-6 pb-6 border-b border-zinc-100">{p.desc}</p>
+            <p class="text-sm text-zinc-600 leading-relaxed mb-6 pb-6 border-b border-zinc-100">{p.desc}</p>
 
             {/* Features */}
             <ul class="space-y-3 mb-8 flex-1">
               {p.features.map(f => (
                 <li class="flex items-start gap-2.5">
-                  <svg class={`w-4 h-4 mt-0.5 flex-shrink-0 ${f.highlight ? 'text-emerald-500' : 'text-[#0066FF]'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <svg class={`w-4 h-4 mt-0.5 flex-shrink-0 ${f.highlight ? 'text-emerald-600' : 'text-[#0066FF]'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
                   <span class={`text-sm ${f.highlight ? 'text-zinc-800 font-medium' : 'text-zinc-600'}`}>{f.text}</span>
@@ -211,7 +245,7 @@ const faq = [
       </div>
 
       <!-- Trust bar -->
-      <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mt-10 text-xs text-zinc-400">
+      <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mt-10 text-xs text-zinc-500">
         <span class="flex items-center gap-1.5">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           Sans engagement
@@ -240,7 +274,7 @@ const faq = [
         {faq.map(item => (
           <div class="py-6">
             <p class="font-semibold text-zinc-900 mb-2">{item.q}</p>
-            <p class="text-sm text-zinc-500 leading-relaxed">{item.a}</p>
+            <p class="text-sm text-zinc-600 leading-relaxed">{item.a}</p>
           </div>
         ))}
       </div>
@@ -259,9 +293,9 @@ const faq = [
 
   function setMonthly() {
     btnMonthly.classList.add('bg-zinc-900', 'text-white', 'shadow')
-    btnMonthly.classList.remove('text-zinc-500')
+    btnMonthly.classList.remove('text-zinc-600')
     btnAnnual.classList.remove('bg-zinc-900', 'text-white', 'shadow')
-    btnAnnual.classList.add('text-zinc-500')
+    btnAnnual.classList.add('text-zinc-600')
     amounts.forEach(el => {
       el.textContent = el.dataset.monthly
     })
@@ -270,9 +304,9 @@ const faq = [
 
   function setAnnual() {
     btnAnnual.classList.add('bg-zinc-900', 'text-white', 'shadow')
-    btnAnnual.classList.remove('text-zinc-500')
+    btnAnnual.classList.remove('text-zinc-600')
     btnMonthly.classList.remove('bg-zinc-900', 'text-white', 'shadow')
-    btnMonthly.classList.add('text-zinc-500')
+    btnMonthly.classList.add('text-zinc-600')
     amounts.forEach(el => {
       el.textContent = el.dataset.annual
     })

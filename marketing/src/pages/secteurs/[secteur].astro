@@ -1,0 +1,148 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import Navbar from '../../components/Navbar.jsx'
+import CTASection from '../../components/CTASection.astro'
+import Footer from '../../components/Footer.astro'
+import { SECTEURS } from '../../data/secteurs.js'
+
+export function getStaticPaths() {
+  return SECTEURS.map(s => ({ params: { secteur: s.slug }, props: { s } }))
+}
+
+const { s } = Astro.props
+const url = `https://fleetdesk.fr/secteurs/${s.slug}`
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: s.faq.map(f => ({
+    '@type': 'Question', name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+}
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://fleetdesk.fr/' },
+    { '@type': 'ListItem', position: 2, name: 'Secteurs', item: 'https://fleetdesk.fr/secteurs' },
+    { '@type': 'ListItem', position: 3, name: s.nav, item: url },
+  ],
+}
+const others = SECTEURS.filter(o => o.slug !== s.slug)
+---
+<Layout title={s.title} description={s.description} jsonLd={[faqSchema, breadcrumb]}>
+  <Navbar client:load currentPath="/secteurs" />
+
+  <section class="bg-white border-b border-zinc-100 pt-20 pb-16">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <nav class="text-xs text-zinc-500 mb-8 flex items-center gap-1.5" aria-label="Fil d'ariane">
+        <a href="/" class="hover:text-[#0066FF]">Accueil</a><span>/</span>
+        <a href="/secteurs" class="hover:text-[#0066FF]">Secteurs</a><span>/</span>
+        <span class="text-zinc-600">{s.nav}</span>
+      </nav>
+      <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-4">{s.nav}</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-semibold text-zinc-900 tracking-tight leading-[1.05] max-w-3xl mb-6">
+        {s.h1}
+      </h1>
+      <p class="text-lg text-zinc-600 max-w-2xl leading-relaxed mb-8">{s.intro}</p>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a href="/souscrire/pro" class="inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
+          Essayer 14 jours gratuitement
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="/pricing" class="inline-flex items-center justify-center text-sm font-medium text-zinc-600 hover:text-zinc-900 px-6 py-3">Voir les tarifs</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Problèmes du secteur -->
+  <section class="py-16 sm:py-20 bg-zinc-50 border-b border-zinc-100">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-10 max-w-2xl leading-tight">
+        Ce qui coûte du temps et de l'argent dans ce métier
+      </h2>
+      <div class="grid md:grid-cols-2 gap-5">
+        {s.pains.map(p => (
+          <div class="bg-white border border-zinc-200 rounded-2xl p-6">
+            <h3 class="font-display text-lg font-semibold text-zinc-900 mb-2 leading-snug">{p.title}</h3>
+            <p class="text-sm text-zinc-600 leading-relaxed">{p.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Ce que fait FleetDesk -->
+  <section class="py-16 sm:py-20 border-b border-zinc-100">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-4 leading-tight">
+        Ce que FleetDesk suit pour vous
+      </h2>
+      <p class="text-zinc-600 leading-relaxed mb-8">
+        À l'inscription, vous déclarez votre secteur : FleetDesk active les modules pertinents et masque les autres.
+        Vous gardez la main depuis les paramètres.
+      </p>
+      <ul class="space-y-3">
+        {s.modules.map(m => (
+          <li class="flex gap-3 items-start">
+            <svg class="w-5 h-5 flex-shrink-0 text-[#0066FF] mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            <span class="text-zinc-600 leading-relaxed">{m}</span>
+          </li>
+        ))}
+      </ul>
+      <p class="text-sm text-zinc-600 leading-relaxed mt-8">
+        Pour le détail complet des fonctions, voir la page
+        <a href="/features" class="text-[#0066FF] font-medium hover:underline">fonctionnalités</a>,
+        le <a href="/conformite" class="text-[#0066FF] font-medium hover:underline">centre de conformité</a>
+        ou notre guide sur le <a href="/logiciel-gestion-de-flotte" class="text-[#0066FF] font-medium hover:underline">choix d'un logiciel de gestion de flotte</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="py-16 sm:py-20 border-b border-zinc-100">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-8">Questions fréquentes</h2>
+      <div class="divide-y divide-zinc-100 border-t border-zinc-100">
+        {s.faq.map(f => (
+          <div class="py-6">
+            <h3 class="font-semibold text-zinc-900 mb-2">{f.q}</h3>
+            <p class="text-sm text-zinc-600 leading-relaxed">{f.a}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Guides + autres secteurs -->
+  <section class="py-16 sm:py-20">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-12">
+      <div>
+        <h2 class="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-4">Guides utiles</h2>
+        <div class="divide-y divide-zinc-100 border-t border-zinc-100">
+          {s.guides.map(g => (
+            <a href={g.href} class="flex items-center justify-between py-4 group">
+              <span class="text-sm font-medium text-zinc-800 group-hover:text-[#0066FF] transition-colors">{g.title}</span>
+              <svg class="w-4 h-4 text-zinc-400 group-hover:text-[#0066FF] transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h2 class="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-4">Autres secteurs</h2>
+        <div class="divide-y divide-zinc-100 border-t border-zinc-100">
+          {others.map(o => (
+            <a href={`/secteurs/${o.slug}`} class="flex items-center justify-between py-4 group">
+              <span class="text-sm font-medium text-zinc-800 group-hover:text-[#0066FF] transition-colors">{o.nav}</span>
+              <svg class="w-4 h-4 text-zinc-400 group-hover:text-[#0066FF] transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CTASection />
+  <Footer />
+</Layout>

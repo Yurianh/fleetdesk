@@ -1,0 +1,317 @@
+---
+import Layout from '../layouts/Layout.astro'
+import Navbar from '../components/Navbar.jsx'
+import CTASection from '../components/CTASection.astro'
+import Footer from '../components/Footer.astro'
+
+const APP_URL = 'https://app.fleetdesk.fr'
+
+const criteria = [
+  {
+    title: 'Le calcul automatique des échéances',
+    desc: "Saisir une date de contrôle technique ne sert à rien si l'outil ne calcule pas la suivante. C'est le minimum vital : à partir du dernier contrôle et de la catégorie du véhicule, la prochaine échéance doit apparaître seule.",
+  },
+  {
+    title: "L'alerte avant l'expiration",
+    desc: "Un logiciel qui affiche une liste ne vaut pas mieux qu'un tableur. Ce qui change tout, c'est d'être prévenu 30 jours avant, avec les véhicules triés par urgence.",
+  },
+  {
+    title: 'Le stockage des justificatifs',
+    desc: "Procès-verbal de contrôle, carte grise, attestation d'assurance, permis : chaque document doit être rattaché au véhicule ou au conducteur concerné, en accès restreint, pas dans un dossier partagé.",
+  },
+  {
+    title: 'La saisie par le terrain',
+    desc: "Le kilométrage relevé par le gestionnaire trois fois par an est faux. Vos conducteurs doivent pouvoir saisir depuis leur téléphone, sans voir le reste de la flotte.",
+  },
+  {
+    title: 'Le coût réel par véhicule',
+    desc: "Entretiens, réparations, pleins : rattachés au véhicule, ils permettent enfin de comparer, d'arbitrer un renouvellement et de calculer un coût kilométrique.",
+  },
+  {
+    title: 'Un démarrage en minutes, pas en semaines',
+    desc: "Une PME n'a ni chef de projet ni budget d'intégration. Si l'outil demande une formation, une migration et un déploiement, il n'est pas fait pour une flotte de 10 véhicules.",
+  },
+]
+
+const compare = [
+  {
+    name: 'Le tableur',
+    fit: 'Jusqu\'à 3 ou 4 véhicules, un seul gestionnaire',
+    limit: 'Ne prévient personne, versions divergentes, documents ailleurs, données conducteurs mal protégées',
+  },
+  {
+    name: 'La télématique embarquée (boîtiers GPS)',
+    fit: 'Optimisation de tournées, géolocalisation temps réel, éco-conduite',
+    limit: 'Coût par boîtier et installation, orientée déplacement plus que conformité administrative',
+  },
+  {
+    name: 'La suite de gestion de flotte grand compte',
+    fit: 'Parcs de plusieurs centaines de véhicules, équipe dédiée',
+    limit: 'Paramétrage lourd, tarification élevée, fonctions largement inutilisées sous 50 véhicules',
+  },
+  {
+    name: 'Un outil de flotte pour PME',
+    fit: 'De 5 à 100 véhicules, un gestionnaire qui a dix autres métiers',
+    limit: 'Ne remplace pas un TMS ni une solution de géolocalisation temps réel',
+  },
+]
+
+const faq = [
+  {
+    q: "Qu'est-ce qu'un logiciel de gestion de flotte ?",
+    a: "C'est un outil qui centralise les véhicules d'une entreprise, leurs conducteurs, leurs documents et leurs échéances réglementaires. Il calcule les dates d'expiration (contrôle technique, assurance, permis, visite médicale), alerte avant échéance, conserve les justificatifs et suit les coûts par véhicule.",
+  },
+  {
+    q: "À partir de combien de véhicules faut-il un logiciel de flotte ?",
+    a: "En pratique, à partir de 5 véhicules, ou dès que deux personnes interviennent sur le suivi. En dessous, un tableur bien tenu suffit ; au-delà, le nombre d'échéances indépendantes dépasse ce qu'un suivi manuel peut absorber sans oubli.",
+  },
+  {
+    q: "Quelle différence entre un logiciel de gestion de flotte et un boîtier de géolocalisation ?",
+    a: "Le boîtier télématique renseigne sur le déplacement du véhicule : position, trajets, conduite. Le logiciel de gestion de flotte gère la vie administrative et économique du parc : documents, échéances réglementaires, entretien, coûts. Les deux se complètent, mais ne répondent pas au même besoin.",
+  },
+  {
+    q: "Combien coûte un logiciel de gestion de flotte pour une PME ?",
+    a: "Les offres pour PME se situent généralement entre quelques euros et quelques dizaines d'euros par mois selon la taille du parc. FleetDesk démarre à 9 € par mois pour 5 véhicules, avec un essai de 14 jours sans carte bancaire sur la formule Pro.",
+  },
+  {
+    q: "Combien de temps faut-il pour mettre en place un outil de gestion de flotte ?",
+    a: "Sur un parc de 10 à 20 véhicules, la saisie initiale prend moins d'une heure : immatriculations, dates d'échéance connues, conducteurs assignés. Les alertes sont actives dès la première saisie, sans paramétrage préalable.",
+  },
+]
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map(item => ({
+    '@type': 'Question', name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+}
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://fleetdesk.fr/' },
+    { '@type': 'ListItem', position: 2, name: 'Logiciel de gestion de flotte', item: 'https://fleetdesk.fr/logiciel-gestion-de-flotte' },
+  ],
+}
+const softwareSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'FleetDesk',
+  applicationCategory: 'BusinessApplication',
+  applicationSubCategory: 'Logiciel de gestion de flotte',
+  operatingSystem: 'Web',
+  inLanguage: 'fr-FR',
+  url: 'https://fleetdesk.fr/logiciel-gestion-de-flotte',
+  offers: {
+    '@type': 'AggregateOffer',
+    lowPrice: '9', highPrice: '79', priceCurrency: 'EUR', offerCount: 3,
+  },
+}
+---
+<Layout
+  title="Logiciel de gestion de flotte automobile pour PME"
+  description="Ce qu'un logiciel de gestion de flotte doit faire : échéances calculées, alertes, documents centralisés, coûts par véhicule. Critères de choix pour une PME."
+  jsonLd={[softwareSchema, faqSchema, breadcrumb]}
+>
+  <Navbar client:load currentPath="/logiciel-gestion-de-flotte" />
+
+  <!-- Hero -->
+  <section class="bg-white border-b border-zinc-100 pt-20 pb-16">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <nav class="text-xs text-zinc-500 mb-8 flex items-center gap-1.5" aria-label="Fil d'ariane">
+        <a href="/" class="hover:text-[#0066FF]">Accueil</a><span>/</span>
+        <span class="text-zinc-600">Logiciel de gestion de flotte</span>
+      </nav>
+      <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-4">Guide d'achat</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-semibold text-zinc-900 tracking-tight leading-[1.05] max-w-3xl mb-6">
+        Logiciel de gestion de flotte : ce qu'il doit vraiment faire
+      </h1>
+      <p class="text-lg text-zinc-600 max-w-2xl leading-relaxed mb-8">
+        Suivre des véhicules n'est pas le problème. Ne rien oublier l'est. Voici les six critères qui séparent un outil
+        utile d'une base de données de plus, et comment choisir selon la taille de votre parc.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a href="/souscrire/pro" class="inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
+          Essayer FleetDesk 14 jours
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="/pricing" class="inline-flex items-center justify-center text-sm font-medium text-zinc-600 hover:text-zinc-900 px-6 py-3">
+          Voir les tarifs
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Définition -->
+  <section class="py-16 sm:py-20 border-b border-zinc-100">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-5 leading-tight">
+        Ce qu'est un logiciel de gestion de flotte
+      </h2>
+      <div class="space-y-4 text-zinc-600 leading-relaxed">
+        <p>
+          Un logiciel de gestion de flotte centralise les véhicules d'une entreprise, leurs conducteurs, leurs documents
+          et leurs échéances. Il remplace le trio classique — un tableur, une boîte mail et la mémoire du gestionnaire —
+          par une source unique qui calcule et qui prévient.
+        </p>
+        <p>
+          Le mot « flotte » recouvre des réalités très différentes. Une société de transport de 80 poids lourds, une
+          entreprise de BTP avec 15 utilitaires et un artisan avec 4 fourgons n'ont ni les mêmes obligations ni le même
+          budget. C'est pourquoi les outils du marché se répartissent en familles distinctes, détaillées plus bas.
+        </p>
+        <p>
+          Le point commun à toutes les flottes : chaque véhicule porte plusieurs dates d'expiration indépendantes
+          (contrôle technique, assurance, carte grise à jour), chaque conducteur aussi (permis, visite médicale,
+          formations). Sur 15 véhicules et 12 conducteurs, cela fait plus d'une centaine de dates à surveiller. Aucune
+          organisation ne tient ce rythme à la main sur la durée.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Critères -->
+  <section class="py-16 sm:py-20 bg-zinc-50 border-b border-zinc-100">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <div class="max-w-2xl mb-12">
+        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Critères de choix</p>
+        <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-4 leading-tight">
+          Les six fonctions qui font la différence
+        </h2>
+        <p class="text-zinc-600 leading-relaxed">
+          Toutes les solutions affichent une liste de véhicules. Ce qui les sépare tient à ces six points — à vérifier
+          pendant l'essai, pas sur la page tarifs.
+        </p>
+      </div>
+      <div class="grid md:grid-cols-2 gap-5">
+        {criteria.map((c, i) => (
+          <div class="bg-white border border-zinc-200 rounded-2xl p-6">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#E5EEFF] text-[#0066FF] text-xs font-semibold mb-4">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <h3 class="font-display text-lg font-semibold text-zinc-900 mb-2 leading-snug">{c.title}</h3>
+            <p class="text-sm text-zinc-600 leading-relaxed">{c.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparatif des approches -->
+  <section class="py-16 sm:py-20 border-b border-zinc-100">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <div class="max-w-2xl mb-10">
+        <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-4 leading-tight">
+          Quatre approches, quatre tailles de flotte
+        </h2>
+        <p class="text-zinc-600 leading-relaxed">
+          Le mauvais choix n'est pas le mauvais logiciel : c'est le logiciel prévu pour une autre taille de parc.
+        </p>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse min-w-[640px]">
+          <thead>
+            <tr class="border-b border-zinc-200">
+              <th class="text-left font-semibold text-zinc-900 py-3 pr-4">Approche</th>
+              <th class="text-left font-semibold text-zinc-900 py-3 pr-4">Pertinente pour</th>
+              <th class="text-left font-semibold text-zinc-900 py-3">Sa limite</th>
+            </tr>
+          </thead>
+          <tbody>
+            {compare.map(row => (
+              <tr class="border-b border-zinc-100 align-top">
+                <td class="py-4 pr-4 font-medium text-zinc-900">{row.name}</td>
+                <td class="py-4 pr-4 text-zinc-600">{row.fit}</td>
+                <td class="py-4 text-zinc-600">{row.limit}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="text-sm text-zinc-600 leading-relaxed mt-6 max-w-2xl">
+        FleetDesk se place délibérément dans la quatrième ligne : la conformité et le pilotage d'un parc de PME, sans
+        boîtier à installer ni projet de déploiement. Pour le détail des fonctions, voir la page
+        <a href="/features" class="text-[#0066FF] font-medium hover:underline">fonctionnalités</a> et le
+        <a href="/conformite" class="text-[#0066FF] font-medium hover:underline">centre de conformité</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- Par secteur -->
+  <section class="py-16 sm:py-20 bg-zinc-50 border-b border-zinc-100">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <div class="max-w-2xl mb-10">
+        <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-4 leading-tight">
+          Les besoins changent selon le métier
+        </h2>
+        <p class="text-zinc-600 leading-relaxed">
+          Un transporteur surveille la licence et la FCO ; une entreprise de BTP surveille les affectations de chantier
+          et l'usure. FleetDesk s'adapte au secteur déclaré à l'inscription.
+        </p>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { t: 'Transport routier', h: '/secteurs/transport-routier' },
+          { t: 'BTP et travaux', h: '/secteurs/btp' },
+          { t: 'VTC et taxi', h: '/secteurs/vtc-taxi' },
+          { t: 'Véhicules de société', h: '/secteurs/vehicules-de-societe' },
+        ].map(s => (
+          <a href={s.h} class="group bg-white border border-zinc-200 rounded-xl px-5 py-4 flex items-center justify-between hover:border-[#0066FF]/40 transition-colors">
+            <span class="text-sm font-medium text-zinc-800 group-hover:text-[#0066FF] transition-colors">{s.t}</span>
+            <svg class="w-4 h-4 text-zinc-400 group-hover:text-[#0066FF] transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Mise en place -->
+  <section class="py-16 sm:py-20 border-b border-zinc-100">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-6 leading-tight">
+        Passer du tableur à l'outil : la méthode en 4 étapes
+      </h2>
+      <ol class="space-y-5">
+        {[
+          ['Reprendre l\'inventaire', 'Immatriculation, modèle, date de première mise en circulation, kilométrage actuel. C\'est la seule saisie vraiment manuelle, et elle prend quelques minutes par véhicule.'],
+          ['Saisir les dernières échéances connues', 'Date du dernier contrôle technique, échéance d\'assurance, documents conducteurs. L\'outil en déduit les prochaines dates.'],
+          ['Assigner les conducteurs', 'Chaque véhicule à son conducteur, pour savoir qui roule avec quoi le jour du contrôle.'],
+          ['Ouvrir les accès terrain', 'Les chauffeurs saisissent kilométrage et pleins depuis leur téléphone ; vous arrêtez de courir après l\'information.'],
+        ].map(([t, d], i) => (
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-8 h-8 rounded-lg bg-[#E5EEFF] text-[#0066FF] text-sm font-semibold flex items-center justify-center">{i + 1}</span>
+            <div>
+              <h3 class="font-semibold text-zinc-900 mb-1">{t}</h3>
+              <p class="text-sm text-zinc-600 leading-relaxed">{d}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <p class="text-sm text-zinc-600 leading-relaxed mt-8">
+        Vous préférez structurer vos données avant de changer d'outil ? Notre
+        <a href="/outils/modele-suivi-parc-automobile-excel" class="text-[#0066FF] font-medium hover:underline">modèle de suivi de parc automobile</a>
+        donne la bonne base de colonnes, et ce guide explique
+        <a href="/guides/gestion-parc-automobile-excel" class="text-[#0066FF] font-medium hover:underline">où le tableur finit par casser</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="py-16 sm:py-20">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-8">Questions fréquentes</h2>
+      <div class="divide-y divide-zinc-100 border-t border-zinc-100">
+        {faq.map(f => (
+          <div class="py-6">
+            <h3 class="font-semibold text-zinc-900 mb-2">{f.q}</h3>
+            <p class="text-sm text-zinc-600 leading-relaxed">{f.a}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CTASection />
+  <Footer />
+</Layout>

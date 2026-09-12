@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import Navbar from '../../components/Navbar.jsx'
+import CTASection from '../../components/CTASection.astro'
+import Footer from '../../components/Footer.astro'
+import { SECTEURS } from '../../data/secteurs.js'
+
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  itemListElement: SECTEURS.map((s, i) => ({
+    '@type': 'ListItem', position: i + 1, name: s.nav, url: `https://fleetdesk.fr/secteurs/${s.slug}`,
+  })),
+}
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://fleetdesk.fr/' },
+    { '@type': 'ListItem', position: 2, name: 'Secteurs', item: 'https://fleetdesk.fr/secteurs' },
+  ],
+}
+---
+<Layout
+  title="Gestion de flotte par secteur d'activité"
+  description="Transport routier, BTP, VTC et taxi, véhicules de société : les obligations et les besoins d'un parc changent avec le métier. FleetDesk s'adapte au vôtre."
+  jsonLd={[itemList, breadcrumb]}
+>
+  <Navbar client:load currentPath="/secteurs" />
+
+  <section class="bg-white border-b border-zinc-100 pt-20 pb-16">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-4">Secteurs</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-semibold text-zinc-900 tracking-tight leading-[1.05] max-w-2xl mb-5">
+        Chaque métier a ses échéances.
+      </h1>
+      <p class="text-lg text-zinc-600 max-w-2xl leading-relaxed">
+        Un transporteur surveille la licence et la qualification de ses conducteurs. Une entreprise de BTP surveille
+        l'usure et les affectations de chantier. FleetDesk active les modules utiles à votre activité et masque le reste.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-16 sm:py-20">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 grid sm:grid-cols-2 gap-5">
+      {SECTEURS.map(s => (
+        <a href={`/secteurs/${s.slug}`} class="group flex flex-col border border-zinc-200 rounded-2xl p-6 hover:border-[#0066FF]/40 hover:shadow-sm transition-all">
+          <h2 class="font-display text-lg font-semibold text-zinc-900 tracking-tight leading-snug mb-2 group-hover:text-[#0066FF] transition-colors">{s.h1}</h2>
+          <p class="text-sm text-zinc-600 leading-relaxed flex-1">{s.intro}</p>
+          <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0066FF] mt-4">
+            Voir la page {s.nav.toLowerCase()}
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <CTASection />
+  <Footer />
+</Layout>
