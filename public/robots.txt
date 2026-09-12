@@ -1,0 +1,4 @@
+# Application FleetDesk (app.fleetdesk.fr) — interface authentifiée, rien à indexer.
+# Le contenu public/SEO vit sur https://fleetdesk.fr
+User-agent: *
+Disallow: /
