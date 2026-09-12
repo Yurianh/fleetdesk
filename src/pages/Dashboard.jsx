@@ -1093,7 +1093,7 @@ export default function Dashboard() {
       <AssignDriverDialog open={showAssign} onClose={() => setShowAssign(false)} />
 
       {/* ── Main content ─────────────────────────────────────────── */}
-      <div className="flex-1 p-5 sm:p-8 min-w-0">
+      <div className="app-stagger flex-1 p-5 sm:p-8 min-w-0">
 
         {/* Header */}
         <div className="flex flex-wrap items-start gap-3 justify-between mb-6">
@@ -1226,7 +1226,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── Right panel ──────────────────────────────────────────── */}
-      <div className="xl:w-80 flex-shrink-0 p-4 sm:p-7 xl:pl-0 flex flex-col gap-5">
+      <div className="app-stagger xl:w-80 flex-shrink-0 p-4 sm:p-7 xl:pl-0 flex flex-col gap-5">
 
         {/* Fleet summary card */}
         <div className="bg-white border border-zinc-100 rounded-xl p-5">

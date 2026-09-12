@@ -16,8 +16,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useCan } from '@/lib/capabilities'
 import UpgradePrompt from '@/components/shared/UpgradePrompt'
 import { ACTIVITIES, MODULES, activityDefaults, useFeatures } from '@/lib/activity'
-import { SlidersHorizontal, Briefcase } from 'lucide-react'
+import { SlidersHorizontal, Briefcase, Wand2 } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
+import { useMotionSetting } from '@/lib/motion'
 
 const SECTIONS = [
   { id: 'profile',  icon: User,          labelKey: 'settings.profile' },
@@ -25,6 +26,7 @@ const SECTIONS = [
   { id: 'team',     icon: Users,      labelKey: 'settings.team' },
   { id: 'modules',  icon: SlidersHorizontal, label: 'Modules' },
   { id: 'plan',     icon: CreditCard, labelKey: 'settings.plan' },
+  { id: 'display',  icon: Wand2,      label: 'Affichage' },
   { id: 'language', icon: Globe,      labelKey: 'settings.language' },
   { id: 'account',  icon: Shield,     labelKey: 'settings.account' },
 ]
@@ -92,6 +94,8 @@ export default function Settings() {
   }
 
   const [searchParams] = useSearchParams()
+  const { enabled: motionOn, setMotion, systemReduced } = useMotionSetting()
+
   const [section, setSection] = useState(() => {
     const s = searchParams.get('section')
     return SECTIONS.some(x => x.id === s) ? s : 'profile'
@@ -305,6 +309,38 @@ export default function Settings() {
                   </div>
                 </>
               )}
+            </div>
+          )}
+
+          {section === 'display' && (
+            <div className="space-y-4">
+              <div className="bg-white border border-zinc-200 rounded-xl p-5">
+                <h2 className="text-sm font-semibold text-zinc-900 mb-1 flex items-center gap-2">
+                  <Wand2 className="w-4 h-4 text-[#0066FF]" /> Animations
+                </h2>
+                <p className="text-xs text-zinc-500 mb-4">
+                  À chaque changement d'écran, la page et ses cartes se posent en fondu. Purement visuel : rien ne
+                  change dans vos données ni dans la vitesse de chargement.
+                </p>
+
+                <div className="flex items-center justify-between gap-4 py-3.5 border-t border-zinc-100">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-zinc-900">Animations d'arrivée</p>
+                    <p className="text-xs text-zinc-500">
+                      {motionOn
+                        ? 'Les écrans se posent en fondu à l\'ouverture.'
+                        : 'Les écrans s\'affichent instantanément, sans transition.'}
+                    </p>
+                  </div>
+                  <Switch checked={motionOn} onCheckedChange={setMotion} />
+                </div>
+
+                <p className="text-xs text-zinc-500 pt-3 border-t border-zinc-100">
+                  {systemReduced
+                    ? 'Votre système demande moins d\'animations : elles sont désactivées par défaut. Votre choix ici prime.'
+                    : 'Réglage propre à cet appareil, conservé dans ce navigateur.'}
+                </p>
+              </div>
             </div>
           )}
 

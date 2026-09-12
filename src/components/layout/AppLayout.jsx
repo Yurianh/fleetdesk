@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import Sidebar from './Sidebar'
 import AppLoader from './AppLoader'
@@ -26,6 +26,7 @@ function TourReadyBridge({ ready }) {
 
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const location = useLocation()
   const [loaderFading, setLoaderFading] = useState(false)
   const [loaderGone, setLoaderGone] = useState(false)
   const mountedAt = useRef(Date.now())
@@ -78,7 +79,10 @@ export default function AppLayout() {
           <main className="flex-1 overflow-y-auto bg-background">
             <BillingBanner />
             <TrialBanner />
-            <Outlet />
+            {/* La clé de route relance l'atterrissage à chaque changement d'écran. */}
+            <div key={location.pathname} className="app-enter">
+              <Outlet />
+            </div>
           </main>
         </div>
       </div>

@@ -113,9 +113,38 @@ masquage réactivable.
 - [x] **T-S01** — Layout : `robots` meta, `og:url`, `og:image`, `og:locale`, `twitter:image`, canonical propre + prop `jsonLd` (rendu `application/ld+json`). _(2026-09-05)_
 - [x] **T-S02** — `robots.txt` + `sitemap.xml` statique (6 pages) dans `public/`. _(2026-09-05)_
 - [x] **T-S03** — JSON-LD : Organization + SoftwareApplication + FAQPage (home) ; FAQPage + BreadcrumbList (conformité) → éligible rich results. _(2026-09-05)_
-- [ ] **T-S04** — (suivi) Vraie image OG 1200×630 (`/og-image.png`) au lieu du logo. Mettre à jour `sitemap.xml` à chaque nouvelle page.
+- [x] **T-S04** — Image OG 1200×630 (`/og-default.png`) générée et posée par défaut dans `Layout` (+ `og:image:width/height`). Sitemap désormais généré automatiquement (T-S08). _(2026-09-12)_
 - [x] **T-S05** — Cluster contenu conformité : hub `/guides` + 3 articles (CT flotte, documents conducteur, assurance flotte) via `GuideLayout` (schema Article + FAQPage + BreadcrumbList), liens internes croisés (pilier ↔ articles ↔ hub), lien footer site-wide, sitemap MAJ. _(2026-09-05)_
-- [ ] **T-S06** — (suivi) Soumettre `sitemap.xml` (apex, pas www) dans Search Console + étendre le cluster (nouveaux sujets) selon les mots-clés qui performent.
+- [ ] **T-S06** — Soumettre `https://fleetdesk.fr/sitemap-index.xml` dans Search Console (apex, pas www) + demander l'indexation des 10 pages neuves. _(côté Julian)_
+- [x] **T-S07** — Bug titres : `<title>` cumulait deux fois « · FleetDesk » (`Conformité · FleetDesk · FleetDesk` en SERP). Suffixe dédupliqué dans `Layout`, titres > 60 caractères raccourcis, descriptions ramenées à 150-160. _(2026-09-12)_
+- [x] **T-S08** — Sitemap automatique : intégration `@astrojs/sitemap` (épinglée 3.2.1, compatible Astro 4) avec filtre (`/souscrire`, `/legal` exclus) et priorités par type de page. `public/sitemap.xml` manuel supprimé, `robots.txt` pointe sur `sitemap-index.xml`, redirection 301 de l'ancienne URL. _(2026-09-12)_
+- [x] **T-S09** — App hors index : `public/robots.txt` (`Disallow: /`) + `noindex, nofollow` et canonical vers le site public dans `index.html`. Le rewrite SPA `/(.*)` exposait des pages fantômes indexables. _(2026-09-12)_
+- [x] **T-S10** — Guides en collection de contenu (`src/content/guides` + `config.ts` + route `[...slug]`) : publier un guide = 1 fichier `.md`. Hub `/guides` et sitemap générés depuis la collection. Bloc « Sources officielles » et dates ISO ajoutés au `GuideLayout`. _(2026-09-12)_
+- [x] **T-S11** — Page pilier `/logiciel-gestion-de-flotte` (requête money) : définition, 6 critères de choix, comparatif des 4 approches, méthode de migration, FAQ, schema SoftwareApplication + FAQPage + BreadcrumbList. _(2026-09-12)_
+- [x] **T-S12** — Pages secteur `/secteurs` + 4 pages (transport routier, BTP, VTC/taxi, véhicules de société), alignées sur les secteurs proposés à l'inscription (`src/lib/activity.js`). _(2026-09-12)_
+- [x] **T-S13** — 4 nouveaux guides : contrôle technique expiré (sanctions), coût de revient kilométrique, parc automobile sur Excel, carte grise d'entreprise. Les 3 guides existants enrichis et migrés en `.md`. _(2026-09-12)_
+- [x] **T-S14** — Aimant à liens `/outils/modele-suivi-parc-automobile-excel` : fichier `.xlsx` généré (4 onglets, échéances en couleur, mode d'emploi), téléchargement direct sans formulaire. _(2026-09-12)_
+- [x] **T-S15** — Maillage interne : navbar (Secteurs, Guides), footer restructuré en 5 colonnes, bloc « Pour aller plus loin » sur la home, liens croisés guides ↔ secteurs ↔ pilier. _(2026-09-12)_
+- [x] **T-S16** — Données structurées complétées : Product + Offer + FAQPage sur `/pricing`, BreadcrumbList sur `/features`, ItemList sur `/guides` et `/secteurs`. _(2026-09-12)_
+- [x] **T-S17** — `marketing/SEO.md` : architecture de contenu, procédure de publication d'un guide, mots-clés couverts, prochain lot éditorial, actions Search Console. _(2026-09-12)_
+- [ ] **T-S18** — Lot suivant (2 guides/mois) : entretien préventif, TCO, temps de conduite et repos, ZFE. Comparatifs concurrents repoussés tant que le produit manque de recul client.
+
+---
+
+## Phase D — Design du site (unification visuelle)
+
+- [x] **T-D01** — Jeu d'icônes unique `marketing/src/lib/icons.js` + composant `Icon.astro` : mêmes icônes que l'app (lucide, trait 1,75), fini les SVG collés à la main avec des traits de 2 à 2,5. Home, fonctionnalités et conformité migrées. _(2026-09-12)_
+- [x] **T-D02** — Maquette de la home refaite à l'identique de l'écran Tableau de bord réel : navigation (Flotte / Opérations + compte), actions rapides, bandeau de chiffres, utilisation des véhicules, activité récente, carte flotte, centre d'alertes groupé. _(2026-09-12)_
+- [x] **T-D03** — Le rouge « danger » sort du site : états critiques en ambre hiérarchisé (ambre plein → ambre clair → neutre), cartes « problèmes » en neutre sobre. Plus aucune classe `red-*` / `orange-*` dans `marketing/src`. _(2026-09-12)_
+- [x] **T-D04** — Contraste : tous les gris de texte remontés d'un cran (`zinc-400` → `500`, `500` → `600`), ambre et émeraude passés en 700/800 sur fonds pâles. `text-zinc-400` (2,8:1 sur blanc) ne porte plus de texte. _(2026-09-12)_
+- [x] **T-D05** — Tableaux des guides en pleine largeur, listes numérotées stylées, emoji retirés des maquettes (👋, ⚠). _(2026-09-12)_
+- [x] **T-D07** — Révélation cinématique de la maquette : l'écran arrive incliné (rotateX 10°), flou et décalé, se redresse en 1,4 s, puis le contenu se pose en cascade (navigation → en-tête → chiffres → barres qui se remplissent → alertes une à une), halo bleu et balayage lumineux. 100 % CSS (`global.css`) : la première version passait par IntersectionObserver et laissait la zone vide ~1 s le temps de l'hydratation React. Neutralisé sous `prefers-reduced-motion`. _(2026-09-12)_
+- [x] **T-D08** — Version longue de la révélation : le texte du hero se pose ligne par ligne (80 → 840 ms), puis l'écran vide monte et se redresse (900 ms → 3,1 s), puis se remplit — navigation, chiffres, barres, alertes — pour finir vers 4,2 s, balayage lumineux compris. _(2026-09-12)_
+- [x] **T-D09** — Chorégraphie d'atterrissage sur tout le site : `src/scripts/motion.js` marque le bloc de titre puis les cartes de chaque `section` (et du pied de page) et les révèle à l'entrée dans le champ, décalage 90 ms, plafonné à 560 ms. Fondu de page au chargement, barre de navigation en fondu simple (sticky : pas de translate). L'état caché est conditionné à `html.js-motion`, posé par un script inline en `<head>` : sans JS, ou sous `prefers-reduced-motion`, la page reste entièrement visible. _(2026-09-12)_
+- [x] **T-D10** — Chorégraphie d'atterrissage dans l'app : `src/lib/motion.js` (classe `motion-on` sur `<html>`, posée avant le premier rendu dans `main.jsx`), keyframes dans `index.css`. Le contenu de route se rejoue à chaque changement d'écran (clé `location.pathname` dans `AppLayout`), et le tableau de bord enchaîne ses blocs (`app-stagger` sur la colonne principale et le rail droit). Pas d'inline script : la CSP de l'app est en `script-src 'self'`. _(2026-09-12)_
+- [x] **T-D11** — Réglages › **Affichage** : interrupteur « Animations d'arrivée ». Par défaut activé, sauf si le système demande moins d'animations ; un choix explicite prime dans les deux sens. Stocké par appareil (`localStorage: fd-motion`). _(2026-09-12)_
+- [x] **T-D12** — Parallaxe au survol de la maquette marketing : l'écran s'incline vers le curseur (±3,2° / ±2,4°), le halo glisse en sens inverse, inertie par `requestAnimationFrame`. Calques séparés (`.reveal-tilt`, `.reveal-depth`) pour ne pas entrer en conflit avec les `transform` des animations d'arrivée. Inactif au toucher et sous `prefers-reduced-motion`. _(2026-09-12)_
+- [ ] **T-D06** — (suivi) Passer la même grille de contraste sur l'app (`text-zinc-400` massivement utilisé dans `src/pages`), pour que produit et site restent alignés.
 
 ---
 

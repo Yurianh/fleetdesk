@@ -12,6 +12,11 @@ import App from '@/App.jsx'
 import ErrorBoundary from '@/components/shared/ErrorBoundary'
 import '@/index.css'
 import '@/lib/i18n'  // initialise i18next before rendering
+import { initMotion } from '@/lib/motion'
+
+// Pose la classe `motion-on` avant le premier rendu : aucune animation ne part
+// si l'utilisateur les a désactivées dans les réglages.
+initMotion()
 
 // Surface uncaught errors and rejected promises to the console — visible in the
 // browser and captured by Vercel logs. Kept lightweight (no external reporter).
