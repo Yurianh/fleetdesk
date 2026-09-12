@@ -148,7 +148,7 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
   }, [ranked, vehicles, months, vehicleMonthlyKm, fleetTotal])
 
   return (
-    <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm mb-8">
+    <div data-land className="bg-white rounded-xl p-4 sm:p-6 shadow-sm mb-8">
       <div data-land className="flex flex-wrap items-start justify-between gap-3 mb-3">
         <div>
           <h2 className="text-base font-bold text-zinc-900">Utilisation des véhicules</h2>
@@ -1167,7 +1167,7 @@ export default function Dashboard() {
         <div className="xl:hidden mb-8">{alertCenter}</div>
 
         {/* Stat cards */}
-        <div className="flex flex-col sm:flex-row bg-white border border-zinc-100 rounded-xl overflow-hidden mb-8">
+        <div data-land className="flex flex-col sm:flex-row bg-white border border-zinc-100 rounded-xl overflow-hidden mb-8">
           {statCards.map(({ label, sub, value, icon: Icon }, idx) => (
             <div key={label} data-land className={`flex-1 px-5 py-5 min-w-0 ${idx < statCards.length - 1 ? 'border-b sm:border-b-0 sm:border-r border-zinc-100' : ''}`}>
               <p className="text-xs font-medium text-zinc-400 mb-3">{label}</p>
@@ -1188,7 +1188,7 @@ export default function Dashboard() {
         )}
 
         {/* ── Activity Timeline ────────────────────────────────────── */}
-        <div className="bg-white rounded-xl border border-zinc-100 overflow-hidden">
+        <div data-land className="bg-white rounded-xl border border-zinc-100 overflow-hidden">
           <div data-land className="px-4 sm:px-6 pt-6 pb-4 flex items-center justify-between">
             <div>
               <h2 className="text-xl font-bold text-zinc-900">{t('dashboard.recentActivity')}</h2>

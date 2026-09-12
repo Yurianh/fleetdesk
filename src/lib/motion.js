@@ -74,7 +74,9 @@ export function clearLanding() {
 const LAND_SPREAD = 3200   // étalement total des départs, en ms
 const LAND_EASE = 9        // plus grand = cadence plus régulière
 const LAND_DURATION = 1500 // durée d'entrée d'un élément
+const BAR_DURATION = 1600  // durée de remplissage d'une barre
 const BAR_OFFSET = 240     // les barres se remplissent après leur ligne
+const NEST_GAP = 140       // écart minimal entre une carte et ce qu'elle contient
 
 export function runLanding(root = document) {
   const items = [...root.querySelectorAll('[data-land]')]
@@ -92,12 +94,28 @@ export function runLanding(root = document) {
     el.style.setProperty('--land-delay', `${delay}ms`)
   })
 
-  // Une barre de progression suit sa propre ligne, avec un temps de retard.
-  for (const bar of root.querySelectorAll('[data-land-bar]')) {
-    const owner = bar.closest('[data-land]')
-    const base = owner ? parseInt(owner.style.getPropertyValue('--land-delay'), 10) || 0 : 0
-    bar.style.setProperty('--land-delay', `${base + BAR_OFFSET}ms`)
+  // Un contenu n'entre jamais avant son conteneur : sinon la carte resterait
+  // affichée vide, comme un cadre blanc, le temps que son contenu arrive.
+  const delayOf = el => parseInt(el.style.getPropertyValue('--land-delay'), 10) || 0
+  for (const { el } of placed) {
+    const parent = el.parentElement?.closest('[data-land]')
+    if (!parent) continue
+    const floor = delayOf(parent) + NEST_GAP
+    if (delayOf(el) < floor) el.style.setProperty('--land-delay', `${floor}ms`)
   }
 
-  return LAND_SPREAD + LAND_DURATION
+  // Une barre de progression suit sa propre ligne, avec un temps de retard.
+  let lastBar = 0
+  for (const bar of root.querySelectorAll('[data-land-bar]')) {
+    const owner = bar.closest('[data-land]')
+    const base = owner ? delayOf(owner) : 0
+    bar.style.setProperty('--land-delay', `${base + BAR_OFFSET}ms`)
+    lastBar = Math.max(lastBar, base + BAR_OFFSET)
+  }
+
+  // Durée réelle de la séquence : les retards imbriqués repoussent la fin
+  // au-delà de l'étalement nominal, et l'appelant s'en sert pour savoir quand
+  // retirer la classe — la retirer trop tôt couperait la dernière entrée.
+  const lastItem = placed.reduce((max, { el }) => Math.max(max, delayOf(el)), 0)
+  return Math.max(lastItem + LAND_DURATION, lastBar + BAR_DURATION)
 }
