@@ -182,7 +182,7 @@ export default function Settings() {
               return (
                 <button key={s.id} onClick={() => setSection(s.id)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
-                    section === s.id ? 'bg-slate-900 text-white' : 'text-zinc-500'
+                    section === s.id ? 'bg-[#E5EEFF] text-[#0052D6]' : 'text-zinc-500'
                   }`}>
                   <Icon className="w-3.5 h-3.5" />{s.label ?? t(s.labelKey)}
                 </button>

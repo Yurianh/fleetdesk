@@ -164,13 +164,13 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
             )}
           </p>
         </div>
-        <div className="flex items-center gap-1 bg-zinc-100 rounded-lg p-[3px]">
+        <div className="flex items-center gap-1">
           {RANGE_OPTIONS.map(o => (
             <button
               key={o.v}
               onClick={() => selectPreset(o.v)}
               className={'px-3 py-1 text-xs font-semibold rounded-md transition-all duration-150 ' + (
-                !isCustom && !showCustom && timeRange === o.v ? 'bg-slate-900 text-white' : 'text-zinc-500 hover:text-zinc-700'
+                !isCustom && !showCustom && timeRange === o.v ? 'bg-[#E5EEFF] text-[#0052D6]' : 'text-zinc-500 hover:text-zinc-800'
               )}
             >
               {o.l}
@@ -179,7 +179,7 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
           <button
             onClick={() => setShowCustom(s => !s)}
             className={'px-3 py-1 text-xs font-semibold rounded-md transition-all duration-150 ' + (
-              isCustom || showCustom ? 'bg-slate-900 text-white' : 'text-zinc-500 hover:text-zinc-700'
+              isCustom || showCustom ? 'bg-[#E5EEFF] text-[#0052D6]' : 'text-zinc-500 hover:text-zinc-800'
             )}
           >
             Custom

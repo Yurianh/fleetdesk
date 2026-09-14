@@ -163,13 +163,13 @@ const breadcrumb = {
         <div class="inline-flex bg-white border border-zinc-200 rounded-full p-1 shadow-sm">
           <button
             id="btn-monthly"
-            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 bg-zinc-900 text-white shadow"
+            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 bg-[#E5EEFF] text-[#0052D6]"
           >
             Mensuel
           </button>
           <button
             id="btn-annual"
-            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-zinc-600 hover:text-zinc-700 flex items-center gap-2"
+            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-zinc-600 hover:text-zinc-800 flex items-center gap-2"
           >
             Annuel
             <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">-20%</span>
@@ -292,9 +292,9 @@ const breadcrumb = {
   const totals     = document.querySelectorAll('.annual-total')
 
   function setMonthly() {
-    btnMonthly.classList.add('bg-zinc-900', 'text-white', 'shadow')
+    btnMonthly.classList.add('bg-[#E5EEFF]', 'text-[#0052D6]')
     btnMonthly.classList.remove('text-zinc-600')
-    btnAnnual.classList.remove('bg-zinc-900', 'text-white', 'shadow')
+    btnAnnual.classList.remove('bg-[#E5EEFF]', 'text-[#0052D6]')
     btnAnnual.classList.add('text-zinc-600')
     amounts.forEach(el => {
       el.textContent = el.dataset.monthly
@@ -303,9 +303,9 @@ const breadcrumb = {
   }
 
   function setAnnual() {
-    btnAnnual.classList.add('bg-zinc-900', 'text-white', 'shadow')
+    btnAnnual.classList.add('bg-[#E5EEFF]', 'text-[#0052D6]')
     btnAnnual.classList.remove('text-zinc-600')
-    btnMonthly.classList.remove('bg-zinc-900', 'text-white', 'shadow')
+    btnMonthly.classList.remove('bg-[#E5EEFF]', 'text-[#0052D6]')
     btnMonthly.classList.add('text-zinc-600')
     amounts.forEach(el => {
       el.textContent = el.dataset.annual
