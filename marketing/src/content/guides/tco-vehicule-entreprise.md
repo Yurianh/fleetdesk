@@ -15,7 +15,7 @@ faq:
   - q: "Quelle différence entre le TCO et le coût de revient kilométrique ?"
     a: "Le coût de revient kilométrique (CRK) rapporte les charges annuelles d'un véhicule à son kilométrage annuel : il mesure le coût d'un kilomètre. Le TCO porte sur l'ensemble de la durée de détention du véhicule, achat et revente inclus : il mesure le coût complet d'un véhicule sur sa vie dans la flotte."
   - q: "Faut-il inclure la fiscalité dans le calcul du TCO ?"
-    a: "Oui : la taxe annuelle sur l'affectation des véhicules de tourisme à des fins économiques et, le cas échéant, l'avantage en nature lié à un usage privé pèsent sur le coût réel du véhicule. Ces règles évoluent ; vérifiez les montants applicables auprès des sources officielles avant de les intégrer à votre calcul."
+    a: "Oui : les taxes annuelles sur l'affectation des véhicules de tourisme à des fins économiques — l'une assise sur les émissions de CO2, l'autre sur les émissions de polluants atmosphériques — et, le cas échéant, l'avantage en nature lié à un usage privé pèsent sur le coût réel du véhicule. Ces règles évoluent ; vérifiez les montants applicables auprès des sources officielles avant de les intégrer à votre calcul."
   - q: "Sur quelle durée calculer le TCO d'un véhicule ?"
     a: "Sur la durée réelle de détention prévue ou effective du véhicule, pas sur une année type. Comparer deux TCO n'a de sens que si les durées de détention retenues sont identiques ou ramenées à une même base, par exemple un coût annuel moyen."
 related:
@@ -28,8 +28,8 @@ related:
 sources:
   - label: "Service-Public Entreprendre — Taxes sur l'affectation des véhicules de tourisme à des fins économiques"
     href: "https://entreprendre.service-public.gouv.fr/vosdroits/F22203"
-  - label: "Urssaf — Les avantages en nature (véhicule)"
-    href: "https://www.urssaf.fr/accueil/employeur/cotisations/avantages-en-nature.html"
+  - label: "Urssaf — Évaluation des avantages en nature (dont véhicule)"
+    href: "https://www.urssaf.fr/portail/home/employeur/calculer-les-cotisations/les-elements-a-prendre-en-compte/les-avantages-en-nature/evaluation-des-avantages-en-natu.html"
 ---
 
 ## Ce que mesure le TCO, et pourquoi le CRK ne suffit pas
@@ -56,7 +56,7 @@ Le TCO rassemble des dépenses de nature différente, sur la période de détent
 
 Deux volets fiscaux pèsent sur le TCO d'un véhicule de tourisme détenu ou loué par une entreprise :
 
-- une **taxe annuelle sur l'affectation des véhicules de tourisme à des fins économiques**, assise notamment sur les émissions de CO2 et les émissions polluantes ;
+- **deux taxes annuelles sur l'affectation des véhicules de tourisme à des fins économiques** (ex-TVS) : l'une assise sur les émissions de CO2, l'autre sur les émissions de polluants atmosphériques ;
 - un **avantage en nature** dès que le véhicule est aussi utilisé à titre privé par un salarié, évalué selon un barème forfaitaire ou sur la base des dépenses réelles.
 
 <p class="note">Ces règles et leurs barèmes ont été révisés récemment et continuent d'évoluer d'une année sur l'autre. Ne recopiez pas un taux ou un montant trouvé ailleurs sans vérifier sa date d'application : consultez le portail Service-Public Entreprendre pour la fiscalité du véhicule d'entreprise, et l'Urssaf pour l'avantage en nature véhicule — sources en bas de page.</p>
