@@ -40,6 +40,8 @@ Le coût de revient kilométrique, ou CRK, est le coût complet d'un kilomètre 
 
 Attention à ne pas confondre le CRK avec le barème kilométrique fiscal. Le barème sert à indemniser un salarié qui utilise son véhicule personnel ; le CRK mesure ce que vous coûte votre propre véhicule.
 
+Le CRK se lit sur une base annuelle. Pour raisonner sur l'ensemble de la durée de détention d'un véhicule — achat et revente inclus — voir notre guide sur le [TCO d'un véhicule d'entreprise](/guides/tco-vehicule-entreprise).
+
 ## Les deux familles de charges
 
 ### Les charges fixes
