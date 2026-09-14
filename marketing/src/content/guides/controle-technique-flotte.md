@@ -38,6 +38,8 @@ Le contrôle technique vérifie l'état d'un véhicule au regard de la sécurit�
 
 La nuance qui change tout à l'échelle d'une flotte : chaque véhicule a sa propre date de première mise en circulation, donc sa propre échéance. Dix véhicules, c'est dix calendriers indépendants.
 
+Le contrôle technique constate un état à un instant donné ; il ne remplace pas l'entretien régulier, qui est justement ce qui permet de le passer sans mauvaise surprise. La méthode pour structurer ce suivi est détaillée dans notre guide sur le [plan d'entretien d'un véhicule utilitaire](/guides/plan-entretien-vehicule-utilitaire).
+
 ## Quelle périodicité selon la catégorie
 
 La fréquence dépend de la catégorie et de l'usage du véhicule. Les grandes lignes en France :

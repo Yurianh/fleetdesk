@@ -47,3 +47,5 @@ marketing/.astro/
 # Duplicate files
 src/lib/supabase\ 2.js
 .portal-optout
+.vercel
+.env*
