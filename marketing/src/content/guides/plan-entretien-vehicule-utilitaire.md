@@ -50,7 +50,7 @@ La plupart des plans constructeur fonctionnent sur un principe simple : chaque o
 
 L'usage du véhicule joue aussi sur la vigilance à porter à certains postes, sans changer la règle de fond : se référer au carnet. Un utilitaire qui tracte régulièrement une remorque ou qui roule chargé sur des chantiers sollicite davantage freins, pneumatiques et suspensions qu'un véhicule utilisé pour des livraisons urbaines à vide. Certains constructeurs prévoient d'ailleurs un plan d'entretien renforcé pour les usages classés comme sévères ; là encore, c'est la notice du véhicule qui fait foi, pas une estimation.
 
-Les postes qui reviennent dans la plupart des plans constructeur, sans que leur fréquence soit generalisable :
+Les postes qui reviennent dans la plupart des plans constructeur, sans que leur fréquence soit généralisable :
 
 - vidange moteur et filtre à huile ;
 - filtres à air, à carburant et d'habitacle ;
