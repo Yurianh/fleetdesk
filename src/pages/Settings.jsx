@@ -79,6 +79,7 @@ export default function Settings() {
   // On stocke l'exception, pas le consentement.
   const digestOn = user?.user_metadata?.digest_opt_out !== true
   const [savingDigest, setSavingDigest] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState('')
   const setDigest = async (on) => {
     setSavingDigest(true)
     try {
@@ -146,6 +147,12 @@ export default function Settings() {
   }
 
   async function handleDeleteAccount() {
+    // Deuxième verrou : le bouton est déjà désactivé sans la saisie, mais un
+    // appel direct ne doit pas pouvoir contourner la confirmation.
+    if (deleteConfirmText.trim() !== 'SUPPRIMER') {
+      toast.error('Saisissez SUPPRIMER pour confirmer.')
+      return
+    }
     setSaving(true)
     try {
       const { error } = await supabase.functions.invoke('delete-account')
@@ -761,16 +768,48 @@ export default function Settings() {
                     {t('settings.deleteAccount')}
                   </button>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-zinc-600">{t('settings.confirmDelete')}</span>
-                    <button onClick={() => setConfirmDelete(false)}
-                      className="text-xs font-medium text-zinc-500 border border-zinc-200 rounded-lg px-3 py-1.5 hover:bg-zinc-50 transition-colors">
-                      {t('common.cancel')}
-                    </button>
-                    <button onClick={handleDeleteAccount} disabled={saving} className="text-xs font-medium text-white bg-red-500 hover:bg-red-600 disabled:opacity-50 rounded-lg px-3 py-1.5 transition-colors flex items-center gap-1.5">
-                      {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-                      {t('settings.confirmDeleteBtn')}
-                    </button>
+                  <div className="space-y-3">
+                    {/* Une suppression de compte efface véhicules, conducteurs,
+                        historiques et factures, sans retour possible. Un clic de
+                        confirmation se donne par réflexe : recopier un mot, non. */}
+                    <div className="rounded-lg bg-red-50/60 border border-red-100 px-3 py-2.5">
+                      <p className="text-xs font-semibold text-red-700 mb-1">Cette action est définitive</p>
+                      <ul className="text-xs text-zinc-600 space-y-0.5 list-disc list-inside">
+                        <li>Véhicules, conducteurs et affectations</li>
+                        <li>Kilométrages, entretiens, contrôles techniques et lavages</li>
+                        <li>Documents et justificatifs stockés</li>
+                      </ul>
+                      <p className="text-xs text-zinc-600 mt-1.5">Aucune restauration n'est possible, même en nous contactant.</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs text-zinc-600 mb-1.5">
+                        Pour confirmer, saisissez <span className="font-semibold text-zinc-900">SUPPRIMER</span> ci-dessous.
+                      </label>
+                      <input
+                        type="text"
+                        value={deleteConfirmText}
+                        onChange={e => setDeleteConfirmText(e.target.value)}
+                        placeholder="SUPPRIMER"
+                        autoComplete="off"
+                        spellCheck={false}
+                        className="w-full max-w-xs px-3 py-2 border border-zinc-200 rounded-lg text-sm tracking-wide focus:outline-none focus:ring-2 focus:ring-red-500/25 focus:border-red-300"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => { setConfirmDelete(false); setDeleteConfirmText('') }}
+                        className="text-xs font-medium text-zinc-500 border border-zinc-200 rounded-lg px-3 py-1.5 hover:bg-zinc-50 transition-colors">
+                        {t('common.cancel')}
+                      </button>
+                      <button
+                        onClick={handleDeleteAccount}
+                        disabled={saving || deleteConfirmText.trim() !== 'SUPPRIMER'}
+                        className="text-xs font-medium text-white bg-red-500 hover:bg-red-600 disabled:bg-zinc-300 disabled:cursor-not-allowed rounded-lg px-3 py-1.5 transition-colors flex items-center gap-1.5">
+                        {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                        {t('settings.confirmDeleteBtn')}
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
