@@ -170,7 +170,7 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
               key={o.v}
               onClick={() => selectPreset(o.v)}
               className={'px-3 py-1 text-xs font-semibold rounded-md transition-all duration-150 ' + (
-                !isCustom && !showCustom && timeRange === o.v ? 'bg-zinc-100 text-zinc-700' : 'text-zinc-500 hover:text-zinc-800'
+                !isCustom && !showCustom && timeRange === o.v ? 'bg-[#E5EEFF] text-[#0052D6]' : 'text-zinc-500 hover:text-zinc-800'
               )}
             >
               {o.l}
@@ -179,7 +179,7 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
           <button
             onClick={() => setShowCustom(s => !s)}
             className={'px-3 py-1 text-xs font-semibold rounded-md transition-all duration-150 ' + (
-              isCustom || showCustom ? 'bg-zinc-100 text-zinc-700' : 'text-zinc-500 hover:text-zinc-800'
+              isCustom || showCustom ? 'bg-[#E5EEFF] text-[#0052D6]' : 'text-zinc-500 hover:text-zinc-800'
             )}
           >
             Custom
