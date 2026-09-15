@@ -140,3 +140,35 @@ html.motion-on.is-landing [data-land-bar] {
   from { transform: scaleX(0); }
   to   { transform: none; }
 }
+
+/* ── Atterrissage d'un panneau ──────────────────────────────────────────────
+   Même grammaire que la séquence de connexion, en beaucoup plus court : ici
+   l'animation se rejoue à chaque changement de sélection, plusieurs fois par
+   minute. Une demi-seconde suffit à dire « le contenu a changé » ; au-delà,
+   elle ferait attendre.
+
+   Le retard vient du rang de l'enfant, pas de sa position à l'écran : un
+   panneau est une colonne, l'ordre visuel et l'ordre du DOM coïncident. */
+html.motion-on [data-panel-land] > * {
+  animation: panel-land 460ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+html.motion-on [data-panel-land] > *:nth-child(1) { animation-delay: 0ms }
+html.motion-on [data-panel-land] > *:nth-child(2) { animation-delay: 55ms }
+html.motion-on [data-panel-land] > *:nth-child(3) { animation-delay: 110ms }
+html.motion-on [data-panel-land] > *:nth-child(4) { animation-delay: 165ms }
+html.motion-on [data-panel-land] > *:nth-child(5) { animation-delay: 210ms }
+
+@keyframes panel-land {
+  from { opacity: 0; transform: translateY(9px) scale(0.992) }
+  to   { opacity: 1; transform: none }
+}
+
+/* Les lignes de documents arrivent à leur tour, à l'intérieur de leur carte. */
+html.motion-on [data-panel-land] [data-row-land] {
+  animation: panel-row 380ms cubic-bezier(0.16, 1, 0.3, 1) var(--row-delay, 0ms) both;
+}
+
+@keyframes panel-row {
+  from { opacity: 0; transform: translateX(-6px) }
+  to   { opacity: 1; transform: none }
+}
