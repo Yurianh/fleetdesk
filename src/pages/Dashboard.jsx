@@ -586,7 +586,7 @@ function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, v
                     </div>
                     <div className="space-y-0.5 pb-2">
                       {urgentDocAlerts.map(({ doc, driver, days }) => (
-                        <Link key={doc.id} to={`/Drivers/${driver.id}`} className="flex items-center justify-between px-3 py-1.5 hover:bg-amber-100/50 transition-colors">
+                        <Link key={doc.id} to={`/Drivers/${driver.id}?doc=${encodeURIComponent(doc.type)}`} className="flex items-center justify-between px-3 py-1.5 hover:bg-amber-100/50 transition-colors">
                           <div>
                             <p className="text-xs font-semibold text-zinc-800">{driver.name}</p>
                             <p className="text-xs text-amber-800">
@@ -607,7 +607,7 @@ function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, v
                     </div>
                     <div className="space-y-0.5 pb-2">
                       {warningDocAlerts.map(({ doc, driver, days }) => (
-                        <Link key={doc.id} to={`/Drivers/${driver.id}`} className="flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100/70 transition-colors">
+                        <Link key={doc.id} to={`/Drivers/${driver.id}?doc=${encodeURIComponent(doc.type)}`} className="flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100/70 transition-colors">
                           <div>
                             <p className="text-xs font-semibold text-zinc-800">{driver.name}</p>
                             <p className="text-xs text-zinc-500">

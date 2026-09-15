@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Users, CreditCard, Car, Droplets, Pencil, Check, X, MapPin, Hash, Truck, ChevronRight, ArrowLeftRight, UserMinus, Search, Mail, Cake } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
@@ -39,6 +39,8 @@ export default function DriverDetail() {
   const dateLocale = useDateLocale()
   usePageTitle('Conducteur')
   const { id } = useParams()
+  // Le tableau de bord pointe le document à renouveler : /Drivers/<id>?doc=<type>
+  const [searchParams] = useSearchParams()
   const { data: drivers }     = useDrivers()
   const { data: vehicles }    = useVehicles()
   const { data: assignments } = useAssignments()
@@ -246,7 +248,7 @@ export default function DriverDetail() {
 
       {/* ── Documents ── */}
       <div className="mb-4">
-        <DriverDocuments driverId={id} driver={driver} />
+        <DriverDocuments driverId={id} driver={driver} focusType={searchParams.get('doc')} />
       </div>
 
       {/* ── Chauffeur vehicles ── (Enterprise-only; server-enforced) */}

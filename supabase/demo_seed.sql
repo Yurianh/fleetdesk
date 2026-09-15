@@ -216,13 +216,16 @@ BEGIN
          d.type, CURRENT_DATE - d.ago, CURRENT_DATE + d.left_days,
          now() - (interval '1 day' * d.ago)
   FROM (VALUES
-    ('Sophie Renard', 'medical', 344, 21),
-    ('Sophie Renard', 'permis',  400, 1200),
-    ('Karim Aïssa',   'permis',  300, 1500),
-    ('Karim Aïssa',   'medical', 120, 1700),
-    ('Marc Lefebvre', 'permis',  500, 900),
-    ('Amel Benali',   'permis',  260, 1100),
-    ('Amel Benali',   'sst',     180, 550)
+    ('Sophie Renard', 'visite_medecin',   344, 21),
+    ('Sophie Renard', 'permis_conduire', 400, 1200),
+    ('Karim Aïssa',   'permis_conduire', 300, 1500),
+    ('Karim Aïssa',   'visite_medecin',  120, 1700),
+    ('Marc Lefebvre', 'permis_conduire', 500, 900),
+    ('Amel Benali',   'permis_conduire', 260, 1100),
+    ('Amel Benali',   'formation_sst_psc1', 180, 550),
+    ('Sophie Renard', 'casier_judiciaire',   200, 165),
+    ('Sophie Renard', 'formation_sst_psc1',  400, 330),
+    ('Sophie Renard', 'formation_tpmr',      300, 1500)
   ) AS d(driver, type, ago, left_days);
 
   RAISE NOTICE 'Démonstration prête : % véhicules, % conducteurs.',

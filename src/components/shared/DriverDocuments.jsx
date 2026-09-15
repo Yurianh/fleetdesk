@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { FileText, Pencil, Trash2, X, Check, AlertTriangle, CheckCircle2, Clock, Upload, ExternalLink, Loader2, Plus } from 'lucide-react'
 import { format, differenceInDays, addYears, differenceInYears } from 'date-fns'
 import { fr } from 'date-fns/locale'
@@ -202,9 +202,22 @@ function FileSlot({ label, file, setFile, existingUrl }) {
   )
 }
 
-export default function DriverDocuments({ driverId, driver }) {
+export default function DriverDocuments({ driverId, driver, focusType = null }) {
   const { data: documents = [] } = useDriverDocuments(driverId)
   const queryClient = useQueryClient()
+
+  // Arrivée depuis une alerte : on amène le document à l'écran et on le
+  // souligne quelques secondes. Sans ça, la personne atterrit sur une liste de
+  // sept lignes sans savoir laquelle l'a fait venir.
+  const [highlighted, setHighlighted] = useState(null)
+  useEffect(() => {
+    if (!focusType) return
+    setHighlighted(focusType)
+    const el = document.getElementById(`doc-${focusType}`)
+    el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    const t = setTimeout(() => setHighlighted(null), 4000)
+    return () => clearTimeout(t)
+  }, [focusType])
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editDoc, setEditDoc] = useState(null)
@@ -397,7 +410,13 @@ export default function DriverDocuments({ driverId, driver }) {
     const st = docState(doc)
     const conf = DOC_TYPE_CONFIG[type]
     return (
-      <div key={type} className="flex items-center gap-3 px-5 py-3 hover:bg-slate-50/70 transition-colors group">
+      <div
+        key={type}
+        id={`doc-${type}`}
+        className={`flex items-center gap-3 px-5 py-3 transition-colors duration-500 group ${
+          highlighted === type ? 'bg-amber-50 ring-1 ring-inset ring-amber-200' : 'hover:bg-slate-50/70'
+        }`}
+      >
         <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dotColor[st]}`} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
