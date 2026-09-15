@@ -171,6 +171,13 @@ masquage réactivable.
 
 ---
 
+## Phase V — Vidéo de démonstration
+
+- [x] **T-V01** — Jeu de données de démonstration (`supabase/demo_seed.sql`) : Occitrans Services, 15 véhicules, 12 conducteurs, 12 affectations, 3 relevés kilométriques par véhicule (minimum requis par « Utilisation des véhicules »), entretiens, plannings, lavages et documents conducteurs. Dates **relatives à aujourd'hui** : le script reste valable quel que soit le jour de tournage. Échéances scénarisées — contrôle technique à 5 jours (action immédiate), à 22 jours (à surveiller), visite médicale à 21 jours. Compte passé en Enterprise et emails automatiques coupés pendant la démo. Garde-fou : refuse toute adresse ne contenant pas « demo », et efface avant d'insérer pour être rejouable. _(2026-09-15)_
+- [ ] **T-V02** — Enregistrer la vidéo (script fourni : 4 min 05, trois accroches sectorielles, conclusion commerciale).
+
+---
+
 ## Backlog (proposé, non planifié)
 
 - Vrai témoignage client (T-P02).
