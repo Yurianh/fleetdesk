@@ -139,8 +139,9 @@ masquage réactivable.
 - [x] **T-N06** — Journal unifié : `digest_log` gagne `kind` (`deadline` / `activation` / `activation_click`) et `details` jsonb. Les deux mécanismes lisent et écrivent leur propre cadence sans interférer. Migration `supabase/digest_log_kind.sql`. _(2026-09-15)_
 - [x] **T-N07** — Mesure du clic : le bouton de l'email passe par `/api/activation-click`, qui enregistre puis redirige vers `/Vehicles?missing=ct` — nouveau filtre d'URL qui ouvre la flotte sur les seuls véhicules sans date de contrôle. Requêtes de suivi dans `supabase/analytics/activation.sql`. _(2026-09-15)_
 - [x] **T-N08** — Correction dans `deadline-digest` : la requête sélectionnait `maintenance_schedules.name`, colonne inexistante — elle échouait en silence, donc aucun entretien n'est jamais remonté depuis la mise en service. Remplacée par `notes`. _(2026-09-15)_
-- [ ] **T-N03** — À faire côté Julian : exécuter `supabase/digest_log.sql` dans le SQL Editor, puis poser `CRON_SECRET` (même valeur) dans les variables Supabase **et** Vercel.
-- [ ] **T-N04** — (suivi) Après la première vraie exécution : vérifier le rendu de l'email reçu, et surveiller `digest_log` pour confirmer que la cadence ne devient pas du spam.
+- [x] **T-N03** — Mise en service : `digest_log.sql` et `digest_log_kind.sql` exécutés, `CRON_SECRET` posé côté Supabase et Vercel. _(2026-09-15)_
+- [x] **T-N04** — Validation en production : `deadline-digest` → 6 comptes scannés, 0 envoi (aucune échéance datée). `activation-digest` → 6 scannés, **4 comptes vides ignorés**, **2 éligibles, 2 emails envoyés**, 0 échec ; second passage immédiat → `skipped_cooldown: 2`, l'anti-spam et l'écriture du journal sont confirmés. _(2026-09-15)_
+- [ ] **T-N09** — (constat) 4 comptes sur 6 n'ont **aucun véhicule** : le décrochage principal est en amont de l'activation, entre l'inscription et la première saisie. Mécanisme distinct à concevoir — montrer la valeur, pas lister ce qui manque.
 
 ## Phase D — Design du site (unification visuelle)
 
