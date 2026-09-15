@@ -28,17 +28,21 @@ join cible c on c.id = u.id;
 
 -- ─── 2. Adoption : qu'est-ce qui a été réellement utilisé ───
 -- Une ligne par module. Un module à 0 = une fonctionnalité jamais découverte.
+-- Chaque table est datée par la colonne que l'app utilise réellement pour trier
+-- (created_at, date, assigned_at…), castée en timestamptz pour l'union.
 with cible as (select id from auth.users where email = 'REMPLACER@exemple.fr')
-select 'véhicules'          as module, count(*) as volume, min(created_at) as premiere, max(created_at) as derniere from vehicles              where user_id = (select id from cible)
-union all select 'conducteurs',        count(*), min(created_at), max(created_at) from drivers               where user_id = (select id from cible)
-union all select 'affectations',       count(*), min(assigned_at), max(assigned_at) from assignments         where user_id = (select id from cible)
-union all select 'relevés km',         count(*), min(created_at), max(created_at) from mileage_entries       where user_id = (select id from cible)
-union all select 'contrôles tech.',    count(*), min(created_at), max(created_at) from technical_inspections where user_id = (select id from cible)
-union all select 'maintenances',       count(*), min(created_at), max(created_at) from maintenance_records   where user_id = (select id from cible)
-union all select 'échéanciers entret.',count(*), min(created_at), max(created_at) from maintenance_schedules where user_id = (select id from cible)
-union all select 'lavages',            count(*), min(created_at), max(created_at) from wash_records         where user_id = (select id from cible)
-union all select 'docs conducteur',    count(*), min(created_at), max(created_at) from driver_documents     where user_id = (select id from cible)
-union all select 'collaborateurs',     count(*), min(invited_at), max(coalesce(joined_at, invited_at)) from org_members where org_id = (select id from cible)
+select 'véhicules' as module, count(*) as volume,
+       min(created_at)::timestamptz as premiere, max(created_at)::timestamptz as derniere
+  from vehicles where user_id = (select id from cible)
+union all select 'conducteurs',         count(*), min(created_at)::timestamptz,     max(created_at)::timestamptz     from drivers               where user_id = (select id from cible)
+union all select 'affectations',        count(*), min(assigned_at)::timestamptz,    max(assigned_at)::timestamptz    from assignments           where user_id = (select id from cible)
+union all select 'relevés km',          count(*), min(created_at)::timestamptz,     max(created_at)::timestamptz     from mileage_entries       where user_id = (select id from cible)
+union all select 'contrôles tech.',     count(*), min(inspection_date)::timestamptz,max(inspection_date)::timestamptz from technical_inspections where user_id = (select id from cible)
+union all select 'maintenances',        count(*), min(date)::timestamptz,           max(date)::timestamptz           from maintenance_records   where user_id = (select id from cible)
+union all select 'échéanciers entret.', count(*), min(created_at)::timestamptz,     max(created_at)::timestamptz     from maintenance_schedules where user_id = (select id from cible)
+union all select 'lavages',             count(*), min(date)::timestamptz,           max(date)::timestamptz           from wash_records          where user_id = (select id from cible)
+union all select 'docs conducteur',     count(*), min(created_at)::timestamptz,     max(created_at)::timestamptz     from driver_documents      where org_id  = (select id from cible)
+union all select 'collaborateurs',      count(*), min(invited_at)::timestamptz,     max(coalesce(joined_at, invited_at))::timestamptz from org_members where org_id = (select id from cible)
 order by volume desc;
 
 
@@ -52,12 +56,13 @@ select
   case when premiere_fois is null then null
        else justify_interval(premiere_fois - (select created_at from cible)) end as delai_depuis_inscription
 from (
-  select 'premier véhicule'     as etape, (select min(created_at) from vehicles              where user_id = (select id from cible)) as premiere_fois
-  union all select 'premier conducteur',   (select min(created_at) from drivers               where user_id = (select id from cible))
-  union all select 'première affectation', (select min(assigned_at) from assignments          where user_id = (select id from cible))
-  union all select 'premier relevé km',    (select min(created_at) from mileage_entries       where user_id = (select id from cible))
-  union all select 'premier contrôle',     (select min(created_at) from technical_inspections where user_id = (select id from cible))
-  union all select 'première invitation',  (select min(invited_at) from org_members           where org_id = (select id from cible))
+  select 'premier véhicule' as etape,
+         (select min(created_at)::timestamptz from vehicles where user_id = (select id from cible)) as premiere_fois
+  union all select 'premier conducteur',   (select min(created_at)::timestamptz     from drivers               where user_id = (select id from cible))
+  union all select 'première affectation', (select min(assigned_at)::timestamptz    from assignments           where user_id = (select id from cible))
+  union all select 'premier relevé km',    (select min(created_at)::timestamptz     from mileage_entries       where user_id = (select id from cible))
+  union all select 'premier contrôle',     (select min(inspection_date)::timestamptz from technical_inspections where user_id = (select id from cible))
+  union all select 'première invitation',  (select min(invited_at)::timestamptz     from org_members           where org_id  = (select id from cible))
 ) t
 order by premiere_fois nulls last;
 
