@@ -136,3 +136,67 @@ if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches
     typeHeadings()
   }
 }
+
+
+// ── Accordéon des questions fréquentes ──────────────────────────────────────
+// `<details>` ouvre d'un coup : la réponse apparaît sèchement et la page saute.
+// On garde l'élément natif — sans JS, tout fonctionne — et on intercepte le clic
+// pour animer la hauteur, puis faire apparaître la réponse de gauche à droite.
+//
+// Le masque n'existe que pendant l'animation : si quoi que ce soit échoue, le
+// texte reste lisible plutôt que masqué.
+
+const FAQ_OPEN_MS = 420
+const FAQ_CLOSE_MS = 300
+const FAQ_REVEAL_MS = 900
+
+function smoothAccordion(details) {
+  const summary = details.querySelector('summary')
+  if (!summary) return
+
+  // Le contenu qui suit le résumé est regroupé : on ne peut animer la hauteur
+  // que d'un conteneur, pas d'une suite de nœuds.
+  const body = document.createElement('div')
+  body.className = 'faq-body'
+  while (summary.nextSibling) body.appendChild(summary.nextSibling)
+  details.appendChild(body)
+
+  let animation = null
+
+  const expand = () => {
+    details.open = true
+    const target = body.scrollHeight
+    animation?.cancel()
+    animation = body.animate(
+      [{ height: '0px', opacity: 0 }, { height: `${target}px`, opacity: 1 }],
+      { duration: FAQ_OPEN_MS, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' },
+    )
+    body.classList.add('is-revealing')
+    setTimeout(() => body.classList.remove('is-revealing'), FAQ_REVEAL_MS)
+  }
+
+  const collapse = () => {
+    const current = body.scrollHeight
+    animation?.cancel()
+    animation = body.animate(
+      [{ height: `${current}px`, opacity: 1 }, { height: '0px', opacity: 0 }],
+      { duration: FAQ_CLOSE_MS, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' },
+    )
+    // L'attribut ne tombe qu'à la fin, sinon le contenu disparaîtrait d'un coup.
+    animation.onfinish = () => { details.open = false }
+  }
+
+  summary.addEventListener('click', event => {
+    event.preventDefault()
+    details.open ? collapse() : expand()
+  })
+}
+
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const start = () => document.querySelectorAll('details').forEach(smoothAccordion)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true })
+  } else {
+    start()
+  }
+}
