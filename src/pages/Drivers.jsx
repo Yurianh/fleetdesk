@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Plus, Search, ChevronRight, Users, Trash2, Loader2, Download, Truck, UserMinus } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -129,6 +129,7 @@ export default function Drivers() {
   const [assignOpen, setAssignOpen] = useState(false)
   const [unassigning, setUnassigning] = useState(false)
   const dateLocale = useDateLocale()
+  const navigate = useNavigate()
 
   const latestAssignments = getLatestAssignments(assignments)
   const driverVehicleMap = {}
@@ -265,16 +266,30 @@ export default function Drivers() {
                 const warn = file?.level === 'expired' || file?.level === 'expiring'
                 const active = selected?.id === d.id
                 return (
-                  <button
+                  <div
                     key={d.id}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setSelectedId(d.id)}
-                    className={'w-full text-left flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0 transition-colors ' + (
+                    onDoubleClick={() => navigate(`/Drivers/${d.id}`)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedId(d.id) }
+                    }}
+                    className={'w-full text-left flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0 transition-colors cursor-pointer select-none ' + (
                       active ? 'bg-[#E5EEFF]' : 'hover:bg-slate-50/70'
                     )}
                   >
                     <Initials name={d.name} warn={warn} />
                     <span className="min-w-0 flex-1">
-                      <span className="block text-sm font-semibold text-slate-900 truncate">{d.name}</span>
+                      {/* Le nom mène à la fiche ; le reste de la ligne choisit.
+                          Un double-clic n'importe où sur la ligne fait pareil. */}
+                      <Link
+                        to={`/Drivers/${d.id}`}
+                        onClick={e => e.stopPropagation()}
+                        className="block text-sm font-semibold text-slate-900 truncate hover:text-[#0052D6] hover:underline decoration-[#0066FF]/40 underline-offset-2"
+                      >
+                        {d.name}
+                      </Link>
                       <span className="block text-xs text-slate-400 truncate">
                         {vehicle ? `${vehicle.plate_number} · ${vehicle.model}` : 'Sans véhicule'}
                       </span>
@@ -282,20 +297,25 @@ export default function Drivers() {
                     <span className={'text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0 ' + LEVEL_CHIP[file?.level || 'ok']}>
                       {file?.headline || 'Dossier à jour'}
                     </span>
-                  </button>
+                  </div>
                 )
               })}
             </div>
 
             {/* ── Le dossier ────────────────────────────────────────── */}
             {selected && (
-              <div className="sticky top-6 space-y-3">
+              // La clé force un remontage à chaque sélection : la chorégraphie
+              // d'arrivée se rejoue, et on voit que le contenu a changé.
+              <div key={selected.id} data-panel-land className="sticky top-6 space-y-3">
 
                 <div className="bg-white rounded-xl border border-slate-200 p-4">
                   <div className="flex items-center gap-3">
                     <Initials name={selected.name} warn={selectedFile?.level === 'expired'} />
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-slate-900 truncate">{selected.name}</p>
+                      <Link to={`/Drivers/${selected.id}`}
+                        className="block text-sm font-semibold text-slate-900 truncate hover:text-[#0052D6] hover:underline decoration-[#0066FF]/40 underline-offset-2">
+                        {selected.name}
+                      </Link>
                       <p className="text-xs text-slate-400 truncate">
                         {selected.employee_id || 'Sans matricule'}{selected.phone ? ` · ${selected.phone}` : ''}
                       </p>
@@ -349,8 +369,9 @@ export default function Drivers() {
                     </span>
                   </div>
                   <div className="px-4 py-3 space-y-2.5">
-                    {selectedFile?.rows.map(row => (
-                      <div key={row.type} className="flex items-center justify-between gap-3">
+                    {selectedFile?.rows.map((row, i) => (
+                      <div key={row.type} data-row-land style={{ '--row-delay': `${210 + i * 32}ms` }}
+                        className="flex items-center justify-between gap-3">
                         <span className="text-[13px] text-slate-600 truncate">{row.label}</span>
                         <DocState row={row} dateLocale={dateLocale} />
                       </div>
@@ -358,17 +379,15 @@ export default function Drivers() {
                   </div>
                 </div>
 
-                <Link to={`/Drivers/${selected.id}`}
-                  className="block text-center text-xs font-semibold text-[#0066FF] hover:text-[#0052D6] py-2">
-                  Ouvrir la fiche — historique des affectations, adresse, cartes ›
-                </Link>
-
-                {/* La suppression quitte la liste : elle était à égalité
-                    visuelle avec le chevron d'ouverture, sur chaque ligne. */}
-                <button onClick={() => setDeleteTarget(selected)}
-                  className="w-full inline-flex items-center justify-center gap-1.5 text-xs font-medium text-slate-400 hover:text-red-500 py-2 transition-colors">
-                  <Trash2 className="w-3.5 h-3.5" /> Supprimer ce conducteur
-                </button>
+                {/* Plus de gros lien bleu : la fiche s'ouvre en cliquant le
+                    nom, ou d'un double-clic sur la ligne. */}
+                <div className="flex items-center justify-between gap-3 px-1">
+                  <span className="text-[11px] text-slate-400">Double-clic pour ouvrir la fiche</span>
+                  <button onClick={() => setDeleteTarget(selected)}
+                    className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-400 hover:text-red-500 transition-colors">
+                    <Trash2 className="w-3.5 h-3.5" /> Supprimer
+                  </button>
+                </div>
               </div>
             )}
           </div>
