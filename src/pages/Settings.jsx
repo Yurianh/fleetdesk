@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useCan } from '@/lib/capabilities'
 import UpgradePrompt from '@/components/shared/UpgradePrompt'
 import { ACTIVITIES, MODULES, activityDefaults, useFeatures } from '@/lib/activity'
-import { SlidersHorizontal, Briefcase, Wand2 } from 'lucide-react'
+import { SlidersHorizontal, Briefcase, Wand2, Bell } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 import { useMotionSetting } from '@/lib/motion'
 
@@ -26,6 +26,7 @@ const SECTIONS = [
   { id: 'team',     icon: Users,      labelKey: 'settings.team' },
   { id: 'modules',  icon: SlidersHorizontal, label: 'Modules' },
   { id: 'plan',     icon: CreditCard, labelKey: 'settings.plan' },
+  { id: 'notifications', icon: Bell,  label: 'Notifications' },
   { id: 'display',  icon: Wand2,      label: 'Affichage' },
   { id: 'language', icon: Globe,      labelKey: 'settings.language' },
   { id: 'account',  icon: Shield,     labelKey: 'settings.account' },
@@ -74,6 +75,20 @@ export default function Settings() {
   // Activity-based modules (visibility of optional features). Owner-managed.
   const { has: hasFeature, activity, overrides } = useFeatures()
   const [savingModules, setSavingModules] = useState(false)
+  // L'email d'échéances est actif par défaut : c'est la promesse du produit.
+  // On stocke l'exception, pas le consentement.
+  const digestOn = user?.user_metadata?.digest_opt_out !== true
+  const [savingDigest, setSavingDigest] = useState(false)
+  const setDigest = async (on) => {
+    setSavingDigest(true)
+    try {
+      const { error } = await supabase.auth.updateUser({ data: { digest_opt_out: !on } })
+      if (error) throw error
+      toast.success(on ? 'Email d\'échéances activé.' : 'Email d\'échéances désactivé.')
+    } catch (e) { toast.error(e.message || 'Erreur.') }
+    finally { setSavingDigest(false) }
+  }
+
   const updateActivity = async (next) => {
     setSavingModules(true)
     try {
@@ -308,6 +323,45 @@ export default function Settings() {
                     </div>
                   </div>
                 </>
+              )}
+            </div>
+          )}
+
+          {section === 'notifications' && (
+            <div className="space-y-4">
+              {isCollaborator ? (
+                <div className="bg-white border border-zinc-200 rounded-xl p-5">
+                  <p className="text-sm text-zinc-500">
+                    L'email d'échéances est envoyé au propriétaire de l'organisation, qui en gère la réception.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-white border border-zinc-200 rounded-xl p-5">
+                  <h2 className="text-sm font-semibold text-zinc-900 mb-1 flex items-center gap-2">
+                    <Bell className="w-4 h-4 text-[#0066FF]" /> Email d'échéances
+                  </h2>
+                  <p className="text-xs text-zinc-500 mb-4">
+                    Le récapitulatif de ce que votre flotte demande dans les 30 prochains jours : contrôles techniques,
+                    documents conducteurs, entretiens prévus. Envoyé une fois par semaine au plus, et plus tôt si une
+                    échéance passe sous les 7 jours.
+                  </p>
+
+                  <div className="flex items-center justify-between gap-4 py-3.5 border-t border-zinc-100">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-zinc-900">Recevoir l'email d'échéances</p>
+                      <p className="text-xs text-zinc-500">
+                        {digestOn
+                          ? 'Vous êtes prévenu avant l\'expiration, sans avoir à ouvrir l\'application.'
+                          : 'Les alertes restent visibles dans le tableau de bord uniquement.'}
+                      </p>
+                    </div>
+                    <Switch checked={digestOn} onCheckedChange={setDigest} disabled={savingDigest} />
+                  </div>
+
+                  <p className="text-xs text-zinc-500 pt-3 border-t border-zinc-100">
+                    Aucun email n'est envoyé si votre flotte n'a aucune échéance dans les 30 jours.
+                  </p>
+                </div>
               )}
             </div>
           )}

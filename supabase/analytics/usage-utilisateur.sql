@@ -11,7 +11,7 @@
 
 -- ─── 1. Le profil du compte ─────────────────────────────────
 -- Plan réel (app_metadata, écrit côté serveur), secteur déclaré, état d'onboarding.
-with cible as (select id from auth.users where email = 'REMPLACER@exemple.fr')
+with cible as (select id from auth.users where email = 'tinitetuairia@gmail.com')
 select
   u.created_at                                    as inscrit_le,
   u.last_sign_in_at                               as derniere_connexion,

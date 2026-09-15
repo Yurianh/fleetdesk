@@ -131,6 +131,13 @@ masquage réactivable.
 
 ---
 
+## Phase N — Notifications
+
+- [x] **T-N01** — Email d'échéances (`supabase/functions/deadline-digest`) : contrôles techniques, documents conducteurs et entretiens prévus à 30 jours, calculés côté serveur avec la même logique que `maintenanceForecast.js`. Envoi Resend, une fois par semaine au plus, devancé seulement si une échéance passe sous 7 jours et que la liste a changé — garde-fou par `digest_log` (empreinte des échéances). Cron Vercel quotidien `0 7 * * *` → `/api/deadline-digest` → fonction edge (deux secrets : celui de Vercel, celui de Supabase). _(2026-09-15)_
+- [x] **T-N02** — Réglages › Notifications : interrupteur de réception, actif par défaut (on stocke l'exception `digest_opt_out`, pas le consentement). Les collaborateurs voient une explication : l'email part au propriétaire. Lien de désabonnement dans le pied de l'email. _(2026-09-15)_
+- [ ] **T-N03** — À faire côté Julian : exécuter `supabase/digest_log.sql` dans le SQL Editor, puis poser `CRON_SECRET` (même valeur) dans les variables Supabase **et** Vercel.
+- [ ] **T-N04** — (suivi) Après la première vraie exécution : vérifier le rendu de l'email reçu, et surveiller `digest_log` pour confirmer que la cadence ne devient pas du spam.
+
 ## Phase D — Design du site (unification visuelle)
 
 - [x] **T-D01** — Jeu d'icônes unique `marketing/src/lib/icons.js` + composant `Icon.astro` : mêmes icônes que l'app (lucide, trait 1,75), fini les SVG collés à la main avec des traits de 2 à 2,5. Home, fonctionnalités et conformité migrées. _(2026-09-12)_
