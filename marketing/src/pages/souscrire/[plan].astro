@@ -99,7 +99,7 @@ if (!p) return Astro.redirect('/pricing')
     </div>
     <p class="text-lg text-zinc-600 leading-relaxed mb-4">{p.tagline}</p>
     {p.trial && (
-      <div class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 text-sm font-medium rounded-full px-3.5 py-1.5 mb-2">
+      <div class="inline-flex items-center gap-2 bg-[#E5EEFF] text-[#0052D6] text-sm font-medium rounded-full px-3.5 py-1.5 mb-2">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         {p.trial}
       </div>
@@ -112,8 +112,8 @@ if (!p) return Astro.redirect('/pricing')
         <ul class="space-y-2.5">
           {p.included.map(f => (
             <li class="flex items-start gap-2.5 text-sm text-zinc-700">
-              <span class="flex-shrink-0 mt-0.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-emerald-100">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span class="flex-shrink-0 mt-0.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#E5EEFF]">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               </span>
               {f}
             </li>

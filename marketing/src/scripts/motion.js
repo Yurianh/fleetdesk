@@ -68,3 +68,71 @@ if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches
 } else {
   document.documentElement.classList.remove('js-motion')
 }
+
+
+// ── Titres composés lettre par lettre ───────────────────────────────────────
+// Les titres de section s'écrivent de gauche à droite quand ils entrent dans le
+// champ : chaque lettre apparaît en fondu, avec un flou qui se dissipe. Le
+// découpage se fait ici plutôt que dans le HTML — aucune page à modifier, et
+// le texte reste intact dans la source pour les moteurs.
+//
+// Découpage par mots, puis par lettres : un mot reste insécable, donc le retour
+// à la ligne se comporte normalement. Le titre garde son texte complet en
+// `aria-label` et les lettres sont masquées aux lecteurs d'écran, qui liraient
+// sinon l'énoncé caractère par caractère.
+
+const CHAR_STEP = 16        // ms entre deux lettres
+const CHAR_CAP = 900        // au-delà, le titre traîne
+const MAX_CHARS = 90        // un paragraphe n'est pas un titre
+
+function splitHeading(el) {
+  const text = el.textContent.trim()
+  if (!text || text.length > MAX_CHARS) return false
+  // Un seul nœud texte : on ne casse pas un titre qui contient déjà du balisage.
+  if (el.childNodes.length !== 1 || el.childNodes[0].nodeType !== Node.TEXT_NODE) return false
+
+  el.setAttribute('aria-label', text)
+  el.textContent = ''
+  el.classList.add('type-in')
+
+  let index = 0
+  for (const word of text.split(' ')) {
+    const wordEl = document.createElement('span')
+    wordEl.className = 'type-in-word'
+    wordEl.setAttribute('aria-hidden', 'true')
+    for (const char of word) {
+      const charEl = document.createElement('span')
+      charEl.textContent = char
+      charEl.style.setProperty('--d', `${Math.min(index * CHAR_STEP, CHAR_CAP)}ms`)
+      wordEl.appendChild(charEl)
+      index++
+    }
+    el.appendChild(wordEl)
+    el.appendChild(document.createTextNode(' '))
+    index++
+  }
+  return true
+}
+
+function typeHeadings() {
+  const io = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue
+      entry.target.classList.add('typed')
+      io.unobserve(entry.target)
+    }
+  }, { threshold: 0.4, rootMargin: '0px 0px -5% 0px' })
+
+  for (const heading of document.querySelectorAll('h1, h2')) {
+    if (splitHeading(heading)) io.observe(heading)
+  }
+}
+
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    && typeof IntersectionObserver !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', typeHeadings, { once: true })
+  } else {
+    typeHeadings()
+  }
+}
