@@ -8,12 +8,8 @@
       "schedule": "0 8 */3 * *"
     },
     {
-      "path": "/api/deadline-digest",
+      "path": "/api/daily-digests",
       "schedule": "0 7 * * *"
-    },
-    {
-      "path": "/api/activation-digest",
-      "schedule": "30 8 * * *"
     }
   ],
   "rewrites": [
