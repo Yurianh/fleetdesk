@@ -166,6 +166,7 @@ masquage réactivable.
 - [x] **T-D19** — Palette d'urgence apaisée dans l'app : plus aucun rouge. Trois niveaux lisibles à l'intensité — ambre plein (dépassé), ambre clair (sous 7 jours), bleu de marque (sous 30 jours), émeraude (en règle). Tableau de bord et badges de statut véhicule alignés. Un écran ouvert chaque matin ne doit pas déclencher d'alarme. _(2026-09-15)_
 - [x] **T-D20** — Titres du site composés lettre par lettre : découpage mots puis caractères au chargement (`motion.js`), fondu avec flou qui se dissipe, 16 ms entre deux lettres, plafonné à 900 ms. Aucune page modifiée, texte intact dans la source pour les moteurs, `aria-label` conservé et lettres masquées aux lecteurs d'écran. _(2026-09-15)_
 - [x] **T-D21** — Toutes les coches du site passent au bleu de marque (tarifs, pages de souscription) : une coche verte au milieu d'une liste bleue se lit comme un statut, pas comme une inclusion. _(2026-09-15)_
+- [x] **T-D22** — Accordéon des questions fréquentes fluide : la hauteur s'anime (420 ms à l'ouverture, 300 ms à la fermeture) au lieu du saut de `<details>`, et la réponse se découvre de gauche à droite par un masque en balayage. L'élément natif est conservé — sans JS, tout fonctionne — et le masque n'existe que pendant l'animation, pour qu'un échec laisse le texte lisible plutôt que masqué. _(2026-09-15)_
 - [ ] **T-D06** — (suivi) Passer la même grille de contraste sur l'app (`text-zinc-400` massivement utilisé dans `src/pages`), pour que produit et site restent alignés.
 
 ---
