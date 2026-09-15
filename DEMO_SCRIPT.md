@@ -1,15 +1,30 @@
 # Script de démonstration — FleetDesk
 
-**Durée visée : 4 min 30.** FleetDesk est le logiciel présenté ; Occitrans
+**Durée visée : 4 min 30.** FleetDesk est le logiciel présenté. Occitrans
 Services est la société fictive dont on montre le compte — 15 véhicules,
-12 conducteurs, sur `demo@fleetdesk.fr`. Ne jamais laisser entendre que
+12 chauffeurs, sur `demo@fleetdesk.fr`. Ne jamais laisser entendre que
 FleetDesk *est* le transporteur : c'est l'outil du transporteur.
 
-Les minutages sont des repères, pas un métronome. Le fil conducteur tient en
-une phrase, à garder en tête d'un bout à l'autre :
+## La voix
 
-> **On ne montre pas des écrans, on montre une journée de gestionnaire de
-> flotte : ce qui brûle, ce qu'on fait, ce qu'on prouve.**
+**Tonalité opérateur.** Tu parles à un gars qui gère quinze camions et qui se
+méfie de ce qui brille. Débit normal, phrases courtes, pas d'emphase. La
+crédibilité vient du vocabulaire juste, pas de l'énergie.
+
+- **Le CT**, jamais « le contrôle technique » à l'oral.
+- **Un chauffeur**, pas « un conducteur » — l'écran écrit conducteur, toi tu
+  dis chauffeur.
+- **La carte grise**, **la licence**, **la visite médicale**, **le casier**.
+- **Des bornes** ou des kilomètres, dits à voix haute : « douze mille six
+  cents », pas « 12 614 ».
+
+**Ne décris pas ce que fait le curseur.** Le spectateur le voit. Tu dis
+pourquoi, pas quoi.
+
+**Laisse du blanc.** Les silences notés dans le script ne sont pas des trous,
+c'est là que le spectateur regarde l'écran. Si tu remplis tout, ça sonne faux.
+
+**Une seule vraie phrase de conclusion**, tout à la fin. Pas une par section.
 
 ---
 
@@ -17,283 +32,286 @@ une phrase, à garder en tête d'un bout à l'autre :
 
 - [ ] Seed rejoué (`supabase/demo_seed.sql`) — les échéances sont relatives au
       jour de tournage, un seed de la veille décale tout d'un jour.
-- [ ] Les 3 PDF de `demo-assets/` déposés sur le Renault Master **AB-123-CD**,
-      ou gardés de côté si tu filmes le téléversement en direct (recommandé).
-- [ ] Session fraîche : se déconnecter puis se reconnecter juste avant de
-      lancer l'enregistrement — la chorégraphie d'atterrissage ne joue **qu'une
-      fois par session**, et c'est la première image de la vidéo.
-- [ ] Fenêtre en 1440×900 minimum, zoom navigateur à 100 %, barre de favoris
-      masquée, notifications système coupées.
-- [ ] Onglet unique. Une barre d'onglets chargée casse l'effet « produit ».
+- [ ] Les 3 PDF de `demo-assets/` sous la main pour le téléversement en direct.
+- [ ] Session fraîche : se déconnecter, se reconnecter juste avant de lancer.
+      La chorégraphie d'atterrissage ne joue **qu'une fois par session**, et
+      c'est la première image de la vidéo.
+- [ ] Fenêtre en 1440×900 minimum, zoom à 100 %, favoris masqués,
+      notifications système coupées.
+- [ ] Onglet unique.
 - [ ] Décider de l'état de l'interrupteur « Recevoir l'email d'échéances »
       (Paramètres → Notifications) : le seed le laisse **coupé**. Voir 3:40.
-- [ ] Ouvrir Rapports une fois avant de tourner : si tu enregistres dans les
-      premiers jours du mois, le mois courant est presque vide — il vaut mieux
+- [ ] Ouvrir Rapports une fois avant de tourner. Si tu enregistres dans les
+      premiers jours du mois, le mois courant est presque vide — mieux vaut
       montrer le mois précédent, et le savoir avant d'être à l'image.
 
 ---
 
 ## 0:00 — 0:20 · L'ouverture
 
-**À l'écran :** la connexion, puis le tableau de bord qui se pose élément par
-élément.
+**À l'écran :** la connexion, puis le tableau de bord qui se pose.
 
-> « FleetDesk, c'est le logiciel qui tient votre flotte. Voici le compte d'une
-> société de transport toulousaine qui l'utilise : quinze véhicules, douze
-> conducteurs. On est lundi matin — et la première chose qu'un gestionnaire
-> veut savoir, c'est ce qui va lui poser problème cette semaine. »
+> « FleetDesk, c'est le logiciel qui tient le parc. Là c'est le compte d'un
+> transporteur toulousain. Quinze véhicules, douze chauffeurs. »
 
-**Ne rien cliquer pendant l'animation.** Elle dure un peu plus de quatre
-secondes, les derniers éléments arrivant en dernier : laisse-la finir, c'est la
-seule fois où elle joue.
+**[silence — laisser l'animation finir]**
+
+> « On est lundi matin. Première question : qu'est-ce qui me tombe dessus cette
+> semaine. »
+
+**Ne rien cliquer pendant l'animation.** Un peu plus de quatre secondes, les
+derniers éléments arrivent en dernier. C'est la seule fois où elle joue.
 
 ---
 
-## 0:20 — 1:10 · Le tableau de bord : ce qui brûle
+## 0:20 — 1:10 · Le tableau de bord
 
-**À l'écran :** rester sur le tableau de bord. Curseur lent, une zone à la fois.
+**À l'écran :** on reste. Curseur lent, une zone à la fois.
 
-1. **La pastille « 2 alertes actives »**, en haut à droite.
+1. La pastille **« 2 alertes actives »**, en haut à droite.
 
-   > « Deux alertes actives. Pas un chiffre décoratif : chacune correspond à
-   > une échéance qui tombe. »
+   > « Deux alertes. »
 
-2. **Le panneau Alertes, à droite.** Le pointer de haut en bas.
+2. **Le panneau Alertes**, à droite. Descendre lentement.
 
-   > « Contrôle technique du Renault Master dans cinq jours — action
-   > immédiate. Peugeot Boxer dans vingt-deux jours, celui-là je le note.
-   > Révision du Master dans neuf mille six cents kilomètres. »
+   > « Le CT du Master saute dans cinq jours. Le Boxer, vingt-deux jours,
+   > celui-là je le note. Révision du Master dans neuf mille six cents
+   > bornes. »
 
-   > « Et en bas, les conducteurs : le casier judiciaire de Pierre Dubois a
-   > expiré il y a huit jours — celui-là, j'y vais tout de suite. La visite
-   > médicale de Sophie Renard tombe dans vingt et un jours, je la note. »
+   **[silence 2 s]**
 
-   **Point à faire entendre :** la couleur n'est pas là pour faire peur.
-   L'ambre signale ce qui demande une action, le gris ce qu'on surveille. Rien
-   n'est rouge — le rouge est réservé à ce qu'on supprime.
+   > « Et les chauffeurs. Le casier de Pierre Dubois est périmé depuis huit
+   > jours. La visite médicale de Sophie Renard tombe dans trois semaines. »
 
-3. **Les quatre compteurs** (Véhicules, Conducteurs, Affectations, Problèmes).
+   **Sur la couleur, ne rien expliquer.** Si quelqu'un demande plus tard :
+   l'ambre appelle une action, le gris se surveille, le rouge est réservé à ce
+   qu'on supprime. Mais ne le dis pas à l'image — ça se voit.
 
-   > « Quinze véhicules, douze affectés. Trois volants libres : c'est normal,
-   > une flotte garde de la réserve. »
+3. **Les quatre compteurs.**
 
-4. **« Utilisation des véhicules »**, le graphe central.
+   > « Quinze véhicules, douze affectés. Trois qui tournent pas cette
+   > semaine. »
 
-   > « Le kilométrage parcouru sur les trois derniers mois. Je vois tout de
-   > suite qui tourne — le Fiat Ducato à douze mille six cents kilomètres — et
-   > qui dort : le Toyota Proace à mille cent. »
+4. **« Utilisation des véhicules »**, le graphe.
 
-   Cliquer sur **« Afficher : Plaque »** et choisir **Conducteur**.
+   > « Le kilométrage sur trois mois. Le Ducato, douze mille six cents. Le
+   > Proace, mille cent. »
 
-   > « Et si je raisonne en conducteurs plutôt qu'en plaques, c'est le même
-   > graphe vu autrement. »
+   **[silence 2 s]**
 
-   **Ne pas changer la période** (3 mois → 6 mois → 1 an) : l'historique du
-   compte ne couvre que trois mois, les barres ne bougeraient pas.
+   Cliquer **« Afficher : Plaque »**, choisir **Conducteur**.
+
+   > « Ou par chauffeur, si c'est comme ça que tu raisonnes. »
+
+   **Ne pas toucher au sélecteur de période.** Le compte n'a que trois mois de
+   relevés : 6 mois et 1 an donnent les mêmes barres.
 
 ---
 
 ## 1:10 — 1:50 · L'alerte jusqu'au bout
 
-**Le moment le plus important de la vidéo.** On ne montre pas une alerte, on
-montre qu'elle mène quelque part.
+**Le cœur de la vidéo.** Tout le reste, les concurrents l'ont.
 
-On prend **Pierre Dubois** et non Sophie Renard : son casier judiciaire est
-expiré (le niveau d'alerte le plus fort) et ce document a une durée de validité
-d'un an, donc l'échéance se recalcule toute seule à l'écran. La visite médicale
-de Sophie, elle, se saisit à la main — moins démonstratif.
+On prend **Pierre Dubois**, pas Sophie Renard. Son casier est périmé — c'est
+l'alerte forte — et ce document est valable un an, donc l'échéance se
+recalcule à l'écran. La visite médicale, elle, se saisit à la main. Moins
+parlant.
 
-1. Cliquer sur **« Pierre Dubois — Casier judiciaire »** dans le bloc
+1. Cliquer **« Pierre Dubois — Casier judiciaire »** dans le bloc
    « Documents expirés ».
 
-2. La fiche conducteur s'ouvre, **défile jusqu'à la ligne concernée et la
-   souligne** quelques secondes.
+2. La fiche s'ouvre, descend toute seule, la ligne se surligne.
 
-   > « Je clique sur l'alerte et j'arrive exactement sur le document qui la
-   > déclenche. Pas sur la fiche, pas sur une liste de sept lignes : sur la
-   > ligne. »
+   **[silence 2 s — ne rien dire pendant que ça défile]**
 
-3. Montrer le compteur **« 6/7 conformes »** et la pastille ambre du casier.
+   > « Voilà. Direct sur la bonne ligne. »
 
-   > « Sept documents réglementaires par conducteur : permis, aptitude à la
-   > conduite, casier, SST, TPMR, éco-conduite, visite médicale. Six sont à
-   > jour, un a expiré. »
+3. Montrer **« 6/7 conformes »**.
 
-4. Cliquer **« Mettre à jour »**, saisir la date de validation du jour,
-   enregistrer.
+   > « Sept documents obligatoires par chauffeur. Permis, aptitude, casier,
+   > SST, TPMR, éco-conduite, visite médicale. Il en manque un. »
 
-   > « Je saisis la date du nouveau document. L'échéance se calcule toute
-   > seule : le casier est valable un an. »
+4. Cliquer **« Mettre à jour »**. Saisir la date du jour en date de validation.
 
-   **Laisser voir le champ d'échéance se remplir** avant d'enregistrer — c'est
-   le détail qui fait comprendre que le logiciel connaît la règle.
+   **[laisser le champ d'échéance se remplir tout seul — silence]**
 
-5. Remonter : la pastille est passée au vert, le compteur à **7/7**.
+   > « Le casier c'est un an. La date de fin, il la met. »
 
-**Ne pas revenir au tableau de bord** pour vérifier que l'alerte a disparu :
-laisse la démonstration sur ce geste, l'enchaînement se fait tout seul.
+   Enregistrer.
+
+5. Remonter. Pastille verte, **7/7**.
+
+**Ne pas retourner au tableau de bord** pour montrer que l'alerte a disparu.
+Ça se comprend.
+
+---
 
 ## 1:50 — 2:30 · La fiche véhicule
 
-**À l'écran :** Véhicules → **AB-123-CD** (Renault Master).
+**À l'écran :** Véhicules → **AB-123-CD**, le Renault Master.
 
-> « Le véhicule qui était en tête des alertes. »
+> « Le Master, celui qui était en tête. »
 
-1. **L'en-tête** : plaque, modèle, mise en circulation, kilométrage courant, et
-   les pastilles de documents — carte grise, assurance, licence de transport.
+1. **L'en-tête** : plaque, modèle, mise en circulation, kilométrage, et les
+   trois pastilles de documents.
 
-2. **Les documents du véhicule.** Cliquer **Modifier** (crayon), déposer la
-   carte grise depuis `demo-assets/`, enregistrer.
+2. Cliquer **Modifier**, déposer la carte grise depuis `demo-assets/`,
+   enregistrer.
 
-   > « Carte grise, assurance, licence de transport. Le fichier est stocké de
-   > façon privée : le lien qui l'ouvre n'existe que le temps de l'ouvrir. »
+   > « Carte grise, assurance, licence. »
 
-   Cliquer sur **Voir** pour ouvrir le PDF, puis refermer l'onglet.
+   **[silence pendant le téléversement]**
 
-3. **Les onglets, sous l'en-tête** : Kilométrage · Maintenance · Contrôles
+   Cliquer **Voir** : le PDF s'ouvre.
+
+   > « Le fichier est stocké en privé. Le lien qui l'ouvre vit le temps de
+   > l'ouvrir. »
+
+   Refermer l'onglet.
+
+3. **Les onglets**, sous l'en-tête : Kilométrage · Maintenance · Contrôles
    tech. · Lavages · Affectations.
 
-   > « Toute la vie du véhicule est là, onglet par onglet. »
+4. Ouvrir **Contrôles tech.** — le dernier CT, l'échéance à cinq jours,
+   l'historique dessous.
 
-4. Ouvrir **Contrôles tech.** — le dernier contrôle et son échéance à cinq
-   jours, avec l'historique.
+5. Ouvrir **Maintenance**.
 
-5. Ouvrir **Maintenance** — la dernière intervention et la prochaine échéance,
-   déduite de l'intervalle du planning.
+   > « Douze mois ou vingt mille bornes. Le premier des deux qui tombe,
+   > l'alerte part. »
 
-   > « L'application ne se contente pas d'enregistrer ce qui a été fait : elle
-   > en déduit ce qui arrive. Douze mois ou vingt mille kilomètres — le premier
-   > des deux atteint déclenche l'alerte. »
-
-**Ne pas ouvrir l'onglet Lavages sur ce véhicule** si tu tournes en début de
-mois : les lavages du jeu de démonstration datent de neuf et vingt-six jours,
-le plus ancien peut tomber sur le mois précédent.
-
-## 2:30 — 3:00 · Les opérations quotidiennes
-
-**Trois écrans, vite.** C'est le rythme qui compte, pas le détail.
-
-1. **Carburant & Kilométrage.** Saisir un relevé sur un véhicule.
-
-   > « Les relevés arrivent ici. Et les chauffeurs ont leur propre accès, limité
-   > à leurs véhicules : ils saisissent leur kilométrage depuis leur téléphone,
-   > sans rien voir du reste de la flotte. »
-
-   **On reste sur l'écran du gestionnaire** — l'accès chauffeur est mentionné,
-   pas montré : il faudrait se déconnecter, et ça casse le rythme.
-
-2. **Lavages.** Montrer la liste et le total en en-tête.
-
-   > « Vingt-quatre lavages, chacun rattaché à son véhicule et à son
-   > conducteur, et le total déjà fait en haut de la page. »
-
-   La page liste **tous** les lavages, pas seulement ceux du mois : c'est dans
-   Rapports que la vue mensuelle apparaît. Ne pas dire « ce mois-ci » ici.
-
-3. **Affectations.** Montrer qui conduit quoi.
-
-   > « Douze affectations en cours. Réaffecter un véhicule prend deux clics, et
-   > l'historique reste. »
+**Ne pas ouvrir l'onglet Lavages** si tu tournes en début de mois : les lavages
+du jeu de démonstration ont neuf et vingt-six jours, le plus vieux peut basculer
+sur le mois précédent.
 
 ---
 
-## 3:00 — 3:40 · Rapports : ce qu'on prouve
+## 2:30 — 3:00 · Le quotidien
 
-**À l'écran :** Rapports.
+**Trois écrans, vite.** Le rythme compte plus que le détail.
 
-**L'écran est mensuel** : un mois à la fois, avec les flèches pour changer de
-mois. Ne pas promettre une période libre.
+1. **Carburant & Kilométrage.** Saisir un relevé.
 
-1. **Les compteurs du mois** : distance parcourue, pleins, entretiens.
+   > « Les relevés arrivent là. Et les chauffeurs ont leur propre accès, limité
+   > à leurs véhicules. Ils saisissent depuis le téléphone, ils voient rien du
+   > reste. »
+
+   **On reste sur l'écran du gestionnaire.** L'accès chauffeur est mentionné,
+   pas montré — il faudrait se déconnecter.
+
+2. **Lavages.**
+
+   > « Vingt-quatre lavages. Véhicule, chauffeur, montant. Le total est en
+   > haut. »
+
+   La page liste **tout**, pas seulement le mois en cours. Ne pas dire « ce
+   mois-ci ».
+
+3. **Affectations.**
+
+   > « Douze en cours. Tu réaffectes en deux clics, l'ancienne reste dans
+   > l'historique. »
+
+---
+
+## 3:00 — 3:40 · Rapports
+
+**L'écran est mensuel.** Un mois à la fois, flèches pour changer. Ne pas
+promettre une période libre.
+
+1. Les compteurs du mois : distance, pleins, entretiens.
 
 2. **Dépenses par catégorie** — maintenance, carburant, lavages.
 
-   > « Où part l'argent ce mois-ci, et la comparaison avec le mois précédent. »
+   > « Où part l'argent ce mois-ci. Et le mois d'avant, pour comparer. »
 
 3. **Véhicules les plus coûteux.**
 
-   > « Et surtout : sur quel véhicule. C'est la conversation qu'on a en réunion
-   > budget, et elle est là, sans tableur. »
+   **[silence 2 s]**
 
-4. **Échéances du mois** — contrôles techniques et documents conducteurs.
+   > « Et sur quel véhicule. C'est la question qu'on te pose en réunion
+   > budget. »
 
-   > « Et ce qui tombe dans le mois, au même endroit que les dépenses. »
+4. **Échéances du mois** — CT et documents chauffeurs.
 
-5. **Télécharger le PDF.** Montrer le fichier qui s'ouvre.
+5. **Télécharger le PDF.** Le montrer s'ouvrir.
 
-   > « Un PDF prêt à envoyer à la direction ou à l'expert-comptable. »
+   > « Ça part à la compta tel quel. »
+
+   **Assumer la limite, ici :**
+
+   > « C'est mois par mois. Si tu veux du trimestre ou du sur-mesure, c'est pas
+   > encore là. »
 
 ---
 
-## 3:40 — 4:10 · Ce qui tourne sans vous
+## 3:40 — 4:10 · Ce qui tourne sans toi
 
-**À l'écran :** Paramètres → section Notifications.
+**À l'écran :** Paramètres → Notifications.
 
-> « Tout ce que je viens de montrer suppose que j'ouvre l'application. Mais une
-> échéance ne tombe pas quand je regarde. »
+> « Tout ça, faut que j'ouvre l'appli. Mais une échéance, elle tombe pas quand
+> je regarde. »
 
-> « FleetDesk envoie un récapitulatif de ce que la flotte demande dans les
-> trente prochains jours : contrôles techniques, documents, entretiens prévus.
-> Une fois par semaine — et plus tôt si une échéance passe sous les sept jours.
-> L'application vient vous chercher, pas l'inverse. »
+**[silence 2 s]**
 
-Montrer l'interrupteur « Recevoir l'email d'échéances ».
+> « Une fois par semaine, un mail avec ce qui arrive dans les trente jours. CT,
+> documents, entretiens. Et plus tôt si un truc passe sous sept jours. »
 
-**Sur le compte de démonstration, l'interrupteur est coupé** — le seed le
-désactive pour ne pas envoyer d'emails pendant les essais. Deux options : le
-dire (« ici je l'ai coupé pour la démonstration »), ou l'activer juste avant de
-filmer le plan. Ne pas le laisser visible sans rien en dire, un interrupteur
-éteint contredit ce qu'on vient d'annoncer.
+Montrer l'interrupteur **« Recevoir l'email d'échéances »**.
+
+**Sur le compte de démonstration il est coupé** — le seed le désactive pour ne
+pas envoyer d'emails pendant les essais. Deux options : le dire (« là je l'ai
+coupé pour la démo »), ou l'activer juste avant de filmer le plan. Ne pas le
+laisser visible sans rien en dire.
 
 ---
 
 ## 4:10 — 4:30 · La clôture
 
-**À l'écran :** revenir au tableau de bord.
+**À l'écran :** retour au tableau de bord.
 
-> « Quinze véhicules, douze conducteurs, une matinée de lundi. Les échéances
-> sont vues, un document est renouvelé, un rapport est prêt pour la compta. »
+> « Quinze véhicules, douze chauffeurs. Les échéances sont vues, un document
+> est refait, le rapport est prêt. »
 
-> « C'est ce que fait FleetDesk : votre flotte tient dans un écran, et ce qui
-> compte vient vous chercher. »
+**[silence 2 s]**
 
-Fin sur le tableau de bord, curseur immobile deux secondes avant de couper.
+> « Voilà. C'est à peu près une matinée de lundi, en quatre minutes. »
+
+Curseur immobile deux secondes avant de couper.
 
 ---
 
 ## Ce qu'il ne faut pas faire à l'écran
 
-- **Ne pas ajouter un contrôle technique en direct sur un véhicule en alerte.**
-  Le centre d'alertes ne dédoublonne pas les contrôles par véhicule : l'alerte
-  reste affichée, et ça se voit.
-- **Ne pas changer la période du graphe d'utilisation.** Le compte n'a que
-  trois mois de relevés : 6 mois et 1 an affichent exactement les mêmes barres,
-  et un sélecteur qui ne change rien se remarque.
-- **Ne pas ouvrir les documents des 14 autres véhicules** : seul AB-123-CD a
-  ses pièces jointes. Sur les autres, les pastilles affichent « Ajouter », ce
-  qui est réaliste mais casse le rythme si on tombe dessus par hasard.
-- **Ne pas recharger la page** pendant l'enregistrement : la chorégraphie
-  d'atterrissage ne rejoue pas, et un chargement nu se voit.
-- **Ne pas s'attarder sur les paramètres de suppression de compte.**
+- **Ne pas ajouter un CT en direct sur un véhicule en alerte.** Le centre
+  d'alertes ne dédoublonne pas les contrôles par véhicule : l'alerte reste
+  affichée, et ça se voit.
+- **Ne pas changer la période du graphe d'utilisation.** Trois mois de relevés
+  seulement : 6 mois et 1 an donnent les mêmes barres, et un sélecteur qui ne
+  change rien se remarque.
+- **Ne pas ouvrir les documents des 14 autres véhicules.** Seul AB-123-CD a ses
+  pièces jointes.
+- **Ne pas recharger la page.** La chorégraphie ne rejoue pas, et un chargement
+  nu se voit.
+- **Ne pas s'attarder sur la suppression de compte.**
 
 ---
 
-## Variantes d'accroche par secteur
+## Accroches par secteur
 
-À poser en ouverture, à la place de la première phrase, selon l'audience.
+À poser en ouverture, à la place de la première phrase.
 
 **Transport de marchandises**
-> « Une licence de transport périmée, c'est un véhicule immobilisé et une
-> amende. Voilà comment on ne l'oublie plus. »
+> « Une licence périmée, c'est le camion à l'arrêt et une amende. »
 
 **Transport de personnes / TPMR**
-> « Aptitude à la conduite, visite médicale, formation TPMR : trois documents
-> par conducteur qui expirent à des dates différentes, douze conducteurs. »
+> « Aptitude, visite médicale, TPMR. Trois papiers par chauffeur, douze
+> chauffeurs, trente-six dates. »
 
 **BTP**
-> « Vos véhicules sont sur les chantiers, pas au bureau. Le kilométrage se
-> saisit depuis le téléphone, et vous, vous voyez la flotte. »
+> « Tes véhicules sont sur les chantiers. Le kilométrage se saisit au
+> téléphone, toi tu vois le parc. »
 
-**Artisan / petite flotte**
-> « Cinq véhicules, ça tient dans un tableur — jusqu'au jour où un contrôle
-> technique passe à travers. »
+**Artisan / petit parc**
+> « Cinq véhicules, ça tient dans un tableur. Jusqu'au CT qui passe à
+> travers. »
