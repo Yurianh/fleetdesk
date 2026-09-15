@@ -25,6 +25,8 @@ function isValidEmail(email) {
 
 export default function Login() {
   const { signIn, signUp } = useAuth()
+  // Décochée par défaut : une case pré-cochée ne vaut pas acceptation.
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
   const navigate = useNavigate()
   const { t } = useTranslation()
   // Arriving from a plan CTA (?plan=pro) means the visitor wants to sign up, not
@@ -59,6 +61,7 @@ export default function Login() {
     setPassword('')
     setConfirm('')
     setTouched({ email: false, password: false, confirm: false })
+    setAcceptedTerms(false)
   }
 
   async function handleSubmit(e) {
@@ -67,6 +70,10 @@ export default function Login() {
     setInfo('')
     if (mode === 'signup' && password !== confirm) {
       setError('Les mots de passe ne correspondent pas.')
+      return
+    }
+    if (mode === 'signup' && !acceptedTerms) {
+      setError('Vous devez accepter les conditions générales pour créer un compte.')
       return
     }
     setLoading(true)
@@ -272,9 +279,28 @@ export default function Login() {
             <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2">{info}</p>
           )}
 
+          {mode === 'signup' && (
+            <label className="flex items-start gap-2.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={acceptedTerms}
+                onChange={e => setAcceptedTerms(e.target.checked)}
+                className="mt-0.5 w-4 h-4 flex-shrink-0 rounded border-zinc-300 text-[#0066FF] focus:ring-[#0066FF]/30 cursor-pointer"
+              />
+              <span className="text-xs text-zinc-600 leading-relaxed">
+                J'accepte les{' '}
+                <a href="https://fleetdesk.fr/legal#cgu" target="_blank" rel="noopener noreferrer"
+                   className="text-[#0066FF] hover:underline font-medium">conditions générales d'utilisation</a>
+                {' '}et j'ai pris connaissance de la{' '}
+                <a href="https://fleetdesk.fr/legal#confidentialite" target="_blank" rel="noopener noreferrer"
+                   className="text-[#0066FF] hover:underline font-medium">politique de confidentialité</a>.
+              </span>
+            </label>
+          )}
+
           <button
             type="submit"
-            disabled={loading || (mode === 'signup' && password !== confirm && confirm.length > 0)}
+            disabled={loading || (mode === 'signup' && (!acceptedTerms || (password !== confirm && confirm.length > 0)))}
             className="w-full bg-[#0066FF] hover:bg-[#0052D6] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl py-2.5 transition-all duration-150 shadow-sm"
           >
             {loading
@@ -294,7 +320,7 @@ export default function Login() {
         </p>
       </div>
 
-      <p className="mt-6 text-xs text-zinc-500/70">© 2025 FleetDesk</p>
+      <p className="mt-6 text-xs text-zinc-500/70">© {new Date().getFullYear()} FleetDesk</p>
     </div>
   )
 }

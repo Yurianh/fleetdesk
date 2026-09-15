@@ -80,6 +80,12 @@ export default function ContactForm() {
         <textarea required rows={5} value={form.message} onChange={set('message')} placeholder="Comment pouvons-nous vous aider ?"
           className="w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30 placeholder:text-zinc-400 resize-none" />
       </div>
+      <p className="text-[11px] text-zinc-500 leading-relaxed">
+        Les informations saisies servent uniquement à répondre à votre demande et ne sont transmises à personne.
+        Vous pouvez demander leur suppression à tout moment —{' '}
+        <a href="/legal#confidentialite" className="underline underline-offset-2 hover:text-zinc-800">politique de confidentialité</a>.
+      </p>
+
       <button type="submit" disabled={sending}
         className="w-full bg-[#0066FF] hover:bg-[#0052D6] disabled:opacity-60 text-white text-sm font-semibold py-3 rounded-lg transition-colors">
         {sending ? 'Envoi…' : 'Envoyer le message'}
