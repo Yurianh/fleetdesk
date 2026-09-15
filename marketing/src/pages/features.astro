@@ -91,8 +91,19 @@ const categories = [
       {
         title: 'Centre d\'alertes',
         desc: "Documents, contrôles techniques et entretiens à échéance, priorisés en un seul endroit. Vous voyez ce qui demande une action.",
-        details: ['Priorité : action immédiate (rouge) ou à surveiller (orange)', 'Véhicules et conducteurs réunis', 'Chaque échéance détectée avant qu\'il soit trop tard'],
+        details: ['Priorité : action immédiate ou à surveiller', 'Véhicules et conducteurs réunis', 'Chaque échéance détectée avant qu\'il soit trop tard'],
         icon: ICONS.bell,
+        bg: 'bg-blue-50', color: 'text-[#0066FF]', accentBg: 'bg-[#0066FF]',
+      },
+      {
+        title: 'Alertes par email',
+        desc: "Vous n'avez pas à ouvrir FleetDesk pour savoir ce qui arrive : le récapitulatif des échéances des 30 prochains jours vous parvient par email.",
+        details: [
+          'Contrôles techniques, documents conducteurs et entretiens réunis',
+          'Une fois par semaine au plus — sauf si une échéance passe sous 7 jours',
+          'Aucun email si votre flotte n\'a rien à traiter',
+        ],
+        icon: ICONS.document,
         bg: 'bg-blue-50', color: 'text-[#0066FF]', accentBg: 'bg-[#0066FF]',
       },
     ],
