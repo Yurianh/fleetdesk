@@ -190,7 +190,9 @@ BEGIN
          CURRENT_DATE + r.remaining,
          now() - (interval '1 day' * (t.validity - r.remaining))
   FROM (
-    SELECT id, name, (row_number() OVER (ORDER BY name)) - 1 AS idx
+    -- row_number() renvoie un bigint : sans la conversion, « date - bigint »
+    -- n'a pas d'opérateur et l'insertion échoue.
+    SELECT id, name, (row_number() OVER (ORDER BY name))::int - 1 AS idx
     FROM drivers WHERE user_id = org
   ) d
   CROSS JOIN (VALUES
@@ -203,7 +205,7 @@ BEGIN
     ('visite_medecin',          365, 6)
   ) AS t(type, validity, ord)
   CROSS JOIN LATERAL (
-    SELECT 60 + ((d.idx * 37 + t.ord * 53) % GREATEST(t.validity - 120, 1)) AS remaining
+    SELECT (60 + ((d.idx * 37 + t.ord * 53) % GREATEST(t.validity - 120, 1)))::int AS remaining
   ) r;
 
   -- La visite médicale de Sophie Renard arrive à échéance dans 21 jours :
