@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Densité — voir toute la flotte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --brand:#0066FF; --brand-tint:#E5EEFF;
+  --ink:#0F172A; --ink-2:#334155; --muted:#64748B; --faint:#94A3B8;
+  --line:#E2E8F0; --line-soft:#F1F5F9; --ground:#F5F7FA;
+  --amber-bg:#FEF3C7; --amber-soft:#FFFBEB; --amber-line:#FDE68A; --amber-ink:#78350F; --amber-dot:#D97706;
+  --zinc-dot:#A1A1AA; --ok-ink:#065F46; --ok-dot:#10B981;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:'Onest',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+
+.shell{display:grid;grid-template-columns:216px 1fr;min-height:100vh}
+.side{background:#fff;border-right:1px solid var(--line);padding:16px 11px}
+.side .brand{display:flex;gap:9px;align-items:center;padding:4px 8px 16px}
+.side .logo{width:28px;height:28px;border-radius:8px;background:var(--brand);
+  display:grid;place-items:center;color:#fff;font-size:12px;font-weight:700}
+.side .brand b{font-size:13.5px;font-weight:600;display:block;line-height:1.2}
+.side .brand span{font-size:10.5px;color:var(--faint)}
+.side .grp{font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--faint);padding:13px 10px 5px}
+.side a{display:block;padding:7px 10px;border-radius:8px;font-size:13px;color:var(--ink-2);text-decoration:none}
+.side a.on{background:var(--brand-tint);color:var(--brand);font-weight:600}
+
+.page{padding:22px 26px 60px}
+h1{font-size:26px;font-weight:700;letter-spacing:-.025em;margin:0}
+.sub{font-size:13.5px;color:var(--muted);margin:4px 0 0}
+.head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px}
+.btn{font:inherit;font-size:13px;font-weight:600;border-radius:9px;padding:8px 14px;
+  border:1px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.search{font:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--line);
+  border-radius:9px;background:#fff;min-width:230px}
+.seg{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px}
+.seg button{font:inherit;font-size:12.5px;font-weight:600;color:var(--muted);background:none;
+  border:0;border-radius:7px;padding:6px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--brand-tint);color:var(--brand)}
+.bar .sep{flex:1}
+
+.meter{font-size:12px;color:var(--faint);margin:0 0 16px;display:flex;gap:18px;flex-wrap:wrap}
+.meter b{color:var(--ink-2);font-weight:600;font-variant-numeric:tabular-nums}
+
+.grouphead{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:600;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:20px 0 10px;cursor:pointer}
+.grouphead:first-child{margin-top:0}
+.grouphead .d{width:7px;height:7px;border-radius:99px;background:var(--zinc-dot)}
+.grouphead.warn{color:var(--amber-ink)} .grouphead.warn .d{background:var(--amber-dot)}
+.grouphead.good{color:var(--ok-ink)} .grouphead.good .d{background:var(--ok-dot)}
+.grouphead .caret{margin-left:2px;font-size:10px;opacity:.6}
+
+.grid{display:grid;gap:12px}
+.mode-confort .grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.mode-compact .grid{grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:10px}
+
+/* ── Carte ────────────────────────────────────────────────────────── */
+.c{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 17px;
+  display:grid;gap:12px;cursor:pointer;transition:box-shadow .15s}
+.c:hover{box-shadow:0 5px 16px rgba(15,23,42,.06)}
+.c.warn{border-color:var(--amber-line)}
+.c .hd{font-size:12px;color:var(--faint);display:flex;gap:6px;align-items:baseline;min-width:0}
+.c .hd b{font-size:12.5px;font-weight:600;color:var(--ink-2);flex:none}
+.c .hd span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.c .say{font-size:17px;font-weight:600;letter-spacing:-.02em;line-height:1.25}
+.c.warn .say{color:var(--amber-ink)}
+.c .say small{display:block;font-size:12px;font-weight:400;color:var(--muted);margin-top:3px;letter-spacing:0}
+.c .mini{position:relative;height:10px}
+.c .mini .rule{position:absolute;left:0;right:0;top:4px;height:2px;background:var(--line-soft);border-radius:99px}
+.c .mini .today{position:absolute;top:0;height:9px;width:2px;background:#CBD5E1;border-radius:99px}
+.c .mini .pin{position:absolute;top:1px;width:7px;height:7px;border-radius:99px;
+  background:var(--zinc-dot);transform:translateX(-50%)}
+.c .mini .pin.amber{background:var(--amber-dot)}
+.c .ft{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;
+  color:var(--muted);padding-top:10px;border-top:1px solid var(--line-soft)}
+.c .ft .km{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink-2)}
+
+/* compact : la phrase secondaire et le pied disparaissent */
+.mode-compact .c{padding:13px 15px;gap:10px;border-radius:12px}
+.mode-compact .c .say{font-size:15px}
+.mode-compact .c .say small{display:none}
+.mode-compact .c .ft{display:none}
+
+/* ── Rangée ───────────────────────────────────────────────────────── */
+.rows{display:grid;gap:5px}
+.r{background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 16px;
+  display:grid;grid-template-columns:4px 108px minmax(0,1fr) 116px 150px 96px;gap:14px;
+  align-items:center;cursor:pointer;font-size:13px}
+.r:hover{box-shadow:0 2px 8px rgba(15,23,42,.05)}
+.r.warn{border-color:var(--amber-line);background:var(--amber-soft)}
+.r .stripe{height:18px;border-radius:99px;background:var(--ok-dot)}
+.r.warn .stripe{background:var(--amber-dot)}
+.r.watch .stripe{background:var(--zinc-dot)}
+.r .plate{font-weight:700;letter-spacing:-.01em;font-size:13.5px}
+.r .model{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.r .due{font-weight:600;color:var(--ink-2)}
+.r.warn .due{color:var(--amber-ink)}
+.r .km{font-variant-numeric:tabular-nums;color:var(--muted);text-align:right}
+.r .who{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.note{background:#0B1220;color:#C7D2E8;border-radius:13px;padding:15px 19px;
+  font-size:13px;line-height:1.6;margin-top:26px;max-width:80ch}
+.note b{color:#fff}
+.collapsed{display:none}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="logo">F</span><span><b>FleetDesk</b><span>Gestion de flotte</span></span></div>
+    <a href="#">Tableau de bord</a>
+    <div class="grp">Flotte</div>
+    <a href="#" class="on">Véhicules</a><a href="#">Conducteurs</a><a href="#">Affectations</a>
+    <div class="grp">Opérations</div>
+    <a href="#">Carburant &amp; Kilométrage</a><a href="#">Maintenance</a>
+    <a href="#">Contrôles tech.</a><a href="#">Lavages</a><a href="#">Rapports</a>
+  </aside>
+
+  <main class="page" id="page">
+    <div class="head">
+      <div><h1>Véhicules</h1><p class="sub" id="count"></p></div>
+      <div style="display:flex;gap:9px">
+        <button class="btn">⤓ Exporter</button>
+        <button class="btn primary">+ Ajouter</button>
+      </div>
+    </div>
+
+    <div class="bar">
+      <input class="search" placeholder="Plaque, modèle, conducteur…">
+      <span class="sep"></span>
+      <div class="seg" id="modes">
+        <button data-mode="confort" aria-pressed="true">Confort</button>
+        <button data-mode="compact" aria-pressed="false">Compact</button>
+        <button data-mode="liste"   aria-pressed="false">Liste</button>
+        <button data-mode="priorite" aria-pressed="false">Priorité</button>
+      </div>
+    </div>
+
+    <p class="meter" id="meter"></p>
+
+    <div id="out"></div>
+
+    <div class="note" id="note"></div>
+  </main>
+</div>
+
+<script>
+// ── Trente véhicules, pour que la question d'échelle soit réelle ──────
+const MODELS = [
+  ['Renault','Master'],['Peugeot','Boxer'],['Citroën','Jumpy'],['Ford','Transit'],
+  ['Mercedes','Sprinter'],['Renault','Trafic'],['Peugeot','Partner'],['Citroën','Berlingo'],
+  ['Fiat','Ducato'],['Renault','Kangoo'],['Ford','Custom'],['Opel','Vivaro'],
+  ['Volkswagen','Crafter'],['Toyota','Proace'],['Mercedes','Vito'],
+];
+const DRIVERS = ['Karim Aïssa','Sophie Renard','Marc Lefebvre','Amel Benali','Thomas Sanchez',
+  'Julien Mercier','Nadia Cherif','Pierre Dubois','Laura Fontaine','Ahmed Belkacem',
+  'Céline Roux','David Martinez',null,null,null];
+
+const L = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+const VEHICLES = Array.from({length: 30}, (_, i) => {
+  const [make, model] = MODELS[i % MODELS.length];
+  const plate = `${L[i%23]}${L[(i*3+5)%23]}-${100+i*27%900}-${L[(i*7+2)%23]}${L[(i*5+9)%23]}`;
+  const km = 18000 + (i * 7919) % 190000;
+  // Trois véhicules en retard, quatre imminents, le reste au calme.
+  const state = i < 3 ? 'warn' : i < 7 ? 'soon' : (i % 5 === 0 ? 'watch' : 'ok');
+  const days = i < 3 ? -(12 + i * 41) : i < 7 ? 4 + i * 5 : 40 + (i * 13) % 250;
+  return {
+    plate, make, model, km, state, days,
+    driver: DRIVERS[i % DRIVERS.length],
+    say: i < 3 ? `Contrôle technique expiré depuis ${Math.abs(days)} jours`
+       : i < 7 ? `Contrôle technique dans ${days} jours`
+       : (i % 5 === 0 ? `Aucun relevé depuis ${18 + i} jours`
+                      : `Révision dans ${(3 + i % 9) * 1200} km`),
+    sub: i < 3 ? 'Révision également dépassée'
+       : i < 7 ? 'Puis révision cet automne'
+       : 'Rien d\'autre avant le printemps',
+    pins: i < 3 ? [1] : i < 7 ? [5 + i * 2, 55 + i] : [30 + (i * 11) % 60],
+  };
+});
+
+const out = document.getElementById('out');
+const meter = document.getElementById('meter');
+const note = document.getElementById('note');
+const page = document.getElementById('page');
+let mode = 'confort';
+let openGroups = { warn: true, soon: true, calm: true };
+
+const group = v => v.state === 'warn' ? 'warn' : v.state === 'soon' ? 'soon' : 'calm';
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+function card(v){
+  const pins = v.pins.map(p => `<div class="pin${v.state==='warn'?' amber':''}" style="left:${p}%"></div>`).join('');
+  return `<article class="c${v.state==='warn'||v.state==='soon'?' warn':''}">
+    <div class="hd"><b>${v.plate}</b><span>${v.make} ${v.model}</span></div>
+    <div class="say">${esc(v.say)}<small>${esc(v.sub)}</small></div>
+    <div class="mini"><div class="rule"></div><div class="today" style="left:1%"></div>${pins}</div>
+    <div class="ft"><span>${v.driver ? esc(v.driver) : 'Non affecté'}</span>
+      <span class="km">${v.km.toLocaleString('fr-FR')} km</span></div>
+  </article>`;
+}
+
+function row(v){
+  const cls = v.state==='warn'||v.state==='soon' ? 'warn' : v.state==='watch' ? 'watch' : '';
+  return `<div class="r ${cls}">
+    <div class="stripe"></div>
+    <div class="plate">${v.plate}</div>
+    <div class="model">${v.make} ${v.model}</div>
+    <div class="who">${v.driver ? esc(v.driver) : '—'}</div>
+    <div class="due">${esc(v.say.replace('Contrôle technique','CT').replace('Aucun relevé depuis','Sans relevé ·'))}</div>
+    <div class="km">${v.km.toLocaleString('fr-FR')} km</div>
+  </div>`;
+}
+
+const GROUPS = [
+  { key:'warn', cls:'warn', label:'À traiter' },
+  { key:'soon', cls:'',     label:'Bientôt' },
+  { key:'calm', cls:'good', label:'À jour' },
+];
+
+function render(){
+  page.className = 'page mode-' + mode;
+  const buckets = { warn:[], soon:[], calm:[] };
+  VEHICLES.forEach(v => buckets[group(v)].push(v));
+  document.getElementById('count').textContent =
+    `${VEHICLES.length} véhicules · ${buckets.warn.length} demandent une action`;
+
+  let html = '';
+  for (const g of GROUPS){
+    const list = buckets[g.key];
+    if (!list.length) continue;
+    const open = openGroups[g.key];
+
+    if (mode === 'liste'){
+      html += `<div class="grouphead ${g.cls}" data-g="${g.key}"><span class="d"></span>${g.label} · ${list.length}<span class="caret">${open?'▾':'▸'}</span></div>`;
+      html += `<div class="rows${open?'':' collapsed'}">${list.map(row).join('')}</div>`;
+    } else if (mode === 'priorite'){
+      // Cartes pour ce qui demande une action, rangées pour le reste.
+      html += `<div class="grouphead ${g.cls}" data-g="${g.key}"><span class="d"></span>${g.label} · ${list.length}<span class="caret">${open?'▾':'▸'}</span></div>`;
+      if (g.key === 'calm')
+        html += `<div class="rows${open?'':' collapsed'}">${list.map(row).join('')}</div>`;
+      else
+        html += `<div class="grid${open?'':' collapsed'}" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr))">${list.map(card).join('')}</div>`;
+    } else {
+      html += `<div class="grouphead ${g.cls}" data-g="${g.key}"><span class="d"></span>${g.label} · ${list.length}<span class="caret">${open?'▾':'▸'}</span></div>`;
+      html += `<div class="grid${open?'':' collapsed'}">${list.map(card).join('')}</div>`;
+    }
+  }
+  out.innerHTML = html;
+
+  out.querySelectorAll('.grouphead').forEach(h => h.addEventListener('click', () => {
+    openGroups[h.dataset.g] = !openGroups[h.dataset.g];
+    render();
+  }));
+
+  measure();
+}
+
+function measure(){
+  requestAnimationFrame(() => {
+    const h = out.scrollHeight;
+    const per = h / VEHICLES.length;
+    const fold = window.innerHeight - out.getBoundingClientRect().top - 24;
+    const visible = Math.max(0, Math.floor(fold / per));
+    meter.innerHTML =
+      `Hauteur totale <b>${Math.round(h)} px</b>` +
+      `<span>Par véhicule <b>${per.toFixed(1)} px</b></span>` +
+      `<span>Visibles sans défiler <b>${Math.min(visible, VEHICLES.length)} / ${VEHICLES.length}</b></span>`;
+
+    const NOTES = {
+      confort: `<b>Confort.</b> Quatre colonnes, la phrase entière, le conducteur et le kilométrage.
+        C'est le mode de lecture, pas le mode de survol. À trente véhicules il faut défiler, et c'est
+        assumé : on ne survole pas trente véhicules, on en traite trois.`,
+      compact: `<b>Compact.</b> Mêmes cartes, colonnes plus étroites, phrase secondaire et pied retirés.
+        On double presque la densité sans changer la grammaire — la phrase reste la dominante.
+        C'est le bon réglage par défaut au-delà de quinze véhicules.`,
+      liste: `<b>Liste.</b> Une rangée par véhicule, colonnes alignées, comparable à l'œil.
+        Le plus dense, et le seul qui permette de comparer deux kilométrages sans les chercher.
+        La carte n'est pas perdue : c'est la même donnée, mise à plat.`,
+      priorite: `<b>Priorité.</b> Le compromis, et celui que je recommande. Ce qui demande une action
+        reste en cartes — lisible, cliquable, avec sa phrase. Tout ce qui est à jour bascule en
+        rangées compactes, repliables d'un clic sur l'en-tête. <b>La densité suit l'importance</b>,
+        au lieu d'être un réglage que l'utilisateur doit deviner.`,
+    };
+    note.innerHTML = NOTES[mode];
+  });
+}
+
+document.getElementById('modes').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  mode = b.dataset.mode;
+  document.querySelectorAll('#modes button').forEach(x =>
+    x.setAttribute('aria-pressed', String(x === b)));
+  render();
+});
+window.addEventListener('resize', measure);
+render();
+</script>
+</body>
+</html>

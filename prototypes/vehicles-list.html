@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Liste des véhicules — variantes de mise en page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --brand:#0066FF; --brand-deep:#0052D6; --brand-tint:#E5EEFF;
+  --ink:#0F172A; --ink-2:#334155; --muted:#64748B; --faint:#94A3B8;
+  --line:#E2E8F0; --line-soft:#F1F5F9; --ground:#F5F7FA; --card:#FFFFFF;
+  --amber-bg:#FEF3C7; --amber-soft:#FFFBEB; --amber-line:#FDE68A; --amber-ink:#78350F; --amber-dot:#D97706;
+  --amber-lite:#FFFBEB;
+  --zinc-bg:#F4F4F5; --zinc-ink:#3F3F46; --zinc-dot:#A1A1AA;
+  --ok-bg:#ECFDF5; --ok-ink:#065F46; --ok-dot:#10B981;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:'Onest',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+
+.switcher{position:sticky;top:0;z-index:50;background:#0B1220;color:#fff;
+  padding:10px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.switcher b{font-size:13px;font-weight:600;margin-right:6px;opacity:.75}
+.switcher button{font:inherit;font-size:13px;font-weight:500;color:#C7D2E8;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+  border-radius:8px;padding:6px 12px;cursor:pointer}
+.switcher button:hover{background:rgba(255,255,255,.14)}
+.switcher button[aria-current="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.switcher .note{margin-left:auto;font-size:12px;color:#8FA0C0}
+
+.shell{display:grid;grid-template-columns:232px 1fr;min-height:calc(100vh - 44px)}
+.side{background:#fff;border-right:1px solid var(--line);padding:18px 12px}
+.side .brand{display:flex;gap:10px;align-items:center;padding:4px 8px 18px}
+.side .logo{width:30px;height:30px;border-radius:9px;background:var(--brand);
+  display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700}
+.side .brand b{font-size:14px;font-weight:600;display:block;line-height:1.2}
+.side .brand span{font-size:11px;color:var(--faint)}
+.side .grp{font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--faint);padding:14px 10px 6px}
+.side a{display:block;padding:8px 10px;border-radius:9px;font-size:13.5px;color:var(--ink-2);text-decoration:none}
+.side a.on{background:var(--brand-tint);color:var(--brand);font-weight:600}
+.main{padding:24px 28px 72px;overflow:auto}
+.wrap{max-width:1500px;margin:0 auto}
+
+h1{font-size:30px;font-weight:700;letter-spacing:-.025em;margin:0}
+.sub{font-size:14px;color:var(--muted);margin:4px 0 0}
+.head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px}
+.btn{font:inherit;font-size:13.5px;font-weight:600;border-radius:10px;padding:9px 15px;
+  border:1px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.primary[disabled]{background:#CBD5E1;border-color:#CBD5E1;cursor:not-allowed}
+.btn.ghost{background:var(--brand-tint);border-color:transparent;color:var(--brand)}
+.btn.sm{font-size:12.5px;padding:6px 11px}
+.search{width:100%;max-width:420px;font:inherit;font-size:14px;padding:11px 14px;
+  border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+.search::placeholder{color:var(--faint)}
+
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12.5px;font-weight:600;color:var(--muted);padding:12px 20px;
+  border-bottom:1px solid var(--line-soft);white-space:nowrap}
+td{padding:14px 20px;border-bottom:1px solid var(--line-soft);color:var(--ink-2)}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#FBFCFE}
+td.plate{font-weight:600;color:var(--ink)}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.grouprow td{background:#FCFCFD;padding:9px 20px;font-size:11px;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
+  padding:4px 10px;border-radius:99px;white-space:nowrap}
+.chip .dot{width:6px;height:6px;border-radius:99px}
+.chip.urgent{background:var(--amber-bg);color:var(--amber-ink)} .chip.urgent .dot{background:var(--amber-dot)}
+.chip.soon{background:var(--amber-soft);color:var(--amber-ink);border:1px solid var(--amber-line)} .chip.soon .dot{background:var(--amber-dot)}
+.chip.watch{background:var(--zinc-bg);color:var(--zinc-ink)} .chip.watch .dot{background:var(--zinc-dot)}
+.chip.ok{background:var(--ok-bg);color:var(--ok-ink)} .chip.ok .dot{background:var(--ok-dot)}
+.chip.none{background:#fff;color:var(--faint);border:1px dashed var(--line)}
+.who{display:inline-flex;align-items:center;gap:8px}
+.who i{width:24px;height:24px;border-radius:99px;background:var(--brand-tint);color:var(--brand);
+  display:grid;place-items:center;font-size:10px;font-weight:700;font-style:normal;flex:none}
+.who.empty{color:var(--faint)}
+.who.empty i{background:var(--line-soft);color:var(--faint)}
+
+.filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.filters .f{font:inherit;font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:99px;
+  background:#fff;border:1px solid var(--line);color:var(--muted);cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px}
+.filters .f.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.filters .f.alert{border-color:var(--amber-line);background:var(--amber-soft);color:var(--amber-ink)}
+.filters .f.alert.on{background:var(--amber-dot);border-color:var(--amber-dot);color:#fff}
+.filters .count{font-weight:700;opacity:.65}
+.filters .sep{flex:1}
+
+.quota{display:inline-flex;align-items:center;gap:9px;font-size:13px;color:var(--muted);
+  background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.quota .bar{width:70px;height:5px;border-radius:99px;background:var(--line-soft);overflow:hidden}
+.quota .bar i{display:block;height:100%;background:var(--amber-dot)}
+.quota.over{border-color:var(--amber-line);background:var(--amber-soft);color:var(--amber-ink)}
+
+.banner{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:14px;
+  padding:14px 18px;margin-bottom:16px;color:var(--amber-ink)}
+.banner b{font-size:14.5px;font-weight:600}
+.banner p{margin:2px 0 0;font-size:13px;opacity:.85}
+
+/* cartes */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.vcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;
+  display:grid;gap:12px}
+.vcard.alert{border-color:var(--amber-line);background:var(--amber-lite)}
+.vcard .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.vcard .plate{font-size:16.5px;font-weight:700;letter-spacing:-.01em}
+.vcard .model{font-size:13px;color:var(--muted)}
+.vcard .facts{display:grid;gap:7px;font-size:13px;color:var(--muted)}
+.vcard .facts div{display:flex;justify-content:space-between;gap:10px}
+.vcard .facts b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+
+/* liste + aperçu */
+.split{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+.pick{padding:12px 16px;border-bottom:1px solid var(--line-soft);cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pick:last-child{border-bottom:0}
+.pick.on{background:var(--brand-tint)}
+.pick .plate{font-weight:600;font-size:14px}
+.pick .model{font-size:12.5px;color:var(--muted)}
+.peek{position:sticky;top:60px;display:grid;gap:14px}
+.peek .box{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.peek .boxhead{padding:13px 18px;border-bottom:1px solid var(--line-soft);font-size:14px;font-weight:600}
+.peek .boxbody{padding:16px 18px;display:grid;gap:11px;font-size:13.5px}
+.peek .boxbody div{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.peek .boxbody span{color:var(--muted)}
+
+.crit{max-width:1500px;margin:0 auto 20px;background:#0B1220;color:#C7D2E8;
+  border-radius:14px;padding:16px 20px;font-size:13.5px;line-height:1.55}
+.crit h3{margin:0 0 8px;font-size:14px;color:#fff;font-weight:600}
+.crit ul{margin:8px 0 0;padding-left:18px} .crit li{margin:3px 0}
+.crit .plus{color:#7EE8B0} .crit .minus{color:#F7B267}
+.variant{display:none} .variant[data-on]{display:block}
+</style>
+</head>
+<body>
+
+<div class="switcher">
+  <b>Liste des véhicules</b>
+  <button data-go="0" aria-current="true">0 · Actuel</button>
+  <button data-go="1">1 · Par urgence</button>
+  <button data-go="2">2 · Table + filtres</button>
+  <button data-go="3">3 · Cartes</button>
+  <button data-go="4">4 · Liste + aperçu</button>
+  <span class="note">Maquette statique — rien de déployé</span>
+</div>
+
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="logo">F</span><span><b>FleetDesk</b><span>Gestion de flotte</span></span></div>
+    <a href="#">Tableau de bord</a>
+    <div class="grp">Flotte</div>
+    <a href="#" class="on">Véhicules</a><a href="#">Conducteurs</a><a href="#">Affectations</a>
+    <div class="grp">Opérations</div>
+    <a href="#">Carburant &amp; Kilométrage</a><a href="#">Maintenance</a>
+    <a href="#">Contrôles tech.</a><a href="#">Lavages</a><a href="#">Rapports</a>
+  </aside>
+
+  <main class="main">
+
+  <!-- ══════════ 0 · ACTUEL ══════════ -->
+  <section class="variant" data-v="0" data-on>
+    <div class="crit">
+      <h3>Ce que fait la page aujourd'hui</h3>
+      Elle range les véhicules par affectation. Or l'affectation n'est presque jamais la raison
+      pour laquelle on ouvre cette page.
+      <ul>
+        <li class="minus">Les deux véhicules dont le CT est <b>expiré</b> sont relégués tout en bas, sous « Non affectés ». Ce qui brûle est ce qu'on voit en dernier.</li>
+        <li class="minus">« 8 / 5 véhicules » et un bouton d'ajout grisé, sans un mot d'explication. On croit à un bug avant de comprendre qu'on est au-delà du quota.</li>
+        <li class="minus">La colonne « Statut » ne dit pas de quoi — c'est le contrôle technique, mais rien ne le nomme.</li>
+        <li class="minus">Aucun filtre ni tri : sur trente véhicules, retrouver les CT à refaire demande de lire toute la liste.</li>
+        <li class="minus">Le tableau s'arrête à 1 300 px sur un écran de 2 000. Quatre colonnes utiles, un tiers d'écran vide.</li>
+        <li class="plus">Le regroupement, les puces d'état et la ligne colorée sont propres. La matière est bonne, l'axe de tri est faux.</li>
+      </ul>
+    </div>
+    <div class="wrap">
+      <div class="head">
+        <div><h1>Véhicules</h1><p class="sub">8 véhicules · 5 affectés</p></div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-size:13px;color:var(--muted)">8 / 5 véhicules</span>
+          <button class="btn">⤓ Exporter</button>
+          <button class="btn primary" disabled>+ Ajouter un véhicule</button>
+        </div>
+      </div>
+      <input class="search" placeholder="Rechercher par plaque ou modèle…">
+      <div class="card" style="margin-top:18px;overflow:hidden">
+        <table>
+          <thead><tr><th>Modèle</th><th>Plaque</th><th>Conducteur</th><th>Kilométrage</th><th>Statut</th></tr></thead>
+          <tbody>
+            <tr class="grouprow"><td colspan="5">● Affectés 5</td></tr>
+            <tr><td class="plate">Kangoo</td><td>AB-123-CD</td><td><span class="who"><i>TD</i>Thomas Dubois</span></td><td class="num">53 200 km</td><td><span class="chip soon"><i class="dot"></i>Bientôt 8j</span></td></tr>
+            <tr><td class="plate">Partner</td><td>EF-456-GH</td><td><span class="who"><i>ML</i>Marie Lefebvre</span></td><td class="num">62 600 km</td><td><span class="chip ok"><i class="dot"></i>Valide</span></td></tr>
+            <tr><td class="plate">Berlingo</td><td>IJ-789-KL</td><td><span class="who"><i>AM</i>Antoine Martin</span></td><td class="num">43 800 km</td><td><span class="chip ok"><i class="dot"></i>Valide</span></td></tr>
+            <tr><td class="plate">Caddy</td><td>PQ-345-RS</td><td><span class="who"><i>SB</i>Sophie Bernard</span></td><td class="num">55 400 km</td><td><span class="chip ok"><i class="dot"></i>Valide</span></td></tr>
+            <tr><td class="plate">Trafic</td><td>TU-678-VW</td><td><span class="who"><i>LM</i>Lucas Moreau</span></td><td class="num">81 600 km</td><td><span class="chip ok"><i class="dot"></i>Valide</span></td></tr>
+            <tr class="grouprow"><td colspan="5">● Non affectés 3</td></tr>
+            <tr><td class="plate">Transit</td><td>LM-012-NO</td><td><span class="who empty"><i>—</i>Non affecté</span></td><td class="num">101 400 km</td><td><span class="chip urgent"><i class="dot"></i>Expiré</span></td></tr>
+            <tr><td class="plate">Expert</td><td>XY-901-ZA</td><td><span class="who empty"><i>—</i>Non affecté</span></td><td class="num">27 200 km</td><td><span class="chip ok"><i class="dot"></i>Valide</span></td></tr>
+            <tr><td class="plate">Sprinter</td><td>BC-234-DE</td><td><span class="who empty"><i>—</i>Non affecté</span></td><td class="num">112 000 km</td><td><span class="chip urgent"><i class="dot"></i>Expiré</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 1 · PAR URGENCE ══════════ -->
+  <section class="variant" data-v="1">
+    <div class="crit">
+      <h3>Variante 1 · Rangée par ce qui brûle</h3>
+      Même tableau, même colonnes. On change l'axe de regroupement : l'état remplace l'affectation,
+      et le quota s'explique au lieu de bloquer en silence.
+      <ul>
+        <li class="plus">Les deux CT expirés ouvrent la page. C'est la seule chose qui coûte de l'argent aujourd'hui.</li>
+        <li class="plus">Le bandeau de quota dit ce qui se passe et quoi faire — plus de bouton grisé inexpliqué.</li>
+        <li class="plus">L'affectation reste lisible dans sa colonne ; on n'a rien perdu, on a changé l'ordre.</li>
+        <li class="plus">Coût de mise en œuvre le plus bas des quatre : une fonction de tri et un bandeau.</li>
+        <li class="minus">Pour « qui conduit quoi », il faut maintenant lire la colonne au lieu de lire les groupes.</li>
+      </ul>
+    </div>
+    <div class="wrap">
+      <div class="head">
+        <div><h1>Véhicules</h1><p class="sub">8 véhicules · 2 demandent une action</p></div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="quota over">8 / 5 <span class="bar"><i style="width:100%"></i></span> plan Starter</span>
+          <button class="btn">⤓ Exporter</button>
+          <button class="btn primary">+ Ajouter</button>
+        </div>
+      </div>
+
+      <div class="banner">
+        <div><b>Vous suivez 8 véhicules pour un plan qui en couvre 5.</b>
+          <p>Rien n'est bloqué et rien ne sera supprimé. Passez au plan Pro pour ajouter de nouveaux véhicules.</p></div>
+        <button class="btn" style="background:#fff">Voir les formules</button>
+      </div>
+
+      <input class="search" placeholder="Rechercher par plaque, modèle ou conducteur…">
+
+      <div class="card" style="margin-top:18px;overflow:hidden">
+        <table>
+          <thead><tr><th>Véhicule</th><th>Conducteur</th><th>Kilométrage</th><th>Contrôle technique</th><th>Prochaine révision</th></tr></thead>
+          <tbody>
+            <tr class="grouprow" style="color:var(--amber-ink)"><td colspan="5">● À traiter 2</td></tr>
+            <tr style="background:var(--amber-lite)">
+              <td class="plate">LM-012-NO <span style="font-weight:400;color:var(--muted)">· Transit</span></td>
+              <td><span class="who empty"><i>—</i>Non affecté</span></td><td class="num">101 400 km</td>
+              <td><span class="chip urgent"><i class="dot"></i>expiré depuis 92 j</span></td>
+              <td class="num">dans 3 100 km</td>
+            </tr>
+            <tr style="background:var(--amber-lite)">
+              <td class="plate">BC-234-DE <span style="font-weight:400;color:var(--muted)">· Sprinter</span></td>
+              <td><span class="who empty"><i>—</i>Non affecté</span></td><td class="num">112 000 km</td>
+              <td><span class="chip urgent"><i class="dot"></i>expiré depuis 118 j</span></td>
+              <td class="num" style="color:var(--amber-ink)">dépassée</td>
+            </tr>
+            <tr class="grouprow"><td colspan="5">● À surveiller 1</td></tr>
+            <tr>
+              <td class="plate">AB-123-CD <span style="font-weight:400;color:var(--muted)">· Kangoo</span></td>
+              <td><span class="who"><i>TD</i>Thomas Dubois</span></td><td class="num">53 200 km</td>
+              <td><span class="chip soon"><i class="dot"></i>dans 8 j</span></td>
+              <td class="num">dans 12 900 km</td>
+            </tr>
+            <tr class="grouprow" style="color:var(--ok-ink)"><td colspan="5">● À jour 5</td></tr>
+            <tr><td class="plate">EF-456-GH <span style="font-weight:400;color:var(--muted)">· Partner</span></td><td><span class="who"><i>ML</i>Marie Lefebvre</span></td><td class="num">62 600 km</td><td><span class="chip ok"><i class="dot"></i>nov. 2026</span></td><td class="num">dans 9 400 km</td></tr>
+            <tr><td class="plate">IJ-789-KL <span style="font-weight:400;color:var(--muted)">· Berlingo</span></td><td><span class="who"><i>AM</i>Antoine Martin</span></td><td class="num">43 800 km</td><td><span class="chip ok"><i class="dot"></i>janv. 2028</span></td><td class="num">dans 11 200 km</td></tr>
+            <tr><td class="plate">PQ-345-RS <span style="font-weight:400;color:var(--muted)">· Caddy</span></td><td><span class="who"><i>SB</i>Sophie Bernard</span></td><td class="num">55 400 km</td><td><span class="chip ok"><i class="dot"></i>août 2027</span></td><td class="num">dans 7 250 km</td></tr>
+            <tr><td class="plate">TU-678-VW <span style="font-weight:400;color:var(--muted)">· Trafic</span></td><td><span class="who"><i>LM</i>Lucas Moreau</span></td><td class="num">81 600 km</td><td><span class="chip ok"><i class="dot"></i>févr. 2028</span></td><td class="num">dans 4 800 km</td></tr>
+            <tr><td class="plate">XY-901-ZA <span style="font-weight:400;color:var(--muted)">· Expert</span></td><td><span class="who empty"><i>—</i>Non affecté</span></td><td class="num">27 200 km</td><td><span class="chip ok"><i class="dot"></i>mai 2028</span></td><td class="num">dans 13 600 km</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 2 · TABLE + FILTRES ══════════ -->
+  <section class="variant" data-v="2">
+    <div class="crit">
+      <h3>Variante 2 · Table dense, filtrable, pleine largeur</h3>
+      La liste devient un outil de travail : on filtre, on trie, on exporte ce qu'on voit.
+      Pensée pour trente véhicules, pas pour huit.
+      <ul>
+        <li class="plus">« CT à refaire » est un filtre, pas une lecture. Un clic remplace le balayage de la liste.</li>
+        <li class="plus">Chaque en-tête trie. Trier par kilométrage répond à « lequel fatigue » sans passer par les rapports.</li>
+        <li class="plus">Toute la largeur est occupée : sept colonnes utiles au lieu de quatre.</li>
+        <li class="plus">L'export suit les filtres — on envoie exactement la liste qu'on regarde.</li>
+        <li class="minus">Plus dense, donc moins accueillant les premiers jours, quand la flotte fait cinq lignes.</li>
+        <li class="minus">Sept colonnes tiennent mal sous 1 300 px : il faut une version réduite pour portable.</li>
+      </ul>
+    </div>
+    <div class="wrap">
+      <div class="head">
+        <div><h1>Véhicules</h1><p class="sub">8 véhicules · 5 affectés · 2 demandent une action</p></div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="quota over">8 / 5 <span class="bar"><i style="width:100%"></i></span> Starter</span>
+          <button class="btn">⤓ Exporter la vue</button>
+          <button class="btn primary">+ Ajouter</button>
+        </div>
+      </div>
+
+      <div class="filters">
+        <input class="search" style="max-width:300px" placeholder="Plaque, modèle, conducteur…">
+        <button class="f alert on">CT à refaire <span class="count">2</span></button>
+        <button class="f">Révision proche <span class="count">1</span></button>
+        <button class="f">Non affectés <span class="count">3</span></button>
+        <button class="f">Documents manquants <span class="count">6</span></button>
+        <span class="sep"></span>
+        <button class="f">Trier : urgence ↓</button>
+      </div>
+
+      <div class="card" style="overflow:hidden">
+        <table>
+          <thead><tr>
+            <th>Plaque ↕</th><th>Modèle ↕</th><th>Conducteur ↕</th><th>Kilométrage ↕</th>
+            <th>Contrôle technique ↑</th><th>Révision ↕</th><th>Docs ↕</th><th>Dernier relevé ↕</th>
+          </tr></thead>
+          <tbody>
+            <tr style="background:var(--amber-lite)"><td class="plate">BC-234-DE</td><td>Sprinter</td><td><span class="who empty"><i>—</i>Non affecté</span></td><td class="num">112 000 km</td><td><span class="chip urgent"><i class="dot"></i>expiré · 118 j</span></td><td class="num" style="color:var(--amber-ink)">dépassée</td><td><span class="chip none">0/2</span></td><td class="num">il y a 34 j</td></tr>
+            <tr style="background:var(--amber-lite)"><td class="plate">LM-012-NO</td><td>Transit</td><td><span class="who empty"><i>—</i>Non affecté</span></td><td class="num">101 400 km</td><td><span class="chip urgent"><i class="dot"></i>expiré · 92 j</span></td><td class="num">3 100 km</td><td><span class="chip none">1/2</span></td><td class="num">il y a 12 j</td></tr>
+            <tr><td class="plate">AB-123-CD</td><td>Kangoo</td><td><span class="who"><i>TD</i>Thomas Dubois</span></td><td class="num">53 200 km</td><td><span class="chip soon"><i class="dot"></i>dans 8 j</span></td><td class="num">12 900 km</td><td><span class="chip none">0/2</span></td><td class="num">il y a 4 j</td></tr>
+            <tr><td class="plate">TU-678-VW</td><td>Trafic</td><td><span class="who"><i>LM</i>Lucas Moreau</span></td><td class="num">81 600 km</td><td><span class="chip ok"><i class="dot"></i>févr. 2028</span></td><td class="num">4 800 km</td><td><span class="chip ok">2/2</span></td><td class="num">il y a 6 j</td></tr>
+            <tr><td class="plate">PQ-345-RS</td><td>Caddy</td><td><span class="who"><i>SB</i>Sophie Bernard</span></td><td class="num">55 400 km</td><td><span class="chip ok"><i class="dot"></i>août 2027</span></td><td class="num">7 250 km</td><td><span class="chip none">1/2</span></td><td class="num">il y a 9 j</td></tr>
+            <tr><td class="plate">EF-456-GH</td><td>Partner</td><td><span class="who"><i>ML</i>Marie Lefebvre</span></td><td class="num">62 600 km</td><td><span class="chip ok"><i class="dot"></i>nov. 2026</span></td><td class="num">9 400 km</td><td><span class="chip none">1/2</span></td><td class="num">il y a 3 j</td></tr>
+            <tr><td class="plate">IJ-789-KL</td><td>Berlingo</td><td><span class="who"><i>AM</i>Antoine Martin</span></td><td class="num">43 800 km</td><td><span class="chip ok"><i class="dot"></i>janv. 2028</span></td><td class="num">11 200 km</td><td><span class="chip ok">2/2</span></td><td class="num">il y a 5 j</td></tr>
+            <tr><td class="plate">XY-901-ZA</td><td>Expert</td><td><span class="who empty"><i>—</i>Non affecté</span></td><td class="num">27 200 km</td><td><span class="chip ok"><i class="dot"></i>mai 2028</span></td><td class="num">13 600 km</td><td><span class="chip none">0/2</span></td><td class="num">il y a 21 j</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 3 · CARTES ══════════ -->
+  <section class="variant" data-v="3">
+    <div class="crit">
+      <h3>Variante 3 · Une carte par véhicule</h3>
+      Chaque véhicule porte ses trois échéances. On lit une flotte comme on lit un parking :
+      d'un coup d'œil, véhicule par véhicule.
+      <ul>
+        <li class="plus">Les deux véhicules en retard se repèrent à la couleur, sans lire une seule ligne.</li>
+        <li class="plus">Chaque carte porte plus d'informations qu'une ligne de tableau sans paraître dense.</li>
+        <li class="plus">Le seul format qui tienne vraiment sur téléphone — et le gérant consulte souvent depuis le sien.</li>
+        <li class="minus">Ne passe pas l'échelle : à trente véhicules, c'est un mur à faire défiler, impossible à comparer.</li>
+        <li class="minus">Pas de tri ni de colonnes : comparer deux kilométrages demande de chercher.</li>
+        <li class="minus">Mauvais pour l'export et pour la sélection multiple.</li>
+      </ul>
+    </div>
+    <div class="wrap">
+      <div class="head">
+        <div><h1>Véhicules</h1><p class="sub">8 véhicules · 2 demandent une action</p></div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="btn">⤓ Exporter</button><button class="btn primary">+ Ajouter</button>
+        </div>
+      </div>
+      <div class="filters">
+        <input class="search" style="max-width:300px" placeholder="Plaque, modèle, conducteur…">
+        <button class="f alert">À traiter <span class="count">2</span></button>
+        <button class="f">Non affectés <span class="count">3</span></button>
+      </div>
+      <div class="grid">
+        <div class="vcard alert">
+          <div class="top"><div><div class="plate">BC-234-DE</div><div class="model">Mercedes Sprinter</div></div>
+            <span class="chip urgent"><i class="dot"></i>CT expiré</span></div>
+          <div class="facts">
+            <div><span>Conducteur</span><b style="color:var(--faint);font-weight:500">non affecté</b></div>
+            <div><span>Kilométrage</span><b>112 000 km</b></div>
+            <div><span>Révision</span><b style="color:var(--amber-ink)">dépassée</b></div>
+            <div><span>Documents</span><b style="color:var(--faint);font-weight:500">0 / 2</b></div>
+          </div>
+        </div>
+        <div class="vcard alert">
+          <div class="top"><div><div class="plate">LM-012-NO</div><div class="model">Ford Transit</div></div>
+            <span class="chip urgent"><i class="dot"></i>CT expiré</span></div>
+          <div class="facts">
+            <div><span>Conducteur</span><b style="color:var(--faint);font-weight:500">non affecté</b></div>
+            <div><span>Kilométrage</span><b>101 400 km</b></div>
+            <div><span>Révision</span><b>dans 3 100 km</b></div>
+            <div><span>Documents</span><b style="color:var(--faint);font-weight:500">1 / 2</b></div>
+          </div>
+        </div>
+        <div class="vcard">
+          <div class="top"><div><div class="plate">AB-123-CD</div><div class="model">Renault Kangoo</div></div>
+            <span class="chip soon"><i class="dot"></i>CT dans 8 j</span></div>
+          <div class="facts">
+            <div><span>Conducteur</span><b>Thomas Dubois</b></div>
+            <div><span>Kilométrage</span><b>53 200 km</b></div>
+            <div><span>Révision</span><b>dans 12 900 km</b></div>
+            <div><span>Documents</span><b style="color:var(--faint);font-weight:500">0 / 2</b></div>
+          </div>
+        </div>
+        <div class="vcard">
+          <div class="top"><div><div class="plate">EF-456-GH</div><div class="model">Peugeot Partner</div></div>
+            <span class="chip ok"><i class="dot"></i>à jour</span></div>
+          <div class="facts">
+            <div><span>Conducteur</span><b>Marie Lefebvre</b></div>
+            <div><span>Kilométrage</span><b>62 600 km</b></div>
+            <div><span>Révision</span><b>dans 9 400 km</b></div>
+            <div><span>Documents</span><b style="color:var(--faint);font-weight:500">1 / 2</b></div>
+          </div>
+        </div>
+        <div class="vcard">
+          <div class="top"><div><div class="plate">IJ-789-KL</div><div class="model">Citroën Berlingo</div></div>
+            <span class="chip ok"><i class="dot"></i>à jour</span></div>
+          <div class="facts">
+            <div><span>Conducteur</span><b>Antoine Martin</b></div>
+            <div><span>Kilométrage</span><b>43 800 km</b></div>
+            <div><span>Révision</span><b>dans 11 200 km</b></div>
+            <div><span>Documents</span><b>2 / 2</b></div>
+          </div>
+        </div>
+        <div class="vcard">
+          <div class="top"><div><div class="plate">TU-678-VW</div><div class="model">Renault Trafic</div></div>
+            <span class="chip ok"><i class="dot"></i>à jour</span></div>
+          <div class="facts">
+            <div><span>Conducteur</span><b>Lucas Moreau</b></div>
+            <div><span>Kilométrage</span><b>81 600 km</b></div>
+            <div><span>Révision</span><b>dans 4 800 km</b></div>
+            <div><span>Documents</span><b>2 / 2</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 4 · LISTE + APERÇU ══════════ -->
+  <section class="variant" data-v="4">
+    <div class="crit">
+      <h3>Variante 4 · Liste à gauche, aperçu à droite</h3>
+      On sélectionne un véhicule et sa fiche s'ouvre à côté, sans quitter la liste.
+      Le va-et-vient liste → fiche → retour disparaît.
+      <ul>
+        <li class="plus">Passer en revue huit véhicules devient huit clics au lieu de huit allers-retours.</li>
+        <li class="plus">Les actions courantes — saisir un relevé, changer de conducteur — se font depuis l'aperçu.</li>
+        <li class="plus">Enchaîne naturellement avec la fiche véhicule en deux colonnes : même grammaire.</li>
+        <li class="minus">La liste perd un tiers de sa largeur, donc trois colonnes au lieu de sept.</li>
+        <li class="minus">Deux niveaux de détail à maintenir : l'aperçu et la fiche complète peuvent diverger.</li>
+        <li class="minus">Inutilisable tel quel sous 1 200 px — il faut replier l'aperçu en tiroir.</li>
+      </ul>
+    </div>
+    <div class="wrap">
+      <div class="head">
+        <div><h1>Véhicules</h1><p class="sub">8 véhicules · 2 demandent une action</p></div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="btn">⤓ Exporter</button><button class="btn primary">+ Ajouter</button>
+        </div>
+      </div>
+      <div class="filters">
+        <input class="search" style="max-width:260px" placeholder="Plaque, modèle…">
+        <button class="f alert">À traiter <span class="count">2</span></button>
+        <button class="f">Non affectés <span class="count">3</span></button>
+      </div>
+
+      <div class="split">
+        <div class="card" style="overflow:hidden">
+          <div class="pick" style="background:var(--amber-lite)">
+            <div><div class="plate">BC-234-DE</div><div class="model">Sprinter · non affecté</div></div>
+            <span class="chip urgent"><i class="dot"></i>CT expiré</span></div>
+          <div class="pick on">
+            <div><div class="plate">AB-123-CD</div><div class="model">Kangoo · Thomas Dubois</div></div>
+            <span class="chip soon"><i class="dot"></i>8 j</span></div>
+          <div class="pick" style="background:var(--amber-lite)">
+            <div><div class="plate">LM-012-NO</div><div class="model">Transit · non affecté</div></div>
+            <span class="chip urgent"><i class="dot"></i>CT expiré</span></div>
+          <div class="pick"><div><div class="plate">EF-456-GH</div><div class="model">Partner · Marie Lefebvre</div></div><span class="chip ok"><i class="dot"></i>à jour</span></div>
+          <div class="pick"><div><div class="plate">IJ-789-KL</div><div class="model">Berlingo · Antoine Martin</div></div><span class="chip ok"><i class="dot"></i>à jour</span></div>
+          <div class="pick"><div><div class="plate">PQ-345-RS</div><div class="model">Caddy · Sophie Bernard</div></div><span class="chip ok"><i class="dot"></i>à jour</span></div>
+          <div class="pick"><div><div class="plate">TU-678-VW</div><div class="model">Trafic · Lucas Moreau</div></div><span class="chip ok"><i class="dot"></i>à jour</span></div>
+          <div class="pick"><div><div class="plate">XY-901-ZA</div><div class="model">Expert · non affecté</div></div><span class="chip ok"><i class="dot"></i>à jour</span></div>
+        </div>
+
+        <div class="peek">
+          <div class="box">
+            <div class="boxhead">AB-123-CD · Renault Kangoo</div>
+            <div class="boxbody">
+              <div><span>Conducteur</span><b>Thomas Dubois</b></div>
+              <div><span>Kilométrage</span><b>53 200 km</b></div>
+              <div><span>Mise en circulation</span><b>18 avr. 2021</b></div>
+            </div>
+            <div style="padding:0 18px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <button class="btn sm ghost" style="justify-content:center">Saisir un relevé</button>
+              <button class="btn sm" style="justify-content:center">Ouvrir la fiche</button>
+            </div>
+          </div>
+          <div class="box">
+            <div class="boxhead">Ce qui tombe</div>
+            <div class="boxbody">
+              <div><span>Contrôle technique</span><span class="chip soon"><i class="dot"></i>dans 8 j</span></div>
+              <div><span>Révision</span><span class="chip watch"><i class="dot"></i>12 900 km</span></div>
+              <div><span>Documents</span><span class="chip none">0 / 2</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<script>
+  const buttons = document.querySelectorAll('.switcher button');
+  const panels  = document.querySelectorAll('.variant');
+  buttons.forEach(b => b.addEventListener('click', () => {
+    buttons.forEach(x => x.setAttribute('aria-current', String(x === b)));
+    panels.forEach(p => p.dataset.v === b.dataset.go
+      ? p.setAttribute('data-on', '')
+      : p.removeAttribute('data-on'));
+    window.scrollTo({ top: 0 });
+  }));
+</script>
+</body>
+</html>

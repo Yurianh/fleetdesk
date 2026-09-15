@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Véhicules — carte à ligne de vie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --brand:#0066FF; --brand-tint:#E5EEFF;
+  --ink:#0F172A; --ink-2:#334155; --muted:#64748B; --faint:#94A3B8;
+  --line:#E2E8F0; --line-soft:#F1F5F9; --ground:#F5F7FA;
+  --amber-bg:#FEF3C7; --amber-soft:#FFFBEB; --amber-line:#FDE68A; --amber-ink:#78350F; --amber-dot:#D97706;
+  --zinc-bg:#F4F4F5; --zinc-ink:#3F3F46; --zinc-dot:#A1A1AA;
+  --ok-bg:#ECFDF5; --ok-ink:#065F46; --ok-dot:#10B981;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:'Onest',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+
+.shell{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+.side{background:#fff;border-right:1px solid var(--line);padding:18px 12px}
+.side .brand{display:flex;gap:10px;align-items:center;padding:4px 8px 18px}
+.side .logo{width:30px;height:30px;border-radius:9px;background:var(--brand);
+  display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700}
+.side .brand b{font-size:14px;font-weight:600;display:block;line-height:1.2}
+.side .brand span{font-size:11px;color:var(--faint)}
+.side .grp{font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--faint);padding:14px 10px 6px}
+.side a{display:block;padding:8px 10px;border-radius:9px;font-size:13.5px;color:var(--ink-2);text-decoration:none}
+.side a.on{background:var(--brand-tint);color:var(--brand);font-weight:600}
+
+.page{padding:26px 28px 70px;max-width:1400px}
+h1{font-size:28px;font-weight:700;letter-spacing:-.025em;margin:0}
+.sub{font-size:14px;color:var(--muted);margin:4px 0 0}
+.head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
+.btn{font:inherit;font-size:13.5px;font-weight:600;border-radius:10px;padding:9px 15px;
+  border:1px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+.bar .f{font:inherit;font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:99px;
+  background:#fff;border:1px solid var(--line);color:var(--muted);cursor:pointer;
+  display:inline-flex;gap:7px;align-items:center}
+.bar .f.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.bar .count{font-weight:700;opacity:.6}
+.bar .sep{flex:1}
+.search{font:inherit;font-size:13.5px;padding:9px 13px;border:1px solid var(--line);
+  border-radius:10px;background:#fff;min-width:260px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:17px 19px;
+  display:grid;gap:15px;cursor:pointer;transition:box-shadow .16s,transform .16s}
+.card:hover{box-shadow:0 6px 20px rgba(15,23,42,.07);transform:translateY(-1px)}
+.card.warn{border-color:var(--amber-line)}
+
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.idc{display:flex;align-items:center;gap:13px;min-width:0}
+.idc .art{flex:none;color:var(--zinc-dot);display:block}
+.card.warn .idc .art{color:var(--amber-dot)}
+.plate{font-size:16.5px;font-weight:700;letter-spacing:-.015em;line-height:1.15}
+.model{font-size:12.5px;color:var(--muted);margin-top:2px}
+
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
+  padding:4px 10px;border-radius:99px;white-space:nowrap;flex:none}
+.chip .dot{width:6px;height:6px;border-radius:99px}
+.chip.urgent{background:var(--amber-bg);color:var(--amber-ink)} .chip.urgent .dot{background:var(--amber-dot)}
+.chip.soon{background:var(--amber-soft);color:var(--amber-ink);border:1px solid var(--amber-line)} .chip.soon .dot{background:var(--amber-dot)}
+.chip.watch{background:var(--zinc-bg);color:var(--zinc-ink)} .chip.watch .dot{background:var(--zinc-dot)}
+.chip.ok{background:var(--ok-bg);color:var(--ok-ink)} .chip.ok .dot{background:var(--ok-dot)}
+
+/* ── La ligne de vie ──────────────────────────────────────────────────
+   Trois mois, une règle fine, un trait bleu pour aujourd'hui, une pastille
+   par échéance. Rien d'autre : pas de bandes, pas de graduation chiffrée,
+   pas d'échelle déformée. ------------------------------------------- */
+.life{position:relative;height:40px}
+.life .rule{position:absolute;left:0;right:0;top:13px;height:2px;
+  background:var(--line-soft);border-radius:99px}
+.life .today{position:absolute;top:7px;height:14px;width:2px;background:var(--brand);border-radius:99px}
+.life .pin{position:absolute;top:8px;width:12px;height:12px;border-radius:99px;
+  background:#fff;border:2.5px solid var(--zinc-dot);transform:translateX(-50%)}
+.life .pin.amber{border-color:var(--amber-dot);background:var(--amber-bg)}
+.life .tag{position:absolute;top:25px;font-size:11px;color:var(--muted);
+  transform:translateX(-50%);white-space:nowrap}
+.life .tag.amber{color:var(--amber-ink);font-weight:600}
+.life .none{position:absolute;top:24px;left:0;font-size:11px;color:var(--faint)}
+.life .horizon{position:absolute;right:0;top:24px;font-size:11px;color:var(--faint)}
+
+.foot{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding-top:12px;border-top:1px solid var(--line-soft)}
+.who{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted)}
+.who i{width:22px;height:22px;border-radius:99px;background:var(--brand-tint);color:var(--brand);
+  display:grid;place-items:center;font-size:9.5px;font-weight:700;font-style:normal;flex:none}
+.who.empty i{background:var(--line-soft);color:var(--faint)}
+.km{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink-2);font-size:12.5px}
+
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--faint);margin:20px 0 0}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend i{width:10px;height:10px;border-radius:99px;border:2.5px solid var(--zinc-dot);background:#fff}
+.legend i.amber{border-color:var(--amber-dot);background:var(--amber-bg)}
+.legend i.today{width:2px;height:12px;border-radius:99px;border:0;background:var(--brand)}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="logo">F</span><span><b>FleetDesk</b><span>Gestion de flotte</span></span></div>
+    <a href="#">Tableau de bord</a>
+    <div class="grp">Flotte</div>
+    <a href="#" class="on">Véhicules</a><a href="#">Conducteurs</a><a href="#">Affectations</a>
+    <div class="grp">Opérations</div>
+    <a href="#">Carburant &amp; Kilométrage</a><a href="#">Maintenance</a>
+    <a href="#">Contrôles tech.</a><a href="#">Lavages</a><a href="#">Rapports</a>
+  </aside>
+
+  <main class="page">
+    <div class="head">
+      <div><h1>Véhicules</h1><p class="sub">8 véhicules · 3 demandent une action</p></div>
+      <div style="display:flex;gap:10px">
+        <button class="btn">⤓ Exporter</button>
+        <button class="btn primary">+ Ajouter un véhicule</button>
+      </div>
+    </div>
+
+    <div class="bar">
+      <input class="search" placeholder="Rechercher par plaque, modèle ou conducteur…">
+      <button class="f">À traiter <span class="count">3</span></button>
+      <button class="f">Non affectés <span class="count">3</span></button>
+      <span class="sep"></span>
+      <button class="f on">Trier : première échéance</button>
+    </div>
+
+    <div class="grid">
+
+      <article class="card warn">
+        <div class="top">
+          <div class="idc"><span class="art"><svg width="48" height="29" viewBox="0 0 87 52" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 42V11q0-4.6 4.6-4.6h30q2.9 0 4.5 2.3l9.3 13.3q1.5 2.1 3.9 2.6l12.3 2.6Q75 28.1 75 31.8V42q0 1.6-1.6 1.6H7.6Q6 43.6 6 42Z" fill="currentColor" fill-opacity=".09"/><path d="M12 24.8V12.2q0-1.3 1.3-1.3h22.4q1.3 0 1.3 1.3v12.6q0 1.3-1.3 1.3H13.3Q12 26.1 12 24.8Z" fill="#fff"/><path d="M41.4 10.9h3.3q1 0 1.6.8l7 10q.8 1-.5 1H41.4q-1 0-1-1V11.9q0-1 1-1Z" fill="#fff"/><circle cx="21" cy="43.6" r="6.4" fill="#fff"/><circle cx="61" cy="43.6" r="6.4" fill="#fff"/></svg></span><span><div class="plate">BC-234-DE</div><div class="model">Mercedes Sprinter</div></span></div>
+          <span class="chip urgent"><i class="dot"></i>en retard</span>
+        </div>
+        <div class="life">
+          <div class="rule"></div><div class="today" style="left:2%"></div>
+          <div class="pin amber" style="left:2%"></div>
+          <div class="tag amber" style="left:13%">CT en retard</div>
+          <div class="horizon">3 mois</div>
+        </div>
+        <div class="foot"><span class="who empty"><i>—</i>Non affecté</span><span class="km">112 000 km</span></div>
+      </article>
+
+      <article class="card warn">
+        <div class="top">
+          <div class="idc"><span class="art"><svg width="48" height="29" viewBox="0 0 87 52" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 42V11q0-4.6 4.6-4.6h30q2.9 0 4.5 2.3l9.3 13.3q1.5 2.1 3.9 2.6l12.3 2.6Q75 28.1 75 31.8V42q0 1.6-1.6 1.6H7.6Q6 43.6 6 42Z" fill="currentColor" fill-opacity=".09"/><path d="M12 24.8V12.2q0-1.3 1.3-1.3h22.4q1.3 0 1.3 1.3v12.6q0 1.3-1.3 1.3H13.3Q12 26.1 12 24.8Z" fill="#fff"/><path d="M41.4 10.9h3.3q1 0 1.6.8l7 10q.8 1-.5 1H41.4q-1 0-1-1V11.9q0-1 1-1Z" fill="#fff"/><circle cx="21" cy="43.6" r="6.4" fill="#fff"/><circle cx="61" cy="43.6" r="6.4" fill="#fff"/></svg></span><span><div class="plate">LM-012-NO</div><div class="model">Ford Transit</div></span></div>
+          <span class="chip urgent"><i class="dot"></i>en retard</span>
+        </div>
+        <div class="life">
+          <div class="rule"></div><div class="today" style="left:2%"></div>
+          <div class="pin amber" style="left:2%"></div>
+          <div class="tag amber" style="left:13%">CT en retard</div>
+          <div class="pin" style="left:47%"></div><div class="tag" style="left:47%">révision</div>
+          <div class="horizon">3 mois</div>
+        </div>
+        <div class="foot"><span class="who empty"><i>—</i>Non affecté</span><span class="km">101 400 km</span></div>
+      </article>
+
+      <article class="card warn">
+        <div class="top">
+          <div class="idc"><span class="art"><svg width="48" height="35" viewBox="0 0 72 52" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 42V22q0-4 4-4h20q2.6 0 4.2 2l7.4 9.2q1.3 1.6 3.3 2l12.1 2.4Q60 34.4 60 38v4q0 1.6-1.6 1.6H7.6Q6 43.6 6 42Z" fill="currentColor" fill-opacity=".09"/><path d="M12 28.4V23q0-1.3 1.3-1.3h14.4q1.3 0 1.3 1.3v5.4q0 1.3-1.3 1.3H13.3Q12 29.7 12 28.4Z" fill="#fff"/><path d="M32.6 21.7h4.2q1 0 1.6.8l4.6 5.7q.8 1-.5 1h-9.9q-1 0-1-1v-5.5q0-1 1-1Z" fill="#fff"/><circle cx="19" cy="43.6" r="6" fill="#fff"/><circle cx="48" cy="43.6" r="6" fill="#fff"/></svg></span><span><div class="plate">AB-123-CD</div><div class="model">Renault Kangoo</div></span></div>
+          <span class="chip soon"><i class="dot"></i>8 jours</span>
+        </div>
+        <div class="life">
+          <div class="rule"></div><div class="today" style="left:2%"></div>
+          <div class="pin amber" style="left:11%"></div><div class="tag amber" style="left:11%">CT</div>
+          <div class="pin" style="left:62%"></div><div class="tag" style="left:62%">révision</div>
+          <div class="horizon">3 mois</div>
+        </div>
+        <div class="foot"><span class="who"><i>TD</i>Thomas Dubois</span><span class="km">53 200 km</span></div>
+      </article>
+
+      <article class="card">
+        <div class="top">
+          <div class="idc"><span class="art"><svg width="48" height="32" viewBox="0 0 79 52" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 42V16q0-4.4 4.4-4.4h24q2.8 0 4.4 2.2l8.4 11.6q1.4 1.9 3.6 2.4l12 2.5Q67 31.4 67 35v7q0 1.6-1.6 1.6H7.6Q6 43.6 6 42Z" fill="currentColor" fill-opacity=".09"/><path d="M12 26.6v-9.2q0-1.3 1.3-1.3h17.4q1.3 0 1.3 1.3v9.2q0 1.3-1.3 1.3H13.3Q12 27.9 12 26.6Z" fill="#fff"/><path d="M35.6 15.9h3.6q1 0 1.6.8l6 8.2q.8 1-.5 1h-10.7q-1 0-1-1v-8q0-1 1-1Z" fill="#fff"/><circle cx="20" cy="43.6" r="6.2" fill="#fff"/><circle cx="54" cy="43.6" r="6.2" fill="#fff"/></svg></span><span><div class="plate">TU-678-VW</div><div class="model">Renault Trafic</div></span></div>
+          <span class="chip watch"><i class="dot"></i>1 échéance</span>
+        </div>
+        <div class="life">
+          <div class="rule"></div><div class="today" style="left:2%"></div>
+          <div class="pin" style="left:41%"></div><div class="tag" style="left:41%">révision</div>
+          <div class="horizon">3 mois</div>
+        </div>
+        <div class="foot"><span class="who"><i>LM</i>Lucas Moreau</span><span class="km">81 600 km</span></div>
+      </article>
+
+      <article class="card">
+        <div class="top">
+          <div class="idc"><span class="art"><svg width="48" height="35" viewBox="0 0 72 52" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 42V22q0-4 4-4h20q2.6 0 4.2 2l7.4 9.2q1.3 1.6 3.3 2l12.1 2.4Q60 34.4 60 38v4q0 1.6-1.6 1.6H7.6Q6 43.6 6 42Z" fill="currentColor" fill-opacity=".09"/><path d="M12 28.4V23q0-1.3 1.3-1.3h14.4q1.3 0 1.3 1.3v5.4q0 1.3-1.3 1.3H13.3Q12 29.7 12 28.4Z" fill="#fff"/><path d="M32.6 21.7h4.2q1 0 1.6.8l4.6 5.7q.8 1-.5 1h-9.9q-1 0-1-1v-5.5q0-1 1-1Z" fill="#fff"/><circle cx="19" cy="43.6" r="6" fill="#fff"/><circle cx="48" cy="43.6" r="6" fill="#fff"/></svg></span><span><div class="plate">EF-456-GH</div><div class="model">Peugeot Partner</div></span></div>
+          <span class="chip watch"><i class="dot"></i>2 échéances</span>
+        </div>
+        <div class="life">
+          <div class="rule"></div><div class="today" style="left:2%"></div>
+          <div class="pin" style="left:44%"></div><div class="tag" style="left:44%">révision</div>
+          <div class="pin" style="left:79%"></div><div class="tag" style="left:79%">permis M.L.</div>
+          <div class="horizon">3 mois</div>
+        </div>
+        <div class="foot"><span class="who"><i>ML</i>Marie Lefebvre</span><span class="km">62 600 km</span></div>
+      </article>
+
+      <article class="card">
+        <div class="top">
+          <div class="idc"><span class="art"><svg width="48" height="35" viewBox="0 0 72 52" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 42V22q0-4 4-4h20q2.6 0 4.2 2l7.4 9.2q1.3 1.6 3.3 2l12.1 2.4Q60 34.4 60 38v4q0 1.6-1.6 1.6H7.6Q6 43.6 6 42Z" fill="currentColor" fill-opacity=".09"/><path d="M12 28.4V23q0-1.3 1.3-1.3h14.4q1.3 0 1.3 1.3v5.4q0 1.3-1.3 1.3H13.3Q12 29.7 12 28.4Z" fill="#fff"/><path d="M32.6 21.7h4.2q1 0 1.6.8l4.6 5.7q.8 1-.5 1h-9.9q-1 0-1-1v-5.5q0-1 1-1Z" fill="#fff"/><circle cx="19" cy="43.6" r="6" fill="#fff"/><circle cx="48" cy="43.6" r="6" fill="#fff"/></svg></span><span><div class="plate">PQ-345-RS</div><div class="model">Volkswagen Caddy</div></span></div>
+          <span class="chip watch"><i class="dot"></i>1 échéance</span>
+        </div>
+        <div class="life">
+          <div class="rule"></div><div class="today" style="left:2%"></div>
+          <div class="pin" style="left:68%"></div><div class="tag" style="left:68%">révision</div>
+          <div class="horizon">3 mois</div>
+        </div>
+        <div class="foot"><span class="who"><i>SB</i>Sophie Bernard</span><span class="km">55 400 km</span></div>
+      </article>
+
+      <article class="card">
+        <div class="top">
+          <div class="idc"><span class="art"><svg width="48" height="32" viewBox="0 0 79 52" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 42V16q0-4.4 4.4-4.4h24q2.8 0 4.4 2.2l8.4 11.6q1.4 1.9 3.6 2.4l12 2.5Q67 31.4 67 35v7q0 1.6-1.6 1.6H7.6Q6 43.6 6 42Z" fill="currentColor" fill-opacity=".09"/><path d="M12 26.6v-9.2q0-1.3 1.3-1.3h17.4q1.3 0 1.3 1.3v9.2q0 1.3-1.3 1.3H13.3Q12 27.9 12 26.6Z" fill="#fff"/><path d="M35.6 15.9h3.6q1 0 1.6.8l6 8.2q.8 1-.5 1h-10.7q-1 0-1-1v-8q0-1 1-1Z" fill="#fff"/><circle cx="20" cy="43.6" r="6.2" fill="#fff"/><circle cx="54" cy="43.6" r="6.2" fill="#fff"/></svg></span><span><div class="plate">XY-901-ZA</div><div class="model">Peugeot Expert</div></span></div>
+          <span class="chip watch"><i class="dot"></i>1 échéance</span>
+        </div>
+        <div class="life">
+          <div class="rule"></div><div class="today" style="left:2%"></div>
+          <div class="pin" style="left:88%"></div><div class="tag" style="left:86%">assurance</div>
+          <div class="horizon">3 mois</div>
+        </div>
+        <div class="foot"><span class="who empty"><i>—</i>Non affecté</span><span class="km">27 200 km</span></div>
+      </article>
+
+      <article class="card">
+        <div class="top">
+          <div class="idc"><span class="art"><svg width="48" height="35" viewBox="0 0 72 52" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 42V22q0-4 4-4h20q2.6 0 4.2 2l7.4 9.2q1.3 1.6 3.3 2l12.1 2.4Q60 34.4 60 38v4q0 1.6-1.6 1.6H7.6Q6 43.6 6 42Z" fill="currentColor" fill-opacity=".09"/><path d="M12 28.4V23q0-1.3 1.3-1.3h14.4q1.3 0 1.3 1.3v5.4q0 1.3-1.3 1.3H13.3Q12 29.7 12 28.4Z" fill="#fff"/><path d="M32.6 21.7h4.2q1 0 1.6.8l4.6 5.7q.8 1-.5 1h-9.9q-1 0-1-1v-5.5q0-1 1-1Z" fill="#fff"/><circle cx="19" cy="43.6" r="6" fill="#fff"/><circle cx="48" cy="43.6" r="6" fill="#fff"/></svg></span><span><div class="plate">IJ-789-KL</div><div class="model">Citroën Berlingo</div></span></div>
+          <span class="chip ok"><i class="dot"></i>à jour</span>
+        </div>
+        <div class="life">
+          <div class="rule"></div><div class="today" style="left:2%"></div>
+          <div class="none">Rien avant décembre</div>
+          <div class="horizon">3 mois</div>
+        </div>
+        <div class="foot"><span class="who"><i>AM</i>Antoine Martin</span><span class="km">43 800 km</span></div>
+      </article>
+
+    </div>
+
+    <div class="legend">
+      <span><i class="today"></i>Aujourd'hui</span>
+      <span><i class="amber"></i>Échéance à traiter</span>
+      <span><i></i>Échéance à venir</span>
+      <span>L'axe couvre les trois prochains mois.</span>
+    </div>
+  </main>
+</div>
+</body>
+</html>

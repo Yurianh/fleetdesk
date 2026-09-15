@@ -5,14 +5,14 @@ const ORG = 'demo-org-001'
 
 // ─── Vehicles ─────────────────────────────────────────────────────────────────
 export const vehicles = [
-  { id: 'v1', user_id: ORG, plate_number: 'AB-123-CD', make: 'Renault',    model: 'Kangoo',   year: 2021, status: 'active',          created_at: '2024-01-10T09:00:00Z', registration_card_url: null, notes: null },
-  { id: 'v2', user_id: ORG, plate_number: 'EF-456-GH', make: 'Peugeot',    model: 'Partner',  year: 2020, status: 'active',          created_at: '2024-01-12T09:00:00Z', registration_card_url: null, notes: null },
-  { id: 'v3', user_id: ORG, plate_number: 'IJ-789-KL', make: 'Citroën',    model: 'Berlingo', year: 2022, status: 'active',          created_at: '2024-02-03T09:00:00Z', registration_card_url: null, notes: null },
-  { id: 'v4', user_id: ORG, plate_number: 'LM-012-NO', make: 'Ford',       model: 'Transit',  year: 2019, status: 'en maintenance',  created_at: '2024-02-20T09:00:00Z', registration_card_url: null, notes: 'Embrayage en cours de remplacement' },
-  { id: 'v5', user_id: ORG, plate_number: 'PQ-345-RS', make: 'Volkswagen', model: 'Caddy',    year: 2021, status: 'active',          created_at: '2024-03-05T09:00:00Z', registration_card_url: null, notes: null },
-  { id: 'v6', user_id: ORG, plate_number: 'TU-678-VW', make: 'Renault',    model: 'Trafic',   year: 2020, status: 'active',          created_at: '2024-03-18T09:00:00Z', registration_card_url: null, notes: null },
-  { id: 'v7', user_id: ORG, plate_number: 'XY-901-ZA', make: 'Peugeot',    model: 'Expert',   year: 2023, status: 'active',          created_at: '2024-06-01T09:00:00Z', registration_card_url: null, notes: null },
-  { id: 'v8', user_id: ORG, plate_number: 'BC-234-DE', make: 'Mercedes',   model: 'Sprinter', year: 2018, status: 'hors service',    created_at: '2023-11-15T09:00:00Z', registration_card_url: null, notes: 'Moteur HS — en attente de décision' },
+  { id: 'v1', user_id: ORG, plate_number: 'AB-123-CD', make: 'Renault',    model: 'Kangoo',   year: 2021, mec_date: '2021-04-18', status: 'active',          created_at: '2024-01-10T09:00:00Z', registration_card_url: null, notes: null },
+  { id: 'v2', user_id: ORG, plate_number: 'EF-456-GH', make: 'Peugeot',    model: 'Partner',  year: 2020, mec_date: '2020-04-18', status: 'active',          created_at: '2024-01-12T09:00:00Z', registration_card_url: null, notes: null },
+  { id: 'v3', user_id: ORG, plate_number: 'IJ-789-KL', make: 'Citroën',    model: 'Berlingo', year: 2022, mec_date: '2022-04-18', status: 'active',          created_at: '2024-02-03T09:00:00Z', registration_card_url: null, notes: null },
+  { id: 'v4', user_id: ORG, plate_number: 'LM-012-NO', make: 'Ford',       model: 'Transit',  year: 2019, mec_date: '2019-04-18', status: 'en maintenance',  created_at: '2024-02-20T09:00:00Z', registration_card_url: null, notes: 'Embrayage en cours de remplacement' },
+  { id: 'v5', user_id: ORG, plate_number: 'PQ-345-RS', make: 'Volkswagen', model: 'Caddy',    year: 2021, mec_date: '2021-04-18', status: 'active',          created_at: '2024-03-05T09:00:00Z', registration_card_url: null, notes: null },
+  { id: 'v6', user_id: ORG, plate_number: 'TU-678-VW', make: 'Renault',    model: 'Trafic',   year: 2020, mec_date: '2020-04-18', status: 'active',          created_at: '2024-03-18T09:00:00Z', registration_card_url: null, notes: null },
+  { id: 'v7', user_id: ORG, plate_number: 'XY-901-ZA', make: 'Peugeot',    model: 'Expert',   year: 2023, mec_date: '2023-04-18', status: 'active',          created_at: '2024-06-01T09:00:00Z', registration_card_url: null, notes: null },
+  { id: 'v8', user_id: ORG, plate_number: 'BC-234-DE', make: 'Mercedes',   model: 'Sprinter', year: 2018, mec_date: '2018-04-18', status: 'hors service',    created_at: '2023-11-15T09:00:00Z', registration_card_url: null, notes: 'Moteur HS — en attente de décision' },
 ]
 
 // ─── Drivers ──────────────────────────────────────────────────────────────────
@@ -87,14 +87,14 @@ export const maintenanceRecords = [
 
 // ─── Technical Inspections ────────────────────────────────────────────────────
 export const technicalInspections = [
-  { id: 'ti1', user_id: ORG, vehicle_id: 'v1', inspection_date: '2025-04-10', expiry_date: '2027-04-10', result: 'pass', notes: null, created_at: '2025-04-10T14:00:00Z' },
-  { id: 'ti2', user_id: ORG, vehicle_id: 'v2', inspection_date: '2024-11-05', expiry_date: '2026-11-05', result: 'pass', notes: null, created_at: '2024-11-05T14:00:00Z' },
-  { id: 'ti3', user_id: ORG, vehicle_id: 'v3', inspection_date: '2026-01-20', expiry_date: '2028-01-20', result: 'pass', notes: null, created_at: '2026-01-20T14:00:00Z' },
-  { id: 'ti4', user_id: ORG, vehicle_id: 'v4', inspection_date: '2025-06-15', expiry_date: '2026-06-15', result: 'advisory', notes: 'Avis : fuites légères direction assistée', created_at: '2025-06-15T14:00:00Z' },
-  { id: 'ti5', user_id: ORG, vehicle_id: 'v5', inspection_date: '2025-08-22', expiry_date: '2027-08-22', result: 'pass', notes: null, created_at: '2025-08-22T14:00:00Z' },
-  { id: 'ti6', user_id: ORG, vehicle_id: 'v6', inspection_date: '2026-02-18', expiry_date: '2028-02-18', result: 'pass', notes: null, created_at: '2026-02-18T14:00:00Z' },
-  { id: 'ti7', user_id: ORG, vehicle_id: 'v7', inspection_date: '2026-05-03', expiry_date: '2028-05-03', result: 'pass', notes: 'Véhicule neuf, premier CT', created_at: '2026-05-03T14:00:00Z' },
-  { id: 'ti8', user_id: ORG, vehicle_id: 'v8', inspection_date: '2024-05-20', expiry_date: '2026-05-20', result: 'fail', notes: 'Refus : freins arrière insuffisants, fuite carburant', created_at: '2024-05-20T14:00:00Z' },
+  { id: 'ti1', user_id: ORG, vehicle_id: 'v1', inspection_date: '2025-09-24', expiration_date: '2026-09-24', result: 'pass', notes: null, created_at: '2025-04-10T14:00:00Z' },
+  { id: 'ti2', user_id: ORG, vehicle_id: 'v2', inspection_date: '2024-11-05', expiration_date: '2026-11-05', result: 'pass', notes: null, created_at: '2024-11-05T14:00:00Z' },
+  { id: 'ti3', user_id: ORG, vehicle_id: 'v3', inspection_date: '2026-01-20', expiration_date: '2028-01-20', result: 'pass', notes: null, created_at: '2026-01-20T14:00:00Z' },
+  { id: 'ti4', user_id: ORG, vehicle_id: 'v4', inspection_date: '2025-06-15', expiration_date: '2026-06-15', result: 'advisory', notes: 'Avis : fuites légères direction assistée', created_at: '2025-06-15T14:00:00Z' },
+  { id: 'ti5', user_id: ORG, vehicle_id: 'v5', inspection_date: '2025-08-22', expiration_date: '2027-08-22', result: 'pass', notes: null, created_at: '2025-08-22T14:00:00Z' },
+  { id: 'ti6', user_id: ORG, vehicle_id: 'v6', inspection_date: '2026-02-18', expiration_date: '2028-02-18', result: 'pass', notes: null, created_at: '2026-02-18T14:00:00Z' },
+  { id: 'ti7', user_id: ORG, vehicle_id: 'v7', inspection_date: '2026-05-03', expiration_date: '2028-05-03', result: 'pass', notes: 'Véhicule neuf, premier CT', created_at: '2026-05-03T14:00:00Z' },
+  { id: 'ti8', user_id: ORG, vehicle_id: 'v8', inspection_date: '2024-05-20', expiration_date: '2026-05-20', result: 'fail', notes: 'Refus : freins arrière insuffisants, fuite carburant', created_at: '2024-05-20T14:00:00Z' },
 ]
 
 // ─── Wash Records ─────────────────────────────────────────────────────────────
@@ -113,16 +113,16 @@ export const washRecords = [
 
 // ─── Maintenance Schedules ────────────────────────────────────────────────────
 export const maintenanceSchedules = [
-  { id: 'ms1', user_id: ORG, vehicle_id: 'v1', task: 'Vidange + filtre à huile',    interval_km: 15000, last_done_km: 51100, last_done_date: '2026-03-15', notes: null, created_at: '2024-01-15T10:00:00Z' },
-  { id: 'ms2', user_id: ORG, vehicle_id: 'v1', task: 'Plaquettes de frein',         interval_km: 40000, last_done_km: 39200, last_done_date: '2025-11-20', notes: null, created_at: '2024-01-15T10:00:00Z' },
-  { id: 'ms3', user_id: ORG, vehicle_id: 'v2', task: 'Vidange + filtre à huile',    interval_km: 15000, last_done_km: 72600, last_done_date: '2026-01-08', notes: null, created_at: '2024-01-20T10:00:00Z' },
-  { id: 'ms4', user_id: ORG, vehicle_id: 'v2', task: 'Courroie de distribution',    interval_km: 120000, last_done_km: 63000, last_done_date: '2025-09-12', notes: 'Kit complet', created_at: '2024-01-20T10:00:00Z' },
-  { id: 'ms5', user_id: ORG, vehicle_id: 'v3', task: 'Vidange + filtre à huile',    interval_km: 15000, last_done_km: 42800, last_done_date: '2026-04-22', notes: null, created_at: '2024-02-05T10:00:00Z' },
-  { id: 'ms6', user_id: ORG, vehicle_id: 'v4', task: 'Vidange + filtre à huile',    interval_km: 15000, last_done_km: 98400, last_done_date: '2025-12-10', notes: null, created_at: '2024-02-22T10:00:00Z' },
-  { id: 'ms7', user_id: ORG, vehicle_id: 'v5', task: 'Vidange + filtre à huile',    interval_km: 15000, last_done_km: 47650, last_done_date: '2026-02-14', notes: null, created_at: '2024-03-07T10:00:00Z' },
-  { id: 'ms8', user_id: ORG, vehicle_id: 'v6', task: 'Vidange + filtre à huile',    interval_km: 15000, last_done_km: 72600, last_done_date: '2026-04-05', notes: null, created_at: '2024-03-20T10:00:00Z' },
-  { id: 'ms9', user_id: ORG, vehicle_id: 'v6', task: 'Amortisseurs',               interval_km: 80000, last_done_km: 54000, last_done_date: '2025-10-30', notes: null, created_at: '2024-03-20T10:00:00Z' },
-  { id: 'ms10', user_id: ORG, vehicle_id: 'v7', task: 'Vidange + filtre à huile',   interval_km: 15000, last_done_km: 15000, last_done_date: '2025-12-20', notes: null, created_at: '2024-06-02T10:00:00Z' },
+  { id: 'ms1', user_id: ORG, vehicle_id: 'v1', task: 'Vidange + filtre à huile',    interval_months: 12, interval_km: 15000, last_done_km: 51100, last_done_date: '2026-03-15', notes: null, created_at: '2024-01-15T10:00:00Z' },
+  { id: 'ms2', user_id: ORG, vehicle_id: 'v1', task: 'Plaquettes de frein',         interval_months: 12, interval_km: 40000, last_done_km: 39200, last_done_date: '2025-11-20', notes: null, created_at: '2024-01-15T10:00:00Z' },
+  { id: 'ms3', user_id: ORG, vehicle_id: 'v2', task: 'Vidange + filtre à huile',    interval_months: 12, interval_km: 15000, last_done_km: 72600, last_done_date: '2026-01-08', notes: null, created_at: '2024-01-20T10:00:00Z' },
+  { id: 'ms4', user_id: ORG, vehicle_id: 'v2', task: 'Courroie de distribution',    interval_months: 12, interval_km: 120000, last_done_km: 63000, last_done_date: '2025-09-12', notes: 'Kit complet', created_at: '2024-01-20T10:00:00Z' },
+  { id: 'ms5', user_id: ORG, vehicle_id: 'v3', task: 'Vidange + filtre à huile',    interval_months: 12, interval_km: 15000, last_done_km: 42800, last_done_date: '2026-04-22', notes: null, created_at: '2024-02-05T10:00:00Z' },
+  { id: 'ms6', user_id: ORG, vehicle_id: 'v4', task: 'Vidange + filtre à huile',    interval_months: 12, interval_km: 15000, last_done_km: 98400, last_done_date: '2025-12-10', notes: null, created_at: '2024-02-22T10:00:00Z' },
+  { id: 'ms7', user_id: ORG, vehicle_id: 'v5', task: 'Vidange + filtre à huile',    interval_months: 12, interval_km: 15000, last_done_km: 47650, last_done_date: '2026-02-14', notes: null, created_at: '2024-03-07T10:00:00Z' },
+  { id: 'ms8', user_id: ORG, vehicle_id: 'v6', task: 'Vidange + filtre à huile',    interval_months: 12, interval_km: 15000, last_done_km: 72600, last_done_date: '2026-04-05', notes: null, created_at: '2024-03-20T10:00:00Z' },
+  { id: 'ms9', user_id: ORG, vehicle_id: 'v6', task: 'Amortisseurs',               interval_months: 12, interval_km: 80000, last_done_km: 54000, last_done_date: '2025-10-30', notes: null, created_at: '2024-03-20T10:00:00Z' },
+  { id: 'ms10', user_id: ORG, vehicle_id: 'v7', task: 'Vidange + filtre à huile',   interval_months: 12, interval_km: 15000, last_done_km: 15000, last_done_date: '2025-12-20', notes: null, created_at: '2024-06-02T10:00:00Z' },
 ]
 
 // ─── Driver Documents ─────────────────────────────────────────────────────────

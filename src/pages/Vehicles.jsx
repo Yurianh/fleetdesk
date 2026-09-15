@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Plus, Search, ChevronRight, Loader2, Truck, Pencil, Trash2, User, UserMinus, Paperclip, FileText, X, Camera, Wrench, ClipboardCheck, Droplets, Download, Archive, RotateCcw } from 'lucide-react'
-import { format, addYears } from 'date-fns'
+import { format, addYears, differenceInDays } from 'date-fns'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -20,7 +20,8 @@ import VehicleStatusBadge from '@/components/shared/VehicleStatusBadge'
 import DataError from '@/components/shared/DataError'
 import { downloadCsv, datedName } from '@/lib/exportCsv'
 import {
-  useVehicles, useVehiclesWithArchived, useDrivers, useAssignments, useMileageEntries, useTechnicalInspections,
+  useVehiclesWithArchived, useDrivers, useAssignments, useMileageEntries, useTechnicalInspections,
+  useMaintenanceRecords, useMaintenanceSchedules,
   createVehicle, updateVehicle, deleteVehicle, archiveVehicle, restoreVehicle, unassignVehicle, getLatestAssignments, getLatestMileage, getDriverById,
   createMaintenanceRecord, createTechnicalInspection, createWashRecord,
 } from '@/lib/useFleetData'
@@ -29,6 +30,9 @@ import { openSignedFile } from '@/lib/signedFile'
 import { usePageTitle } from '@/lib/usePageTitle'
 import { useTranslation } from 'react-i18next'
 import { usePlanLimits } from '@/lib/usePlanLimits'
+import { useViewPreference } from '@/lib/viewPreference'
+import { computeForecasts } from '@/lib/maintenanceForecast'
+import { LayoutList, LayoutGrid } from 'lucide-react'
 
 function RegistrationUpload({ file, existingUrl, onFileChange, onClear }) {
   const fileRef   = useRef(null)
@@ -109,6 +113,122 @@ function MobileSectionHeader({ color, label, count }) {
   )
 }
 
+// ── Densités d'affichage ─────────────────────────────────────────────
+// La liste est le défaut : c'est la forme qui montre le plus de véhicules d'un
+// seul regard et la seule où deux kilométrages se comparent sans les chercher.
+// Les trois autres existent parce qu'une flotte de cinq et une flotte de
+// cinquante ne se consultent pas de la même façon.
+const VIEWS = [
+  { key: 'liste',   label: 'Liste',  icon: LayoutList, hint: 'Une ligne par véhicule, colonnes alignées' },
+  { key: 'cartes',  label: 'Cartes', icon: LayoutGrid, hint: 'Une carte par véhicule, avec son échéance' },
+]
+
+const VIEW_KEYS = VIEWS.map(v => v.key)
+
+const HORIZON_DAYS = 90   // l'axe des cartes couvre trois mois
+
+// Ce que le véhicule réclame, en une phrase. On prend l'échéance la plus
+// proche : c'est elle qui décide, les autres sont du contexte.
+function nextDue(vehicle, inspections, forecast) {
+  const events = []
+
+  const insp = inspections.reduce(
+    (best, i) => (!best || new Date(i.expiration_date) > new Date(best.expiration_date) ? i : best), null
+  )
+  if (insp?.expiration_date) {
+    const days = differenceInDays(new Date(insp.expiration_date), new Date())
+    events.push({
+      days,
+      text: days < 0 ? `Contrôle technique expiré depuis ${Math.abs(days)} jour${Math.abs(days) > 1 ? 's' : ''}`
+          : days === 0 ? "Contrôle technique à repasser aujourd'hui"
+          : `Contrôle technique dans ${days} jour${days > 1 ? 's' : ''}`,
+    })
+  }
+
+  if (forecast && forecast.status !== 'no_record') {
+    const { kmUntil, daysUntil } = forecast
+    // L'échéance kilométrique n'est pas une date : on l'estime au rythme du
+    // mois écoulé uniquement pour la placer sur l'axe, jamais pour l'annoncer.
+    const byKm = kmUntil != null && (daysUntil == null || kmUntil / 60 < daysUntil)
+    if (byKm) events.push({
+      days: Math.max(0, Math.round(kmUntil / 60)),
+      text: kmUntil <= 0 ? 'Révision dépassée'
+          : `Révision dans ${kmUntil.toLocaleString('fr-FR')} km`,
+    })
+    else if (daysUntil != null) events.push({
+      days: daysUntil,
+      text: daysUntil < 0 ? `Révision dépassée depuis ${Math.abs(daysUntil)} jours`
+          : `Révision dans ${daysUntil} jour${daysUntil > 1 ? 's' : ''}`,
+    })
+  }
+
+  if (!events.length) {
+    return { level: 'calm', text: 'Aucune échéance enregistrée',
+             sub: 'Ajoutez un contrôle technique pour être prévenu', pins: [] }
+  }
+
+  events.sort((a, b) => a.days - b.days)
+  const first = events[0]
+  const level = first.days < 0 ? 'warn' : first.days <= 30 ? 'soon' : 'calm'
+  const pins = events
+    .filter(e => e.days <= HORIZON_DAYS)
+    .map(e => Math.min(98, Math.max(1, Math.round((Math.max(e.days, 0) / HORIZON_DAYS) * 100))))
+
+  return {
+    level,
+    text: first.text,
+    sub: events[1] ? events[1].text.replace(/^./, c => c.toLowerCase()).replace(/^/, 'Puis ')
+                   : 'Rien d\'autre dans les trois mois',
+    pins,
+  }
+}
+
+// Une carte dit une chose : ce que le véhicule réclame. Le reste l'entoure.
+function VehicleCard({ vehicle, due, driver, mileage }) {
+  const alert = due.level === 'warn' || due.level === 'soon'
+  return (
+    <Link
+      to={`/Vehicles/${vehicle.id}`}
+      className={'block rounded-xl border bg-white p-4 transition-shadow hover:shadow-[0_5px_16px_rgba(15,23,42,.06)] ' + (
+        alert ? 'border-amber-200' : 'border-slate-200'
+      )}
+    >
+      <p className="flex items-baseline gap-1.5 text-xs text-slate-400 min-w-0">
+        <span className="font-semibold text-slate-600 flex-shrink-0">{vehicle.plate_number}</span>
+        <span className="truncate">{vehicle.model}</span>
+      </p>
+
+      <p className={'mt-2.5 text-[16px] font-semibold tracking-tight leading-snug ' + (
+        alert ? 'text-amber-900' : 'text-slate-900'
+      )}>
+        {due.text}
+        <span className="block mt-1 text-xs font-normal text-slate-500">{due.sub}</span>
+      </p>
+
+      {/* L'axe ne dit plus « quand » mais « combien, et dans quel ordre ». */}
+      <div className="relative h-2.5 mt-3">
+        <span className="absolute inset-x-0 top-1 h-0.5 rounded-full bg-slate-100" />
+        <span className="absolute top-0 left-[1%] w-0.5 h-2.5 rounded-full bg-slate-300" />
+        {due.pins.map((left, i) => (
+          <span key={i}
+            className={'absolute top-0.5 w-[7px] h-[7px] -translate-x-1/2 rounded-full ' + (
+              alert && i === 0 ? 'bg-amber-500' : 'bg-zinc-400'
+            )}
+            style={{ left: `${left}%` }} />
+        ))}
+      </div>
+
+      <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2 text-xs text-slate-500">
+        <span className="truncate">{driver?.name || 'Non affecté'}</span>
+        <span className="font-semibold text-slate-700 tabular-nums flex-shrink-0">
+          {mileage != null ? `${mileage.toLocaleString('fr-FR')} km` : '—'}
+        </span>
+      </div>
+    </Link>
+  )
+}
+
+
 export default function Vehicles() {
   usePageTitle('Véhicules')
   const { t } = useTranslation()
@@ -118,6 +238,11 @@ export default function Vehicles() {
   const { data: assignments } = useAssignments()
   const { data: mileageEntries } = useMileageEntries()
   const { data: inspections } = useTechnicalInspections()
+  const { data: maintenanceRecords } = useMaintenanceRecords()
+  const { data: schedules } = useMaintenanceSchedules()
+
+  // La densité est un choix d'écran, conservé d'une visite à l'autre.
+  const [view, setView] = useViewPreference('vehicles', VIEW_KEYS, 'liste')
   const queryClient = useQueryClient()
 
   // ?missing=ct — cible du bouton de l'email d'activation : on ouvre la flotte
@@ -189,6 +314,18 @@ export default function Vehicles() {
       setArchiveTarget(null)
     } catch (e) { toast.error(e.message || 'Erreur.') }
     finally { setArchiving(false) }
+  }
+
+  // Une prévision d'entretien par véhicule, et la phrase qui en découle.
+  const forecastByVehicle = {}
+  for (const f of computeForecasts({ schedules, vehicles: listed, maintenanceRecords, mileageEntries })) {
+    const cur = forecastByVehicle[f.vehicle?.id]
+    // Un véhicule peut avoir plusieurs plannings : on garde le plus pressant.
+    if (!cur || (f.kmUntil ?? Infinity) < (cur.kmUntil ?? Infinity)) forecastByVehicle[f.vehicle?.id] = f
+  }
+  const dueByVehicle = {}
+  for (const v of listed) {
+    dueByVehicle[v.id] = nextDue(v, (inspections || []).filter(i => i.vehicle_id === v.id), forecastByVehicle[v.id])
   }
 
   const filtered = listed.filter(v => {
@@ -518,6 +655,24 @@ export default function Vehicles() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <Input placeholder={t('vehicles.searchPlaceholder')} value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
         </div>
+        {/* Densité : le réglage est mémorisé, on ne le redemande pas. */}
+        <div className="flex items-center gap-0.5 rounded-lg border border-zinc-200 bg-white p-0.5 sm:ml-auto">
+          {VIEWS.map(v => (
+            <IconTip key={v.key} label={v.hint}>
+              <button
+                onClick={() => setView(v.key)}
+                aria-pressed={view === v.key}
+                className={'inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-md transition-colors ' + (
+                  view === v.key ? 'bg-[#E5EEFF] text-[#0052D6]' : 'text-zinc-500 hover:text-zinc-800'
+                )}
+              >
+                <v.icon className="w-3.5 h-3.5" />
+                <span className="hidden lg:inline">{v.label}</span>
+              </button>
+            </IconTip>
+          ))}
+        </div>
+
         {outOfFleet.length > 0 && (
           <div className="flex items-center gap-1">
             {[
@@ -538,7 +693,7 @@ export default function Vehicles() {
         )}
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className={view === 'liste' ? 'bg-white rounded-xl border border-slate-200 overflow-hidden' : ''}>
         {missingFilter === 'ct' && (
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#0066FF]/20 bg-[#E5EEFF] px-4 py-3">
             <p className="text-sm text-[#0052D6]">
@@ -556,8 +711,47 @@ export default function Vehicles() {
 
         {filtered.length > 0 ? (
           <>
+            {/* ── Vues en cartes (bureau) ── */}
+            {view !== 'liste' && (
+              <div className="hidden sm:block">
+                {[
+                  { key: 'warn', label: 'À traiter',    dot: 'bg-amber-500' },
+                  { key: 'soon', label: 'Bientôt',      dot: 'bg-amber-300' },
+                  { key: 'calm', label: 'À jour',       dot: 'bg-emerald-400' },
+                ].map(group => {
+                  const list = filtered.filter(v => {
+                    const lv = dueByVehicle[v.id]?.level
+                    return group.key === 'calm' ? lv !== 'warn' && lv !== 'soon' : lv === group.key
+                  })
+                  if (!list.length) return null
+
+                  return (
+                    <section key={group.key} className="mb-6 last:mb-0">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className={`w-2 h-2 rounded-full ${group.dot}`} />
+                        <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                          {group.label}
+                        </h2>
+                        <span className="text-xs text-slate-400">{list.length}</span>
+                      </div>
+
+                      <div className="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(272px,1fr))]">
+                        {list.map(v => {
+                          const a = latestAssignments[v.id]
+                          const driver = a ? getDriverById(drivers, a.driver_id) : null
+                          const km = latestMileage[v.id]?.mileage
+                          const due = dueByVehicle[v.id]
+                          return <VehicleCard key={v.id} vehicle={v} due={due} driver={driver} mileage={km} />
+                        })}
+                      </div>
+                    </section>
+                  )
+                })}
+              </div>
+            )}
+
             {/* ── Desktop table ── */}
-            <div className="hidden sm:block overflow-x-auto">
+            <div className={(view === 'liste' ? 'hidden sm:block' : 'hidden') + ' overflow-x-auto'}>
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-white border-b border-slate-200">
