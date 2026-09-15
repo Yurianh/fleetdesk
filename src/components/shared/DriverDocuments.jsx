@@ -64,7 +64,7 @@ export const DOC_TYPE_CONFIG = {
   },
 }
 
-const DOC_TYPES_ORDER = [
+export const DOC_TYPES_ORDER = [
   'permis_conduire',
   'aptitude_conduite',
   'casier_judiciaire',

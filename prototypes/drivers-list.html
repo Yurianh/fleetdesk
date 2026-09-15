@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conducteurs — variantes de mise en page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --brand:#0066FF; --brand-tint:#E5EEFF;
+  --ink:#0F172A; --ink-2:#334155; --muted:#64748B; --faint:#94A3B8;
+  --line:#E2E8F0; --line-soft:#F1F5F9; --ground:#F5F7FA;
+  --amber-bg:#FEF3C7; --amber-soft:#FFFBEB; --amber-line:#FDE68A; --amber-ink:#78350F; --amber-dot:#D97706;
+  --zinc-bg:#F4F4F5; --zinc-ink:#3F3F46; --zinc-dot:#A1A1AA;
+  --ok-bg:#ECFDF5; --ok-ink:#065F46; --ok-dot:#10B981;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:'Onest',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+
+.switcher{position:sticky;top:0;z-index:50;background:#0B1220;color:#fff;
+  padding:10px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.switcher b{font-size:13px;font-weight:600;margin-right:6px;opacity:.75}
+.switcher button{font:inherit;font-size:13px;font-weight:500;color:#C7D2E8;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+  border-radius:8px;padding:6px 12px;cursor:pointer}
+.switcher button:hover{background:rgba(255,255,255,.14)}
+.switcher button[aria-current="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.switcher .note{margin-left:auto;font-size:12px;color:#8FA0C0}
+
+.shell{display:grid;grid-template-columns:216px 1fr;min-height:calc(100vh - 44px)}
+.side{background:#fff;border-right:1px solid var(--line);padding:16px 11px}
+.side .brand{display:flex;gap:9px;align-items:center;padding:4px 8px 16px}
+.side .logo{width:28px;height:28px;border-radius:8px;background:var(--brand);
+  display:grid;place-items:center;color:#fff;font-size:12px;font-weight:700}
+.side .brand b{font-size:13.5px;font-weight:600;display:block;line-height:1.2}
+.side .brand span{font-size:10.5px;color:var(--faint)}
+.side .grp{font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--faint);padding:13px 10px 5px}
+.side a{display:block;padding:7px 10px;border-radius:8px;font-size:13px;color:var(--ink-2);text-decoration:none}
+.side a.on{background:var(--brand-tint);color:var(--brand);font-weight:600}
+
+.page{padding:24px 26px 70px}
+.wrap{max-width:1420px}
+h1{font-size:27px;font-weight:700;letter-spacing:-.025em;margin:0}
+.sub{font-size:13.5px;color:var(--muted);margin:4px 0 0}
+.head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px}
+.btn{font:inherit;font-size:13px;font-weight:600;border-radius:9px;padding:8px 14px;
+  border:1px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.primary[disabled]{background:#CBD5E1;border-color:#CBD5E1;cursor:not-allowed}
+.btn.sm{font-size:12.5px;padding:6px 11px}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.search{font:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--line);
+  border-radius:10px;background:#fff;min-width:260px}
+.bar .f{font:inherit;font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:99px;
+  background:#fff;border:1px solid var(--line);color:var(--muted);cursor:pointer;
+  display:inline-flex;gap:7px;align-items:center}
+.bar .f.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.bar .f.alert{border-color:var(--amber-line);background:var(--amber-soft);color:var(--amber-ink)}
+.bar .count{font-weight:700;opacity:.6}
+.bar .sep{flex:1}
+.quota{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;color:var(--amber-ink);
+  background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:9px;padding:7px 11px}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:12px;font-weight:600;color:var(--muted);padding:12px 18px;
+  border-bottom:1px solid var(--line-soft);white-space:nowrap}
+td{padding:13px 18px;border-bottom:1px solid var(--line-soft);color:var(--ink-2);vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#FBFCFE}
+.grouprow td{background:#FCFCFD;padding:8px 18px;font-size:11px;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.grouprow.warn td{color:var(--amber-ink)}
+.grouprow.good td{color:var(--ok-ink)}
+
+.who{display:flex;align-items:center;gap:11px;min-width:0}
+.who i{width:34px;height:34px;border-radius:99px;background:var(--brand-tint);color:var(--brand);
+  display:grid;place-items:center;font-size:12px;font-weight:700;font-style:normal;flex:none}
+.who.warn i{background:var(--amber-bg);color:var(--amber-ink)}
+.who .n{font-weight:600;color:var(--ink);font-size:14px;line-height:1.2}
+.who .m{font-size:12px;color:var(--faint);margin-top:2px}
+
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
+  padding:4px 10px;border-radius:99px;white-space:nowrap}
+.chip .dot{width:6px;height:6px;border-radius:99px}
+.chip.urgent{background:var(--amber-bg);color:var(--amber-ink)} .chip.urgent .dot{background:var(--amber-dot)}
+.chip.soon{background:var(--amber-soft);color:var(--amber-ink);border:1px solid var(--amber-line)} .chip.soon .dot{background:var(--amber-dot)}
+.chip.watch{background:var(--zinc-bg);color:var(--zinc-ink)} .chip.watch .dot{background:var(--zinc-dot)}
+.chip.ok{background:var(--ok-bg);color:var(--ok-ink)} .chip.ok .dot{background:var(--ok-dot)}
+.chip.none{background:#fff;color:var(--faint);border:1px dashed var(--line)}
+
+.due{font-weight:600;color:var(--ink-2)} .due.warn{color:var(--amber-ink)}
+.ratio{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+.ratio b{color:var(--ink-2);font-weight:600;font-variant-numeric:tabular-nums}
+.ratio .track{width:58px;height:5px;border-radius:99px;background:var(--line-soft);overflow:hidden}
+.ratio .track i{display:block;height:100%;background:var(--ok-dot)}
+.ratio .track i.amber{background:var(--amber-dot)}
+
+/* ── Cartes ───────────────────────────────────────────────────────── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:12px}
+.dc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 17px;
+  display:grid;gap:12px;cursor:pointer;transition:box-shadow .15s}
+.dc:hover{box-shadow:0 5px 16px rgba(15,23,42,.06)}
+.dc.warn{border-color:var(--amber-line)}
+.dc .say{font-size:16px;font-weight:600;letter-spacing:-.02em;line-height:1.3}
+.dc.warn .say{color:var(--amber-ink)}
+.dc .say small{display:block;font-size:12px;font-weight:400;color:var(--muted);margin-top:3px;letter-spacing:0}
+.dc .ft{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;
+  color:var(--muted);padding-top:10px;border-top:1px solid var(--line-soft)}
+.groupheadC{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:600;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:20px 0 10px}
+.groupheadC:first-of-type{margin-top:0}
+.groupheadC .d{width:7px;height:7px;border-radius:99px;background:var(--zinc-dot)}
+.groupheadC.warn{color:var(--amber-ink)} .groupheadC.warn .d{background:var(--amber-dot)}
+.groupheadC.good{color:var(--ok-ink)} .groupheadC.good .d{background:var(--ok-dot)}
+
+/* ── Liste + aperçu ───────────────────────────────────────────────── */
+.split{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}
+.pick{padding:11px 16px;border-bottom:1px solid var(--line-soft);cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pick:last-child{border-bottom:0}
+.pick.on{background:var(--brand-tint)}
+.peek{position:sticky;top:60px;display:grid;gap:12px}
+.peek .box{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.peek .bh{padding:12px 16px;border-bottom:1px solid var(--line-soft);font-size:13.5px;font-weight:600}
+.peek .bb{padding:14px 16px;display:grid;gap:10px;font-size:13px}
+.peek .bb div{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.peek .bb span{color:var(--muted)}
+.peek .box.scroll{max-height:none}
+.peek .veh{display:flex;align-items:center;gap:11px;padding:13px 16px}
+.peek .veh .ic{width:36px;height:36px;border-radius:10px;background:var(--brand-tint);color:var(--brand);
+  display:grid;place-items:center;flex:none}
+.peek .veh .p{font-size:14px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
+.peek .veh .m{font-size:12px;color:var(--muted)}
+.peek .veh .go{margin-left:auto;font-size:12.5px;font-weight:600;color:var(--brand)}
+.peek .acts{display:flex;gap:7px;padding:0 16px 13px}
+.peek .acts .btn{flex:1;justify-content:center}
+.peek .empty{padding:15px 16px;font-size:13px;color:var(--faint);display:grid;gap:10px}
+.peek .more{display:block;padding:11px 16px;font-size:12.5px;font-weight:600;color:var(--brand);
+  text-align:center;border-top:1px solid var(--line-soft)}
+.peek .doc{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.peek .doc b{font-weight:400;color:var(--ink-2)}
+
+.crit{background:#0B1220;color:#C7D2E8;border-radius:14px;padding:16px 20px;
+  font-size:13.5px;line-height:1.55;margin-bottom:18px;max-width:100ch}
+.crit h3{margin:0 0 8px;font-size:14px;color:#fff;font-weight:600}
+.crit ul{margin:8px 0 0;padding-left:18px} .crit li{margin:3px 0}
+.crit .plus{color:#7EE8B0} .crit .minus{color:#F7B267}
+.variant{display:none} .variant[data-on]{display:block}
+.dim{color:var(--faint)}
+</style>
+</head>
+<body>
+
+<div class="switcher">
+  <b>Conducteurs</b>
+  <button data-go="0" aria-current="true">0 · Actuel</button>
+  <button data-go="1">1 · Conformité d'abord</button>
+  <button data-go="2">2 · Cartes</button>
+  <button data-go="3">3 · Liste + aperçu</button>
+  <span class="note">Maquette statique — rien de déployé</span>
+</div>
+
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="logo">F</span><span><b>FleetDesk</b><span>Gestion de flotte</span></span></div>
+    <a href="#">Tableau de bord</a>
+    <div class="grp">Flotte</div>
+    <a href="#">Véhicules</a><a href="#" class="on">Conducteurs</a><a href="#">Affectations</a>
+    <div class="grp">Opérations</div>
+    <a href="#">Carburant &amp; Kilométrage</a><a href="#">Maintenance</a>
+    <a href="#">Contrôles tech.</a><a href="#">Lavages</a><a href="#">Rapports</a>
+  </aside>
+
+  <main class="page">
+
+  <!-- ══════════ 0 · ACTUEL ══════════ -->
+  <section class="variant" data-v="0" data-on>
+    <div class="crit">
+      <h3>Ce que fait la page aujourd'hui</h3>
+      Elle range les conducteurs par ordre alphabétique et consacre trois colonnes à des numéros
+      de carte que personne ne lit dans une liste.
+      <ul>
+        <li class="minus"><b>« Doc. expiré » ne dit pas lequel, ni depuis quand.</b> Quatre conducteurs sur six portent exactement la même pastille. C'est le défaut qu'on vient de corriger sur les véhicules.</li>
+        <li class="minus">Carte DKV, badge autoroute, carte lavage : trois colonnes, dix-huit cellules, dix-huit tirets. Un tiers de la largeur pour zéro information.</li>
+        <li class="minus">Tri A→Z : les quatre conducteurs non conformes sont dispersés dans la liste au lieu d'être groupés.</li>
+        <li class="minus">L'adresse occupe une ligne entière sous chaque nom. On ne cherche pas une adresse dans une liste de conducteurs, on la cherche sur une fiche.</li>
+        <li class="minus">Aucun ratio de conformité : impossible de distinguer « il manque un papier » de « il en manque six ».</li>
+        <li class="minus">La corbeille est à égalité visuelle avec le chevron d'ouverture. L'action destructrice ne devrait pas être au même niveau que la navigation.</li>
+        <li class="minus">« 6 / 3 conducteurs » et un bouton grisé, sans explication — même angle mort que sur les véhicules.</li>
+      </ul>
+    </div>
+    <div class="wrap">
+      <div class="head">
+        <div><h1>Conducteurs</h1><p class="sub">6 conducteurs</p></div>
+        <div style="display:flex;align-items:center;gap:11px">
+          <span class="dim" style="font-size:12.5px">6 / 3 conducteurs</span>
+          <button class="btn">⤓ Exporter</button>
+          <button class="btn primary" disabled>+ Ajouter</button>
+        </div>
+      </div>
+      <div class="bar">
+        <input class="search" placeholder="Rechercher un conducteur…">
+        <button class="f">Nom (A → Z) ⌄</button>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Nom</th><th>ID</th><th>Téléphone</th><th>Véhicule actuel</th>
+            <th>Carte DKV</th><th>Badge autoroute</th><th>Carte lavage</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><b>Antoine Martin</b> <span class="chip urgent"><i class="dot"></i>Doc. expiré</span>
+              <div class="dim" style="font-size:12px;margin-top:3px">8 boulevard Gambetta, 13001 Marseille</div></td>
+              <td>EMP-003</td><td>06 34 56 78 90</td><td>IJ-789-KL — Berlingo</td>
+              <td class="dim">—</td><td class="dim">—</td><td class="dim">—</td><td class="dim">🗑 ›</td></tr>
+            <tr><td><b>Emma Petit</b>
+              <div class="dim" style="font-size:12px;margin-top:3px">17 rue des Fleurs, 33000 Bordeaux</div></td>
+              <td>EMP-006</td><td>06 67 89 01 23</td><td class="dim">—</td>
+              <td class="dim">—</td><td class="dim">—</td><td class="dim">—</td><td class="dim">🗑 ›</td></tr>
+            <tr><td><b>Lucas Moreau</b> <span class="chip urgent"><i class="dot"></i>Doc. expiré</span>
+              <div class="dim" style="font-size:12px;margin-top:3px">3 place de la République, 44000 Nantes</div></td>
+              <td>EMP-005</td><td>06 56 78 90 12</td><td>TU-678-VW — Trafic</td>
+              <td class="dim">—</td><td class="dim">—</td><td class="dim">—</td><td class="dim">🗑 ›</td></tr>
+            <tr><td><b>Marie Lefebvre</b> <span class="chip urgent"><i class="dot"></i>Doc. expiré</span>
+              <div class="dim" style="font-size:12px;margin-top:3px">45 avenue Victor Hugo, 69002 Lyon</div></td>
+              <td>EMP-002</td><td>06 23 45 67 89</td><td>EF-456-GH — Partner</td>
+              <td class="dim">—</td><td class="dim">—</td><td class="dim">—</td><td class="dim">🗑 ›</td></tr>
+            <tr><td><b>Sophie Bernard</b>
+              <div class="dim" style="font-size:12px;margin-top:3px">22 rue du Commerce, 31000 Toulouse</div></td>
+              <td>EMP-004</td><td>06 45 67 89 01</td><td>PQ-345-RS — Caddy</td>
+              <td class="dim">—</td><td class="dim">—</td><td class="dim">—</td><td class="dim">🗑 ›</td></tr>
+            <tr><td><b>Thomas Dubois</b> <span class="chip urgent"><i class="dot"></i>Doc. expiré</span>
+              <div class="dim" style="font-size:12px;margin-top:3px">12 rue de la Paix, 75001 Paris</div></td>
+              <td>EMP-001</td><td>06 12 34 56 78</td><td>AB-123-CD — Kangoo</td>
+              <td class="dim">—</td><td class="dim">—</td><td class="dim">—</td><td class="dim">🗑 ›</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 1 · CONFORMITÉ D'ABORD ══════════ -->
+  <section class="variant" data-v="1">
+    <div class="crit">
+      <h3>Variante 1 · Conformité d'abord</h3>
+      Le tableau reste, mais il répond enfin à la question qu'on se pose : <b>qui n'est pas en règle,
+      et sur quoi.</b> Même correction que sur la liste des véhicules, même grammaire.
+      <ul>
+        <li class="plus">« Visite médicale expirée depuis 12 jours » remplace « Doc. expiré ». On sait quoi faire sans ouvrir la fiche.</li>
+        <li class="plus">Une colonne <b>Conformité 6/7</b> avec sa jauge : il manque un papier ou il en manque six, ça se voit.</li>
+        <li class="plus">Les trois colonnes de cartes fusionnent en une pastille « 2/3 » — l'information reste, la largeur revient au reste.</li>
+        <li class="plus">Groupé par état, pas par alphabet. Le tri A→Z reste disponible dans le sélecteur.</li>
+        <li class="plus">L'adresse quitte la liste pour la fiche. Le téléphone reste : on appelle un chauffeur, on ne lui écrit pas.</li>
+        <li class="minus">Chercher quelqu'un par son nom demande la recherche plutôt que l'ordre alphabétique — d'où le tri conservé.</li>
+      </ul>
+    </div>
+    <div class="wrap">
+      <div class="head">
+        <div><h1>Conducteurs</h1><p class="sub">6 conducteurs · 4 ne sont pas en règle</p></div>
+        <div style="display:flex;align-items:center;gap:11px">
+          <span class="quota">6 / 3 · plan Starter</span>
+          <button class="btn">⤓ Exporter</button>
+          <button class="btn primary">+ Ajouter</button>
+        </div>
+      </div>
+      <div class="bar">
+        <input class="search" placeholder="Nom, téléphone, véhicule…">
+        <button class="f alert">Documents à refaire <span class="count">4</span></button>
+        <button class="f">Sans véhicule <span class="count">1</span></button>
+        <span class="sep"></span>
+        <button class="f on">Trier : conformité</button>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Conducteur</th><th>Téléphone</th><th>Véhicule</th>
+            <th>Prochaine échéance</th><th>Conformité</th><th>Cartes</th><th></th></tr></thead>
+          <tbody>
+            <tr class="grouprow warn"><td colspan="7">● À régulariser 2</td></tr>
+            <tr style="background:var(--amber-soft)">
+              <td><div class="who warn"><i>TD</i><div><div class="n">Thomas Dubois</div><div class="m">EMP-001</div></div></div></td>
+              <td>06 12 34 56 78</td><td>AB-123-CD · Kangoo</td>
+              <td class="due warn">Visite médicale expirée depuis 12 j</td>
+              <td><span class="ratio"><b>5/7</b><span class="track"><i class="amber" style="width:71%"></i></span></span></td>
+              <td><span class="chip none">1/3</span></td><td class="dim">›</td></tr>
+            <tr style="background:var(--amber-soft)">
+              <td><div class="who warn"><i>AM</i><div><div class="n">Antoine Martin</div><div class="m">EMP-003</div></div></div></td>
+              <td>06 34 56 78 90</td><td>IJ-789-KL · Berlingo</td>
+              <td class="due warn">Casier judiciaire expiré depuis 3 j</td>
+              <td><span class="ratio"><b>6/7</b><span class="track"><i class="amber" style="width:86%"></i></span></span></td>
+              <td><span class="chip none">2/3</span></td><td class="dim">›</td></tr>
+
+            <tr class="grouprow"><td colspan="7">● Bientôt 2</td></tr>
+            <tr>
+              <td><div class="who"><i>ML</i><div><div class="n">Marie Lefebvre</div><div class="m">EMP-002</div></div></div></td>
+              <td>06 23 45 67 89</td><td>EF-456-GH · Partner</td>
+              <td class="due">Permis à renouveler dans 18 j</td>
+              <td><span class="ratio"><b>7/7</b><span class="track"><i style="width:100%"></i></span></span></td>
+              <td><span class="chip ok">3/3</span></td><td class="dim">›</td></tr>
+            <tr>
+              <td><div class="who"><i>LM</i><div><div class="n">Lucas Moreau</div><div class="m">EMP-005</div></div></div></td>
+              <td>06 56 78 90 12</td><td>TU-678-VW · Trafic</td>
+              <td class="due">Formation SST dans 26 j</td>
+              <td><span class="ratio"><b>6/7</b><span class="track"><i class="amber" style="width:86%"></i></span></span></td>
+              <td><span class="chip none">2/3</span></td><td class="dim">›</td></tr>
+
+            <tr class="grouprow good"><td colspan="7">● En règle 2</td></tr>
+            <tr>
+              <td><div class="who"><i>SB</i><div><div class="n">Sophie Bernard</div><div class="m">EMP-004</div></div></div></td>
+              <td>06 45 67 89 01</td><td>PQ-345-RS · Caddy</td>
+              <td class="dim">Rien avant mars 2027</td>
+              <td><span class="ratio"><b>7/7</b><span class="track"><i style="width:100%"></i></span></span></td>
+              <td><span class="chip ok">3/3</span></td><td class="dim">›</td></tr>
+            <tr>
+              <td><div class="who"><i>EP</i><div><div class="n">Emma Petit</div><div class="m">EMP-006</div></div></div></td>
+              <td>06 67 89 01 23</td><td class="dim">Sans véhicule</td>
+              <td class="dim">Rien avant janvier 2027</td>
+              <td><span class="ratio"><b>7/7</b><span class="track"><i style="width:100%"></i></span></span></td>
+              <td><span class="chip none">0/3</span></td><td class="dim">›</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 2 · CARTES ══════════ -->
+  <section class="variant" data-v="2">
+    <div class="crit">
+      <h3>Variante 2 · Cartes, même grammaire que les véhicules</h3>
+      Exactement la carte qu'on vient de déployer côté véhicules, transposée : une phrase qui dit
+      ce que la personne réclame, une jauge de conformité à la place de l'axe, le véhicule et le
+      téléphone en pied.
+      <ul>
+        <li class="plus"><b>Cohérence :</b> qui a compris la liste des véhicules a compris celle-ci. Même sélecteur Liste / Cartes, même préférence mémorisée.</li>
+        <li class="plus">L'initiale en pastille donne un repère visuel que sept colonnes de texte ne donnent pas.</li>
+        <li class="plus">La jauge de conformité est comparable d'une carte à l'autre, ce qu'un « 6/7 » écrit ne permet pas.</li>
+        <li class="minus">Moins de conducteurs visibles d'un coup qu'en tableau — d'où le sélecteur, avec la liste par défaut.</li>
+        <li class="minus">Le numéro de téléphone perd son alignement : pour appeler une série de chauffeurs, le tableau reste meilleur.</li>
+      </ul>
+    </div>
+    <div class="wrap">
+      <div class="head">
+        <div><h1>Conducteurs</h1><p class="sub">6 conducteurs · 4 ne sont pas en règle</p></div>
+        <div style="display:flex;align-items:center;gap:11px">
+          <span class="quota">6 / 3 · plan Starter</span>
+          <button class="btn">⤓ Exporter</button>
+          <button class="btn primary">+ Ajouter</button>
+        </div>
+      </div>
+      <div class="bar">
+        <input class="search" placeholder="Nom, téléphone, véhicule…">
+        <button class="f alert">Documents à refaire <span class="count">4</span></button>
+        <span class="sep"></span>
+        <button class="f">▤ Liste</button><button class="f on">▦ Cartes</button>
+      </div>
+
+      <div class="groupheadC warn"><span class="d"></span>À régulariser · 2</div>
+      <div class="grid">
+        <article class="dc warn">
+          <div class="who warn"><i>TD</i><div><div class="n">Thomas Dubois</div><div class="m">EMP-001 · 06 12 34 56 78</div></div></div>
+          <div class="say">Visite médicale expirée depuis 12 jours
+            <small>Puis casier judiciaire en février</small></div>
+          <span class="ratio"><b>5/7</b> conformes<span class="track"><i class="amber" style="width:71%"></i></span></span>
+          <div class="ft"><span>AB-123-CD · Kangoo</span><span class="chip none">1/3 cartes</span></div>
+        </article>
+        <article class="dc warn">
+          <div class="who warn"><i>AM</i><div><div class="n">Antoine Martin</div><div class="m">EMP-003 · 06 34 56 78 90</div></div></div>
+          <div class="say">Casier judiciaire expiré depuis 3 jours
+            <small>Le reste est à jour</small></div>
+          <span class="ratio"><b>6/7</b> conformes<span class="track"><i class="amber" style="width:86%"></i></span></span>
+          <div class="ft"><span>IJ-789-KL · Berlingo</span><span class="chip none">2/3 cartes</span></div>
+        </article>
+      </div>
+
+      <div class="groupheadC"><span class="d"></span>Bientôt · 2</div>
+      <div class="grid">
+        <article class="dc">
+          <div class="who"><i>ML</i><div><div class="n">Marie Lefebvre</div><div class="m">EMP-002 · 06 23 45 67 89</div></div></div>
+          <div class="say">Permis à renouveler dans 18 jours
+            <small>Rien d'autre avant l'été</small></div>
+          <span class="ratio"><b>7/7</b> conformes<span class="track"><i style="width:100%"></i></span></span>
+          <div class="ft"><span>EF-456-GH · Partner</span><span class="chip ok">3/3 cartes</span></div>
+        </article>
+        <article class="dc">
+          <div class="who"><i>LM</i><div><div class="n">Lucas Moreau</div><div class="m">EMP-005 · 06 56 78 90 12</div></div></div>
+          <div class="say">Formation SST dans 26 jours
+            <small>Puis visite médicale en avril</small></div>
+          <span class="ratio"><b>6/7</b> conformes<span class="track"><i class="amber" style="width:86%"></i></span></span>
+          <div class="ft"><span>TU-678-VW · Trafic</span><span class="chip none">2/3 cartes</span></div>
+        </article>
+      </div>
+
+      <div class="groupheadC good"><span class="d"></span>En règle · 2</div>
+      <div class="grid">
+        <article class="dc">
+          <div class="who"><i>SB</i><div><div class="n">Sophie Bernard</div><div class="m">EMP-004 · 06 45 67 89 01</div></div></div>
+          <div class="say">Rien à prévoir avant mars 2027
+            <small>Prochaine échéance : formation TPMR</small></div>
+          <span class="ratio"><b>7/7</b> conformes<span class="track"><i style="width:100%"></i></span></span>
+          <div class="ft"><span>PQ-345-RS · Caddy</span><span class="chip ok">3/3 cartes</span></div>
+        </article>
+        <article class="dc">
+          <div class="who"><i>EP</i><div><div class="n">Emma Petit</div><div class="m">EMP-006 · 06 67 89 01 23</div></div></div>
+          <div class="say">Rien à prévoir avant janvier 2027
+            <small>Aucun véhicule affecté</small></div>
+          <span class="ratio"><b>7/7</b> conformes<span class="track"><i style="width:100%"></i></span></span>
+          <div class="ft"><span class="dim">Sans véhicule</span><span class="chip none">0/3 cartes</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 3 · LISTE + APERÇU ══════════ -->
+  <section class="variant" data-v="3">
+    <div class="crit">
+      <h3>Variante 3 · Liste à gauche, dossier à droite</h3>
+      Le cas d'usage propre aux conducteurs : passer en revue les sept documents de chacun, et
+      redistribuer les véhicules. On clique un nom, son dossier s'ouvre à côté.
+      <ul>
+        <li class="plus">Contrôler six dossiers devient six clics, contre six allers-retours aujourd'hui.</li>
+        <li class="plus">Les sept lignes réglementaires sont là, avec l'action sur celle qui pose problème.</li>
+        <li class="plus"><b>Changer</b> et <b>Désaffecter</b> sont dans l'aperçu : réaffecter suppose de comparer des conducteurs, c'est une tâche de liste, pas de fiche.</li>
+        <li class="minus">La liste perd un tiers de largeur, donc quatre colonnes au lieu de sept.</li>
+        <li class="minus">Inutilisable sous 1 200 px sans replier l'aperçu en tiroir.</li>
+        <li class="minus">Deux niveaux de détail à tenir : si l'aperçu grossit encore, il remplace la fiche et on maintient deux fois la même page.</li>
+      </ul>
+      <p style="margin:12px 0 0;color:#8FA0C0">
+        <b style="color:#fff">Ce qui reste volontairement sur la fiche :</b> l'historique des
+        affectations, l'adresse, les numéros de carte. Ce sont des informations qu'on <i>étudie</i>,
+        pas des informations sur lesquelles on <i>décide</i> — et c'est la ligne de partage qui
+        empêche l'aperçu de devenir une seconde fiche.
+      </p>
+    </div>
+    <div class="wrap">
+      <div class="head">
+        <div><h1>Conducteurs</h1><p class="sub">6 conducteurs · 4 ne sont pas en règle</p></div>
+        <div style="display:flex;gap:11px"><button class="btn">⤓ Exporter</button><button class="btn primary">+ Ajouter</button></div>
+      </div>
+      <div class="bar">
+        <input class="search" placeholder="Nom, téléphone, véhicule…">
+        <button class="f alert">Documents à refaire <span class="count">4</span></button>
+      </div>
+      <div class="split">
+        <div class="card">
+          <div class="pick" style="background:var(--amber-soft)">
+            <div class="who warn"><i>TD</i><div><div class="n">Thomas Dubois</div><div class="m">AB-123-CD · Kangoo</div></div></div>
+            <span class="chip urgent"><i class="dot"></i>visite médicale</span></div>
+          <div class="pick on">
+            <div class="who warn"><i>AM</i><div><div class="n">Antoine Martin</div><div class="m">IJ-789-KL · Berlingo</div></div></div>
+            <span class="chip urgent"><i class="dot"></i>casier</span></div>
+          <div class="pick">
+            <div class="who"><i>ML</i><div><div class="n">Marie Lefebvre</div><div class="m">EF-456-GH · Partner</div></div></div>
+            <span class="chip soon"><i class="dot"></i>18 j</span></div>
+          <div class="pick">
+            <div class="who"><i>LM</i><div><div class="n">Lucas Moreau</div><div class="m">TU-678-VW · Trafic</div></div></div>
+            <span class="chip soon"><i class="dot"></i>26 j</span></div>
+          <div class="pick">
+            <div class="who"><i>SB</i><div><div class="n">Sophie Bernard</div><div class="m">PQ-345-RS · Caddy</div></div></div>
+            <span class="chip ok"><i class="dot"></i>en règle</span></div>
+          <div class="pick">
+            <div class="who"><i>EP</i><div><div class="n">Emma Petit</div><div class="m">Sans véhicule</div></div></div>
+            <span class="chip ok"><i class="dot"></i>en règle</span></div>
+        </div>
+
+        <div class="peek">
+
+          <div class="box">
+            <div class="bh">Antoine Martin <span style="font-weight:400;color:var(--faint)">· EMP-003</span></div>
+            <div class="bb">
+              <div><span>Téléphone</span><b>06 34 56 78 90</b></div>
+              <div><span>Cartes &amp; badges</span><span class="chip none">2 / 3</span></div>
+            </div>
+          </div>
+
+          <!-- Affecter, c'est une tâche de liste : on compare des conducteurs
+               et on redistribue. Elle a donc sa place dans l'aperçu. -->
+          <div class="box">
+            <div class="bh">Véhicule actuel</div>
+            <div class="veh">
+              <span class="ic">▣</span>
+              <span><span class="p">IJ-789-KL</span><span class="m">Citroën Berlingo</span></span>
+              <span class="go">Voir ›</span>
+            </div>
+            <div class="acts">
+              <button class="btn sm">Désaffecter</button>
+              <button class="btn sm" style="background:var(--brand-tint);border-color:transparent;color:var(--brand)">Changer</button>
+            </div>
+          </div>
+
+          <div class="box">
+            <div class="bh">Documents réglementaires <span style="font-weight:400;color:var(--faint)">· 6/7</span></div>
+            <div class="bb">
+              <div class="doc"><b>Permis de conduire</b><span class="chip ok">2031</span></div>
+              <div class="doc"><b>Aptitude à la conduite</b><span class="chip ok">2029</span></div>
+              <div class="doc"><b>Casier judiciaire</b><span class="chip urgent"><i class="dot"></i>expiré 3 j</span></div>
+              <div class="doc"><b>Formation SST / PSC1</b><span class="chip ok">2028</span></div>
+              <div class="doc"><b>Formation TPMR</b><span class="chip ok">2030</span></div>
+              <div class="doc"><b>Éco-conduite</b><span class="chip ok">2029</span></div>
+              <div class="doc"><b>Visite médicale</b><span class="chip watch">avr. 2027</span></div>
+            </div>
+            <div class="acts"><button class="btn sm" style="background:var(--brand-tint);border-color:transparent;color:var(--brand)">Renouveler le casier</button></div>
+          </div>
+
+          <a class="more" href="#">Ouvrir la fiche complète — historique des affectations, adresse, numéros de carte ›</a>
+
+      </div>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<script>
+  const buttons = document.querySelectorAll('.switcher button');
+  const panels  = document.querySelectorAll('.variant');
+  buttons.forEach(b => b.addEventListener('click', () => {
+    buttons.forEach(x => x.setAttribute('aria-current', String(x === b)));
+    panels.forEach(p => p.dataset.v === b.dataset.go
+      ? p.setAttribute('data-on', '')
+      : p.removeAttribute('data-on'));
+    window.scrollTo({ top: 0 });
+  }));
+</script>
+</body>
+</html>
