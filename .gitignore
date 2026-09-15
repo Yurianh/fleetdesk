@@ -49,3 +49,6 @@ src/lib/supabase\ 2.js
 .portal-optout
 .vercel
 .env*
+
+# Doublons créés par la synchro iCloud du Bureau ("fichier 2.js")
+* 2.*
