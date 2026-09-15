@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, ChevronRight, CreditCard, Users, Trash2, Loader2, MapPin, AlertTriangle, Clock, Download } from 'lucide-react'
+import { Plus, Search, ChevronRight, Users, Trash2, Loader2, Download, Truck, UserMinus } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -21,6 +21,42 @@ import {
 import { usePageTitle } from '@/lib/usePageTitle'
 import { useTranslation } from 'react-i18next'
 import { usePlanLimits } from '@/lib/usePlanLimits'
+import AssignDriverDialog from '@/components/shared/AssignDriverDialog'
+import { DOC_TYPE_CONFIG, DOC_TYPES_ORDER, normalizeDocType, docLabel } from '@/components/shared/DriverDocuments'
+import { unassignVehicle } from '@/lib/useFleetData'
+import { format } from 'date-fns'
+import { useDateLocale } from '@/lib/useDateLocale'
+const LEVEL_CHIP = {
+  expired:  'text-amber-900 bg-amber-100',
+  expiring: 'text-amber-900 bg-amber-50 border border-amber-200',
+  missing:  'text-zinc-700 bg-zinc-100',
+  ok:       'text-emerald-700 bg-emerald-50',
+}
+
+// L'état d'une ligne de document, dans l'échelle ambre du reste de l'app.
+function DocState({ row, dateLocale }) {
+  if (row.state === 'missing')
+    return <span className="text-[11px] font-medium text-slate-400 border border-dashed border-slate-200 px-2 py-0.5 rounded-full">manquant</span>
+  if (row.state === 'expired')
+    return <span className="text-[11px] font-semibold text-amber-900 bg-amber-100 px-2 py-0.5 rounded-full whitespace-nowrap">expiré · {Math.abs(row.days)} j</span>
+  if (row.state === 'expiring')
+    return <span className="text-[11px] font-semibold text-amber-900 bg-amber-50 px-2 py-0.5 rounded-full whitespace-nowrap">dans {row.days} j</span>
+  return (
+    <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full whitespace-nowrap">
+      {row.doc?.expiry_date ? format(new Date(row.doc.expiry_date), 'MMM yyyy', { locale: dateLocale }) : 'enregistré'}
+    </span>
+  )
+}
+
+function Initials({ name, warn }) {
+  const letters = (name || '?').split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase()
+  return (
+    <span className={'w-9 h-9 rounded-full grid place-items-center text-[11px] font-bold flex-shrink-0 ' + (
+      warn ? 'bg-amber-100 text-amber-900' : 'bg-[#E5EEFF] text-[#0052D6]'
+    )}>{letters}</span>
+  )
+}
+
 export default function Drivers() {
   usePageTitle('Conducteurs')
   const { t } = useTranslation()
@@ -31,27 +67,68 @@ export default function Drivers() {
   const { data: allDocs = [] } = useAllDriverDocuments()
   const { canAddDriver, limits } = usePlanLimits(0, drivers.length)
 
-  const driverDocStatus = useMemo(() => {
-    const map = {}
+  // Le dossier de chaque conducteur : les sept lignes réglementaires, leur
+  // état, et la première échéance qui tombe. C'est ce que la liste doit dire,
+  // au lieu d'un « Doc. expiré » identique pour tout le monde.
+  const driverFiles = useMemo(() => {
+    const byDriver = {}
     for (const doc of allDocs) {
-      if (!doc.expiry_date) continue
-      const days = differenceInDays(new Date(doc.expiry_date), new Date())
-      const current = map[doc.driver_id]
-      const status = days < 0 ? 'expired' : days <= 30 ? 'expiring' : 'ok'
-      if (!current || status === 'expired' || (status === 'expiring' && current === 'ok')) {
-        map[doc.driver_id] = status
-      }
+      const type = normalizeDocType(doc.type)
+      const cur = byDriver[doc.driver_id] || (byDriver[doc.driver_id] = {})
+      cur[type] = doc
     }
-    return map
-  }, [allDocs])
+
+    const files = {}
+    for (const d of drivers) {
+      const held = byDriver[d.id] || {}
+      const rows = DOC_TYPES_ORDER.map(type => {
+        const doc = held[type]
+        const days = doc?.expiry_date
+          ? differenceInDays(new Date(doc.expiry_date), new Date())
+          : null
+        const state = !doc ? 'missing'
+          : days == null ? 'valid'
+          : days < 0 ? 'expired'
+          : days <= 30 ? 'expiring'
+          : 'valid'
+        return { type, label: DOC_TYPE_CONFIG[type]?.label || docLabel(type), doc, days, state }
+      })
+
+      const done = rows.filter(r => r.state === 'valid').length
+      const due = rows
+        .filter(r => r.days != null && (r.state === 'expired' || r.state === 'expiring'))
+        .sort((a, b) => a.days - b.days)[0] || null
+      const missing = rows.filter(r => r.state === 'missing')
+
+      let level = 'ok', headline = 'Dossier à jour'
+      if (due?.state === 'expired') {
+        level = 'expired'
+        headline = `${due.label} expiré depuis ${Math.abs(due.days)} j`
+      } else if (due?.state === 'expiring') {
+        level = 'expiring'
+        headline = `${due.label} dans ${due.days} j`
+      } else if (missing.length) {
+        level = 'missing'
+        headline = `${missing.length} document${missing.length > 1 ? 's' : ''} manquant${missing.length > 1 ? 's' : ''}`
+      }
+
+      files[d.id] = { rows, done, total: rows.length, due, level, headline }
+    }
+    return files
+  }, [allDocs, drivers])
+
   const queryClient = useQueryClient()
 
   const [search, setSearch] = useState('')
-  const [sort, setSort] = useState('az')
+  const [sort, setSort] = useState('conformite')
   const [showAdd, setShowAdd] = useState(false)
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({ name: '', phone: '', email: '', employee_id: '', date_of_birth: '', address: '', dkv_card: '', highway_badge: '', wash_card: '' })
   const [deleteTarget, setDeleteTarget] = useState(null)
+  const [selectedId, setSelectedId] = useState(null)
+  const [assignOpen, setAssignOpen] = useState(false)
+  const [unassigning, setUnassigning] = useState(false)
+  const dateLocale = useDateLocale()
 
   const latestAssignments = getLatestAssignments(assignments)
   const driverVehicleMap = {}
@@ -61,11 +138,35 @@ export default function Drivers() {
   const filtered = useMemo(() => {
     const arr = drivers.filter(d => d.name.toLowerCase().includes(search.toLowerCase()))
     const byName = (a, b) => (a.name || '').localeCompare(b.name || '', 'fr', { sensitivity: 'base' })
+    const RANK = { expired: 0, expiring: 1, missing: 2, ok: 3 }
     if (sort === 'za') arr.sort((a, b) => byName(b, a))
     else if (sort === 'recent') arr.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+    else if (sort === 'conformite') arr.sort((a, b) => {
+      const d = (RANK[driverFiles[a.id]?.level] ?? 3) - (RANK[driverFiles[b.id]?.level] ?? 3)
+      return d !== 0 ? d : byName(a, b)
+    })
     else arr.sort(byName)
     return arr
-  }, [drivers, search, sort])
+  }, [drivers, search, sort, driverFiles])
+
+  // Le conducteur montré dans l'aperçu : celui qu'on a choisi, sinon le
+  // premier de la liste — l'aperçu n'est jamais vide.
+  const selected = filtered.find(d => d.id === selectedId) || filtered[0] || null
+  const selectedFile = selected ? driverFiles[selected.id] : null
+  const selectedVehicle = selected && driverVehicleMap[selected.id]
+    ? getVehicleById(vehicles, driverVehicleMap[selected.id])
+    : null
+
+  const handleUnassign = async () => {
+    if (!selectedVehicle) return
+    setUnassigning(true)
+    try {
+      await unassignVehicle(selectedVehicle.id)
+      await queryClient.invalidateQueries({ queryKey: ['assignments'] })
+      toast.success('Véhicule désaffecté.')
+    } catch { toast.error('Erreur lors de la désaffectation.') }
+    finally { setUnassigning(false) }
+  }
 
   const handleCreate = async () => {
     if (!form.name) return
@@ -143,6 +244,7 @@ export default function Drivers() {
         <Select value={sort} onValueChange={setSort}>
           <SelectTrigger className="w-full sm:w-[190px] flex-shrink-0"><SelectValue /></SelectTrigger>
           <SelectContent>
+            <SelectItem value="conformite">Conformité d'abord</SelectItem>
             <SelectItem value="az">Nom (A → Z)</SelectItem>
             <SelectItem value="za">Nom (Z → A)</SelectItem>
             <SelectItem value="recent">Récemment ajoutés</SelectItem>
@@ -150,96 +252,153 @@ export default function Drivers() {
         </Select>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        {filtered.length > 0 ? (
-          <>
-            {/* Desktop table */}
-            <div className="hidden sm:block overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-white border-b border-slate-200">
-                    <th className="text-left px-5 py-3 font-medium text-slate-500">Nom</th>
-                    <th className="text-left px-5 py-3 font-medium text-slate-500">ID</th>
-                    <th className="text-left px-5 py-3 font-medium text-slate-500">Téléphone</th>
-                    <th className="text-left px-5 py-3 font-medium text-slate-500">Véhicule actuel</th>
-                    <th className="text-left px-5 py-3 font-medium text-slate-500">Carte DKV</th>
-                    <th className="text-left px-5 py-3 font-medium text-slate-500">Badge autoroute</th>
-                    <th className="text-left px-5 py-3 font-medium text-slate-500">Carte lavage</th>
-                    <th className="px-5 py-3"></th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filtered.map(d => {
-                    const vehicleId = driverVehicleMap[d.id]
-                    const vehicle = vehicleId ? getVehicleById(vehicles, vehicleId) : null
-                    return (
-                      <tr key={d.id} className="hover:bg-white transition-colors">
-                        <td className="px-5 py-3.5">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <Link to={`/Drivers/${d.id}`} className="font-semibold text-slate-900 hover:text-[#0052D6]">{d.name}</Link>
-                            {driverDocStatus[d.id] === 'expired' && (
-                              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded-full"><AlertTriangle className="w-2.5 h-2.5" />Doc. expiré</span>
-                            )}
-                            {driverDocStatus[d.id] === 'expiring' && (
-                              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded-full"><Clock className="w-2.5 h-2.5" />Expire bientôt</span>
-                            )}
-                          </div>
-                          {d.address && <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5"><MapPin className="w-3 h-3" />{d.address}</p>}
-                        </td>
-                        <td className="px-5 py-3.5 text-slate-500 font-mono text-xs">{d.employee_id || <span className="text-slate-300">—</span>}</td>
-                        <td className="px-5 py-3.5 text-slate-600">{d.phone || '—'}</td>
-                        <td className="px-5 py-3.5 text-slate-600">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : '—'}</td>
-                        <td className="px-5 py-3.5">
-                          {d.dkv_card ? <span className="flex items-center gap-1.5 text-slate-700"><CreditCard className="w-3.5 h-3.5 text-blue-400" />{d.dkv_card}</span> : <span className="text-slate-300">—</span>}
-                        </td>
-                        <td className="px-5 py-3.5">
-                          {d.highway_badge ? <span className="text-slate-700">{d.highway_badge}</span> : <span className="text-slate-300">—</span>}
-                        </td>
-                        <td className="px-5 py-3.5">
-                          {d.wash_card ? <span className="text-slate-700">{d.wash_card}</span> : <span className="text-slate-300">—</span>}
-                        </td>
-                        <td className="px-5 py-3.5">
-                          <div className="flex items-center justify-end gap-1">
-                            <button onClick={() => setDeleteTarget(d)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
-                            <Link to={`/Drivers/${d.id}`} className="p-1.5 text-slate-400 hover:text-[#0052D6]"><ChevronRight className="w-4 h-4" /></Link>
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
+      {filtered.length > 0 ? (
+        <>
+          {/* ── Bureau : la liste choisit, le dossier s'ouvre à côté ── */}
+          <div className="hidden lg:grid lg:grid-cols-[minmax(0,1fr)_340px] gap-4 items-start">
 
-            {/* Mobile cards */}
-            <div className="sm:hidden divide-y divide-slate-100">
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
               {filtered.map(d => {
+                const file = driverFiles[d.id]
                 const vehicleId = driverVehicleMap[d.id]
                 const vehicle = vehicleId ? getVehicleById(vehicles, vehicleId) : null
+                const warn = file?.level === 'expired' || file?.level === 'expiring'
+                const active = selected?.id === d.id
                 return (
-                  <Link key={d.id} to={`/Drivers/${d.id}`} className="flex items-center justify-between p-4 hover:bg-white transition-colors">
-                    <div className="flex-1 min-w-0 mr-3">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="font-semibold text-slate-900">{d.name}</p>
-                        {driverDocStatus[d.id] === 'expired' && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded-full"><AlertTriangle className="w-2.5 h-2.5" />Doc. expiré</span>
-                        )}
-                        {driverDocStatus[d.id] === 'expiring' && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded-full"><Clock className="w-2.5 h-2.5" />Expire bientôt</span>
-                        )}
-                      </div>
-                      <p className="text-sm text-slate-500">{vehicle ? `${vehicle.plate_number} — ${vehicle.model}` : 'Non affecté'}</p>
-                      {d.phone && <p className="text-xs text-slate-400 mt-0.5">{d.phone}</p>}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <button onClick={e => { e.preventDefault(); setDeleteTarget(d) }} className="p-1.5 text-slate-400 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
-                      <ChevronRight className="w-4 h-4 text-slate-300 flex-shrink-0" />
-                    </div>
-                  </Link>
+                  <button
+                    key={d.id}
+                    onClick={() => setSelectedId(d.id)}
+                    className={'w-full text-left flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0 transition-colors ' + (
+                      active ? 'bg-[#E5EEFF]' : 'hover:bg-slate-50/70'
+                    )}
+                  >
+                    <Initials name={d.name} warn={warn} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-semibold text-slate-900 truncate">{d.name}</span>
+                      <span className="block text-xs text-slate-400 truncate">
+                        {vehicle ? `${vehicle.plate_number} · ${vehicle.model}` : 'Sans véhicule'}
+                      </span>
+                    </span>
+                    <span className={'text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0 ' + LEVEL_CHIP[file?.level || 'ok']}>
+                      {file?.headline || 'Dossier à jour'}
+                    </span>
+                  </button>
                 )
               })}
             </div>
-          </>
+
+            {/* ── Le dossier ────────────────────────────────────────── */}
+            {selected && (
+              <div className="sticky top-6 space-y-3">
+
+                <div className="bg-white rounded-xl border border-slate-200 p-4">
+                  <div className="flex items-center gap-3">
+                    <Initials name={selected.name} warn={selectedFile?.level === 'expired'} />
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-slate-900 truncate">{selected.name}</p>
+                      <p className="text-xs text-slate-400 truncate">
+                        {selected.employee_id || 'Sans matricule'}{selected.phone ? ` · ${selected.phone}` : ''}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Réaffecter suppose de comparer des conducteurs : c'est une
+                    tâche de liste, elle a donc sa place ici. */}
+                <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+                  <p className="px-4 py-3 text-sm font-semibold text-slate-900 border-b border-slate-100">Véhicule actuel</p>
+                  {selectedVehicle ? (
+                    <>
+                      <Link to={`/Vehicles/${selectedVehicle.id}`} className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50/70 transition-colors">
+                        <span className="w-9 h-9 rounded-lg bg-[#E5EEFF] text-[#0052D6] grid place-items-center flex-shrink-0">
+                          <Truck className="w-4 h-4" />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-sm font-bold text-slate-900">{selectedVehicle.plate_number}</span>
+                          <span className="block text-xs text-slate-400 truncate">{selectedVehicle.model}</span>
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-slate-300 flex-shrink-0" />
+                      </Link>
+                      <div className="flex gap-2 px-4 pb-4">
+                        <button onClick={handleUnassign} disabled={unassigning}
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-medium text-slate-500 hover:text-[#0066FF] px-3 py-2 rounded-lg border border-slate-200 hover:border-[#0066FF] transition-colors disabled:opacity-50">
+                          {unassigning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UserMinus className="w-3.5 h-3.5" />} Désaffecter
+                        </button>
+                        <button onClick={() => setAssignOpen(true)}
+                          className="flex-1 text-xs font-semibold text-[#0066FF] bg-[#0066FF]/5 hover:bg-[#0066FF]/10 px-3 py-2 rounded-lg transition-colors">
+                          Changer
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="px-4 py-4">
+                      <p className="text-sm text-slate-400 mb-3">Aucun véhicule affecté.</p>
+                      <button onClick={() => setAssignOpen(true)}
+                        className="w-full text-xs font-semibold text-[#0066FF] bg-[#0066FF]/5 hover:bg-[#0066FF]/10 px-3 py-2 rounded-lg transition-colors">
+                        Affecter un véhicule
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+                  <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-slate-100">
+                    <p className="text-sm font-semibold text-slate-900">Documents</p>
+                    <span className="text-xs text-slate-400 tabular-nums">
+                      {selectedFile?.done}/{selectedFile?.total} conformes
+                    </span>
+                  </div>
+                  <div className="px-4 py-3 space-y-2.5">
+                    {selectedFile?.rows.map(row => (
+                      <div key={row.type} className="flex items-center justify-between gap-3">
+                        <span className="text-[13px] text-slate-600 truncate">{row.label}</span>
+                        <DocState row={row} dateLocale={dateLocale} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <Link to={`/Drivers/${selected.id}`}
+                  className="block text-center text-xs font-semibold text-[#0066FF] hover:text-[#0052D6] py-2">
+                  Ouvrir la fiche — historique des affectations, adresse, cartes ›
+                </Link>
+
+                {/* La suppression quitte la liste : elle était à égalité
+                    visuelle avec le chevron d'ouverture, sur chaque ligne. */}
+                <button onClick={() => setDeleteTarget(selected)}
+                  className="w-full inline-flex items-center justify-center gap-1.5 text-xs font-medium text-slate-400 hover:text-red-500 py-2 transition-colors">
+                  <Trash2 className="w-3.5 h-3.5" /> Supprimer ce conducteur
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* ── Sous 1024 px : la liste seule, chaque ligne mène à la fiche ── */}
+          <div className="lg:hidden bg-white rounded-xl border border-slate-200 overflow-hidden">
+            {filtered.map(d => {
+              const file = driverFiles[d.id]
+              const vehicleId = driverVehicleMap[d.id]
+              const vehicle = vehicleId ? getVehicleById(vehicles, vehicleId) : null
+              const warn = file?.level === 'expired' || file?.level === 'expiring'
+              return (
+                <Link key={d.id} to={`/Drivers/${d.id}`}
+                  className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0 hover:bg-slate-50/70 transition-colors">
+                  <Initials name={d.name} warn={warn} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-slate-900 truncate">{d.name}</p>
+                    <p className="text-xs text-slate-400 truncate">
+                      {vehicle ? `${vehicle.plate_number} · ${vehicle.model}` : 'Sans véhicule'}
+                    </p>
+                    <span className={'inline-block mt-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full ' + LEVEL_CHIP[file?.level || 'ok']}>
+                      {file?.headline || 'Dossier à jour'}
+                    </span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-300 flex-shrink-0" />
+                </Link>
+              )
+            })}
+          </div>
+        </>
         ) : (
           <EmptyState
             icon={Users}
@@ -247,8 +406,14 @@ export default function Drivers() {
             description={search ? `Aucun conducteur ne correspond à "${search}"` : 'Ajoutez votre premier conducteur pour commencer.'}
             action={!search ? { label: 'Ajouter un conducteur', onClick: () => setShowAdd(true) } : undefined}
           />
-        )}
-      </div>
+      )}
+
+      {/* Affecter ou changer le véhicule du conducteur sélectionné */}
+      <AssignDriverDialog
+        open={assignOpen}
+        onClose={() => setAssignOpen(false)}
+        driverId={selected?.id || null}
+      />
 
       <Dialog open={showAdd} onOpenChange={setShowAdd}>
         <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto">

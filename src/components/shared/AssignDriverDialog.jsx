@@ -14,25 +14,27 @@ import { useAssignDriver } from '@/lib/useAssignDriver'
 // picker, with the same visual vocabulary (Actuel / Disponible / Échange).
 // With `vehicleId` fixed it assigns to that vehicle; without, a vehicle
 // select is shown first (used by the Assignments page create action).
-export default function AssignDriverDialog({ open, onClose, vehicleId: fixedVehicleId = null }) {
+// With `driverId` fixed the roles are reversed: the driver is known and only
+// the vehicle is chosen — that is how the drivers list reassigns someone.
+export default function AssignDriverDialog({ open, onClose, vehicleId: fixedVehicleId = null, driverId: fixedDriverId = null }) {
   const { data: vehicles }    = useVehicles()
   const { data: drivers }     = useDrivers()
   const { data: assignments } = useAssignments()
   const { assign, assigning } = useAssignDriver()
 
   const [vehicleId, setVehicleId] = useState(fixedVehicleId || '')
-  const [driverId,  setDriverId]  = useState('')
+  const [driverId,  setDriverId]  = useState(fixedDriverId || '')
   const [search,    setSearch]    = useState('')
   const searchRef = useRef(null)
 
   useEffect(() => {
     if (open) {
       setVehicleId(fixedVehicleId || '')
-      setDriverId('')
+      setDriverId(fixedDriverId || '')
       setSearch('')
       setTimeout(() => searchRef.current?.focus(), 50)
     }
-  }, [open, fixedVehicleId])
+  }, [open, fixedVehicleId, fixedDriverId])
 
   const latestAssignments = useMemo(() => getLatestAssignments(assignments), [assignments])
   // driver id → vehicle id they currently drive
@@ -60,7 +62,31 @@ export default function AssignDriverDialog({ open, onClose, vehicleId: fixedVehi
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) onClose() }}>
       <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-md">
-        <DialogHeader><DialogTitle>Affecter un conducteur</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>{fixedDriverId ? 'Affecter un véhicule' : 'Affecter un conducteur'}</DialogTitle>
+        </DialogHeader>
+
+        {fixedDriverId ? (
+          <div className="mt-1 space-y-2">
+            <SearchableSelect
+              value={vehicleId}
+              onValueChange={setVehicleId}
+              placeholder="Sélectionner un véhicule"
+              options={vehicles.map(v => {
+                const held = latestAssignments[v.id]
+                const heldBy = held ? drivers.find(d => d.id === held.driver_id) : null
+                return {
+                  value: v.id,
+                  label: `${v.plate_number} — ${v.model}`
+                    + (heldBy ? ` · conduit par ${heldBy.name}` : ' · libre'),
+                }
+              })}
+            />
+            <p className="text-xs text-slate-400">
+              Choisir un véhicule déjà conduit échange les deux affectations.
+            </p>
+          </div>
+        ) : (<>
 
         {!fixedVehicleId && (
           <div className="mt-1">
@@ -152,6 +178,8 @@ export default function AssignDriverDialog({ open, onClose, vehicleId: fixedVehi
             )}
           </>
         )}
+
+        </>)}
 
         <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
           <Button variant="outline" onClick={onClose} className="flex-shrink-0">Annuler</Button>
