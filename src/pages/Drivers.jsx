@@ -178,7 +178,7 @@ export default function Drivers() {
                           <div className="flex items-center gap-2 flex-wrap">
                             <Link to={`/Drivers/${d.id}`} className="font-semibold text-slate-900 hover:text-[#0052D6]">{d.name}</Link>
                             {driverDocStatus[d.id] === 'expired' && (
-                              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-red-700 bg-red-100 px-1.5 py-0.5 rounded-full"><AlertTriangle className="w-2.5 h-2.5" />Doc. expiré</span>
+                              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded-full"><AlertTriangle className="w-2.5 h-2.5" />Doc. expiré</span>
                             )}
                             {driverDocStatus[d.id] === 'expiring' && (
                               <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded-full"><Clock className="w-2.5 h-2.5" />Expire bientôt</span>
@@ -222,7 +222,7 @@ export default function Drivers() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <p className="font-semibold text-slate-900">{d.name}</p>
                         {driverDocStatus[d.id] === 'expired' && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-red-700 bg-red-100 px-1.5 py-0.5 rounded-full"><AlertTriangle className="w-2.5 h-2.5" />Doc. expiré</span>
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded-full"><AlertTriangle className="w-2.5 h-2.5" />Doc. expiré</span>
                         )}
                         {driverDocStatus[d.id] === 'expiring' && (
                           <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded-full"><Clock className="w-2.5 h-2.5" />Expire bientôt</span>

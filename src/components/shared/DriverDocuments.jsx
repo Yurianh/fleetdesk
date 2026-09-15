@@ -154,21 +154,21 @@ function DocStatusBadge({ doc }) {
   const days = differenceInDays(new Date(doc.expiry_date), new Date())
   if (days < 0) {
     return (
-      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-red-700 bg-red-100 px-2 py-0.5 rounded-full">
+      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-900 bg-amber-100 px-2 py-0.5 rounded-full">
         <AlertTriangle className="w-3 h-3" />Expiré
       </span>
     )
   }
   if (days <= 30) {
     return (
-      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-red-700 bg-red-100 px-2 py-0.5 rounded-full">
+      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-900 bg-amber-50 px-2 py-0.5 rounded-full">
         <Clock className="w-3 h-3" />Expire dans {days}j
       </span>
     )
   }
   if (days <= 90) {
     return (
-      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
+      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-zinc-700 bg-zinc-100 px-2 py-0.5 rounded-full">
         <Clock className="w-3 h-3" />Expire dans {days}j
       </span>
     )
@@ -424,19 +424,19 @@ export default function DriverDocuments({ driverId, driver, focusType = null }) 
     : completedCount === totalCount ? 'complete'
     : 'incomplete'
 
-  const progressColor = overallStatus === 'expired' ? 'bg-red-400'
+  const progressColor = overallStatus === 'expired' ? 'bg-amber-400'
     : overallStatus === 'expiring' ? 'bg-amber-400'
     : overallStatus === 'complete' ? 'bg-emerald-400'
     : 'bg-slate-300'
 
-  const badgeStyle = overallStatus === 'expired' ? 'text-red-700 bg-red-100'
-    : overallStatus === 'expiring' ? 'text-amber-700 bg-amber-100'
+  const badgeStyle = overallStatus === 'expired' ? 'text-amber-900 bg-amber-100'
+    : overallStatus === 'expiring' ? 'text-amber-900 bg-amber-50'
     : overallStatus === 'complete' ? 'text-emerald-700 bg-emerald-100'
     : 'text-slate-500 bg-slate-100'
 
   // One row, unified across states. Grouped by category, so the leading dot +
   // status pill carry the urgency the old urgency-buckets used to.
-  const dotColor = { expired: 'bg-red-500', expiring: 'bg-amber-500', valid: 'bg-emerald-500', missing: 'bg-slate-300' }
+  const dotColor = { expired: 'bg-amber-500', expiring: 'bg-amber-400', valid: 'bg-emerald-500', missing: 'bg-slate-300' }
   const renderRow = (entry) => {
     const { type, doc } = entry
     const st = docState(doc)
@@ -487,13 +487,13 @@ export default function DriverDocuments({ driverId, driver, focusType = null }) 
           )}
           {st === 'expired' && (
             <button onClick={() => openEdit(doc)}
-              className="text-xs font-semibold text-white bg-red-500 hover:bg-red-600 px-3 py-1.5 rounded-lg transition-colors shadow-sm">
+              className="text-xs font-semibold text-white bg-[#0066FF] hover:bg-[#0052D6] px-3 py-1.5 rounded-lg transition-colors shadow-sm">
               Mettre à jour
             </button>
           )}
           {st === 'expiring' && (
             <button onClick={() => openEdit(doc)}
-              className="text-xs font-semibold text-amber-700 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-lg transition-colors">
+              className="text-xs font-semibold text-[#0066FF] bg-[#0066FF]/5 hover:bg-[#0066FF]/10 px-3 py-1.5 rounded-lg transition-colors">
               Renouveler
             </button>
           )}
