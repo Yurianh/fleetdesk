@@ -74,7 +74,11 @@ async function logActivity(action, entityType, entityId, entityLabel) {
 
 // ── Queries ──────────────────────────────────────────────────────
 
-export function useVehicles() {
+// Requête unique (un seul cache), deux lectures. Par défaut, un écran veut le
+// parc en service : un véhicule sorti du parc ne doit plus apparaître dans les
+// listes déroulantes, les compteurs ni les alertes. Les écrans qui gèrent le
+// parc lui-même utilisent `useVehiclesWithArchived`.
+function useVehiclesQuery() {
   return useQuery({
     queryKey: ['vehicles'],
     queryFn: async () => {
@@ -86,6 +90,15 @@ export function useVehicles() {
     },
     placeholderData: () => [],
   })
+}
+
+export function useVehicles() {
+  const query = useVehiclesQuery()
+  return { ...query, data: (query.data || []).filter(v => !v.archived_at) }
+}
+
+export function useVehiclesWithArchived() {
+  return useVehiclesQuery()
 }
 
 export function useDrivers() {
@@ -340,6 +353,31 @@ export async function updateVehicle(id, data) {
   if (error) throw error
   logActivity('updateVehicle', 'vehicle', id, data.plate_number || '')
 }
+
+// Sortie de parc : le véhicule quitte les listes, les alertes et les quotas,
+// mais garde son historique. Les affectations en cours sont closes — un véhicule
+// hors parc n'a plus de conducteur.
+export async function archiveVehicle(id, label = '') {
+  if (DEMO) return
+  const uid = await orgUid()
+  const now = new Date().toISOString()
+  await supabase.from('assignments').update({ ended_at: now })
+    .eq('user_id', uid).eq('vehicle_id', id).is('ended_at', null)
+  const { error } = await supabase.from('vehicles').update({ archived_at: now }).eq('id', id)
+  if (error) throw error
+  logActivity('archiveVehicle', 'vehicle', id, label)
+}
+
+export async function restoreVehicle(id, label = '') {
+  if (DEMO) return
+  const { error } = await supabase.from('vehicles').update({ archived_at: null }).eq('id', id)
+  if (error) throw error
+  logActivity('restoreVehicle', 'vehicle', id, label)
+}
+
+// Le parc actif — ce que la plupart des écrans veulent réellement.
+export const activeVehicles = (vehicles = []) => vehicles.filter(v => !v.archived_at)
+export const archivedVehicles = (vehicles = []) => vehicles.filter(v => v.archived_at)
 
 export async function deleteVehicle(id) {
   if (DEMO) return

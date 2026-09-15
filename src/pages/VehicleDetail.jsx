@@ -98,7 +98,7 @@ function VehicleDocField({ label, file, setFile, existingUrl, placeholder }) {
   )
 }
 import {
-  useVehicles, useDrivers, useAssignments, useMileageEntries,
+  useVehicles, useVehiclesWithArchived, useDrivers, useAssignments, useMileageEntries,
   useMaintenanceRecords, useTechnicalInspections, useWashRecords,
   getDriverById, getLatestAssignments,
   createMileageEntry, createMaintenanceRecord, createTechnicalInspection, createWashRecord,
@@ -122,7 +122,7 @@ export default function VehicleDetail() {
   const activeTab = VALID_TABS.includes(tabParam) ? tabParam : 'mileage'
   const setActiveTab = (tab) => setSearchParams(tab === 'mileage' ? {} : { tab }, { replace: true })
 
-  const { data: vehicles }          = useVehicles()
+  const { data: vehicles }          = useVehiclesWithArchived()
   const { data: drivers }           = useDrivers()
   const { data: assignments }       = useAssignments()
   const { data: mileageEntries }    = useMileageEntries()
@@ -361,6 +361,11 @@ export default function VehicleDetail() {
             </div>
             <div className="min-w-0">
               <h1 className="text-xl font-bold text-slate-900 whitespace-nowrap">{vehicle.plate_number}</h1>
+              {vehicle.archived_at && (
+                <span className="text-[11px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full whitespace-nowrap">
+                  Hors parc
+                </span>
+              )}
               <p className="text-slate-500 truncate">{vehicle.model}</p>
             </div>
           </div>

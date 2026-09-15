@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Plus, Search, ChevronRight, Loader2, Truck, Pencil, Trash2, User, UserMinus, Paperclip, FileText, X, Camera, Wrench, ClipboardCheck, Droplets, Download } from 'lucide-react'
+import { Plus, Search, ChevronRight, Loader2, Truck, Pencil, Trash2, User, UserMinus, Paperclip, FileText, X, Camera, Wrench, ClipboardCheck, Droplets, Download, Archive, RotateCcw } from 'lucide-react'
 import { format, addYears } from 'date-fns'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -19,8 +19,8 @@ import VehicleStatusBadge from '@/components/shared/VehicleStatusBadge'
 import DataError from '@/components/shared/DataError'
 import { downloadCsv, datedName } from '@/lib/exportCsv'
 import {
-  useVehicles, useDrivers, useAssignments, useMileageEntries, useTechnicalInspections,
-  createVehicle, updateVehicle, deleteVehicle, unassignVehicle, getLatestAssignments, getLatestMileage, getDriverById,
+  useVehicles, useVehiclesWithArchived, useDrivers, useAssignments, useMileageEntries, useTechnicalInspections,
+  createVehicle, updateVehicle, deleteVehicle, archiveVehicle, restoreVehicle, unassignVehicle, getLatestAssignments, getLatestMileage, getDriverById,
   createMaintenanceRecord, createTechnicalInspection, createWashRecord,
 } from '@/lib/useFleetData'
 import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
@@ -111,7 +111,7 @@ function MobileSectionHeader({ color, label, count }) {
 export default function Vehicles() {
   usePageTitle('Véhicules')
   const { t } = useTranslation()
-  const vehiclesQ = useVehicles()
+  const vehiclesQ = useVehiclesWithArchived()
   const { data: vehicles } = vehiclesQ
   const { data: drivers } = useDrivers()
   const { data: assignments } = useAssignments()
@@ -129,6 +129,11 @@ export default function Vehicles() {
   const [showAdd, setShowAdd] = useState(false)
   const [editTarget, setEditTarget] = useState(null)
   const [deleteTarget, setDeleteTarget] = useState(null)
+  // Un véhicule sorti du parc reste consultable, mais ne figure plus dans les
+  // listes, les quotas ni les alertes. On peut l'afficher à la demande.
+  const [showArchived, setShowArchived] = useState(false)
+  const [archiveTarget, setArchiveTarget] = useState(null)
+  const [archiving, setArchiving] = useState(false)
   const [form, setForm] = useState({ plate_number: '', model: '', mec_date: '' })
   const [registrationFile, setRegistrationFile] = useState(null)
   const [registrationUrl, setRegistrationUrl] = useState('')
@@ -158,7 +163,10 @@ export default function Vehicles() {
   const [washInvoiceFile, setWashInvoiceFile] = useState(null)
   const [savingWash, setSavingWash] = useState(false)
 
-  const { canAddVehicle, limits } = usePlanLimits(vehicles.length)
+  const liveVehicles = vehicles.filter(v => !v.archived_at)
+  const outOfFleet = vehicles.filter(v => v.archived_at)
+  // Un véhicule hors parc ne consomme pas de place dans la formule.
+  const { canAddVehicle, limits } = usePlanLimits(liveVehicles.length)
   const latestAssignments = getLatestAssignments(assignments)
   const latestMileage = getLatestMileage(mileageEntries)
 
@@ -166,7 +174,23 @@ export default function Vehicles() {
     (inspections || []).filter(i => i.expiration_date).map(i => i.vehicle_id)
   )
 
-  const filtered = vehicles.filter(v => {
+  const listed = showArchived ? outOfFleet : liveVehicles
+
+  const handleArchive = async () => {
+    if (!archiveTarget) return
+    setArchiving(true)
+    try {
+      if (archiveTarget.archived_at) await restoreVehicle(archiveTarget.id, archiveTarget.plate_number)
+      else await archiveVehicle(archiveTarget.id, archiveTarget.plate_number)
+      await queryClient.invalidateQueries({ queryKey: ['vehicles'] })
+      await queryClient.invalidateQueries({ queryKey: ['assignments'] })
+      toast.success(archiveTarget.archived_at ? 'Véhicule remis en service.' : 'Véhicule sorti du parc.')
+      setArchiveTarget(null)
+    } catch (e) { toast.error(e.message || 'Erreur.') }
+    finally { setArchiving(false) }
+  }
+
+  const filtered = listed.filter(v => {
     const matchesSearch =
       v.plate_number?.toLowerCase().includes(search.toLowerCase()) ||
       v.model?.toLowerCase().includes(search.toLowerCase())
@@ -399,6 +423,9 @@ export default function Vehicles() {
             <button onClick={() => openInsp(v.id)} title="Ajouter un contrôle technique" className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"><ClipboardCheck className="w-3.5 h-3.5" /></button>
             <button onClick={() => openWash(v.id)} title="Ajouter un lavage" className="p-1.5 text-slate-400 hover:text-sky-500 hover:bg-sky-50 rounded-lg transition-colors"><Droplets className="w-3.5 h-3.5" /></button>
             <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model, mec_date: v.mec_date || '' }); setRegistrationFile(null); setRegistrationUrl(v.registration_card_url || '') }} className="p-1.5 text-slate-400 hover:text-[#0066FF] hover:bg-blue-50 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+            <button onClick={() => setArchiveTarget(v)} title={v.archived_at ? 'Remettre en service' : 'Sortir du parc'} className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors">
+              {v.archived_at ? <RotateCcw className="w-3.5 h-3.5" /> : <Archive className="w-3.5 h-3.5" />}
+            </button>
             <button onClick={() => setDeleteTarget(v)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
             <Link to={`/Vehicles/${v.id}`} className="p-1.5 text-slate-400 hover:text-[#0052D6]"><ChevronRight className="w-4 h-4" /></Link>
           </div>
@@ -433,6 +460,9 @@ export default function Vehicles() {
           <button onClick={() => openInsp(v.id)} title="Contrôle technique" className="p-1.5 text-slate-400 hover:text-emerald-600"><ClipboardCheck className="w-3.5 h-3.5" /></button>
           <button onClick={() => openWash(v.id)} title="Lavage" className="p-1.5 text-slate-400 hover:text-sky-500"><Droplets className="w-3.5 h-3.5" /></button>
           <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model, mec_date: v.mec_date || '' }); setRegistrationFile(null); setRegistrationUrl(v.registration_card_url || '') }} className="p-1.5 text-slate-400 hover:text-[#0066FF]"><Pencil className="w-3.5 h-3.5" /></button>
+          <button onClick={() => setArchiveTarget(v)} title={v.archived_at ? 'Remettre en service' : 'Sortir du parc'} className="p-1.5 text-slate-400 hover:text-amber-600">
+            {v.archived_at ? <RotateCcw className="w-3.5 h-3.5" /> : <Archive className="w-3.5 h-3.5" />}
+          </button>
           <button onClick={() => setDeleteTarget(v)} className="p-1.5 text-slate-400 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
         </div>
       </div>
@@ -462,9 +492,29 @@ export default function Vehicles() {
 
       <DataError queries={[vehiclesQ]} />
 
-      <div className="relative mb-6 max-w-full sm:max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-        <Input placeholder={t('vehicles.searchPlaceholder')} value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="relative max-w-full sm:max-w-md sm:flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Input placeholder={t('vehicles.searchPlaceholder')} value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
+        </div>
+        {outOfFleet.length > 0 && (
+          <div className="flex items-center gap-1">
+            {[
+              { on: false, label: `En service (${liveVehicles.length})` },
+              { on: true,  label: `Hors parc (${outOfFleet.length})` },
+            ].map(tab => (
+              <button
+                key={tab.label}
+                onClick={() => setShowArchived(tab.on)}
+                className={'px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ' + (
+                  showArchived === tab.on ? 'bg-[#E5EEFF] text-[#0052D6]' : 'text-zinc-500 hover:text-zinc-800'
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
@@ -572,6 +622,33 @@ export default function Vehicles() {
       </Dialog>
 
       {/* Delete confirm dialog */}
+      <Dialog open={!!archiveTarget} onOpenChange={() => setArchiveTarget(null)}>
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{archiveTarget?.archived_at ? 'Remettre en service' : 'Sortir du parc'}</DialogTitle>
+          </DialogHeader>
+          {archiveTarget?.archived_at ? (
+            <p className="text-sm text-slate-500 mt-1">
+              <span className="font-semibold text-slate-800">{archiveTarget?.plate_number}</span> réapparaîtra dans vos
+              listes, vos alertes et le décompte de votre formule.
+            </p>
+          ) : (
+            <p className="text-sm text-slate-500 mt-1">
+              <span className="font-semibold text-slate-800">{archiveTarget?.plate_number}</span> ({archiveTarget?.model})
+              quitte le parc : plus d'alertes d'échéance, plus de place occupée dans votre formule, affectation en cours
+              clôturée. <span className="text-slate-700">Son historique reste consultable</span>, et vous pouvez le
+              remettre en service à tout moment.
+            </p>
+          )}
+          <div className="flex gap-3 mt-4">
+            <Button variant="outline" className="flex-1" onClick={() => setArchiveTarget(null)}>Annuler</Button>
+            <Button onClick={handleArchive} disabled={archiving} className="flex-1 bg-[#0066FF] hover:bg-[#0052D6] text-white">
+              {archiving ? <Loader2 className="w-4 h-4 animate-spin" /> : (archiveTarget?.archived_at ? 'Remettre en service' : 'Sortir du parc')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
         <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-sm">
           <DialogHeader><DialogTitle>Supprimer le véhicule</DialogTitle></DialogHeader>
