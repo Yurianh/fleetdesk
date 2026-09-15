@@ -97,8 +97,32 @@ const STATE_RANK = { expired: 0, expiring: 1, missing: 2, valid: 3 }
 // admin can add arbitrary documents without a schema change or a fixed enum.
 export const CUSTOM_PREFIX = 'autre:'
 export const isCustomType = (type) => typeof type === 'string' && type.startsWith(CUSTOM_PREFIX)
-export const docLabel = (type) =>
-  DOC_TYPE_CONFIG[type]?.label || (isCustomType(type) ? type.slice(CUSTOM_PREFIX.length) : type)
+
+// Short spellings that predate the canonical keys, plus the obvious near-misses.
+// A row stored under one of these belongs to a real regulatory line: without the
+// mapping it would sit in the database with no row to appear in, and the
+// dashboard alert would print the raw key.
+const TYPE_ALIASES = {
+  medical: 'visite_medecin',
+  medecin: 'visite_medecin',
+  visite_medicale: 'visite_medecin',
+  permis: 'permis_conduire',
+  sst: 'formation_sst_psc1',
+  psc1: 'formation_sst_psc1',
+  tpmr: 'formation_tpmr',
+  eco_conduite: 'formation_eco_conduite',
+  aptitude: 'aptitude_conduite',
+  casier: 'casier_judiciaire',
+}
+export const normalizeDocType = (type) => {
+  if (typeof type !== 'string') return type
+  if (DOC_TYPE_CONFIG[type] || isCustomType(type)) return type
+  return TYPE_ALIASES[type.toLowerCase()] || type
+}
+export const docLabel = (type) => {
+  const t = normalizeDocType(type)
+  return DOC_TYPE_CONFIG[t]?.label || (isCustomType(t) ? t.slice(CUSTOM_PREFIX.length) : t)
+}
 
 export function calcDocExpiry(type, validationDate, driverBirthDate) {
   if (!validationDate) return ''
@@ -212,8 +236,9 @@ export default function DriverDocuments({ driverId, driver, focusType = null }) 
   const [highlighted, setHighlighted] = useState(null)
   useEffect(() => {
     if (!focusType) return
-    setHighlighted(focusType)
-    const el = document.getElementById(`doc-${focusType}`)
+    const target = normalizeDocType(focusType)
+    setHighlighted(target)
+    const el = document.getElementById(`doc-${target}`)
     el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     const t = setTimeout(() => setHighlighted(null), 4000)
     return () => clearTimeout(t)
@@ -231,7 +256,7 @@ export default function DriverDocuments({ driverId, driver, focusType = null }) 
 
   const docsByType = {}
   for (const d of documents) {
-    docsByType[d.type] = d
+    docsByType[normalizeDocType(d.type)] = d
   }
 
   const invalidate = () => {
@@ -264,7 +289,9 @@ export default function DriverDocuments({ driverId, driver, focusType = null }) 
     setFileVerso(null)
     setCustomLabel(isCustomType(doc.type) ? doc.type.slice(CUSTOM_PREFIX.length) : '')
     setForm({
-      type: doc.type,
+      // Modifier un document stocké sous une clé historique le range du même
+      // coup sur la bonne ligne réglementaire.
+      type: normalizeDocType(doc.type),
       validation_date: doc.validation_date || '',
       expiry_date: doc.expiry_date || '',
       notes: doc.notes || '',
@@ -364,8 +391,13 @@ export default function DriverDocuments({ driverId, driver, focusType = null }) 
   // be missing), plus any free-form "autre:" documents (always present).
   const entries = [
     ...DOC_TYPES_ORDER.map(type => ({ type, doc: docsByType[type], custom: false })),
+    // Free-form documents, and anything whose type matches no regulatory line:
+    // an unknown type still gets a row rather than disappearing from the sheet.
     ...documents
-      .filter(d => isCustomType(d.type))
+      .filter(d => {
+        const t = normalizeDocType(d.type)
+        return isCustomType(t) || !DOC_TYPE_CONFIG[t]
+      })
       .map(d => ({ type: d.type, doc: d, custom: true })),
   ]
 
