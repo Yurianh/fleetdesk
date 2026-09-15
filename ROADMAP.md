@@ -174,6 +174,7 @@ masquage réactivable.
 ## Phase V — Vidéo de démonstration
 
 - [x] **T-V01** — Jeu de données de démonstration (`supabase/demo_seed.sql`) : Occitrans Services, 15 véhicules, 12 conducteurs, 12 affectations, 3 relevés kilométriques par véhicule (minimum requis par « Utilisation des véhicules »), entretiens, plannings, lavages et documents conducteurs. Dates **relatives à aujourd'hui** : le script reste valable quel que soit le jour de tournage. Échéances scénarisées — contrôle technique à 5 jours (action immédiate), à 22 jours (à surveiller), visite médicale à 21 jours. Compte passé en Enterprise et emails automatiques coupés pendant la démo. Garde-fou : refuse toute adresse ne contenant pas « demo », et efface avant d'insérer pour être rejouable. _(2026-09-15)_
+- [x] **T-V03** — Deux chemins d'écriture d'entretien réparés, découverts en préparant la démonstration : la fiche véhicule envoyait `NULL` pour une note vide alors que `issue_description` est `NOT NULL` (échec dès qu'on enregistrait un entretien sans commentaire), et l'ajout rapide depuis la liste des véhicules visait une colonne `description` qui n'existe pas — il échouait **à chaque fois**. Les deux écrivent désormais une chaîne vide dans la bonne colonne. _(2026-09-15)_
 - [ ] **T-V02** — Enregistrer la vidéo (script fourni : 4 min 05, trois accroches sectorielles, conclusion commerciale).
 
 ---

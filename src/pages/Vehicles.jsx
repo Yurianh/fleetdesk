@@ -296,7 +296,7 @@ export default function Vehicles() {
         date: maintForm.date || new Date().toISOString().split('T')[0],
         mileage: parseFloat(maintForm.mileage),
         status: maintForm.status,
-        description: maintForm.description || null,
+        issue_description: maintForm.description || '',
         invoice_url: invoiceUrl,
         invoice_amount: maintInvoiceAmount ? parseFloat(maintInvoiceAmount) : null,
       })

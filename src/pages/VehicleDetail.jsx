@@ -234,7 +234,8 @@ export default function VehicleDetail() {
         date: maintenanceForm.date || new Date().toISOString().split('T')[0],
         mileage: maintenanceForm.mileage ? parseFloat(maintenanceForm.mileage) : null,
         status: maintenanceForm.status,
-        issue_description: maintenanceForm.issue_description || null,
+        // La colonne est NOT NULL : une note vide s'écrit en chaîne vide, pas en NULL.
+        issue_description: maintenanceForm.issue_description || '',
         invoice_url: invoiceUrl,
         invoice_amount: maintInvoiceAmount ? parseFloat(maintInvoiceAmount) : null,
       })
