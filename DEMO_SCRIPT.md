@@ -1,7 +1,9 @@
 # Script de démonstration — FleetDesk
 
-**Durée visée : 4 min 30.** Compte `demo@fleetdesk.fr`, société Occitrans
-Services, 15 véhicules, 12 conducteurs.
+**Durée visée : 4 min 30.** FleetDesk est le logiciel présenté ; Occitrans
+Services est la société fictive dont on montre le compte — 15 véhicules,
+12 conducteurs, sur `demo@fleetdesk.fr`. Ne jamais laisser entendre que
+FleetDesk *est* le transporteur : c'est l'outil du transporteur.
 
 Les minutages sont des repères, pas un métronome. Le fil conducteur tient en
 une phrase, à garder en tête d'un bout à l'autre :
@@ -31,9 +33,10 @@ une phrase, à garder en tête d'un bout à l'autre :
 **À l'écran :** la connexion, puis le tableau de bord qui se pose élément par
 élément.
 
-> « Voici FleetDesk. Une société de transport toulousaine, quinze véhicules,
-> douze conducteurs. Je me connecte le lundi matin — et la première chose que
-> je veux savoir, c'est ce qui va me poser problème cette semaine. »
+> « FleetDesk, c'est le logiciel qui tient votre flotte. Voici le compte d'une
+> société de transport toulousaine qui l'utilise : quinze véhicules, douze
+> conducteurs. On est lundi matin — et la première chose qu'un gestionnaire
+> veut savoir, c'est ce qui va lui poser problème cette semaine. »
 
 **Ne rien cliquer pendant l'animation.** Elle dure environ deux secondes et
 demie : laisse-la finir, c'est la seule fois où elle joue.
@@ -198,8 +201,8 @@ Montrer l'interrupteur, et le fait qu'on peut le couper.
 > « Quinze véhicules, douze conducteurs, une matinée de lundi. Les échéances
 > sont vues, un document est renouvelé, un rapport est parti à la compta. »
 
-> « FleetDesk, c'est ça : la flotte tient dans un écran, et ce qui compte vient
-> à vous. »
+> « C'est ce que fait FleetDesk : votre flotte tient dans un écran, et ce qui
+> compte vient vous chercher. »
 
 Fin sur le tableau de bord, curseur immobile deux secondes avant de couper.
 
