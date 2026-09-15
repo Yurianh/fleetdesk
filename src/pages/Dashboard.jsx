@@ -881,14 +881,21 @@ export default function Dashboard() {
   const washQ               = useWashRecords()
   const schedulesQ          = useMaintenanceSchedules()
   const driverDocsQ         = useAllDriverDocuments()
-  const { data: vehicles }           = vehiclesQ
+  const { data: allVehicles }        = vehiclesQ
   const { data: drivers }            = driversQ
   const { data: assignments }        = assignmentsQ
   const { data: mileageEntries }     = mileageQ
-  const { data: inspections }        = inspectionsQ
+  const { data: allInspections }     = inspectionsQ
   const { data: maintenanceRecords } = maintenanceQ
   const { data: washRecords }        = washQ
-  const { data: schedules }          = schedulesQ
+  const { data: allSchedules }       = schedulesQ
+
+  // Un véhicule sorti du parc disparaît du tableau de bord : plus de chiffre,
+  // plus d'alerte, plus de place dans la formule. Son historique reste en base.
+  const vehicles  = useMemo(() => allVehicles.filter(v => !v.archived_at), [allVehicles])
+  const activeIds = useMemo(() => new Set(vehicles.map(v => v.id)), [vehicles])
+  const inspections = useMemo(() => allInspections.filter(i => activeIds.has(i.vehicle_id)), [allInspections, activeIds])
+  const schedules   = useMemo(() => allSchedules.filter(s => activeIds.has(s.vehicle_id)), [allSchedules, activeIds])
   const { data: allDriverDocuments } = driverDocsQ
   const allQueries = [vehiclesQ, driversQ, assignmentsQ, mileageQ, inspectionsQ, maintenanceQ, washQ, schedulesQ, driverDocsQ]
   // Alert Center must never show a green "all clear" computed from failed queries

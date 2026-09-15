@@ -40,7 +40,7 @@ type Gaps = {
 
 async function analyse(admin: any, orgId: string): Promise<Gaps> {
   const [vehicles, inspections, schedules, documents] = await Promise.all([
-    admin.from('vehicles').select('id').eq('user_id', orgId).is('archived_at', null),
+    admin.from('vehicles').select('id').eq('user_id', orgId),
     admin.from('technical_inspections').select('vehicle_id, expiration_date').eq('user_id', orgId),
     admin.from('maintenance_schedules').select('vehicle_id, interval_months, interval_km').eq('user_id', orgId),
     admin.from('driver_documents').select('id, expiry_date').eq('org_id', orgId),

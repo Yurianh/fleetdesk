@@ -61,7 +61,7 @@ const DOC_LABELS: Record<string, string> = {
 
 async function collectItems(admin: any, orgId: string): Promise<Item[]> {
   const [vehicles, drivers, inspections, documents, schedules, records, mileage] = await Promise.all([
-    admin.from('vehicles').select('id, plate_number, model').eq('user_id', orgId),
+    admin.from('vehicles').select('id, plate_number, model').eq('user_id', orgId).is('archived_at', null),
     admin.from('drivers').select('id, name').eq('user_id', orgId),
     admin.from('technical_inspections').select('vehicle_id, expiration_date').eq('user_id', orgId),
     admin.from('driver_documents').select('driver_id, type, expiry_date').eq('org_id', orgId),
