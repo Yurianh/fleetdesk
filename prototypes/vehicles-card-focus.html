@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carte véhicule — ce qu'on retire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --brand:#0066FF; --brand-tint:#E5EEFF;
+  --ink:#0F172A; --ink-2:#334155; --muted:#64748B; --faint:#94A3B8;
+  --line:#E2E8F0; --line-soft:#F1F5F9; --ground:#F5F7FA;
+  --amber-bg:#FEF3C7; --amber-soft:#FFFBEB; --amber-line:#FDE68A; --amber-ink:#78350F; --amber-dot:#D97706;
+  --zinc-dot:#A1A1AA; --ok-ink:#065F46; --ok-dot:#10B981;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:'Onest',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1240px;margin:0 auto;padding:34px 28px 90px}
+h1{font-size:27px;font-weight:700;letter-spacing:-.025em;margin:0}
+h2{font-size:16px;font-weight:600;letter-spacing:-.015em;margin:42px 0 6px}
+.sub{font-size:14px;color:var(--muted);margin:6px 0 0;max-width:72ch;line-height:1.6}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px;align-items:start}
+.col h3{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--faint);margin:0 0 12px}
+.col.after h3{color:var(--brand)}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:17px 19px;
+  display:grid;gap:15px;cursor:pointer}
+.card.warn{border-color:var(--amber-line)}
+
+/* ── Avant : tout au même poids ──────────────────────────────────── */
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.idc{display:flex;align-items:center;gap:13px;min-width:0}
+.art{flex:none;color:var(--zinc-dot);display:block}
+.card.warn .art{color:var(--amber-dot)}
+.plate{font-size:16.5px;font-weight:700;letter-spacing:-.015em;line-height:1.15}
+.model{font-size:12.5px;color:var(--muted);margin-top:2px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
+  padding:4px 10px;border-radius:99px;white-space:nowrap;flex:none}
+.chip .dot{width:6px;height:6px;border-radius:99px}
+.chip.urgent{background:var(--amber-bg);color:var(--amber-ink)} .chip.urgent .dot{background:var(--amber-dot)}
+.chip.watch{background:#F4F4F5;color:#3F3F46} .chip.watch .dot{background:var(--zinc-dot)}
+.life{position:relative;height:40px}
+.life .rule{position:absolute;left:0;right:0;top:13px;height:2px;background:var(--line-soft);border-radius:99px}
+.life .today{position:absolute;top:7px;height:14px;width:2px;background:var(--brand);border-radius:99px}
+.life .pin{position:absolute;top:8px;width:12px;height:12px;border-radius:99px;background:#fff;
+  border:2.5px solid var(--zinc-dot);transform:translateX(-50%)}
+.life .pin.amber{border-color:var(--amber-dot);background:var(--amber-bg)}
+.life .tag{position:absolute;top:25px;font-size:11px;color:var(--muted);transform:translateX(-50%);white-space:nowrap}
+.life .tag.amber{color:var(--amber-ink);font-weight:600}
+.life .horizon{position:absolute;right:0;top:24px;font-size:11px;color:var(--faint)}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding-top:12px;border-top:1px solid var(--line-soft)}
+.who{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted)}
+.who i{width:22px;height:22px;border-radius:99px;background:var(--brand-tint);color:var(--brand);
+  display:grid;place-items:center;font-size:9.5px;font-weight:700;font-style:normal;flex:none}
+.who.empty i{background:var(--line-soft);color:var(--faint)}
+.km{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink-2);font-size:12.5px}
+
+/* ── Après : une dominante, le reste en retrait ──────────────────── */
+.c2{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px;
+  display:grid;gap:14px;cursor:pointer;transition:box-shadow .16s,transform .16s}
+.c2:hover{box-shadow:0 6px 20px rgba(15,23,42,.07);transform:translateY(-1px)}
+.c2.warn{border-color:var(--amber-line)}
+.c2 .hd{font-size:12.5px;color:var(--faint);display:flex;gap:7px;align-items:baseline}
+.c2 .hd b{font-size:12.5px;font-weight:600;color:var(--ink-2);letter-spacing:-.005em}
+.c2 .say{font-size:19px;font-weight:600;letter-spacing:-.02em;line-height:1.25;color:var(--ink)}
+.c2.warn .say{color:var(--amber-ink)}
+.c2 .say small{display:block;font-size:12.5px;font-weight:400;color:var(--muted);margin-top:4px;
+  letter-spacing:0}
+.c2 .mini{position:relative;height:12px}
+.c2 .mini .rule{position:absolute;left:0;right:0;top:5px;height:2px;background:var(--line-soft);border-radius:99px}
+.c2 .mini .today{position:absolute;top:1px;height:10px;width:2px;background:#CBD5E1;border-radius:99px}
+.c2 .mini .pin{position:absolute;top:2px;width:8px;height:8px;border-radius:99px;
+  background:var(--zinc-dot);transform:translateX(-50%)}
+.c2 .mini .pin.amber{background:var(--amber-dot)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-top:20px}
+
+.tally{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:18px}
+.tally table{width:100%;border-collapse:collapse;font-size:13.5px}
+.tally th{text-align:left;font-size:12px;font-weight:600;color:var(--muted);padding:11px 18px;
+  border-bottom:1px solid var(--line-soft)}
+.tally td{padding:11px 18px;border-bottom:1px solid var(--line-soft);color:var(--ink-2)}
+.tally tr:last-child td{border-bottom:0}
+.tally .out{color:#B45309;font-weight:600}
+.tally .keep{color:var(--ok-ink);font-weight:600}
+.tally .down{color:var(--muted);font-weight:600}
+
+.note{background:#0B1220;color:#C7D2E8;border-radius:14px;padding:16px 20px;
+  font-size:13.5px;line-height:1.6;margin-top:24px}
+.note b{color:#fff}
+.legend{font-size:12px;color:var(--faint);margin-top:14px}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1>Une seule chose à regarder</h1>
+  <p class="sub">
+    La carte portait neuf éléments de poids comparable. Aucun ne dominait, donc l'œil n'avait pas
+    de point d'entrée. Ci-dessous, le même véhicule à gauche tel qu'il était, à droite après retrait.
+  </p>
+
+  <div class="split">
+
+    <div class="col">
+      <h3>Avant · neuf éléments, aucune hiérarchie</h3>
+      <div class="card warn">
+        <div class="top">
+          <div class="idc">
+            <span class="art"><svg width="48" height="29" viewBox="0 0 87 52" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 42V11q0-4.6 4.6-4.6h30q2.9 0 4.5 2.3l9.3 13.3q1.5 2.1 3.9 2.6l12.3 2.6Q75 28.1 75 31.8V42q0 1.6-1.6 1.6H7.6Q6 43.6 6 42Z" fill="currentColor" fill-opacity=".09"/><path d="M12 24.8V12.2q0-1.3 1.3-1.3h22.4q1.3 0 1.3 1.3v12.6q0 1.3-1.3 1.3H13.3Q12 26.1 12 24.8Z" fill="#fff"/><path d="M41.4 10.9h3.3q1 0 1.6.8l7 10q.8 1-.5 1H41.4q-1 0-1-1V11.9q0-1 1-1Z" fill="#fff"/><circle cx="21" cy="43.6" r="6.4" fill="#fff"/><circle cx="61" cy="43.6" r="6.4" fill="#fff"/></svg></span>
+            <span><div class="plate">AB-123-CD</div><div class="model">Renault Kangoo</div></span>
+          </div>
+          <span class="chip urgent"><i class="dot"></i>8 jours</span>
+        </div>
+        <div class="life">
+          <div class="rule"></div><div class="today" style="left:2%"></div>
+          <div class="pin amber" style="left:11%"></div><div class="tag amber" style="left:11%">CT</div>
+          <div class="pin" style="left:62%"></div><div class="tag" style="left:62%">révision</div>
+          <div class="horizon">3 mois</div>
+        </div>
+        <div class="foot"><span class="who"><i>TD</i>Thomas Dubois</span><span class="km">53 200 km</span></div>
+      </div>
+      <p class="legend">Silhouette, plaque, modèle, pastille, axe, deux pastilles, deux étiquettes,
+        horizon, conducteur, kilométrage. Tout se vaut.</p>
+    </div>
+
+    <div class="col after">
+      <h3>Après · une dominante</h3>
+      <div class="c2 warn">
+        <div class="hd"><b>AB-123-CD</b><span>Renault Kangoo</span></div>
+        <div class="say">Contrôle technique dans 8 jours
+          <small>Puis révision vers la mi-novembre</small></div>
+        <div class="mini">
+          <div class="rule"></div><div class="today" style="left:1%"></div>
+          <div class="pin amber" style="left:11%"></div><div class="pin" style="left:62%"></div>
+        </div>
+        <div class="foot"><span class="who"><i>TD</i>Thomas Dubois</span><span class="km">53 200 km</span></div>
+      </div>
+      <p class="legend">Une phrase porte la carte. Le reste l'entoure sans la concurrencer.</p>
+    </div>
+
+  </div>
+
+  <h2>Ce qui est retiré, et pourquoi</h2>
+  <div class="tally">
+    <table>
+      <tr><th>Élément</th><th>Décision</th><th>Raison</th></tr>
+      <tr><td>Silhouette du véhicule</td><td class="out">retirée</td>
+        <td>Répète « Renault Kangoo », écrit deux centimètres à droite. Douze Kangoo donnent douze dessins identiques.</td></tr>
+      <tr><td>Pastille « 8 jours »</td><td class="out">retirée</td>
+        <td>Dit exactement ce que dit la phrase, en plus petit et en même temps.</td></tr>
+      <tr><td>Étiquettes sous l'axe</td><td class="out">retirées</td>
+        <td>Deux mots qui obligent à croiser une position et un texte pour reconstituer une phrase déjà écrite.</td></tr>
+      <tr><td>Repère « 3 mois »</td><td class="out">retiré</td>
+        <td>Une échelle n'est utile que si on lit des positions. Ici on lit une phrase.</td></tr>
+      <tr><td>Plaque et modèle</td><td class="down">rétrogradés</td>
+        <td>Une ligne discrète en tête. L'identité est le contexte de la carte, pas son message.</td></tr>
+      <tr><td>Axe des échéances</td><td class="down">rétrogradé</td>
+        <td>Réduit à 12 px, sans étiquette ni graduation. Il ne dit plus « quand », il dit « combien, et dans quel ordre ».</td></tr>
+      <tr><td>La phrase d'échéance</td><td class="keep">promue</td>
+        <td>19 px, en ambre quand c'est à traiter. C'est elle qu'on lit, et elle suffit.</td></tr>
+      <tr><td>Conducteur et kilométrage</td><td class="keep">conservés</td>
+        <td>En pied, en gris. Ce sont les deux questions qui suivent immédiatement, jamais la première.</td></tr>
+    </table>
+  </div>
+
+  <h2>La grille entière</h2>
+  <p class="sub">Le test qui compte : balayer huit cartes et voir en deux secondes lesquelles demandent quelque chose.</p>
+
+  <div class="grid">
+
+    <article class="c2 warn">
+      <div class="hd"><b>BC-234-DE</b><span>Mercedes Sprinter</span></div>
+      <div class="say">Contrôle technique expiré depuis 118 jours
+        <small>Révision également dépassée</small></div>
+      <div class="mini"><div class="rule"></div><div class="today" style="left:1%"></div>
+        <div class="pin amber" style="left:1%"></div></div>
+      <div class="foot"><span class="who empty"><i>—</i>Non affecté</span><span class="km">112 000 km</span></div>
+    </article>
+
+    <article class="c2 warn">
+      <div class="hd"><b>LM-012-NO</b><span>Ford Transit</span></div>
+      <div class="say">Contrôle technique expiré depuis 92 jours
+        <small>Puis révision dans 3 100 km</small></div>
+      <div class="mini"><div class="rule"></div><div class="today" style="left:1%"></div>
+        <div class="pin amber" style="left:1%"></div><div class="pin" style="left:47%"></div></div>
+      <div class="foot"><span class="who empty"><i>—</i>Non affecté</span><span class="km">101 400 km</span></div>
+    </article>
+
+    <article class="c2 warn">
+      <div class="hd"><b>AB-123-CD</b><span>Renault Kangoo</span></div>
+      <div class="say">Contrôle technique dans 8 jours
+        <small>Puis révision vers la mi-novembre</small></div>
+      <div class="mini"><div class="rule"></div><div class="today" style="left:1%"></div>
+        <div class="pin amber" style="left:11%"></div><div class="pin" style="left:62%"></div></div>
+      <div class="foot"><span class="who"><i>TD</i>Thomas Dubois</span><span class="km">53 200 km</span></div>
+    </article>
+
+    <article class="c2">
+      <div class="hd"><b>TU-678-VW</b><span>Renault Trafic</span></div>
+      <div class="say">Révision dans 4 800 km
+        <small>Environ six semaines au rythme actuel</small></div>
+      <div class="mini"><div class="rule"></div><div class="today" style="left:1%"></div>
+        <div class="pin" style="left:41%"></div></div>
+      <div class="foot"><span class="who"><i>LM</i>Lucas Moreau</span><span class="km">81 600 km</span></div>
+    </article>
+
+    <article class="c2">
+      <div class="hd"><b>EF-456-GH</b><span>Peugeot Partner</span></div>
+      <div class="say">Révision dans 9 400 km
+        <small>Puis permis de Marie Lefebvre en décembre</small></div>
+      <div class="mini"><div class="rule"></div><div class="today" style="left:1%"></div>
+        <div class="pin" style="left:44%"></div><div class="pin" style="left:79%"></div></div>
+      <div class="foot"><span class="who"><i>ML</i>Marie Lefebvre</span><span class="km">62 600 km</span></div>
+    </article>
+
+    <article class="c2">
+      <div class="hd"><b>PQ-345-RS</b><span>Volkswagen Caddy</span></div>
+      <div class="say">Révision dans 7 250 km
+        <small>Rien d'autre avant le printemps</small></div>
+      <div class="mini"><div class="rule"></div><div class="today" style="left:1%"></div>
+        <div class="pin" style="left:68%"></div></div>
+      <div class="foot"><span class="who"><i>SB</i>Sophie Bernard</span><span class="km">55 400 km</span></div>
+    </article>
+
+    <article class="c2">
+      <div class="hd"><b>XY-901-ZA</b><span>Peugeot Expert</span></div>
+      <div class="say">Assurance à renouveler en décembre
+        <small>Aucun relevé depuis 21 jours</small></div>
+      <div class="mini"><div class="rule"></div><div class="today" style="left:1%"></div>
+        <div class="pin" style="left:88%"></div></div>
+      <div class="foot"><span class="who empty"><i>—</i>Non affecté</span><span class="km">27 200 km</span></div>
+    </article>
+
+    <article class="c2">
+      <div class="hd"><b>IJ-789-KL</b><span>Citroën Berlingo</span></div>
+      <div class="say">Rien à prévoir avant décembre
+        <small>Prochaine échéance : révision</small></div>
+      <div class="mini"><div class="rule"></div><div class="today" style="left:1%"></div></div>
+      <div class="foot"><span class="who"><i>AM</i>Antoine Martin</span><span class="km">43 800 km</span></div>
+    </article>
+
+  </div>
+
+  <div class="note">
+    <b>Sur la silhouette.</b> Je l'ai retirée ici, et je pense qu'elle doit sortir de la carte —
+    pas de l'application. Sa place est la <b>fiche véhicule</b>, où il n'y a qu'un véhicule à
+    l'écran, où rien ne la concurrence, et où elle donne à la page une identité que trois lignes de
+    texte ne donnent pas. Sur une grille, elle se répète ; sur une fiche, elle singularise.
+  </div>
+
+</div>
+</body>
+</html>

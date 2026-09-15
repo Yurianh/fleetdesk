@@ -1,10 +1,10 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Truck, Plus, FileText, Paperclip, Camera, X, ChevronRight, Pencil, Gauge } from 'lucide-react'
+import { differenceInDays } from 'date-fns'
 import { format, addYears } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -18,6 +18,7 @@ import IconTip from '@/components/shared/IconTip'
 import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import { openSignedFile } from '@/lib/signedFile'
 import { useFeature } from '@/lib/activity'
+import { computeForecasts } from '@/lib/maintenanceForecast'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
@@ -32,25 +33,6 @@ function FileLink({ url, label = 'Voir', icon: Icon = Paperclip }) {
   )
 }
 
-// Compact document chip for the header: present → green "Voir", missing →
-// dashed "Ajouter". Keeps documents grouped without crowding the fact grid.
-function DocChip({ label, url, onView, onAdd }) {
-  if (url) return (
-    <button type="button" onClick={onView}
-      className="inline-flex items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50/60 px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 transition-colors">
-      <FileText className="w-3.5 h-3.5 text-emerald-600" />
-      <span className="font-medium">{label}</span>
-      <span className="text-xs font-semibold text-emerald-700">Voir →</span>
-    </button>
-  )
-  return (
-    <button type="button" onClick={onAdd}
-      className="inline-flex items-center gap-2 rounded-lg border border-dashed border-slate-200 bg-white px-3 py-2 text-sm text-slate-500 hover:border-[#0066FF] hover:text-[#0066FF] transition-colors">
-      <Plus className="w-3.5 h-3.5" />
-      <span className="font-medium">{label}</span>
-    </button>
-  )
-}
 
 // A single vehicle document field: file/camera pick, clear, and a signed link
 // to the stored document (the "invoices" bucket is private).
@@ -103,13 +85,45 @@ function VehicleDocField({ label, file, setFile, existingUrl, placeholder }) {
   )
 }
 import {
-  useVehicles, useVehiclesWithArchived, useDrivers, useAssignments, useMileageEntries,
-  useMaintenanceRecords, useTechnicalInspections, useWashRecords,
+  useVehiclesWithArchived, useDrivers, useAssignments, useMileageEntries,
+  useMaintenanceRecords, useTechnicalInspections, useWashRecords, useMaintenanceSchedules,
   getDriverById, getLatestAssignments,
   createMileageEntry, createMaintenanceRecord, createTechnicalInspection, createWashRecord,
   updateMileageEntry, updateVehicle
 } from '@/lib/useFleetData'
 import { usePageTitle } from '@/lib/usePageTitle'
+
+// Échéance datée : ambre quand c'est passé ou imminent, graphite quand c'est
+// à surveiller, émeraude au-delà. Même échelle que le badge véhicule et que
+// la fiche conducteur — aucun rouge hors suppression.
+function DeadlineChip({ days }) {
+  const style = days < 0 ? 'text-amber-900 bg-amber-100'
+    : days <= 30 ? 'text-amber-900 bg-amber-50'
+    : days <= 90 ? 'text-zinc-700 bg-zinc-100'
+    : 'text-emerald-700 bg-emerald-50'
+  const label = days < 0 ? `expiré · ${Math.abs(days)} j`
+    : days === 0 ? "aujourd'hui"
+    : `dans ${days} j`
+  return <span className={`text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${style}`}>{label}</span>
+}
+
+// Prévision d'entretien : elle tombe en kilomètres ou en jours, on affiche
+// celui des deux qui arrive en premier, puisque c'est lui qui déclenche.
+function ForecastChip({ forecast }) {
+  const { status, kmUntil, daysUntil } = forecast
+  const style = status === 'overdue' ? 'text-amber-900 bg-amber-100'
+    : status === 'due_soon' ? 'text-amber-900 bg-amber-50'
+    : status === 'no_record' ? 'text-zinc-700 bg-zinc-100'
+    : 'text-emerald-700 bg-emerald-50'
+  let label = 'à jour'
+  if (status === 'no_record') label = 'sans historique'
+  else if (kmUntil != null && (daysUntil == null || kmUntil / 60 < daysUntil))
+    label = kmUntil <= 0 ? `dépassée de ${Math.abs(kmUntil).toLocaleString('fr-FR')} km`
+                         : `dans ${kmUntil.toLocaleString('fr-FR')} km`
+  else if (daysUntil != null)
+    label = daysUntil < 0 ? `dépassée de ${Math.abs(daysUntil)} j` : `dans ${daysUntil} j`
+  return <span className={`text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${style}`}>{label}</span>
+}
 
 export default function VehicleDetail() {
   usePageTitle('Véhicule')
@@ -119,13 +133,18 @@ export default function VehicleDetail() {
   const queryClient = useQueryClient()
   const showLicense = useFeature('transportLicense')
 
-  // Tab state lives in the URL so alerts and colleagues can deep-link
-  // (e.g. /Vehicles/:id?tab=inspections)
-  const [searchParams, setSearchParams] = useSearchParams()
-  const VALID_TABS = ['mileage', 'maintenance', 'inspections', 'washes', 'assignments']
-  const tabParam = searchParams.get('tab')
-  const activeTab = VALID_TABS.includes(tabParam) ? tabParam : 'mileage'
-  const setActiveTab = (tab) => setSearchParams(tab === 'mileage' ? {} : { tab }, { replace: true })
+  // Les sections sont des ancres, plus des onglets. L'URL conserve ?tab= pour
+  // que les liens existants — alertes, messages entre collègues — amènent
+  // toujours au bon endroit, en faisant défiler au lieu de commuter.
+  const [searchParams] = useSearchParams()
+  const SECTIONS = [
+    { key: 'mileage',     label: 'Kilométrage' },
+    { key: 'maintenance', label: 'Maintenance' },
+    { key: 'inspections', label: 'Contrôles tech.' },
+    { key: 'washes',      label: 'Lavages' },
+    { key: 'assignments', label: 'Affectations' },
+  ]
+  const [activeSection, setActiveSection] = useState('mileage')
 
   const { data: vehicles }          = useVehiclesWithArchived()
   const { data: drivers }           = useDrivers()
@@ -134,6 +153,7 @@ export default function VehicleDetail() {
   const { data: maintenanceRecords } = useMaintenanceRecords()
   const { data: inspections }       = useTechnicalInspections()
   const { data: washRecords }       = useWashRecords()
+  const { data: schedules }         = useMaintenanceSchedules()
 
   const vehicle = vehicles.find(v => v.id === id)
 
@@ -168,6 +188,28 @@ export default function VehicleDetail() {
   // ── Assign driver ──
   const [assignDriverOpen, setAssignDriverOpen] = useState(false)
 
+  // La pastille active suit ce qu'on regarde, sinon elle ment dès qu'on
+  // fait défiler à la main.
+  useEffect(() => {
+    const seen = document.querySelectorAll('[data-section]')
+    if (!seen.length) return
+    const io = new IntersectionObserver(entries => {
+      const visible = entries.filter(e => e.isIntersecting)
+        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0]
+      if (visible) setActiveSection(visible.target.dataset.section)
+    }, { rootMargin: '-96px 0px -60% 0px' })
+    seen.forEach(el => io.observe(el))
+    return () => io.disconnect()
+  }, [vehicle?.id])
+
+  // Un lien existant ?tab=inspections continue d'amener au bon endroit.
+  useEffect(() => {
+    const tab = searchParams.get('tab')
+    if (!tab) return
+    const el = document.getElementById(`section-${tab}`)
+    if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); setActiveSection(tab) }
+  }, [searchParams, vehicle?.id])
+
   if (!vehicle) return <div className="p-8 text-center text-slate-400">{t('vehicles.noResults')}</div>
 
   const vehicleAssignments = assignments.filter(a => a.vehicle_id === id)
@@ -184,6 +226,36 @@ export default function VehicleDetail() {
   const latestMileage    = vehicleMileage.reduce(
     (best, e) => ((e.mileage ?? 0) > (best?.mileage ?? -1) ? e : best), null
   )
+
+  // ── Ce qui tombe ──────────────────────────────────────────────────
+  // La colonne de gauche existe pour répondre à une seule question : « ce
+  // véhicule, il me demande quoi ? ». On la calcule ici plutôt que de laisser
+  // l'information dormir au fond d'une section.
+  const latestInspection = vehicleInspections.reduce(
+    (best, i) => (!best || new Date(i.expiration_date) > new Date(best.expiration_date) ? i : best), null
+  )
+  const ctDays = latestInspection?.expiration_date
+    ? differenceInDays(new Date(latestInspection.expiration_date), new Date())
+    : null
+
+  const forecast = computeForecasts({
+    schedules: schedules.filter(sc => sc.vehicle_id === id),
+    vehicles: [vehicle], maintenanceRecords, mileageEntries,
+  })[0] || null
+
+  const docs = [
+    { label: 'Carte grise', url: vehicle.registration_card_url },
+    { label: 'Assurance',   url: vehicle.insurance_url },
+    ...(showLicense ? [{ label: 'Licence de transport', url: vehicle.transport_license_url }] : []),
+  ]
+  const docsDone = docs.filter(d => d.url).length
+
+  // Les ancres remplacent les onglets : on amène la section sous les yeux
+  // plutôt que de masquer les quatre autres.
+  const goToSection = (key) => {
+    document.getElementById(`section-${key}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    setActiveSection(key)
+  }
 
   // ── Submit handlers ───────────────────────────────────────────────
   const handleMileage = async () => {
@@ -336,9 +408,11 @@ export default function VehicleDetail() {
   }
 
   // ── Tab header helper ─────────────────────────────────────────────
-  const TabHeader = ({ label, onAdd }) => (
-    <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100">
-      <p className="text-xs text-slate-400 font-medium">{label}</p>
+  const TabHeader = ({ title, label, onAdd }) => (
+    <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-slate-100">
+      <p className="text-sm font-semibold text-slate-900 truncate">
+        {title}{label && <span className="ml-2 text-xs font-normal text-slate-400">{label}</span>}
+      </p>
       <button
         onClick={onAdd}
         className="flex items-center gap-1 text-xs font-medium text-[#0066FF] hover:text-[#0052D6] transition-colors"
@@ -353,101 +427,150 @@ export default function VehicleDetail() {
     : <span className="inline-flex items-center gap-1 text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-full"><span className="w-1.5 h-1.5 rounded-full bg-red-500" />Problème</span>
 
   return (
-    <div className="p-4 lg:p-8 max-w-5xl mx-auto">
+    <div className="p-4 lg:p-8 max-w-[1180px] mx-auto">
       <Link to="/Vehicles" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-[#0052D6] mb-6">
         <ArrowLeft className="w-4 h-4" /> {t('vehicles.title')}
       </Link>
 
-      <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 mb-6">
-        {/* Identity */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-4 min-w-0">
-            <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Truck className="w-6 h-6 text-[#0052D6]" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-xl font-bold text-slate-900 whitespace-nowrap">{vehicle.plate_number}</h1>
-              {vehicle.archived_at && (
-                <span className="text-[11px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full whitespace-nowrap">
-                  Hors parc
-                </span>
-              )}
-              <p className="text-slate-500 truncate">{vehicle.model}</p>
-            </div>
-          </div>
-          <button
-            onClick={openVehicleInfo}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-[#0066FF] px-3 py-1.5 rounded-lg border border-slate-200 hover:border-[#0066FF] transition-colors flex-shrink-0"
-          >
-            <Pencil className="w-3.5 h-3.5" /> Modifier
-          </button>
-        </div>
+      {/* Deux colonnes : à gauche ce que le véhicule est et ce qu'il demande,
+          qui reste sous les yeux ; à droite son histoire, empilée et parcourue
+          au défilement. Les onglets cachaient quatre sections sur cinq. */}
+      <div className="grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] gap-5 items-start">
 
-        {/* Facts */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-8 gap-y-4 mt-5 pt-5 border-t border-slate-100">
-          <div>
-            <p className="text-sm text-slate-500">{t('assignments.driver')}</p>
-            {currentDriver ? (
-              <div className="flex items-center gap-2 flex-wrap">
-                <Link to={`/Drivers/${currentDriver.id}`}
-                  className="inline-flex items-center gap-1 font-semibold text-slate-900 hover:text-[#0052D6] transition-colors">
-                  {currentDriver.name} <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
-                </Link>
-                <button onClick={() => setAssignDriverOpen(true)}
-                  className="text-xs font-medium text-[#0066FF] hover:text-[#0052D6] transition-colors">
-                  Changer
-                </button>
+        {/* ── Colonne fixe ─────────────────────────────────────────── */}
+        <div className="lg:sticky lg:top-6 space-y-4">
+
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
+            <div className="flex items-start gap-3.5 min-w-0">
+              <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Truck className="w-5 h-5 text-[#0052D6]" />
               </div>
-            ) : (
-              <button onClick={() => setAssignDriverOpen(true)}
-                className="text-sm font-medium text-[#0066FF] hover:text-[#0052D6] transition-colors">
-                + Affecter
+              <div className="min-w-0">
+                <h1 className="text-lg font-bold text-slate-900 leading-tight">{vehicle.plate_number}</h1>
+                <p className="text-sm text-slate-500 truncate">{vehicle.model}</p>
+                {vehicle.archived_at && (
+                  <span className="inline-block mt-1.5 text-[11px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                    Hors parc
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-5 pt-4 border-t border-slate-100 space-y-3">
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="text-sm text-slate-500 flex-shrink-0">{t('assignments.driver')}</span>
+                {currentDriver ? (
+                  <Link to={`/Drivers/${currentDriver.id}`}
+                    className="inline-flex items-center gap-1 text-sm font-semibold text-slate-900 hover:text-[#0052D6] transition-colors truncate">
+                    {currentDriver.name} <ChevronRight className="w-3.5 h-3.5 text-slate-300 flex-shrink-0" />
+                  </Link>
+                ) : (
+                  <button onClick={() => setAssignDriverOpen(true)}
+                    className="text-sm font-medium text-[#0066FF] hover:text-[#0052D6] transition-colors">
+                    + Affecter
+                  </button>
+                )}
+              </div>
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="text-sm text-slate-500">{t('mileage.title')}</span>
+                <span className="text-sm font-semibold text-slate-900 tabular-nums">
+                  {latestMileage ? `${latestMileage.mileage?.toLocaleString('fr-FR') ?? '—'} km` : '—'}
+                </span>
+              </div>
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="text-sm text-slate-500">Mise en circulation</span>
+                {vehicle.mec_date
+                  ? <span className="text-sm font-semibold text-slate-900">{format(new Date(vehicle.mec_date), 'd MMM yyyy', { locale: dateLocale })}</span>
+                  : <button onClick={openVehicleInfo} className="text-sm font-medium text-slate-300 hover:text-[#0066FF] transition-colors">Ajouter →</button>
+                }
+              </div>
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <button onClick={() => setMileageModal(true)}
+                className="text-xs font-semibold text-[#0066FF] bg-[#0066FF]/5 hover:bg-[#0066FF]/10 px-3 py-2 rounded-lg transition-colors">
+                Saisir un relevé
               </button>
-            )}
+              <button onClick={openVehicleInfo}
+                className="inline-flex items-center justify-center gap-1.5 text-xs font-medium text-slate-500 hover:text-[#0066FF] px-3 py-2 rounded-lg border border-slate-200 hover:border-[#0066FF] transition-colors">
+                <Pencil className="w-3.5 h-3.5" /> Modifier
+              </button>
+            </div>
           </div>
-          <div>
-            <p className="text-sm text-slate-500">{t('mileage.title')}</p>
-            <p className="font-semibold text-slate-900">{latestMileage ? `${latestMileage.mileage?.toLocaleString('fr-FR') ?? '—'} km` : '—'}</p>
+
+          {/* Ce qui tombe — la raison d'être de la colonne */}
+          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-slate-100">
+              <p className="text-sm font-semibold text-slate-900">Ce qui tombe</p>
+            </div>
+            <div className="p-5 space-y-3.5">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-slate-600">Contrôle technique</span>
+                {ctDays == null
+                  ? <span className="text-xs font-medium text-slate-400 border border-dashed border-slate-200 px-2 py-0.5 rounded-full">jamais saisi</span>
+                  : <DeadlineChip days={ctDays} />}
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-slate-600">Révision</span>
+                {!forecast
+                  ? <span className="text-xs font-medium text-slate-400 border border-dashed border-slate-200 px-2 py-0.5 rounded-full">sans planning</span>
+                  : <ForecastChip forecast={forecast} />}
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-slate-600">Documents</span>
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                  docsDone === docs.length ? 'text-emerald-700 bg-emerald-50' : 'text-zinc-700 bg-zinc-100'
+                }`}>
+                  {docsDone}/{docs.length}
+                </span>
+              </div>
+            </div>
           </div>
-          <div>
-            <p className="text-sm text-slate-500">Mise en circulation</p>
-            {vehicle.mec_date
-              ? <p className="font-semibold text-slate-900">{format(new Date(vehicle.mec_date), 'd MMM yyyy', { locale: dateLocale })}</p>
-              : <button onClick={openVehicleInfo} className="text-sm font-medium text-slate-300 hover:text-[#0066FF] transition-colors">Ajouter →</button>
-            }
+
+          {/* Documents */}
+          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-slate-100">
+              <p className="text-sm font-semibold text-slate-900">Documents</p>
+              <button onClick={openVehicleInfo}
+                className="text-xs font-medium text-[#0066FF] hover:text-[#0052D6] transition-colors">
+                Déposer
+              </button>
+            </div>
+            <div className="p-5 space-y-2.5">
+              {docs.map(d => (
+                <div key={d.label} className="flex items-center justify-between gap-3">
+                  <span className="text-sm text-slate-600 truncate">{d.label}</span>
+                  {d.url
+                    ? <button onClick={() => openSignedFile(d.url)}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#0066FF] hover:text-[#0052D6] transition-colors flex-shrink-0">
+                        <Paperclip className="w-3 h-3" /> Voir
+                      </button>
+                    : <span className="text-xs font-medium text-slate-400 border border-dashed border-slate-200 px-2 py-0.5 rounded-full flex-shrink-0">manquant</span>}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Documents */}
-        <div className="mt-5 pt-5 border-t border-slate-100">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Documents</p>
-          <div className="flex flex-wrap gap-2">
-            <DocChip label="Carte grise" url={vehicle.registration_card_url}
-              onView={() => openSignedFile(vehicle.registration_card_url)} onAdd={openVehicleInfo} />
-            <DocChip label="Assurance" url={vehicle.insurance_url}
-              onView={() => openSignedFile(vehicle.insurance_url)} onAdd={openVehicleInfo} />
-            {showLicense && (
-              <DocChip label="Licence de transport" url={vehicle.transport_license_url}
-                onView={() => openSignedFile(vehicle.transport_license_url)} onAdd={openVehicleInfo} />
-            )}
+        {/* ── Colonne d'historique ─────────────────────────────────── */}
+        <div className="space-y-4 min-w-0">
+
+          {/* Ancres : le même rôle que les onglets, sans rien masquer */}
+          <div className="flex flex-wrap gap-1.5 -mb-1">
+            {SECTIONS.map(sec => (
+              <button key={sec.key} onClick={() => goToSection(sec.key)}
+                className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${
+                  activeSection === sec.key
+                    ? 'bg-[#E5EEFF] text-[#0052D6] border-transparent'
+                    : 'bg-white text-slate-500 border-slate-200 hover:text-[#0066FF] hover:border-[#0066FF]'
+                }`}>
+                {sec.label}
+              </button>
+            ))}
           </div>
-        </div>
-      </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="w-full justify-start bg-white border-b border-slate-200 rounded-none px-2 h-12 min-w-max">
-              <TabsTrigger value="mileage">Kilométrage</TabsTrigger>
-              <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
-              <TabsTrigger value="inspections">Contrôles tech.</TabsTrigger>
-              <TabsTrigger value="washes">Lavages</TabsTrigger>
-              <TabsTrigger value="assignments">Affectations</TabsTrigger>
-            </TabsList>
-
-            {/* ── Kilométrage ───────────────────────────────────────── */}
-            <TabsContent value="mileage" className="p-0">
-              <TabHeader label={`${vehicleMileage.length} entrée${vehicleMileage.length !== 1 ? 's' : ''}`} onAdd={() => setMileageModal(true)} />
+            <section id="section-mileage" data-section="mileage" className="scroll-mt-24 bg-white rounded-xl border border-slate-200 overflow-hidden">
+              <TabHeader title="Kilométrage" label={`${vehicleMileage.length} entrée${vehicleMileage.length !== 1 ? 's' : ''}`} onAdd={() => setMileageModal(true)} />
               {vehicleMileage.length > 0 ? (
                 <>
                   <div className="hidden sm:block overflow-x-auto">
@@ -504,11 +627,11 @@ export default function VehicleDetail() {
               ) : <EmptyState title="Aucun kilométrage enregistré"
                     description="Relevez le compteur régulièrement pour suivre l'usage et déclencher les prévisions d'entretien."
                     action={{ label: 'Enregistrer un relevé', onClick: () => setMileageModal(true) }} />}
-            </TabsContent>
+            </section>
 
             {/* ── Maintenance ───────────────────────────────────────── */}
-            <TabsContent value="maintenance" className="p-0">
-              <TabHeader label={`${vehicleMaintenance.length} entretien${vehicleMaintenance.length !== 1 ? 's' : ''}`} onAdd={() => setMaintenanceModal(true)} />
+            <section id="section-maintenance" data-section="maintenance" className="scroll-mt-24 bg-white rounded-xl border border-slate-200 overflow-hidden">
+              <TabHeader title="Maintenance" label={`${vehicleMaintenance.length} entretien${vehicleMaintenance.length !== 1 ? 's' : ''}`} onAdd={() => setMaintenanceModal(true)} />
               {vehicleMaintenance.length > 0 ? (
                 <>
                   <div className="hidden sm:block overflow-x-auto">
@@ -543,11 +666,11 @@ export default function VehicleDetail() {
               ) : <EmptyState title="Aucun entretien enregistré"
                     description="Consignez les entretiens (vidange, freins…) pour garder un historique et suivre les coûts."
                     action={{ label: 'Ajouter un entretien', onClick: () => setMaintenanceModal(true) }} />}
-            </TabsContent>
+            </section>
 
             {/* ── Contrôles tech. ───────────────────────────────────── */}
-            <TabsContent value="inspections" className="p-0">
-              <TabHeader label={`${vehicleInspections.length} contrôle${vehicleInspections.length !== 1 ? 's' : ''}`} onAdd={() => setInspectionModal(true)} />
+            <section id="section-inspections" data-section="inspections" className="scroll-mt-24 bg-white rounded-xl border border-slate-200 overflow-hidden">
+              <TabHeader title="Contrôles techniques" label={`${vehicleInspections.length} contrôle${vehicleInspections.length !== 1 ? 's' : ''}`} onAdd={() => setInspectionModal(true)} />
               {vehicleInspections.length > 0 ? (
                 <>
                   <div className="hidden sm:block overflow-x-auto">
@@ -577,11 +700,11 @@ export default function VehicleDetail() {
               ) : <EmptyState title="Aucun contrôle technique"
                     description="Enregistrez le contrôle technique : FleetDesk calcule l'expiration et vous alerte avant l'échéance."
                     action={{ label: 'Ajouter un contrôle', onClick: () => setInspectionModal(true) }} />}
-            </TabsContent>
+            </section>
 
             {/* ── Lavages ───────────────────────────────────────────── */}
-            <TabsContent value="washes" className="p-0">
-              <TabHeader label={`${vehicleWashes.length} lavage${vehicleWashes.length !== 1 ? 's' : ''}`} onAdd={() => setWashModal(true)} />
+            <section id="section-washes" data-section="washes" className="scroll-mt-24 bg-white rounded-xl border border-slate-200 overflow-hidden">
+              <TabHeader title="Lavages" label={`${vehicleWashes.length} lavage${vehicleWashes.length !== 1 ? 's' : ''}`} onAdd={() => setWashModal(true)} />
               {vehicleWashes.length > 0 ? (
                 <>
                   <div className="hidden sm:block overflow-x-auto">
@@ -621,12 +744,21 @@ export default function VehicleDetail() {
               ) : <EmptyState title="Aucun lavage enregistré"
                     description="Suivez les lavages et leurs coûts par véhicule et par conducteur."
                     action={{ label: 'Ajouter un lavage', onClick: () => setWashModal(true) }} />}
-            </TabsContent>
+            </section>
 
             {/* ── Affectations ──────────────────────────────────────── */}
-            <TabsContent value="assignments" className="p-0">
-              <div className="px-5 py-3 border-b border-slate-100">
-                <p className="text-xs text-slate-400 font-medium">{vehicleAssignments.length} affectation{vehicleAssignments.length !== 1 ? 's' : ''}</p>
+            <section id="section-assignments" data-section="assignments" className="scroll-mt-24 bg-white rounded-xl border border-slate-200 overflow-hidden">
+              <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-slate-100">
+                <p className="text-sm font-semibold text-slate-900">
+                  Affectations
+                  <span className="ml-2 text-xs font-normal text-slate-400">
+                    {vehicleAssignments.length} affectation{vehicleAssignments.length !== 1 ? 's' : ''}
+                  </span>
+                </p>
+                <button onClick={() => setAssignDriverOpen(true)}
+                  className="flex items-center gap-1 text-xs font-medium text-[#0066FF] hover:text-[#0052D6] transition-colors">
+                  <Plus className="w-3.5 h-3.5" /> Changer
+                </button>
               </div>
               {vehicleAssignments.length > 0 ? (
                 <>
@@ -661,8 +793,7 @@ export default function VehicleDetail() {
               ) : <EmptyState title="Aucune affectation"
                     description="Affectez un conducteur à ce véhicule pour suivre qui le conduit."
                     action={{ label: 'Affecter un conducteur', onClick: () => setAssignDriverOpen(true) }} />}
-            </TabsContent>
-          </Tabs>
+            </section>
         </div>
       </div>
 

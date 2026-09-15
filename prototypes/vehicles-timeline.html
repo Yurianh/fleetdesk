@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ligne de vie — six déclinaisons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --brand:#0066FF; --brand-deep:#0052D6; --brand-tint:#E5EEFF;
+  --ink:#0F172A; --ink-2:#334155; --muted:#64748B; --faint:#94A3B8;
+  --line:#E2E8F0; --line-soft:#F1F5F9; --ground:#F5F7FA;
+  --amber-bg:#FEF3C7; --amber-soft:#FFFBEB; --amber-line:#FDE68A; --amber-ink:#78350F; --amber-dot:#D97706;
+  --zinc-bg:#F4F4F5; --zinc-ink:#3F3F46; --zinc-dot:#A1A1AA;
+  --ok-bg:#ECFDF5; --ok-ink:#065F46; --ok-dot:#10B981;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:'Onest',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+
+.switcher{position:sticky;top:0;z-index:50;background:#0B1220;color:#fff;
+  padding:10px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.switcher b{font-size:13px;font-weight:600;margin-right:6px;opacity:.75}
+.switcher button{font:inherit;font-size:13px;font-weight:500;color:#C7D2E8;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+  border-radius:8px;padding:6px 12px;cursor:pointer}
+.switcher button:hover{background:rgba(255,255,255,.14)}
+.switcher button[aria-current="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.switcher .note{margin-left:auto;font-size:12px;color:#8FA0C0}
+
+.page{max-width:1500px;margin:0 auto;padding:26px 28px 80px}
+h1{font-size:28px;font-weight:700;letter-spacing:-.025em;margin:0}
+.sub{font-size:14px;color:var(--muted);margin:4px 0 0}
+.head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
+.btn{font:inherit;font-size:13.5px;font-weight:600;border-radius:10px;padding:9px 15px;
+  border:1px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.sm{font-size:12.5px;padding:6px 11px}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+.bar .f{font:inherit;font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:99px;
+  background:#fff;border:1px solid var(--line);color:var(--muted);cursor:pointer}
+.bar .f.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.bar .sep{flex:1}
+.search{font:inherit;font-size:13.5px;padding:9px 13px;border:1px solid var(--line);
+  border-radius:10px;background:#fff;min-width:250px}
+
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
+  padding:4px 10px;border-radius:99px;white-space:nowrap}
+.chip .dot{width:6px;height:6px;border-radius:99px}
+.chip.urgent{background:var(--amber-bg);color:var(--amber-ink)} .chip.urgent .dot{background:var(--amber-dot)}
+.chip.soon{background:var(--amber-soft);color:var(--amber-ink);border:1px solid var(--amber-line)} .chip.soon .dot{background:var(--amber-dot)}
+.chip.watch{background:var(--zinc-bg);color:var(--zinc-ink)} .chip.watch .dot{background:var(--zinc-dot)}
+.chip.ok{background:var(--ok-bg);color:var(--ok-ink)} .chip.ok .dot{background:var(--ok-dot)}
+
+.who{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted)}
+.who i{width:22px;height:22px;border-radius:99px;background:var(--brand-tint);color:var(--brand);
+  display:grid;place-items:center;font-size:9.5px;font-weight:700;font-style:normal;flex:none}
+.who.empty i{background:var(--line-soft);color:var(--faint)}
+.km{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink-2);font-size:12.5px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:grid;gap:14px}
+.card.warn{border-color:var(--amber-line)}
+.card .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.plate{font-size:16.5px;font-weight:700;letter-spacing:-.015em}
+.model{font-size:12.5px;color:var(--muted)}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding-top:11px;border-top:1px solid var(--line-soft)}
+
+.crit{background:#0B1220;color:#C7D2E8;border-radius:14px;padding:16px 20px;
+  font-size:13.5px;line-height:1.55;margin-bottom:20px}
+.crit h3{margin:0 0 8px;font-size:14px;color:#fff;font-weight:600}
+.crit ul{margin:8px 0 0;padding-left:18px} .crit li{margin:3px 0}
+.crit .plus{color:#7EE8B0} .crit .minus{color:#F7B267}
+.variant{display:none} .variant[data-on]{display:block}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:14px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:9px;height:9px;border-radius:99px;display:block}
+
+/* ═══ C1 · Axe partagé, une ligne par véhicule ═════════════════════════ */
+.fleet{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.fleet .ruler{display:grid;grid-template-columns:200px 1fr;border-bottom:1px solid var(--line-soft);
+  background:#FCFCFD}
+.fleet .ruler .sp{padding:11px 18px;font-size:11px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--faint)}
+.fleet .ruler .months{position:relative;height:38px}
+.fleet .ruler .months span{position:absolute;top:12px;font-size:11.5px;font-weight:600;color:var(--muted);
+  transform:translateX(-50%)}
+.fleet .ruler .months u{position:absolute;top:0;bottom:0;width:1px;background:var(--line-soft);text-decoration:none}
+.fleet .row{display:grid;grid-template-columns:200px 1fr;border-bottom:1px solid var(--line-soft);
+  align-items:center;cursor:pointer}
+.fleet .row:last-child{border-bottom:0}
+.fleet .row:hover{background:#FBFCFE}
+.fleet .row.warn{background:var(--amber-soft)}
+.fleet .idc{padding:12px 18px}
+.fleet .idc .plate{font-size:14px}
+.fleet .track{position:relative;height:56px}
+.fleet .track u{position:absolute;top:0;bottom:0;width:1px;background:var(--line-soft);text-decoration:none}
+.fleet .track .rule{position:absolute;left:0;right:0;top:27px;height:2px;background:var(--line-soft)}
+.fleet .today{position:absolute;top:6px;bottom:6px;width:2px;background:var(--brand);z-index:2}
+.pin{position:absolute;top:19px;display:flex;flex-direction:column;align-items:center;
+  transform:translateX(-50%);z-index:3}
+.pin b{width:15px;height:15px;border-radius:99px;background:#fff;border:3px solid var(--zinc-dot);display:block}
+.pin.amber b{border-color:var(--amber-dot);background:var(--amber-bg)}
+.pin.ok b{border-color:var(--ok-dot)}
+.pin.km b{border-radius:3px;transform:rotate(45deg);border-color:var(--brand);background:var(--brand-tint)}
+.pin em{font-style:normal;font-size:10.5px;color:var(--muted);margin-top:4px;white-space:nowrap}
+.pin.amber em{color:var(--amber-ink);font-weight:600}
+
+/* ═══ C2 · Bandes de mois + file d'attente ════════════════════════════ */
+.axisM{position:relative;height:58px;border-radius:9px;overflow:hidden;background:var(--line-soft)}
+.axisM .band{position:absolute;top:0;bottom:0;background:#fff}
+.axisM .mlab{position:absolute;top:7px;font-size:10.5px;font-weight:600;color:var(--faint);
+  transform:translateX(-50%);letter-spacing:.03em}
+.axisM .rule{position:absolute;left:0;right:0;top:32px;height:2px;background:var(--line)}
+.axisM .today{position:absolute;top:22px;bottom:14px;width:2px;background:var(--brand);z-index:2}
+.axisM .tail{position:absolute;right:0;top:0;bottom:0;width:58px;
+  background:repeating-linear-gradient(135deg,#F8FAFC 0 5px,#fff 5px 10px);
+  border-left:1px dashed var(--line);display:grid;place-items:center;
+  font-size:10px;color:var(--faint);text-align:center;line-height:1.25}
+
+/* ═══ C3 · Deux axes : temps et kilomètres ════════════════════════════ */
+.dual{display:grid;gap:11px}
+.lane{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:center}
+.lane .tag{font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);
+  text-align:right}
+.lane .line{position:relative;height:26px}
+.lane .line .rule{position:absolute;left:0;right:0;top:12px;height:2px;background:var(--line-soft);border-radius:99px}
+.lane .line .fill{position:absolute;left:0;top:12px;height:2px;border-radius:99px;background:var(--brand)}
+.lane .line .mk{position:absolute;top:6px;width:13px;height:13px;border-radius:99px;background:#fff;
+  border:3px solid var(--zinc-dot);transform:translateX(-50%)}
+.lane .line .mk.amber{border-color:var(--amber-dot);background:var(--amber-bg)}
+.lane .line .mk.ok{border-color:var(--ok-dot)}
+.lane .line .cap{position:absolute;right:0;top:0;font-size:11px;color:var(--muted);
+  font-variant-numeric:tabular-nums}
+
+/* ═══ C4 · Arc radial ═════════════════════════════════════════════════ */
+.arcs{display:flex;gap:18px;align-items:center;justify-content:space-around;padding:2px 0}
+.arcw{display:grid;justify-items:center;gap:7px}
+.arcw .cap{font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+.arcw .val{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.arcw .val b{font-size:15px;font-weight:700;letter-spacing:-.02em;display:block;line-height:1.1}
+.arcw .val span{font-size:9.5px;color:var(--muted)}
+.arcbox{position:relative;width:78px;height:78px}
+
+/* ═══ C5 · Axe resserré sur le court terme ════════════════════════════ */
+.axisZ{position:relative;height:60px}
+.axisZ .seg{position:absolute;top:26px;height:4px;border-radius:99px;background:var(--line-soft)}
+.axisZ .seg.near{background:#DCE7FF}
+.axisZ .divider{position:absolute;top:18px;bottom:18px;width:1px;background:var(--line);
+  border-left:1px dashed var(--line)}
+.axisZ .zlab{position:absolute;top:2px;font-size:10px;font-weight:600;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--faint);transform:translateX(-50%)}
+.axisZ .today{position:absolute;top:18px;bottom:18px;width:2px;background:var(--brand);z-index:2}
+.axisZ .mk{position:absolute;top:21px;width:14px;height:14px;border-radius:99px;background:#fff;
+  border:3px solid var(--zinc-dot);transform:translateX(-50%);z-index:3}
+.axisZ .mk.amber{border-color:var(--amber-dot);background:var(--amber-bg)}
+.axisZ .cap{position:absolute;top:40px;font-size:10.5px;color:var(--muted);transform:translateX(-50%);white-space:nowrap}
+.axisZ .cap.amber{color:var(--amber-ink);font-weight:600}
+
+/* ═══ C6 · Ruban compact ══════════════════════════════════════════════ */
+.ribbon{display:flex;height:10px;border-radius:99px;overflow:hidden;background:var(--line-soft)}
+.ribbon i{display:block;height:100%}
+.ribbon i.past{background:var(--amber-dot)}
+.ribbon i.near{background:var(--amber-line)}
+.ribbon i.mid{background:#DCE7FF}
+.ribbon i.far{background:var(--line-soft)}
+.ticks{position:relative;height:20px;margin-top:-4px}
+.ticks u{position:absolute;top:0;width:2px;height:11px;border-radius:99px;background:var(--zinc-dot);
+  transform:translateX(-50%);text-decoration:none}
+.ticks u.amber{background:var(--amber-dot);height:14px}
+.ticks u.brand{background:var(--brand)}
+.summary{font-size:13px;color:var(--ink-2)}
+.summary b{font-weight:600}
+.summary .amber{color:var(--amber-ink);font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="switcher">
+  <b>Ligne de vie</b>
+  <button data-go="1" aria-current="true">C1 · Axe partagé</button>
+  <button data-go="2">C2 · Bandes de mois</button>
+  <button data-go="3">C3 · Temps + kilomètres</button>
+  <button data-go="4">C4 · Arcs</button>
+  <button data-go="5">C5 · Court terme dilaté</button>
+  <button data-go="6">C6 · Ruban compact</button>
+  <span class="note">Maquette statique — rien de déployé</span>
+</div>
+
+<!-- ══════════════ C1 ══════════════ -->
+<section class="variant" data-v="1" data-on>
+<div class="page">
+  <div class="crit">
+    <h3>C1 · Un seul axe pour toute la flotte</h3>
+    La faiblesse de la version en cartes, c'est qu'un axe par carte ne se compare pas vraiment :
+    les échelles se ressemblent sans être alignées. Ici l'axe est <b>partagé</b>, une ligne par
+    véhicule, comme un planning de chantier.
+    <ul>
+      <li class="plus">Une verticale = une date. On voit d'un coup que trois échéances tombent la même semaine.</li>
+      <li class="plus">Les mois sont écrits une seule fois, en en-tête : on récupère la place perdue sur chaque carte.</li>
+      <li class="plus">Trier par première échéance produit une diagonale — la flotte se lit comme une courbe.</li>
+      <li class="plus">C'est le format qui répond à la vraie question de planification : « quelle semaine vais-je être débordé ? »</li>
+      <li class="minus">Ce n'est plus une liste de véhicules, c'est un planning. Il faut assumer d'en faire un écran à part.</li>
+      <li class="minus">Au-delà de vingt lignes il faut figer la colonne de gauche et faire défiler.</li>
+    </ul>
+  </div>
+
+  <div class="head">
+    <div><h1>Échéances de la flotte</h1><p class="sub">8 véhicules · 90 prochains jours</p></div>
+    <div style="display:flex;gap:10px"><button class="btn">⤓ Exporter</button><button class="btn primary">+ Ajouter</button></div>
+  </div>
+  <div class="bar">
+    <input class="search" placeholder="Plaque, modèle, conducteur…">
+    <button class="f on">90 jours</button><button class="f">6 mois</button><button class="f">1 an</button>
+    <span class="sep"></span><button class="f on">Trier : première échéance</button>
+  </div>
+  <div class="legend">
+    <span><i style="background:var(--amber-dot)"></i>Contrôle technique</span>
+    <span><i style="background:var(--brand);border-radius:2px"></i>Révision (estimée au kilométrage)</span>
+    <span><i style="background:var(--zinc-dot)"></i>Document conducteur</span>
+    <span><i style="background:var(--brand);width:2px;height:12px;border-radius:0"></i>Aujourd'hui</span>
+  </div>
+
+  <div class="fleet">
+    <div class="ruler">
+      <div class="sp">Véhicule</div>
+      <div class="months">
+        <u style="left:0"></u><u style="left:33%"></u><u style="left:66%"></u><u style="left:99.7%"></u>
+        <span style="left:16%">septembre</span><span style="left:49%">octobre</span><span style="left:83%">novembre</span>
+      </div>
+    </div>
+
+    <div class="row warn">
+      <div class="idc"><div class="plate">BC-234-DE</div><div class="model">Sprinter · non affecté</div></div>
+      <div class="track">
+        <u style="left:33%"></u><u style="left:66%"></u><div class="rule"></div>
+        <div class="today" style="left:2%"></div>
+        <div class="pin amber" style="left:2%"><b></b><em>CT en retard</em></div>
+      </div>
+    </div>
+
+    <div class="row warn">
+      <div class="idc"><div class="plate">AB-123-CD</div><div class="model">Kangoo · T. Dubois</div></div>
+      <div class="track">
+        <u style="left:33%"></u><u style="left:66%"></u><div class="rule"></div>
+        <div class="today" style="left:2%"></div>
+        <div class="pin amber" style="left:11%"><b></b><em>CT</em></div>
+        <div class="pin km" style="left:62%"><b></b><em>révision</em></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="idc"><div class="plate">TU-678-VW</div><div class="model">Trafic · L. Moreau</div></div>
+      <div class="track">
+        <u style="left:33%"></u><u style="left:66%"></u><div class="rule"></div>
+        <div class="today" style="left:2%"></div>
+        <div class="pin km" style="left:41%"><b></b><em>révision</em></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="idc"><div class="plate">EF-456-GH</div><div class="model">Partner · M. Lefebvre</div></div>
+      <div class="track">
+        <u style="left:33%"></u><u style="left:66%"></u><div class="rule"></div>
+        <div class="today" style="left:2%"></div>
+        <div class="pin km" style="left:44%"><b></b><em>révision</em></div>
+        <div class="pin" style="left:71%"><b></b><em>permis M.L.</em></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="idc"><div class="plate">PQ-345-RS</div><div class="model">Caddy · S. Bernard</div></div>
+      <div class="track">
+        <u style="left:33%"></u><u style="left:66%"></u><div class="rule"></div>
+        <div class="today" style="left:2%"></div>
+        <div class="pin km" style="left:68%"><b></b><em>révision</em></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="idc"><div class="plate">IJ-789-KL</div><div class="model">Berlingo · A. Martin</div></div>
+      <div class="track">
+        <u style="left:33%"></u><u style="left:66%"></u><div class="rule"></div>
+        <div class="today" style="left:2%"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="idc"><div class="plate">XY-901-ZA</div><div class="model">Expert · non affecté</div></div>
+      <div class="track">
+        <u style="left:33%"></u><u style="left:66%"></u><div class="rule"></div>
+        <div class="today" style="left:2%"></div>
+        <div class="pin" style="left:88%"><b></b><em>assurance</em></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ C2 ══════════════ -->
+<section class="variant" data-v="2">
+<div class="page">
+  <div class="crit">
+    <h3>C2 · Bandes de mois, et une file pour le reste</h3>
+    L'axe nu ne dit pas « quand » mais « dans combien de temps », ce qui oblige à compter.
+    Ici les mois sont nommés, alternés, et <b>ce qui dépasse l'horizon part dans une file hachurée</b>
+    à droite plutôt que de disparaître.
+    <ul>
+      <li class="plus">« Mi-octobre » est plus utile que « dans 38 jours » quand on prend un rendez-vous.</li>
+      <li class="plus">La file de droite règle le défaut majeur de la version initiale : plus rien ne tombe hors du cadre sans prévenir.</li>
+      <li class="plus">Les bandes alternées donnent un repère visuel sans ajouter de graduation.</li>
+      <li class="minus">Les bandes prennent de la couleur et de la place — la carte s'alourdit.</li>
+      <li class="minus">Les mois ne font pas la même longueur : l'axe est légèrement irrégulier, un puriste le verra.</li>
+    </ul>
+  </div>
+
+  <div class="head">
+    <div><h1>Véhicules</h1><p class="sub">8 véhicules · 3 demandent une action</p></div>
+    <div style="display:flex;gap:10px"><button class="btn">⤓ Exporter</button><button class="btn primary">+ Ajouter</button></div>
+  </div>
+  <div class="bar"><input class="search" placeholder="Plaque, modèle, conducteur…">
+    <button class="f on">3 mois</button><button class="f">6 mois</button></div>
+
+  <div class="grid">
+    <article class="card warn">
+      <div class="top"><div><div class="plate">AB-123-CD</div><div class="model">Renault Kangoo</div></div>
+        <span class="chip soon"><i class="dot"></i>CT dans 8 j</span></div>
+      <div class="axisM">
+        <div class="band" style="left:0;width:30%"></div>
+        <div class="band" style="left:62%;width:28%"></div>
+        <span class="mlab" style="left:15%">SEPT.</span><span class="mlab" style="left:46%">OCT.</span><span class="mlab" style="left:76%">NOV.</span>
+        <div class="rule"></div><div class="today" style="left:2%"></div>
+        <div class="pin amber" style="left:11%;top:24px"><b></b><em>CT</em></div>
+        <div class="pin km" style="left:58%;top:24px"><b></b><em>révision</em></div>
+        <div class="tail">2 après<br>février</div>
+      </div>
+      <div class="foot"><span class="who"><i>TD</i>Thomas Dubois</span><span class="km">53 200 km</span></div>
+    </article>
+
+    <article class="card warn">
+      <div class="top"><div><div class="plate">BC-234-DE</div><div class="model">Mercedes Sprinter</div></div>
+        <span class="chip urgent"><i class="dot"></i>en retard</span></div>
+      <div class="axisM">
+        <div class="band" style="left:0;width:30%"></div>
+        <div class="band" style="left:62%;width:28%"></div>
+        <span class="mlab" style="left:15%">SEPT.</span><span class="mlab" style="left:46%">OCT.</span><span class="mlab" style="left:76%">NOV.</span>
+        <div class="rule"></div><div class="today" style="left:2%"></div>
+        <div class="pin amber" style="left:2%;top:24px"><b></b><em>CT en retard</em></div>
+        <div class="tail">1 après<br>février</div>
+      </div>
+      <div class="foot"><span class="who empty"><i>—</i>Non affecté</span><span class="km">112 000 km</span></div>
+    </article>
+
+    <article class="card">
+      <div class="top"><div><div class="plate">TU-678-VW</div><div class="model">Renault Trafic</div></div>
+        <span class="chip watch"><i class="dot"></i>1 échéance</span></div>
+      <div class="axisM">
+        <div class="band" style="left:0;width:30%"></div>
+        <div class="band" style="left:62%;width:28%"></div>
+        <span class="mlab" style="left:15%">SEPT.</span><span class="mlab" style="left:46%">OCT.</span><span class="mlab" style="left:76%">NOV.</span>
+        <div class="rule"></div><div class="today" style="left:2%"></div>
+        <div class="pin km" style="left:38%;top:24px"><b></b><em>révision</em></div>
+        <div class="tail">3 après<br>février</div>
+      </div>
+      <div class="foot"><span class="who"><i>LM</i>Lucas Moreau</span><span class="km">81 600 km</span></div>
+    </article>
+
+    <article class="card">
+      <div class="top"><div><div class="plate">IJ-789-KL</div><div class="model">Citroën Berlingo</div></div>
+        <span class="chip ok"><i class="dot"></i>rien avant 3 mois</span></div>
+      <div class="axisM">
+        <div class="band" style="left:0;width:30%"></div>
+        <div class="band" style="left:62%;width:28%"></div>
+        <span class="mlab" style="left:15%">SEPT.</span><span class="mlab" style="left:46%">OCT.</span><span class="mlab" style="left:76%">NOV.</span>
+        <div class="rule"></div><div class="today" style="left:2%"></div>
+        <div class="tail">4 après<br>février</div>
+      </div>
+      <div class="foot"><span class="who"><i>AM</i>Antoine Martin</span><span class="km">43 800 km</span></div>
+    </article>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ C3 ══════════════ -->
+<section class="variant" data-v="3">
+<div class="page">
+  <div class="crit">
+    <h3>C3 · Deux axes : le temps, et les kilomètres</h3>
+    Le reproche le plus sérieux fait à la version initiale : poser une révision kilométrique sur un
+    axe de temps oblige à convertir, donc à estimer, donc à mentir un peu. Ici chaque unité a
+    <b>sa propre voie</b>, et rien n'est converti.
+    <ul>
+      <li class="plus">Honnête : une révision à 12 900 km n'est pas une date, et la carte ne prétend plus le contraire.</li>
+      <li class="plus">La voie du bas se lit comme une jauge d'usure — le remplissage dit où en est le véhicule dans son cycle.</li>
+      <li class="plus">Deux voies courtes tiennent dans moins de hauteur qu'un axe unique avec ses étiquettes.</li>
+      <li class="minus">On perd ce qui faisait la force de C : voir <b>tout</b> se bousculer sur un même axe.</li>
+      <li class="minus">Deux échelles à comprendre au lieu d'une, sur chaque carte.</li>
+    </ul>
+  </div>
+
+  <div class="head">
+    <div><h1>Véhicules</h1><p class="sub">8 véhicules · 3 demandent une action</p></div>
+    <div style="display:flex;gap:10px"><button class="btn">⤓ Exporter</button><button class="btn primary">+ Ajouter</button></div>
+  </div>
+  <div class="bar"><input class="search" placeholder="Plaque, modèle, conducteur…">
+    <button class="f on">Trier : urgence</button></div>
+
+  <div class="grid">
+    <article class="card warn">
+      <div class="top"><div><div class="plate">AB-123-CD</div><div class="model">Renault Kangoo</div></div>
+        <span class="chip soon"><i class="dot"></i>8 jours</span></div>
+      <div class="dual">
+        <div class="lane"><div class="tag">Temps</div><div class="line">
+          <div class="rule"></div><div class="fill" style="width:11%"></div>
+          <div class="mk amber" style="left:11%"></div><div class="cap">CT · 8 j</div></div></div>
+        <div class="lane"><div class="tag">Km</div><div class="line">
+          <div class="rule"></div><div class="fill" style="width:36%;background:var(--zinc-dot)"></div>
+          <div class="mk" style="left:36%"></div><div class="cap">révision · 12 900 km</div></div></div>
+      </div>
+      <div class="foot"><span class="who"><i>TD</i>Thomas Dubois</span><span class="km">53 200 km</span></div>
+    </article>
+
+    <article class="card warn">
+      <div class="top"><div><div class="plate">BC-234-DE</div><div class="model">Mercedes Sprinter</div></div>
+        <span class="chip urgent"><i class="dot"></i>en retard</span></div>
+      <div class="dual">
+        <div class="lane"><div class="tag">Temps</div><div class="line">
+          <div class="rule"></div><div class="fill" style="width:100%;background:var(--amber-dot)"></div>
+          <div class="mk amber" style="left:2%"></div><div class="cap" style="color:var(--amber-ink)">CT · expiré 118 j</div></div></div>
+        <div class="lane"><div class="tag">Km</div><div class="line">
+          <div class="rule"></div><div class="fill" style="width:100%;background:var(--amber-dot)"></div>
+          <div class="mk amber" style="left:100%"></div><div class="cap" style="color:var(--amber-ink)">révision dépassée</div></div></div>
+      </div>
+      <div class="foot"><span class="who empty"><i>—</i>Non affecté</span><span class="km">112 000 km</span></div>
+    </article>
+
+    <article class="card">
+      <div class="top"><div><div class="plate">TU-678-VW</div><div class="model">Renault Trafic</div></div>
+        <span class="chip watch"><i class="dot"></i>révision proche</span></div>
+      <div class="dual">
+        <div class="lane"><div class="tag">Temps</div><div class="line">
+          <div class="rule"></div><div class="fill" style="width:78%;background:var(--ok-dot)"></div>
+          <div class="mk ok" style="left:78%"></div><div class="cap">CT · févr. 2028</div></div></div>
+        <div class="lane"><div class="tag">Km</div><div class="line">
+          <div class="rule"></div><div class="fill" style="width:76%;background:var(--zinc-dot)"></div>
+          <div class="mk" style="left:76%"></div><div class="cap">révision · 4 800 km</div></div></div>
+      </div>
+      <div class="foot"><span class="who"><i>LM</i>Lucas Moreau</span><span class="km">81 600 km</span></div>
+    </article>
+
+    <article class="card">
+      <div class="top"><div><div class="plate">EF-456-GH</div><div class="model">Peugeot Partner</div></div>
+        <span class="chip ok"><i class="dot"></i>à jour</span></div>
+      <div class="dual">
+        <div class="lane"><div class="tag">Temps</div><div class="line">
+          <div class="rule"></div><div class="fill" style="width:58%;background:var(--ok-dot)"></div>
+          <div class="mk ok" style="left:58%"></div><div class="cap">CT · nov. 2026</div></div></div>
+        <div class="lane"><div class="tag">Km</div><div class="line">
+          <div class="rule"></div><div class="fill" style="width:37%;background:var(--zinc-dot)"></div>
+          <div class="mk" style="left:37%"></div><div class="cap">révision · 9 400 km</div></div></div>
+      </div>
+      <div class="foot"><span class="who"><i>ML</i>Marie Lefebvre</span><span class="km">62 600 km</span></div>
+    </article>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ C4 ══════════════ -->
+<section class="variant" data-v="4">
+<div class="page">
+  <div class="crit">
+    <h3>C4 · Des arcs plutôt qu'une ligne</h3>
+    Le même contenu, enroulé. Trois arcs — contrôle technique, révision, documents — chacun
+    rempli à proportion du chemin parcouru depuis la dernière échéance.
+    <ul>
+      <li class="plus">Tient dans très peu de largeur : trois arcs passent là où un axe est déjà illisible, sous 260 px.</li>
+      <li class="plus">Un arc presque bouclé se repère en vision périphérique, sans lire.</li>
+      <li class="plus">Trois unités différentes cohabitent sans contradiction : chacune a son cercle.</li>
+      <li class="minus">On perd toute notion de simultanéité — impossible de voir que deux échéances tombent la même semaine.</li>
+      <li class="minus">Un arc n'a pas de sens pour un document manquant : un compteur 0/2 aurait été plus honnête.</li>
+      <li class="minus">Trois petits cercles finissent par ressembler à un tableau de bord d'agence, pas à un outil.</li>
+    </ul>
+  </div>
+
+  <div class="head">
+    <div><h1>Véhicules</h1><p class="sub">8 véhicules · 3 demandent une action</p></div>
+    <div style="display:flex;gap:10px"><button class="btn">⤓ Exporter</button><button class="btn primary">+ Ajouter</button></div>
+  </div>
+  <div class="bar"><input class="search" placeholder="Plaque, modèle, conducteur…"></div>
+
+  <div class="grid">
+    <article class="card warn">
+      <div class="top"><div><div class="plate">AB-123-CD</div><div class="model">Renault Kangoo</div></div>
+        <span class="chip soon"><i class="dot"></i>8 jours</span></div>
+      <div class="arcs">
+        <div class="arcw"><div class="arcbox">
+          <svg width="78" height="78" viewBox="0 0 78 78">
+            <circle cx="39" cy="39" r="32" fill="none" stroke="#F1F5F9" stroke-width="7"/>
+            <circle cx="39" cy="39" r="32" fill="none" stroke="#D97706" stroke-width="7" stroke-linecap="round"
+              stroke-dasharray="201" stroke-dashoffset="8" transform="rotate(-90 39 39)"/>
+          </svg><div class="val"><b>8 j</b><span>CT</span></div></div><div class="cap">Contrôle</div></div>
+        <div class="arcw"><div class="arcbox">
+          <svg width="78" height="78" viewBox="0 0 78 78">
+            <circle cx="39" cy="39" r="32" fill="none" stroke="#F1F5F9" stroke-width="7"/>
+            <circle cx="39" cy="39" r="32" fill="none" stroke="#A1A1AA" stroke-width="7" stroke-linecap="round"
+              stroke-dasharray="201" stroke-dashoffset="129" transform="rotate(-90 39 39)"/>
+          </svg><div class="val"><b>12 900</b><span>km</span></div></div><div class="cap">Révision</div></div>
+        <div class="arcw"><div class="arcbox">
+          <svg width="78" height="78" viewBox="0 0 78 78">
+            <circle cx="39" cy="39" r="32" fill="none" stroke="#F1F5F9" stroke-width="7"/>
+          </svg><div class="val"><b>0/2</b><span>déposés</span></div></div><div class="cap">Documents</div></div>
+      </div>
+      <div class="foot"><span class="who"><i>TD</i>Thomas Dubois</span><span class="km">53 200 km</span></div>
+    </article>
+
+    <article class="card warn">
+      <div class="top"><div><div class="plate">BC-234-DE</div><div class="model">Mercedes Sprinter</div></div>
+        <span class="chip urgent"><i class="dot"></i>en retard</span></div>
+      <div class="arcs">
+        <div class="arcw"><div class="arcbox">
+          <svg width="78" height="78" viewBox="0 0 78 78">
+            <circle cx="39" cy="39" r="32" fill="none" stroke="#FEF3C7" stroke-width="7"/>
+            <circle cx="39" cy="39" r="32" fill="none" stroke="#D97706" stroke-width="7" stroke-linecap="round"
+              stroke-dasharray="201" stroke-dashoffset="0" transform="rotate(-90 39 39)"/>
+          </svg><div class="val"><b style="color:#78350F">−118</b><span>jours</span></div></div><div class="cap">Contrôle</div></div>
+        <div class="arcw"><div class="arcbox">
+          <svg width="78" height="78" viewBox="0 0 78 78">
+            <circle cx="39" cy="39" r="32" fill="none" stroke="#FEF3C7" stroke-width="7"/>
+            <circle cx="39" cy="39" r="32" fill="none" stroke="#D97706" stroke-width="7" stroke-linecap="round"
+              stroke-dasharray="201" stroke-dashoffset="0" transform="rotate(-90 39 39)"/>
+          </svg><div class="val"><b style="color:#78350F">passée</b><span>révision</span></div></div><div class="cap">Révision</div></div>
+        <div class="arcw"><div class="arcbox">
+          <svg width="78" height="78" viewBox="0 0 78 78">
+            <circle cx="39" cy="39" r="32" fill="none" stroke="#F1F5F9" stroke-width="7"/>
+          </svg><div class="val"><b>0/2</b><span>déposés</span></div></div><div class="cap">Documents</div></div>
+      </div>
+      <div class="foot"><span class="who empty"><i>—</i>Non affecté</span><span class="km">112 000 km</span></div>
+    </article>
+
+    <article class="card">
+      <div class="top"><div><div class="plate">TU-678-VW</div><div class="model">Renault Trafic</div></div>
+        <span class="chip watch"><i class="dot"></i>révision proche</span></div>
+      <div class="arcs">
+        <div class="arcw"><div class="arcbox">
+          <svg width="78" height="78" viewBox="0 0 78 78">
+            <circle cx="39" cy="39" r="32" fill="none" stroke="#F1F5F9" stroke-width="7"/>
+            <circle cx="39" cy="39" r="32" fill="none" stroke="#10B981" stroke-width="7" stroke-linecap="round"
+              stroke-dasharray="201" stroke-dashoffset="157" transform="rotate(-90 39 39)"/>
+          </svg><div class="val"><b>2028</b><span>févr.</span></div></div><div class="cap">Contrôle</div></div>
+        <div class="arcw"><div class="arcbox">
+          <svg width="78" height="78" viewBox="0 0 78 78">
+            <circle cx="39" cy="39" r="32" fill="none" stroke="#F1F5F9" stroke-width="7"/>
+            <circle cx="39" cy="39" r="32" fill="none" stroke="#A1A1AA" stroke-width="7" stroke-linecap="round"
+              stroke-dasharray="201" stroke-dashoffset="48" transform="rotate(-90 39 39)"/>
+          </svg><div class="val"><b>4 800</b><span>km</span></div></div><div class="cap">Révision</div></div>
+        <div class="arcw"><div class="arcbox">
+          <svg width="78" height="78" viewBox="0 0 78 78">
+            <circle cx="39" cy="39" r="32" fill="none" stroke="#ECFDF5" stroke-width="7"/>
+            <circle cx="39" cy="39" r="32" fill="none" stroke="#10B981" stroke-width="7" stroke-linecap="round"
+              stroke-dasharray="201" stroke-dashoffset="0" transform="rotate(-90 39 39)"/>
+          </svg><div class="val"><b>2/2</b><span>déposés</span></div></div><div class="cap">Documents</div></div>
+      </div>
+      <div class="foot"><span class="who"><i>LM</i>Lucas Moreau</span><span class="km">81 600 km</span></div>
+    </article>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ C5 ══════════════ -->
+<section class="variant" data-v="5">
+<div class="page">
+  <div class="crit">
+    <h3>C5 · Le court terme occupe la moitié de l'axe</h3>
+    Un axe linéaire donne autant de place au 89<sup>e</sup> jour qu'au 2<sup>e</sup>, alors que seul
+    le court terme se décide. Ici <b>les 30 prochains jours prennent la moitié de la largeur</b>,
+    les deux mois suivants le quart, et le reste tient dans un dernier segment.
+    <ul>
+      <li class="plus">La zone où l'on agit est la zone où l'on voit. Deux échéances à trois jours d'écart ne se chevauchent plus.</li>
+      <li class="plus">Un seul axe, donc la simultanéité reste lisible — ce que C3 perdait.</li>
+      <li class="plus">Plus rien ne sort du cadre : le dernier segment absorbe tout l'horizon lointain.</li>
+      <li class="minus">L'échelle n'est pas linéaire. Une pastille au milieu ne veut pas dire « à la moitié du temps » — il faut l'accepter et le montrer.</li>
+      <li class="minus">Les trois zones demandent une étiquette chacune, sinon personne ne devine la distorsion.</li>
+    </ul>
+  </div>
+
+  <div class="head">
+    <div><h1>Véhicules</h1><p class="sub">8 véhicules · 3 demandent une action</p></div>
+    <div style="display:flex;gap:10px"><button class="btn">⤓ Exporter</button><button class="btn primary">+ Ajouter</button></div>
+  </div>
+  <div class="bar"><input class="search" placeholder="Plaque, modèle, conducteur…">
+    <button class="f on">Trier : première échéance</button></div>
+
+  <div class="grid">
+    <article class="card warn">
+      <div class="top"><div><div class="plate">AB-123-CD</div><div class="model">Renault Kangoo</div></div>
+        <span class="chip soon"><i class="dot"></i>8 jours</span></div>
+      <div class="axisZ">
+        <span class="zlab" style="left:25%">30 jours</span><span class="zlab" style="left:62%">3 mois</span><span class="zlab" style="left:88%">plus tard</span>
+        <div class="seg near" style="left:0;width:50%"></div>
+        <div class="seg" style="left:50%;width:25%"></div>
+        <div class="seg" style="left:75%;width:25%"></div>
+        <div class="divider" style="left:50%"></div><div class="divider" style="left:75%"></div>
+        <div class="today" style="left:1%"></div>
+        <div class="mk amber" style="left:14%"></div><div class="cap amber" style="left:14%">CT · 8 j</div>
+        <div class="mk" style="left:66%"></div><div class="cap" style="left:66%">révision</div>
+      </div>
+      <div class="foot"><span class="who"><i>TD</i>Thomas Dubois</span><span class="km">53 200 km</span></div>
+    </article>
+
+    <article class="card warn">
+      <div class="top"><div><div class="plate">BC-234-DE</div><div class="model">Mercedes Sprinter</div></div>
+        <span class="chip urgent"><i class="dot"></i>en retard</span></div>
+      <div class="axisZ">
+        <span class="zlab" style="left:25%">30 jours</span><span class="zlab" style="left:62%">3 mois</span><span class="zlab" style="left:88%">plus tard</span>
+        <div class="seg near" style="left:0;width:50%"></div>
+        <div class="seg" style="left:50%;width:25%"></div>
+        <div class="seg" style="left:75%;width:25%"></div>
+        <div class="divider" style="left:50%"></div><div class="divider" style="left:75%"></div>
+        <div class="today" style="left:1%"></div>
+        <div class="mk amber" style="left:1%"></div><div class="cap amber" style="left:8%">CT en retard · révision passée</div>
+      </div>
+      <div class="foot"><span class="who empty"><i>—</i>Non affecté</span><span class="km">112 000 km</span></div>
+    </article>
+
+    <article class="card">
+      <div class="top"><div><div class="plate">EF-456-GH</div><div class="model">Peugeot Partner</div></div>
+        <span class="chip watch"><i class="dot"></i>2 échéances</span></div>
+      <div class="axisZ">
+        <span class="zlab" style="left:25%">30 jours</span><span class="zlab" style="left:62%">3 mois</span><span class="zlab" style="left:88%">plus tard</span>
+        <div class="seg near" style="left:0;width:50%"></div>
+        <div class="seg" style="left:50%;width:25%"></div>
+        <div class="seg" style="left:75%;width:25%"></div>
+        <div class="divider" style="left:50%"></div><div class="divider" style="left:75%"></div>
+        <div class="today" style="left:1%"></div>
+        <div class="mk" style="left:41%"></div><div class="cap" style="left:41%">révision</div>
+        <div class="mk" style="left:86%"></div><div class="cap" style="left:86%">CT · nov. 26</div>
+      </div>
+      <div class="foot"><span class="who"><i>ML</i>Marie Lefebvre</span><span class="km">62 600 km</span></div>
+    </article>
+
+    <article class="card">
+      <div class="top"><div><div class="plate">IJ-789-KL</div><div class="model">Citroën Berlingo</div></div>
+        <span class="chip ok"><i class="dot"></i>rien avant 3 mois</span></div>
+      <div class="axisZ">
+        <span class="zlab" style="left:25%">30 jours</span><span class="zlab" style="left:62%">3 mois</span><span class="zlab" style="left:88%">plus tard</span>
+        <div class="seg near" style="left:0;width:50%"></div>
+        <div class="seg" style="left:50%;width:25%"></div>
+        <div class="seg" style="left:75%;width:25%"></div>
+        <div class="divider" style="left:50%"></div><div class="divider" style="left:75%"></div>
+        <div class="today" style="left:1%"></div>
+        <div class="mk" style="left:83%"></div><div class="cap" style="left:83%">2 échéances</div>
+      </div>
+      <div class="foot"><span class="who"><i>AM</i>Antoine Martin</span><span class="km">43 800 km</span></div>
+    </article>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ C6 ══════════════ -->
+<section class="variant" data-v="6">
+<div class="page">
+  <div class="crit">
+    <h3>C6 · Le ruban, et la phrase</h3>
+    La version la plus sobre. Un ruban de 10 px coloré par zone, des traits pour les échéances,
+    et surtout <b>une phrase en clair</b> dessous. Le graphique ne porte plus l'information : il la
+    résume, la phrase la dit.
+    <ul>
+      <li class="plus">Rien à déchiffrer : celui qui ne comprend pas le ruban lit la phrase et sait quoi faire.</li>
+      <li class="plus">Le ruban ne prend que 10 px de haut — la carte reste courte, la grille dense.</li>
+      <li class="plus">Accessible : la phrase est le texte que lira un lecteur d'écran, le ruban est décoratif.</li>
+      <li class="plus">Aucune échelle à expliquer, donc aucune distorsion à assumer.</li>
+      <li class="minus">On abandonne la lecture fine : impossible de dire si deux échéances sont à trois jours ou à trois semaines d'écart.</li>
+      <li class="minus">C'est presque un retour à la carte A. La ligne de vie n'est plus qu'un ornement informé.</li>
+    </ul>
+  </div>
+
+  <div class="head">
+    <div><h1>Véhicules</h1><p class="sub">8 véhicules · 3 demandent une action</p></div>
+    <div style="display:flex;gap:10px"><button class="btn">⤓ Exporter</button><button class="btn primary">+ Ajouter</button></div>
+  </div>
+  <div class="bar"><input class="search" placeholder="Plaque, modèle, conducteur…">
+    <button class="f on">Trier : première échéance</button></div>
+
+  <div class="grid">
+    <article class="card warn">
+      <div class="top"><div><div class="plate">BC-234-DE</div><div class="model">Mercedes Sprinter</div></div>
+        <span class="chip urgent"><i class="dot"></i>en retard</span></div>
+      <div>
+        <div class="ribbon"><i class="past" style="width:22%"></i><i class="near" style="width:24%"></i><i class="mid" style="width:26%"></i><i class="far" style="width:28%"></i></div>
+        <div class="ticks"><u class="amber" style="left:6%"></u><u class="amber" style="left:17%"></u></div>
+      </div>
+      <p class="summary" style="margin:0"><span class="amber">Deux échéances en retard</span> : contrôle technique depuis 118 jours, révision dépassée.</p>
+      <div class="foot"><span class="who empty"><i>—</i>Non affecté</span><span class="km">112 000 km</span></div>
+    </article>
+
+    <article class="card warn">
+      <div class="top"><div><div class="plate">AB-123-CD</div><div class="model">Renault Kangoo</div></div>
+        <span class="chip soon"><i class="dot"></i>8 jours</span></div>
+      <div>
+        <div class="ribbon"><i class="near" style="width:28%"></i><i class="mid" style="width:34%"></i><i class="far" style="width:38%"></i></div>
+        <div class="ticks"><u class="amber" style="left:11%"></u><u class="brand" style="left:58%"></u></div>
+      </div>
+      <p class="summary" style="margin:0"><span class="amber">Contrôle technique dans 8 jours</span>, puis révision vers la mi-novembre.</p>
+      <div class="foot"><span class="who"><i>TD</i>Thomas Dubois</span><span class="km">53 200 km</span></div>
+    </article>
+
+    <article class="card">
+      <div class="top"><div><div class="plate">TU-678-VW</div><div class="model">Renault Trafic</div></div>
+        <span class="chip watch"><i class="dot"></i>1 échéance</span></div>
+      <div>
+        <div class="ribbon"><i class="mid" style="width:46%"></i><i class="far" style="width:54%"></i></div>
+        <div class="ticks"><u class="brand" style="left:41%"></u></div>
+      </div>
+      <p class="summary" style="margin:0">Révision dans <b>4 800 km</b>, soit environ six semaines au rythme actuel.</p>
+      <div class="foot"><span class="who"><i>LM</i>Lucas Moreau</span><span class="km">81 600 km</span></div>
+    </article>
+
+    <article class="card">
+      <div class="top"><div><div class="plate">IJ-789-KL</div><div class="model">Citroën Berlingo</div></div>
+        <span class="chip ok"><i class="dot"></i>rien avant 3 mois</span></div>
+      <div>
+        <div class="ribbon"><i class="far" style="width:100%"></i></div>
+        <div class="ticks"></div>
+      </div>
+      <p class="summary" style="margin:0">Rien à prévoir avant <b>décembre</b>. Prochaine échéance : révision.</p>
+      <div class="foot"><span class="who"><i>AM</i>Antoine Martin</span><span class="km">43 800 km</span></div>
+    </article>
+  </div>
+</div>
+</section>
+
+<script>
+  const buttons = document.querySelectorAll('.switcher button');
+  const panels  = document.querySelectorAll('.variant');
+  buttons.forEach(b => b.addEventListener('click', () => {
+    buttons.forEach(x => x.setAttribute('aria-current', String(x === b)));
+    panels.forEach(p => p.dataset.v === b.dataset.go
+      ? p.setAttribute('data-on', '')
+      : p.removeAttribute('data-on'));
+    window.scrollTo({ top: 0 });
+  }));
+</script>
+</body>
+</html>

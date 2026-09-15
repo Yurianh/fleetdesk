@@ -55,7 +55,12 @@ function AppRoutes() {
         <Route path="/join" element={<Login />} />
         <Route path="/logout" element={<LogoutAndRedirect />} />
         <Route path="/billing/success" element={<BillingSuccess />} />
-        <Route path="*" element={<ExternalRedirect to={MARKETING_URL} />} />
+        {/* En production, un visiteur non connecté appartient au site vitrine.
+            En développement, l'envoyer sur fleetdesk.fr rend le serveur local
+            inutilisable : on l'amène à l'écran de connexion. */}
+        <Route path="*" element={import.meta.env.DEV
+          ? <Navigate to="/login" replace />
+          : <ExternalRedirect to={MARKETING_URL} />} />
       </Routes>
     )
   }
