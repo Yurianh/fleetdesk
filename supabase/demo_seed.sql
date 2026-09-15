@@ -88,22 +88,27 @@ BEGIN
   SELECT org, plate, model, mec, now() - (interval '1 day' * 120) FROM demo_fleet;
 
   -- ── Conducteurs ───────────────────────────────────────────
-  INSERT INTO drivers (user_id, name, email, phone, date_of_birth, created_at)
-  SELECT org, d.name, d.email, d.phone, d.birth, now() - (interval '1 day' * 118)
+  -- Cartes et badges renseignés : la fiche conducteur ouvre sur trois
+  -- « Non renseigné » sinon, ce qui donne l'impression d'un compte à moitié
+  -- créé alors que c'est simplement le jeu de démonstration qui était court.
+  INSERT INTO drivers (user_id, name, email, phone, date_of_birth, employee_id, address,
+                       dkv_card, highway_badge, wash_card, created_at)
+  SELECT org, d.name, d.email, d.phone, d.birth, d.matricule, d.addr,
+         d.dkv, d.badge, d.wash, now() - (interval '1 day' * 118)
   FROM (VALUES
-    ('Karim Aïssa', 'k.aissa@occitrans-demo.fr', '06 12 34 56 78', DATE '1988-04-17'),
-    ('Sophie Renard', 's.renard@occitrans-demo.fr', '06 23 45 67 89', DATE '1979-11-03'),
-    ('Marc Lefebvre', 'm.lefebvre@occitrans-demo.fr', '06 34 56 78 90', DATE '1985-06-22'),
-    ('Amel Benali', 'a.benali@occitrans-demo.fr', '06 45 67 89 01', DATE '1992-01-14'),
-    ('Thomas Sanchez', 't.sanchez@occitrans-demo.fr', '06 56 78 90 12', DATE '1983-09-30'),
-    ('Julien Mercier', 'j.mercier@occitrans-demo.fr', '06 67 89 01 23', DATE '1990-03-08'),
-    ('Nadia Cherif', 'n.cherif@occitrans-demo.fr', '06 78 90 12 34', DATE '1987-07-19'),
-    ('Pierre Dubois', 'p.dubois@occitrans-demo.fr', '06 89 01 23 45', DATE '1975-12-05'),
-    ('Laura Fontaine', 'l.fontaine@occitrans-demo.fr', '06 90 12 34 56', DATE '1994-05-27'),
-    ('Ahmed Belkacem', 'a.belkacem@occitrans-demo.fr', '06 01 23 45 67', DATE '1981-08-11'),
-    ('Céline Roux', 'c.roux@occitrans-demo.fr', '06 11 22 33 44', DATE '1989-02-23'),
-    ('David Martinez', 'd.martinez@occitrans-demo.fr', '06 22 33 44 55', DATE '1986-10-09')
-  ) AS d(name, email, phone, birth);
+    ('Karim Aïssa',    'k.aissa@occitrans-demo.fr',    '06 12 34 56 78', DATE '1988-04-17', 'OCC-001', '14 rue des Pyrénées, 31400 Toulouse', '7083 2641 0091', 'TIS-4471-A', 'LAV-1042'),
+    ('Sophie Renard',  's.renard@occitrans-demo.fr',   '06 23 45 67 89', DATE '1979-11-03', 'OCC-002', '7 avenue de Lespinet, 31400 Toulouse', '7083 2641 0092', 'TIS-4471-B', 'LAV-1043'),
+    ('Marc Lefebvre',  'm.lefebvre@occitrans-demo.fr', '06 34 56 78 90', DATE '1985-06-22', 'OCC-003', '23 rue Bayard, 31000 Toulouse', '7083 2641 0093', 'TIS-4471-C', 'LAV-1044'),
+    ('Amel Benali',    'a.benali@occitrans-demo.fr',   '06 45 67 89 01', DATE '1992-01-14', 'OCC-004', '5 impasse des Tilleuls, 31200 Toulouse', '7083 2641 0094', 'TIS-4471-D', 'LAV-1045'),
+    ('Thomas Sanchez', 't.sanchez@occitrans-demo.fr',  '06 56 78 90 12', DATE '1983-09-30', 'OCC-005', '41 route de Narbonne, 31400 Toulouse', '7083 2641 0095', 'TIS-4471-E', 'LAV-1046'),
+    ('Julien Mercier', 'j.mercier@occitrans-demo.fr',  '06 67 89 01 23', DATE '1990-03-08', 'OCC-006', '12 allée de Bellefontaine, 31100 Toulouse', '7083 2641 0096', 'TIS-4471-F', 'LAV-1047'),
+    ('Nadia Cherif',   'n.cherif@occitrans-demo.fr',   '06 78 90 12 34', DATE '1987-07-19', 'OCC-007', '3 place du Capitole, 31000 Toulouse', '7083 2641 0097', 'TIS-4471-G', 'LAV-1048'),
+    ('Pierre Dubois',  'p.dubois@occitrans-demo.fr',   '06 89 01 23 45', DATE '1975-12-05', 'OCC-008', '18 rue de la Colombette, 31000 Toulouse', '7083 2641 0098', 'TIS-4471-H', 'LAV-1049'),
+    ('Laura Fontaine', 'l.fontaine@occitrans-demo.fr', '06 90 12 34 56', DATE '1994-05-27', 'OCC-009', '9 chemin de Gabardie, 31200 Toulouse', '7083 2641 0099', 'TIS-4471-J', 'LAV-1050'),
+    ('Ahmed Belkacem', 'a.belkacem@occitrans-demo.fr', '06 01 23 45 67', DATE '1981-08-11', 'OCC-010', '27 avenue Jean Rieux, 31500 Toulouse', '7083 2641 0100', 'TIS-4471-K', 'LAV-1051'),
+    ('Céline Roux',    'c.roux@occitrans-demo.fr',     '06 11 22 33 44', DATE '1989-02-23', 'OCC-011', '6 rue Saint-Rome, 31000 Toulouse', '7083 2641 0101', 'TIS-4471-L', 'LAV-1052'),
+    ('David Martinez', 'd.martinez@occitrans-demo.fr', '06 22 33 44 55', DATE '1986-10-09', 'OCC-012', '31 boulevard de Suisse, 31200 Toulouse', '7083 2641 0102', 'TIS-4471-M', 'LAV-1053')
+  ) AS d(name, email, phone, birth, matricule, addr, dkv, badge, wash);
 
   -- ── Affectations en cours ─────────────────────────────────
   -- Douze conducteurs, douze véhicules attribués. Trois véhicules restent
