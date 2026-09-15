@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Facture N° FA-2026-001 – FleetDesk</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      color: #1a1a2e;
+      background: #fff;
+      padding: 48px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 40px;
+    }
+    .logo { display: flex; flex-direction: column; gap: 6px; }
+    .logo-tagline {
+      font-size: 11px; color: #94A3B8; letter-spacing: 0.4px;
+      padding-left: 2px;
+    }
+    .logo-divider {
+      width: 32px; height: 2px; background: #2563EB;
+      border-radius: 2px; margin-top: 2px;
+    }
+    .facture-meta { text-align: right; }
+    .facture-num { font-size: 22px; font-weight: 700; color: #2563EB; }
+    .facture-date { font-size: 12px; color: #6b7280; margin-top: 4px; }
+    .facture-badge {
+      display: inline-block; margin-top: 6px;
+      font-size: 11px; background: #DCFCE7; color: #166534;
+      padding: 2px 8px; border-radius: 20px; font-weight: 500;
+    }
+
+    /* ── PARTIES ── */
+    .parties {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 24px; margin-bottom: 24px;
+    }
+    .party-box {
+      padding: 18px 20px; border-radius: 10px;
+      background: #F8FAFC; border: 1px solid #E2E8F0;
+    }
+    .party-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.8px; color: #94A3B8; margin-bottom: 10px;
+    }
+    .party-name { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 6px; }
+    .party-detail { font-size: 12px; color: #475569; line-height: 1.7; }
+
+    /* ── OBJET ── */
+    .objet {
+      background: #EFF6FF; border-left: 3px solid #2563EB;
+      padding: 12px 16px; border-radius: 0 8px 8px 0;
+      margin-bottom: 28px; font-size: 13px; color: #1E40AF;
+    }
+    .objet strong { font-weight: 600; }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.8px; color: #94A3B8; margin-bottom: 12px;
+    }
+
+    /* ── TABLE ── */
+    table { width: 100%; border-collapse: collapse; margin-bottom: 28px; }
+
+    thead tr { background: #1E293B; color: #fff; }
+    thead th {
+      padding: 10px 14px; text-align: left;
+      font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    thead th.price-col { text-align: right; }
+
+    tbody tr { border-bottom: 1px solid #F1F5F9; }
+    tbody tr:hover { background: #FAFBFC; }
+    tbody td { padding: 12px 14px; vertical-align: top; font-size: 12.5px; }
+    tbody td:first-child { width: 26px; color: #94A3B8; font-weight: 600; }
+    tbody td:nth-child(2) { font-weight: 600; color: #1E293B; white-space: nowrap; min-width: 160px; }
+    tbody td:nth-child(3) { color: #475569; line-height: 1.55; }
+    tbody td:last-child { text-align: right; font-weight: 600; color: #1E293B; white-space: nowrap; }
+
+    .tag {
+      display: inline-block; font-size: 10px; padding: 1px 7px;
+      border-radius: 20px; font-weight: 500; margin-left: 6px; vertical-align: middle;
+    }
+    .tag-included { background: #DCFCE7; color: #166534; }
+
+    /* ── TOTAUX ── */
+    .totaux-wrap { display: flex; justify-content: flex-end; margin-bottom: 32px; }
+    .totaux { width: 280px; border: 1px solid #E2E8F0; border-radius: 10px; overflow: hidden; }
+    .totaux-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 16px; font-size: 13px; border-bottom: 1px solid #F1F5F9;
+    }
+    .totaux-row:last-child { border-bottom: none; }
+    .totaux-row.total { background: #1E293B; color: #fff; font-weight: 700; font-size: 15px; }
+    .totaux-row .label { color: #64748B; }
+    .totaux-row.total .label { color: rgba(255,255,255,0.7); font-weight: 400; }
+    .tva-note { font-size: 10px; color: #94A3B8; margin-top: 2px; }
+
+    /* ── RIB ── */
+    .rib-box {
+      background: #F8FAFC; border: 1px solid #E2E8F0;
+      border-radius: 10px; padding: 18px 20px; margin-bottom: 32px;
+    }
+    .rib-title {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.8px; color: #94A3B8; margin-bottom: 12px;
+    }
+    .rib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; }
+    .rib-item { font-size: 12px; }
+    .rib-item .k { color: #94A3B8; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+    .rib-item .v { font-weight: 600; color: #1E293B; font-size: 13px; }
+
+    /* ── MENTIONS LÉGALES ── */
+    .legal-box {
+      background: #FFFBEB; border: 1px solid #FDE68A;
+      border-radius: 10px; padding: 14px 18px; margin-bottom: 32px;
+      font-size: 11.5px; color: #78350F; line-height: 1.7;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      border-top: 1px solid #F1F5F9; padding-top: 16px;
+      font-size: 10.5px; color: #94A3B8; text-align: center; line-height: 1.6;
+    }
+
+    @media print {
+      @page { margin: 7mm 12mm; size: A4; }
+      body { padding: 0; font-size: 8.5px; }
+      .header { margin-bottom: 11px; }
+      .logo svg { width: 96px; height: 36px; }
+      .logo-tagline { font-size: 9.5px; }
+      .facture-num { font-size: 17px; }
+      .facture-date { font-size: 10.5px; }
+      .parties { margin-bottom: 9px; gap: 9px; }
+      .party-box { padding: 7px 11px; border-radius: 7px; }
+      .party-label { font-size: 8.5px; margin-bottom: 5px; }
+      .party-name { font-size: 10.5px; margin-bottom: 3px; }
+      .party-detail { font-size: 9px; line-height: 1.45; }
+      .objet { margin-bottom: 9px; padding: 6px 11px; font-size: 9.5px; }
+      .section-title { margin-bottom: 5px; font-size: 8.5px; }
+      table { margin-bottom: 8px; }
+      thead th { padding: 5.5px 9px; font-size: 8.5px; }
+      tbody td { padding: 3.5px 9px; font-size: 8.5px; line-height: 1.38; }
+      tbody td:nth-child(2) { min-width: 115px; }
+      .totaux-wrap { margin-bottom: 8px; }
+      .totaux { width: 230px; }
+      .totaux-row { padding: 5.5px 11px; font-size: 10.5px; }
+      .totaux-row.total { font-size: 11.5px; }
+      .tva-note { font-size: 8px; }
+      .rib-box { padding: 8px 11px; margin-bottom: 8px; border-radius: 7px; }
+      .rib-title { font-size: 8.5px; margin-bottom: 6px; }
+      .rib-grid { gap: 4px 18px; }
+      .rib-item .k { font-size: 8.5px; }
+      .rib-item .v { font-size: 10.5px; }
+      .legal-box { padding: 6px 11px; margin-bottom: 6px; font-size: 8.5px; line-height: 1.4; border-radius: 7px; }
+      .footer { padding-top: 5px; font-size: 8.5px; line-height: 1.45; }
+      p[style] { margin-bottom: 6px !important; margin-top: 4px !important; font-size: 8.5px; }
+      .rib-box, .legal-box { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">
+      <svg width="136" height="51" viewBox="0 0 136 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11.136 45.3456C8.5248 45.3456 6.3872 44.6672 4.7232 43.3104C3.0592 41.9536 2.048 40.1488 1.6896 37.896L4.1472 37.2816C4.4544 39.176 5.2352 40.6224 6.4896 41.6208C7.7696 42.5936 9.344 43.08 11.2128 43.08C12.3136 43.08 13.2992 42.8624 14.1696 42.4272C15.0656 41.992 15.7696 41.3776 16.2816 40.584C16.7936 39.7904 17.0496 38.8816 17.0496 37.8576C17.0496 36.7568 16.7552 35.8736 16.1664 35.208C15.5776 34.5168 14.7968 33.928 13.824 33.4416C12.8512 32.9552 11.7504 32.4816 10.5216 32.0208C9.1392 31.4832 7.8976 30.9072 6.7968 30.2928C5.696 29.6528 4.8256 28.8848 4.1856 27.9888C3.5712 27.0928 3.264 25.9792 3.264 24.648C3.264 23.3168 3.584 22.152 4.224 21.1536C4.864 20.1296 5.76 19.3232 6.912 18.7344C8.0896 18.1456 9.4464 17.8512 10.9824 17.8512C12.6208 17.8512 14.0672 18.2224 15.3216 18.9648C16.576 19.7072 17.5872 20.7952 18.3552 22.2288L16.3584 23.4576C15.744 22.3824 14.976 21.5504 14.0544 20.9616C13.1584 20.3728 12.1088 20.0784 10.9056 20.0784C9.8816 20.0784 8.9856 20.2704 8.2176 20.6544C7.4496 21.0384 6.848 21.576 6.4128 22.2672C5.9776 22.9328 5.76 23.7008 5.76 24.5712C5.76 25.4928 6.0032 26.2736 6.4896 26.9136C7.0016 27.5536 7.7184 28.104 8.64 28.5648C9.5872 29.0256 10.688 29.4864 11.9424 29.9472C13.4272 30.5104 14.7328 31.1248 15.8592 31.7904C17.0112 32.4304 17.9072 33.224 18.5472 34.1712C19.1872 35.1184 19.5072 36.296 19.5072 37.704C19.5072 39.1888 19.1488 40.5072 18.432 41.6592C17.7152 42.8112 16.7296 43.72 15.4752 44.3856C14.2208 45.0256 12.7744 45.3456 11.136 45.3456ZM28.5471 45.2688C27.7023 45.2688 26.9599 45.1024 26.3199 44.7696C25.6799 44.4368 25.1807 43.9248 24.8223 43.2336C24.4895 42.5168 24.3231 41.6208 24.3231 40.5456V20.6544L26.7807 19.2336V39.9696C26.7807 40.9936 26.9471 41.8 27.2799 42.3888C27.6383 42.952 28.2527 43.2336 29.1231 43.2336C29.4303 43.2336 29.7631 43.208 30.1215 43.1568C30.4799 43.08 30.8639 42.9904 31.2735 42.888V44.808C30.8127 44.9616 30.3519 45.0768 29.8911 45.1536C29.4303 45.2304 28.9823 45.2688 28.5471 45.2688ZM20.1375 27.9888V26.0688H31.2735V27.9888H20.1375ZM41.073 45.2688C39.7418 45.2688 38.5898 45 37.617 44.4624C36.6442 43.8992 35.889 43.08 35.3514 42.0048C34.8394 40.904 34.5834 39.5216 34.5834 37.8576V26.0688H37.0026V37.0128C37.0026 38.3952 37.1818 39.5472 37.5402 40.4688C37.8986 41.3648 38.4234 42.0432 39.1146 42.504C39.8058 42.9392 40.6762 43.1568 41.7258 43.1568C42.8522 43.1568 43.8122 42.888 44.6058 42.3504C45.3994 41.8128 46.001 40.9936 46.4106 39.8928C46.8458 38.792 47.0634 37.384 47.0634 35.6688V26.0688H49.4826V45H47.0634V40.584H47.6394C47.153 42.1456 46.321 43.3232 45.1434 44.1168C43.9914 44.8848 42.6346 45.2688 41.073 45.2688ZM62.5866 45.2688C60.897 45.2688 59.3994 44.8464 58.0938 44.0016C56.8138 43.1312 55.8026 41.9664 55.0602 40.5072C54.3434 39.0224 53.985 37.3584 53.985 35.5152C53.985 33.5696 54.369 31.8672 55.137 30.408C55.905 28.9488 56.9418 27.8224 58.2474 27.0288C59.553 26.2096 60.9994 25.8 62.5866 25.8C63.841 25.8 64.9674 26.056 65.9658 26.568C66.9642 27.0544 67.809 27.7328 68.5002 28.6032C69.1914 29.4736 69.665 30.4592 69.921 31.56L69.2682 31.9824V18.2352H71.6874V45H69.2682V39.048L70.0362 39.3168C69.7034 40.4944 69.1914 41.5312 68.5002 42.4272C67.809 43.3232 66.9642 44.0272 65.9658 44.5392C64.9674 45.0256 63.841 45.2688 62.5866 45.2688ZM62.9706 43.0416C64.2506 43.0416 65.377 42.7216 66.3498 42.0816C67.3226 41.416 68.0778 40.52 68.6154 39.3936C69.1786 38.2672 69.4602 36.9744 69.4602 35.5152C69.4602 34.056 69.1786 32.7632 68.6154 31.6368C68.0778 30.5104 67.3226 29.6272 66.3498 28.9872C65.377 28.3472 64.2506 28.0272 62.9706 28.0272C61.7162 28.0272 60.5898 28.3472 59.5914 28.9872C58.593 29.6272 57.8122 30.5104 57.249 31.6368C56.6858 32.7632 56.4042 34.056 56.4042 35.5152C56.4042 36.9744 56.6858 38.2672 57.249 39.3936C57.8122 40.52 58.593 41.416 59.5914 42.0816C60.5898 42.7216 61.7162 43.0416 62.9706 43.0416ZM77.2458 45V26.0688H79.665V45H77.2458ZM77.0154 22.3824V18.2352H79.8954V22.3824H77.0154ZM93.366 45.2688C91.6252 45.2688 90.0636 44.8592 88.6812 44.04C87.3244 43.1952 86.262 42.0432 85.494 40.584C84.726 39.0992 84.342 37.4096 84.342 35.5152C84.342 33.6208 84.7132 31.944 85.4556 30.4848C86.2236 29.0256 87.286 27.8864 88.6428 27.0672C90.0252 26.2224 91.5996 25.8 93.366 25.8C95.1324 25.8 96.6812 26.2224 98.0124 27.0672C99.3692 27.8864 100.432 29.0256 101.2 30.4848C101.993 31.944 102.39 33.6208 102.39 35.5152C102.39 37.4096 101.993 39.0992 101.2 40.584C100.432 42.0432 99.3692 43.1952 98.0124 44.04C96.6556 44.8592 95.1068 45.2688 93.366 45.2688ZM93.366 43.1184C94.6972 43.1184 95.8492 42.7984 96.822 42.1584C97.8204 41.5184 98.5884 40.6352 99.126 39.5088C99.6636 38.3568 99.9324 37.0256 99.9324 35.5152C99.9324 33.9792 99.6636 32.648 99.126 31.5216C98.5884 30.3696 97.8204 29.4864 96.822 28.872C95.8492 28.232 94.6972 27.912 93.366 27.912C92.0348 27.912 90.87 28.232 89.8716 28.872C88.8732 29.512 88.0924 30.3952 87.5292 31.5216C86.9916 32.648 86.7228 33.9792 86.7228 35.5152C86.7228 37.0256 86.9916 38.3568 87.5292 39.5088C88.0924 40.6352 88.8732 41.5184 89.8716 42.1584C90.87 42.7984 92.0348 43.1184 93.366 43.1184ZM114.708 45.256C113.564 45.256 112.48 45.0512 111.456 44.6416C110.449 44.232 109.63 43.6176 108.999 42.7984C108.384 41.9621 108.077 40.9296 108.077 39.7008C108.077 38.7621 108.282 37.9088 108.692 37.1408C109.118 36.3728 109.75 35.7584 110.586 35.2976C110.074 34.9392 109.664 34.4869 109.357 33.9408C109.067 33.3947 108.922 32.7461 108.922 31.9952C108.922 30.92 109.195 30.0069 109.741 29.256C110.287 28.5051 111.004 27.9248 111.892 27.5152C112.779 27.1056 113.718 26.9008 114.708 26.9008C115.749 26.9008 116.704 27.1141 117.575 27.5408C118.445 27.9504 119.145 28.5392 119.674 29.3072C120.203 30.0581 120.468 30.9627 120.468 32.0208C120.468 32.7717 120.322 33.4203 120.032 33.9664C119.742 34.4955 119.341 34.9392 118.829 35.2976C119.665 35.7584 120.288 36.3728 120.698 37.1408C121.125 37.9088 121.338 38.7621 121.338 39.7008C121.338 40.9296 121.022 41.9621 120.391 42.7984C119.776 43.6176 118.966 44.232 117.959 44.6416C116.952 45.0512 115.868 45.256 114.708 45.256ZM114.708 42.2352C115.373 42.2352 115.962 42.1328 116.474 41.928C117.003 41.7061 117.413 41.3819 117.703 40.9552C118.01 40.5285 118.164 40.008 118.164 39.3936C118.164 38.7792 118.01 38.2672 117.703 37.8576C117.413 37.4309 117.003 37.1152 116.474 36.9104C115.962 36.6885 115.373 36.5776 114.708 36.5776C114.042 36.5776 113.445 36.6885 112.916 36.9104C112.404 37.1152 111.994 37.4309 111.687 37.8576C111.397 38.2672 111.252 38.7792 111.252 39.3936C111.252 40.008 111.397 40.5285 111.687 40.9552C111.994 41.3819 112.412 41.7061 112.941 41.928C113.47 42.1328 114.059 42.2352 114.708 42.2352ZM114.733 34.4016C115.501 34.4016 116.124 34.2053 116.602 33.8128C117.08 33.4203 117.319 32.8997 117.319 32.2512C117.319 31.5515 117.088 30.9968 116.628 30.5872C116.167 30.1605 115.527 29.9472 114.708 29.9472C114.196 29.9472 113.743 30.0411 113.351 30.2288C112.958 30.3995 112.651 30.6555 112.429 30.9968C112.224 31.3211 112.122 31.7221 112.122 32.2C112.122 32.8827 112.361 33.4203 112.839 33.8128C113.317 34.2053 113.948 34.4016 114.733 34.4016ZM129.442 45V40.8016H121.557V38.344L129.852 27.1568H132.642V37.832H135.484V40.8016H132.642V45H129.442ZM124.041 38.9328L123.989 37.832H129.442V30.3056L129.877 30.7408L124.041 38.9328Z" fill="black"/>
+      </svg>
+      <div class="logo-divider"></div>
+      <div class="logo-tagline">Développement web &amp; mobile</div>
+    </div>
+    <div class="facture-meta">
+      <div class="facture-num">FACTURE N° FA-2026-001</div>
+      <div class="facture-date">Émise le 15 avril 2026</div>
+      <div class="facture-date" style="margin-top:2px;">Réf. devis : 2026-001 du 11 avril 2026</div>
+    </div>
+  </div>
+
+  <!-- PARTIES -->
+  <div class="parties">
+    <div class="party-box">
+      <div class="party-label">Prestataire</div>
+      <div class="party-name">Julian Khuy</div>
+      <div class="party-detail">
+        Entrepreneur Individuel<br>
+        135 chemin des Étroits, 31000 Toulouse<br>
+        06 61 29 75 28<br>
+        julian.khuy@gmail.com<br>
+        SIRET : 102 751 435 00011
+      </div>
+    </div>
+    <div class="party-box">
+      <div class="party-label">Client</div>
+      <div class="party-name">RK SERVICE</div>
+      <div class="party-detail">
+        Société à responsabilité limitée<br>
+        135 Chemin des Étroits, 31400 Toulouse<br>
+        SIRET : 833 876 857 00024<br>
+        TVA intracommunautaire : FR01 833 876 857
+      </div>
+    </div>
+  </div>
+
+  <!-- OBJET -->
+  <div class="objet">
+    <strong>Objet :</strong> Développement sur mesure d'une application web de gestion de flotte automobile — FleetDesk
+  </div>
+
+  <!-- TABLEAU PRESTATIONS -->
+  <div class="section-title">Détail des prestations</div>
+  <table>
+    <thead>
+      <tr>
+        <th>N°</th>
+        <th>Prestation</th>
+        <th>Description</th>
+        <th class="price-col">Forfait HT</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>Analyse &amp; conception</td><td>Recueil des besoins, modélisation de la base de données, architecture technique — gestion multi-utilisateurs, droits d'accès, logique métier</td><td>Inclus</td></tr>
+      <tr><td>2</td><td>Tableau de bord &amp; reporting</td><td>Vue synthétique de la flotte, graphiques d'utilisation mensuelle sur 12 mois, indicateurs de maintenance, journal d'activité récente</td><td>Inclus</td></tr>
+      <tr><td>3</td><td>Module Véhicules</td><td>Gestion complète du parc (création, modification, suppression), fiche détail par véhicule avec historiques croisés kilométrage / maintenance / contrôles / lavages, statuts en temps réel</td><td>Inclus</td></tr>
+      <tr><td>4</td><td>Module Conducteurs</td><td>Gestion des profils conducteurs, fiche détail, suivi du véhicule assigné, historique des affectations</td><td>Inclus</td></tr>
+      <tr><td>5</td><td>Documents réglementaires</td><td>Suivi de 6 types de documents obligatoires (aptitude à la conduite, casier judiciaire, SST/PSC1, TPMR, visite médicale du travail, éco-conduite), calcul automatique des dates d'expiration avec règle spéciale conducteurs +62 ans, alertes par statut, archivage PDF</td><td>Inclus</td></tr>
+      <tr><td>6</td><td>Module Affectations</td><td>Gestion des affectations véhicule ↔ conducteur, permutation intelligente en cas d'échange entre conducteurs, historique complet</td><td>Inclus</td></tr>
+      <tr><td>7</td><td>Module Kilométrage</td><td>Saisie des relevés kilométriques par véhicule, contrôle de cohérence anti-régression, agrégation mensuelle pour les graphiques de reporting</td><td>Inclus</td></tr>
+      <tr><td>8</td><td>Module Maintenance</td><td>Planification des entretiens par intervalle (mois et/ou km), algorithme de prévision automatique avec niveaux d'alerte (en retard / à prévoir / à jour), historique des interventions, archivage des factures</td><td>Inclus</td></tr>
+      <tr><td>9</td><td>Contrôles techniques</td><td>Suivi des contrôles techniques avec calcul automatique de l'échéance (validité 1 an), alertes graduées (urgent / expiré / à venir), archivage des justificatifs</td><td>Inclus</td></tr>
+      <tr><td>10</td><td>Module Lavages</td><td>Journal des lavages avec suivi des coûts, association conducteur / véhicule, cumul des dépenses, archivage des justificatifs</td><td>Inclus</td></tr>
+      <tr><td>11</td><td>Journal d'activité</td><td>Traçabilité complète et horodatée de toutes les actions effectuées dans l'application (qui, quoi, quand), vue chronologique</td><td>Inclus</td></tr>
+      <tr><td>12</td><td>Authentification &amp; gestion d'équipe</td><td>Connexion sécurisée par email, invitation de collaborateurs, gestion des rôles (propriétaire / membre), révocation d'accès</td><td>Inclus</td></tr>
+      <tr><td>13</td><td>Déploiement &amp; mise en production</td><td>Configuration de l'hébergement (Vercel), base de données cloud (Supabase), stockage sécurisé des fichiers, tests de mise en ligne et validation finale</td><td>Inclus</td></tr>
+      <tr><td>15</td><td>Garantie corrective</td><td>Prise en charge de tout dysfonctionnement signalé après la livraison, sans durée déterminée, délai d'intervention sous 48h ouvrées</td><td>Inclus</td></tr>
+    </tbody>
+  </table>
+
+  <!-- TOTAUX -->
+  <div class="totaux-wrap">
+    <div class="totaux">
+      <div class="totaux-row">
+        <div>
+          <div class="label">Montant HT</div>
+        </div>
+        <span>1 400 €</span>
+      </div>
+      <div class="totaux-row">
+        <div>
+          <div class="label">TVA</div>
+          <div class="tva-note">Non applicable – Art. 293 B du CGI</div>
+        </div>
+        <span>0 €</span>
+      </div>
+      <div class="totaux-row total">
+        <span class="label">Total TTC</span>
+        <span>1 400 €</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIB -->
+  <div class="rib-box">
+    <div class="rib-title">Coordonnées bancaires — Virement SEPA</div>
+    <div class="rib-grid">
+      <div class="rib-item">
+        <div class="k">Titulaire</div>
+        <div class="v">Studio 84</div>
+      </div>
+      <div class="rib-item">
+        <div class="k">Banque</div>
+        <div class="v">Indy (Swan SAS)</div>
+      </div>
+      <div class="rib-item">
+        <div class="k">IBAN</div>
+        <div class="v">FR76 1732 8844 0098 5955 6898 130</div>
+      </div>
+      <div class="rib-item">
+        <div class="k">BIC/SWIFT</div>
+        <div class="v">SWNBFR22</div>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size:12px; color:#64748B; margin-top:12px; margin-bottom:32px;">Règlement par virement bancaire. Prestation intégralement réalisée et livrée.</p>
+
+  <!-- MENTIONS LÉGALES -->
+  <div class="legal-box">
+    <strong>Mentions légales obligatoires —</strong>
+    TVA non applicable, article 293 B du CGI. Pas d'escompte pour paiement anticipé.
+    En cas de retard de paiement, des pénalités de retard seront appliquées au taux annuel de 3 fois le taux d'intérêt légal en vigueur, ainsi qu'une indemnité forfaitaire pour frais de recouvrement de 40 € (art. L441-10 et D441-5 du Code de commerce).
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    Julian Khuy – Entrepreneur Individuel · SIRET 102 751 435 00011 · 135 chemin des Étroits, 31000 Toulouse<br>
+    Facture établie conformément à l'article 289 du CGI. Tout litige relève de la compétence des tribunaux de Toulouse.
+  </div>
+
+</body>
+</html>
