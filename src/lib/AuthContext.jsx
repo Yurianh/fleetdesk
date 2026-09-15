@@ -40,6 +40,11 @@ export function AuthProvider({ children }) {
     if (error) throw error
   }
 
+  // Version des conditions en vigueur. À incrémenter à chaque modification des
+  // CGU : c'est ce qui permet de savoir *quelles* conditions un client a
+  // acceptées, et de redemander une acceptation si elles changent.
+  const TERMS_VERSION = '2026-09-15'
+
   const signUp = async (email, password) => {
     const url = (import.meta.env.VITE_SUPABASE_URL || '').trim()
     const key = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim()
@@ -49,7 +54,17 @@ export function AuthProvider({ children }) {
         'Content-Type': 'application/json',
         'apikey': key,
       },
-      body: JSON.stringify({ email, password }),
+      // L'horodatage est posé côté client : c'est une preuve d'usage, pas une
+      // preuve légale opposable — mais datée et versionnée, elle vaut infiniment
+      // mieux qu'une case cochée dont il ne reste aucune trace.
+      body: JSON.stringify({
+        email,
+        password,
+        data: {
+          terms_accepted_at: new Date().toISOString(),
+          terms_version: TERMS_VERSION,
+        },
+      }),
     })
     const data = await res.json()
     if (!res.ok) throw new Error(data.message || data.msg || 'Impossible de créer le compte.')

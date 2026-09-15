@@ -140,6 +140,12 @@ if (!p) return Astro.redirect('/pricing')
 
     <!-- CTA -->
     <div class="mt-8">
+      <p class="text-[11px] text-zinc-500 leading-relaxed mb-3">
+        En créant votre compte, vous acceptez les
+        <a href="/legal#cgu" class="underline underline-offset-2 hover:text-zinc-800">conditions générales d'utilisation</a>
+        et prenez connaissance de la
+        <a href="/legal#confidentialite" class="underline underline-offset-2 hover:text-zinc-800">politique de confidentialité</a>.
+      </p>
       <a href={p.cta.href} class="w-full inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white text-sm font-semibold py-3.5 rounded-xl transition-colors">
         {p.cta.label}
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
