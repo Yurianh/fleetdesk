@@ -65,7 +65,7 @@ async function collectItems(admin: any, orgId: string): Promise<Item[]> {
     admin.from('drivers').select('id, name').eq('user_id', orgId),
     admin.from('technical_inspections').select('vehicle_id, expiration_date').eq('user_id', orgId),
     admin.from('driver_documents').select('driver_id, type, expiry_date').eq('org_id', orgId),
-    admin.from('maintenance_schedules').select('id, vehicle_id, name, interval_months, interval_km').eq('user_id', orgId),
+    admin.from('maintenance_schedules').select('id, vehicle_id, notes, interval_months, interval_km').eq('user_id', orgId),
     admin.from('maintenance_records').select('vehicle_id, date, mileage').eq('user_id', orgId),
     admin.from('mileage_entries').select('vehicle_id, mileage, created_at').eq('user_id', orgId),
   ])
@@ -138,7 +138,7 @@ async function collectItems(admin: any, orgId: string): Promise<Item[]> {
     if (dueByDate || dueByKm) {
       items.push({
         kind: 'maintenance',
-        label: sch.name || 'Entretien prévu',
+        label: sch.notes || 'Entretien prévu',
         subject: vehicleLabel(sch.vehicle_id),
         days: dueByDate ? days : null,
         km: dueByKm ? km : null,
@@ -256,7 +256,8 @@ Deno.serve(async (req) => {
 
         const { data: last } = await admin
           .from('digest_log').select('sent_at, signature')
-          .eq('org_id', user.id).order('sent_at', { ascending: false }).limit(1).maybeSingle()
+          .eq('org_id', user.id).eq('kind', 'deadline')
+          .order('sent_at', { ascending: false }).limit(1).maybeSingle()
 
         if (last) {
           const hoursSince = (Date.now() - new Date(last.sent_at).getTime()) / 3_600_000
@@ -276,7 +277,7 @@ Deno.serve(async (req) => {
         const ok = await sendEmail(user.email, subject, renderEmail(items, firstName))
         if (!ok) { report.failed++; continue }
 
-        await admin.from('digest_log').insert({ org_id: user.id, signature, item_count: items.length, urgent })
+        await admin.from('digest_log').insert({ org_id: user.id, kind: 'deadline', signature, item_count: items.length, urgent })
         report.sent++
       }
 
