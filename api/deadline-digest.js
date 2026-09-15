@@ -20,19 +20,28 @@ export default async function handler(req, res) {
     return res.status(401).json({ ok: false, error: 'Non autorisé' })
   }
 
+  // La passerelle Supabase exige un en-tête Authorization sur /functions/v1 —
+  // `apikey` seul ne suffit pas, elle répond UNAUTHORIZED_NO_AUTH_HEADER. La clé
+  // anonyme suffit ici : c'est `x-cron-secret` qui autorise vraiment l'appel,
+  // vérifié dans la fonction elle-même.
+  const anonKey = (process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '').trim()
+  if (!anonKey) {
+    console.error('[deadline-digest] clé anonyme Supabase manquante')
+    return res.status(500).json({ ok: false, error: 'Configuration incomplète' })
+  }
+
   try {
     const response = await fetch(`${supabaseUrl}/functions/v1/deadline-digest`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'x-cron-secret': cronSecret,
-        // La fonction vérifie elle-même le secret ; l'apikey satisfait la
-        // passerelle Supabase qui refuse les requêtes anonymes.
-        apikey: (process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '').trim(),
+        Authorization: `Bearer ${anonKey}`,
+        apikey: anonKey,
       },
     })
     const body = await response.json().catch(() => ({}))
-    console.log('[deadline-digest]', response.status, JSON.stringify(body))
+    console.log('[deadline-digest] réponse amont', response.status, JSON.stringify(body))
     return res.status(response.ok ? 200 : 500).json(body)
   } catch (e) {
     console.error('[deadline-digest] échec', String(e?.message || e))
