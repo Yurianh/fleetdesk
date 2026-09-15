@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Plus, Search, ChevronRight, Loader2, Truck, Pencil, Trash2, User, UserMinus, Paperclip, FileText, X, Camera, Wrench, ClipboardCheck, Droplets, Download } from 'lucide-react'
 import { format, addYears } from 'date-fns'
 import { Input } from '@/components/ui/input'
@@ -119,6 +119,12 @@ export default function Vehicles() {
   const { data: inspections } = useTechnicalInspections()
   const queryClient = useQueryClient()
 
+  // ?missing=ct — cible du bouton de l'email d'activation : on ouvre la flotte
+  // déjà filtrée sur les véhicules sans date de contrôle, pour que l'utilisateur
+  // n'ait pas à les retrouver lui-même.
+  const [searchParams, setSearchParams] = useSearchParams()
+  const missingFilter = searchParams.get('missing')
+
   const [search, setSearch] = useState('')
   const [showAdd, setShowAdd] = useState(false)
   const [editTarget, setEditTarget] = useState(null)
@@ -156,10 +162,18 @@ export default function Vehicles() {
   const latestAssignments = getLatestAssignments(assignments)
   const latestMileage = getLatestMileage(mileageEntries)
 
-  const filtered = vehicles.filter(v =>
-    v.plate_number?.toLowerCase().includes(search.toLowerCase()) ||
-    v.model?.toLowerCase().includes(search.toLowerCase())
+  const vehiclesWithCt = new Set(
+    (inspections || []).filter(i => i.expiration_date).map(i => i.vehicle_id)
   )
+
+  const filtered = vehicles.filter(v => {
+    const matchesSearch =
+      v.plate_number?.toLowerCase().includes(search.toLowerCase()) ||
+      v.model?.toLowerCase().includes(search.toLowerCase())
+    if (!matchesSearch) return false
+    if (missingFilter === 'ct') return !vehiclesWithCt.has(v.id)
+    return true
+  })
 
   // CSV export of the full fleet (not the filtered view) for accounting / audits.
   const exportVehiclesCsv = () => {
@@ -454,6 +468,21 @@ export default function Vehicles() {
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        {missingFilter === 'ct' && (
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#0066FF]/20 bg-[#E5EEFF] px-4 py-3">
+            <p className="text-sm text-[#0052D6]">
+              <span className="font-semibold">{filtered.length} véhicule{filtered.length > 1 ? 's' : ''} sans date de contrôle technique.</span>{' '}
+              Ajoutez-la pour que FleetDesk vous prévienne avant l'échéance.
+            </p>
+            <button
+              onClick={() => { const next = new URLSearchParams(searchParams); next.delete('missing'); setSearchParams(next, { replace: true }) }}
+              className="text-xs font-semibold text-[#0052D6] hover:underline"
+            >
+              Voir toute la flotte
+            </button>
+          </div>
+        )}
+
         {filtered.length > 0 ? (
           <>
             {/* ── Desktop table ── */}
