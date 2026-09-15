@@ -19,6 +19,7 @@ import EmptyState from '@/components/shared/EmptyState'
 import FormModal from '@/components/shared/FormModal'
 import DataError from '@/components/shared/DataError'
 import ConfirmDeleteDialog from '@/components/shared/ConfirmDeleteDialog'
+import IconTip from '@/components/shared/IconTip'
 import {
   useVehicles, useMileageEntries, useDrivers, useAssignments,
   createMileageEntry, deleteMileageEntry, updateMileageEntry,
@@ -60,14 +61,18 @@ function PhotoField({ label, hint, required, file, setFile }) {
           </button>
         ) : (
           <div className="flex items-center gap-1 shrink-0">
-            <button type="button" onClick={() => camRef.current?.click()} title="Prendre une photo"
-              className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
-              <Camera className="w-4 h-4" />
-            </button>
-            <button type="button" onClick={() => fileRef.current?.click()} title="Choisir un fichier"
-              className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
-              <Paperclip className="w-3.5 h-3.5" />
-            </button>
+            <IconTip label="Prendre une photo">
+              <button type="button" onClick={() => camRef.current?.click()} aria-label="Prendre une photo"
+                className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
+                <Camera className="w-4 h-4" />
+              </button>
+            </IconTip>
+            <IconTip label="Choisir un fichier">
+              <button type="button" onClick={() => fileRef.current?.click()} aria-label="Choisir un fichier"
+                className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
+                <Paperclip className="w-3.5 h-3.5" />
+              </button>
+            </IconTip>
           </div>
         )}
       </div>
@@ -288,9 +293,11 @@ export default function Mileage() {
                                 <Paperclip className="w-3.5 h-3.5" /> Ticket
                               </button>
                             )}
-                            <button onClick={() => openEdit(m)} title="Modifier" className="p-1.5 rounded-lg hover:bg-blue-50 text-slate-400 hover:text-[#0066FF] transition-colors opacity-0 group-hover:opacity-100">
-                              <Pencil className="w-3.5 h-3.5" />
-                            </button>
+                            <IconTip label="Modifier ce relevé">
+                              <button onClick={() => openEdit(m)} aria-label="Modifier ce relevé" className="p-1.5 rounded-lg hover:bg-blue-50 text-slate-400 hover:text-[#0066FF] transition-colors opacity-0 group-hover:opacity-100">
+                                <Pencil className="w-3.5 h-3.5" />
+                              </button>
+                            </IconTip>
                             <button onClick={() => setConfirmDeleteId(m.id)} disabled={deletingId === m.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -334,9 +341,11 @@ export default function Mileage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-1 flex-shrink-0">
-                      <button onClick={() => openEdit(m)} title="Modifier" className="p-1.5 rounded-lg hover:bg-blue-50 text-slate-300 hover:text-[#0066FF] transition-colors">
-                        <Pencil className="w-4 h-4" />
-                      </button>
+                      <IconTip label="Modifier ce relevé">
+                        <button onClick={() => openEdit(m)} aria-label="Modifier ce relevé" className="p-1.5 rounded-lg hover:bg-blue-50 text-slate-300 hover:text-[#0066FF] transition-colors">
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                      </IconTip>
                       <button onClick={() => setConfirmDeleteId(m.id)} disabled={deletingId === m.id} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 transition-colors">
                         <Trash2 className="w-4 h-4" />
                       </button>

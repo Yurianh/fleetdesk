@@ -14,6 +14,7 @@ import FormModal from '@/components/shared/FormModal'
 import { InvoiceUpload } from '@/components/shared/InvoiceUpload'
 import EmptyState from '@/components/shared/EmptyState'
 import AssignDriverDialog from '@/components/shared/AssignDriverDialog'
+import IconTip from '@/components/shared/IconTip'
 import { uploadInvoice, deleteInvoice } from '@/lib/invoiceStorage'
 import { openSignedFile } from '@/lib/signedFile'
 import { useFeature } from '@/lib/activity'
@@ -83,12 +84,16 @@ function VehicleDocField({ label, file, setFile, existingUrl, placeholder }) {
           </button>
         ) : (
           <div className="flex items-center gap-1 shrink-0">
-            <button type="button" onClick={() => fileRef.current?.click()} title="Choisir un fichier" className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
-              <Paperclip className="w-3.5 h-3.5" />
-            </button>
-            <button type="button" onClick={() => camRef.current?.click()} title="Prendre une photo" className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
-              <Camera className="w-3.5 h-3.5" />
-            </button>
+            <IconTip label="Choisir un fichier">
+              <button type="button" onClick={() => fileRef.current?.click()} aria-label="Choisir un fichier" className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
+                <Paperclip className="w-3.5 h-3.5" />
+              </button>
+            </IconTip>
+            <IconTip label="Prendre une photo">
+              <button type="button" onClick={() => camRef.current?.click()} aria-label="Prendre une photo" className="p-1 rounded hover:bg-slate-200 text-slate-300 hover:text-slate-600 transition-colors">
+                <Camera className="w-3.5 h-3.5" />
+              </button>
+            </IconTip>
           </div>
         )}
       </div>
@@ -460,10 +465,12 @@ export default function VehicleDetail() {
                               </div>
                             </td>
                             <td className="px-5 py-3 text-right">
-                              <button onClick={() => openEditMileage(m)} title="Modifier"
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-[#0066FF] hover:bg-blue-50 transition-colors opacity-0 group-hover:opacity-100">
-                                <Pencil className="w-3.5 h-3.5" />
-                              </button>
+                              <IconTip label="Modifier ce relevé">
+                                <button onClick={() => openEditMileage(m)} aria-label="Modifier ce relevé"
+                                  className="p-1.5 rounded-lg text-slate-400 hover:text-[#0066FF] hover:bg-blue-50 transition-colors opacity-0 group-hover:opacity-100">
+                                  <Pencil className="w-3.5 h-3.5" />
+                                </button>
+                              </IconTip>
                             </td>
                           </tr>
                         ))}
@@ -483,10 +490,12 @@ export default function VehicleDetail() {
                             </div>
                           )}
                         </div>
-                        <button onClick={() => openEditMileage(m)} title="Modifier"
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-[#0066FF] hover:bg-blue-50 transition-colors flex-shrink-0">
-                          <Pencil className="w-4 h-4" />
-                        </button>
+                        <IconTip label="Modifier ce relevé">
+                          <button onClick={() => openEditMileage(m)} aria-label="Modifier ce relevé"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-[#0066FF] hover:bg-blue-50 transition-colors flex-shrink-0">
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                        </IconTip>
                       </div>
                     ))}
                   </div>

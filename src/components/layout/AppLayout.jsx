@@ -15,6 +15,7 @@ import {
   useTechnicalInspections, useWashRecords, useAllDriverDocuments,
 } from '@/lib/useFleetData'
 import { usePlanSync } from '@/lib/usePlanSync'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { shouldLand, markLanded, runLanding } from '@/lib/motion'
 
 // Signals the onboarding context that the loading overlay has lifted, so the
@@ -79,6 +80,7 @@ export default function AppLayout() {
 
   return (
     <OnboardingProvider>
+      <TooltipProvider delayDuration={120} skipDelayDuration={400}>
       {/* App always renders behind the loader — no zero-flash when overlay lifts */}
       <div className="flex h-dvh bg-background overflow-hidden">
         <Sidebar open={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
@@ -120,6 +122,7 @@ export default function AppLayout() {
           <AppLoader />
         </div>
       )}
+      </TooltipProvider>
     </OnboardingProvider>
   )
 }

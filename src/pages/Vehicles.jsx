@@ -12,6 +12,7 @@ import { SearchableSelect } from '@/components/ui/searchable-select'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import PageHeader from '@/components/shared/PageHeader'
+import IconTip from '@/components/shared/IconTip'
 import EmptyState from '@/components/shared/EmptyState'
 import FormModal from '@/components/shared/FormModal'
 import { InvoiceUpload } from '@/components/shared/InvoiceUpload'
@@ -410,24 +411,40 @@ export default function Vehicles() {
         <td className="px-5 py-3.5">
           <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             {isAssigned && (
-              <button
-                onClick={() => handleUnassign(v.id)}
-                disabled={unassigningId === v.id}
-                title="Désaffecter le conducteur"
-                className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-              >
-                <UserMinus className="w-3.5 h-3.5" />
-              </button>
+              <IconTip label="Désaffecter le conducteur">
+                <button
+                  onClick={() => handleUnassign(v.id)}
+                  disabled={unassigningId === v.id}
+                  aria-label="Désaffecter le conducteur"
+                  className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                >
+                  <UserMinus className="w-3.5 h-3.5" />
+                </button>
+              </IconTip>
             )}
-            <button onClick={() => openMaint(v.id)} title="Ajouter un entretien" className="p-1.5 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors"><Wrench className="w-3.5 h-3.5" /></button>
-            <button onClick={() => openInsp(v.id)} title="Ajouter un contrôle technique" className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"><ClipboardCheck className="w-3.5 h-3.5" /></button>
-            <button onClick={() => openWash(v.id)} title="Ajouter un lavage" className="p-1.5 text-slate-400 hover:text-sky-500 hover:bg-sky-50 rounded-lg transition-colors"><Droplets className="w-3.5 h-3.5" /></button>
-            <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model, mec_date: v.mec_date || '' }); setRegistrationFile(null); setRegistrationUrl(v.registration_card_url || '') }} className="p-1.5 text-slate-400 hover:text-[#0066FF] hover:bg-blue-50 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-            <button onClick={() => setArchiveTarget(v)} title={v.archived_at ? 'Remettre en service' : 'Sortir du parc'} className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors">
-              {v.archived_at ? <RotateCcw className="w-3.5 h-3.5" /> : <Archive className="w-3.5 h-3.5" />}
-            </button>
-            <button onClick={() => setDeleteTarget(v)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
-            <Link to={`/Vehicles/${v.id}`} className="p-1.5 text-slate-400 hover:text-[#0052D6]"><ChevronRight className="w-4 h-4" /></Link>
+            <IconTip label="Ajouter un entretien">
+              <button onClick={() => openMaint(v.id)} aria-label="Ajouter un entretien" className="p-1.5 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors"><Wrench className="w-3.5 h-3.5" /></button>
+            </IconTip>
+            <IconTip label="Ajouter un contrôle technique">
+              <button onClick={() => openInsp(v.id)} aria-label="Ajouter un contrôle technique" className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"><ClipboardCheck className="w-3.5 h-3.5" /></button>
+            </IconTip>
+            <IconTip label="Ajouter un lavage">
+              <button onClick={() => openWash(v.id)} aria-label="Ajouter un lavage" className="p-1.5 text-slate-400 hover:text-sky-500 hover:bg-sky-50 rounded-lg transition-colors"><Droplets className="w-3.5 h-3.5" /></button>
+            </IconTip>
+            <IconTip label="Modifier la fiche">
+              <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model, mec_date: v.mec_date || '' }); setRegistrationFile(null); setRegistrationUrl(v.registration_card_url || '') }} aria-label="Modifier la fiche" className="p-1.5 text-slate-400 hover:text-[#0066FF] hover:bg-blue-50 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+            </IconTip>
+            <IconTip label={v.archived_at ? 'Remettre en service' : 'Sortir du parc'}>
+              <button onClick={() => setArchiveTarget(v)} aria-label={v.archived_at ? 'Remettre en service' : 'Sortir du parc'} className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors">
+                {v.archived_at ? <RotateCcw className="w-3.5 h-3.5" /> : <Archive className="w-3.5 h-3.5" />}
+              </button>
+            </IconTip>
+            <IconTip label="Supprimer définitivement">
+              <button onClick={() => setDeleteTarget(v)} aria-label="Supprimer définitivement" className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+            </IconTip>
+            <IconTip label="Ouvrir la fiche">
+              <Link to={`/Vehicles/${v.id}`} aria-label="Ouvrir la fiche" className="p-1.5 text-slate-400 hover:text-[#0052D6]"><ChevronRight className="w-4 h-4" /></Link>
+            </IconTip>
           </div>
         </td>
       </tr>
@@ -454,16 +471,20 @@ export default function Vehicles() {
         </Link>
         <div className="flex items-center gap-1">
           {isAssigned && (
-            <button onClick={() => handleUnassign(v.id)} disabled={unassigningId === v.id} className="p-1.5 text-slate-400 hover:text-amber-600"><UserMinus className="w-3.5 h-3.5" /></button>
+            <IconTip label="Désaffecter le conducteur"><button onClick={() => handleUnassign(v.id)} disabled={unassigningId === v.id} aria-label="Désaffecter le conducteur" className="p-1.5 text-slate-400 hover:text-amber-600"><UserMinus className="w-3.5 h-3.5" /></button></IconTip>
           )}
-          <button onClick={() => openMaint(v.id)} title="Entretien" className="p-1.5 text-slate-400 hover:text-orange-500"><Wrench className="w-3.5 h-3.5" /></button>
-          <button onClick={() => openInsp(v.id)} title="Contrôle technique" className="p-1.5 text-slate-400 hover:text-emerald-600"><ClipboardCheck className="w-3.5 h-3.5" /></button>
-          <button onClick={() => openWash(v.id)} title="Lavage" className="p-1.5 text-slate-400 hover:text-sky-500"><Droplets className="w-3.5 h-3.5" /></button>
-          <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model, mec_date: v.mec_date || '' }); setRegistrationFile(null); setRegistrationUrl(v.registration_card_url || '') }} className="p-1.5 text-slate-400 hover:text-[#0066FF]"><Pencil className="w-3.5 h-3.5" /></button>
-          <button onClick={() => setArchiveTarget(v)} title={v.archived_at ? 'Remettre en service' : 'Sortir du parc'} className="p-1.5 text-slate-400 hover:text-amber-600">
-            {v.archived_at ? <RotateCcw className="w-3.5 h-3.5" /> : <Archive className="w-3.5 h-3.5" />}
-          </button>
-          <button onClick={() => setDeleteTarget(v)} className="p-1.5 text-slate-400 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
+          <IconTip label="Ajouter un entretien"><button onClick={() => openMaint(v.id)} aria-label="Ajouter un entretien" className="p-1.5 text-slate-400 hover:text-orange-500"><Wrench className="w-3.5 h-3.5" /></button></IconTip>
+          <IconTip label="Ajouter un contrôle technique"><button onClick={() => openInsp(v.id)} aria-label="Ajouter un contrôle technique" className="p-1.5 text-slate-400 hover:text-emerald-600"><ClipboardCheck className="w-3.5 h-3.5" /></button></IconTip>
+          <IconTip label="Ajouter un lavage"><button onClick={() => openWash(v.id)} aria-label="Ajouter un lavage" className="p-1.5 text-slate-400 hover:text-sky-500"><Droplets className="w-3.5 h-3.5" /></button></IconTip>
+          <IconTip label="Modifier la fiche">
+            <button onClick={() => { setEditTarget(v); setForm({ plate_number: v.plate_number, model: v.model, mec_date: v.mec_date || '' }); setRegistrationFile(null); setRegistrationUrl(v.registration_card_url || '') }} aria-label="Modifier la fiche" className="p-1.5 text-slate-400 hover:text-[#0066FF]"><Pencil className="w-3.5 h-3.5" /></button>
+          </IconTip>
+          <IconTip label={v.archived_at ? 'Remettre en service' : 'Sortir du parc'}>
+            <button onClick={() => setArchiveTarget(v)} aria-label={v.archived_at ? 'Remettre en service' : 'Sortir du parc'} className="p-1.5 text-slate-400 hover:text-amber-600">
+              {v.archived_at ? <RotateCcw className="w-3.5 h-3.5" /> : <Archive className="w-3.5 h-3.5" />}
+            </button>
+          </IconTip>
+          <IconTip label="Supprimer définitivement"><button onClick={() => setDeleteTarget(v)} aria-label="Supprimer définitivement" className="p-1.5 text-slate-400 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button></IconTip>
         </div>
       </div>
     )
