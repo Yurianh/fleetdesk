@@ -18,15 +18,15 @@ export function getVehicleInspectionStatus(vehicleId, inspections) {
 }
 
 // Trois niveaux, trois tons — sans rouge.
-// L'urgence se lit à l'intensité (ambre plein → ambre clair → bleu de marque) et
+// L'urgence se lit à l'intensité (ambre plein → ambre clair → gris neutre) et
 // au texte, pas à une couleur d'alarme : un gestionnaire ouvre cet écran chaque
 // matin, un tableau rouge finit par être évité plutôt que lu.
 const BADGE_STYLES = {
   expired:  { dot: 'bg-amber-600',   badge: 'bg-amber-100 text-amber-900 border-amber-200' },
   urgent:   { dot: 'bg-amber-500',   badge: 'bg-amber-50 text-amber-900 border-amber-200' },
-  upcoming: { dot: 'bg-[#0066FF]',   badge: 'bg-[#E5EEFF] text-[#0052D6] border-[#0066FF]/20' },
+  upcoming: { dot: 'bg-zinc-400',    badge: 'bg-zinc-100 text-zinc-700 border-zinc-200' },
   ok:       { dot: 'bg-emerald-500', badge: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  unknown:  { dot: 'bg-slate-300',   badge: 'bg-slate-100 text-slate-500 border-slate-200' },
+  unknown:  { dot: 'bg-slate-300',   badge: 'bg-white text-slate-500 border-slate-200 border-dashed' },
 }
 
 export default function VehicleStatusBadge({ vehicleId, inspections }) {
