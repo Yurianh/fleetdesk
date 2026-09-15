@@ -171,12 +171,12 @@ BEGIN
          CURRENT_DATE - m.ago, m.km, m.status, m.issue, m.amount,
          now() - (interval '1 day' * m.ago)
   FROM (VALUES
-    ('AB-123-CD', 350, 118000, 'OK',      NULL,                                   289.90),
-    ('EF-456-GH', 120, 152000, 'OK',      NULL,                                   412.50),
+    ('AB-123-CD', 350, 118000, 'OK',      'Vidange + filtre à huile',             289.90),
+    ('EF-456-GH', 120, 152000, 'OK',      'Révision constructeur',                412.50),
     ('MN-012-OP',  12, 196400, 'PROBLEM', 'Bruit de roulement à l''avant droit',   0.00),
-    ('GH-567-IJ',   6, 219800, 'OK',      NULL,                                   640.00),
-    ('QR-345-ST',  40,  58900, 'OK',      NULL,                                   198.00),
-    ('UV-678-WX', 200, 104500, 'OK',      NULL,                                   327.40)
+    ('GH-567-IJ',   6, 219800, 'OK',      'Distribution + courroie',              640.00),
+    ('QR-345-ST',  40,  58900, 'OK',      'Plaquettes avant',                     198.00),
+    ('UV-678-WX', 200, 104500, 'OK',      'Vidange + filtres',                    327.40)
   ) AS m(plate, ago, km, status, issue, amount);
 
   -- ── Plannings d'entretien ─────────────────────────────────
