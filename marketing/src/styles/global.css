@@ -161,27 +161,6 @@
 }
 
 
-/* ── Titres composés lettre par lettre ──────────────────────────────────────
-   Le découpage est fait par src/scripts/motion.js. Sans JS, le titre reste un
-   titre normal : ces règles ne s'appliquent qu'une fois les lettres présentes. */
-@media (prefers-reduced-motion: no-preference) {
-  .type-in-word { display: inline-block; white-space: nowrap; }
-
-  html.js-motion .type-in .type-in-word > span { opacity: 0; }
-
-  html.js-motion .type-in.typed .type-in-word > span {
-    animation: type-in 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
-    animation-delay: var(--d, 0ms);
-  }
-
-  @keyframes type-in {
-    from { opacity: 0; transform: translateY(0.14em); filter: blur(5px); }
-    60%  { filter: blur(0); }
-    to   { opacity: 1; transform: none; filter: none; }
-  }
-}
-
-
 /* ── Accordéon des questions fréquentes ─────────────────────────────────────
    La hauteur est animée en JS (src/scripts/motion.js) ; ici, le cadrage et le
    balayage qui fait apparaître la réponse de gauche à droite. Le masque n'est
