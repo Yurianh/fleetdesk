@@ -7,9 +7,11 @@ FleetDesk *est* le transporteur : c'est l'outil du transporteur.
 
 ## La voix
 
-**Tonalité opérateur.** Tu parles à un gars qui gère quinze camions et qui se
-méfie de ce qui brille. Débit normal, phrases courtes, pas d'emphase. La
-crédibilité vient du vocabulaire juste, pas de l'énergie.
+**Tonalité opérateur.** Tu parles à quelqu'un qui gère quinze camions et qui se
+méfie de ce qui brille. Débit normal, pas d'emphase. La crédibilité vient du
+vocabulaire juste, pas de l'énergie.
+
+Le lexique, d'abord :
 
 - **Le CT**, jamais « le contrôle technique » à l'oral.
 - **Un chauffeur**, pas « un conducteur » — l'écran écrit conducteur, toi tu
@@ -18,13 +20,21 @@ crédibilité vient du vocabulaire juste, pas de l'énergie.
 - **Des bornes** ou des kilomètres, dits à voix haute : « douze mille six
   cents », pas « 12 614 ».
 
-**Ne décris pas ce que fait le curseur.** Le spectateur le voit. Tu dis
-pourquoi, pas quoi.
+Ensuite, le débit. **Varie la longueur des phrases.** Une suite de phrases de
+trois mots, c'est un télégramme, et ça s'entend aussi faux qu'un texte trop
+écrit. Laisse-toi partir sur une phrase un peu longue de temps en temps, avec
+un « donc », un « en fait », un « bon ». Reprends-toi si besoin, ce n'est pas
+grave — c'est même ce qui prouve qu'un humain conduit.
 
-**Laisse du blanc.** Les silences notés dans le script ne sont pas des trous,
-c'est là que le spectateur regarde l'écran. Si tu remplis tout, ça sonne faux.
+Les répliques ci-dessous sont des **appuis, pas un texte à réciter.** Garde le
+sens, les chiffres et le vocabulaire ; dis-le avec tes mots.
 
-**Une seule vraie phrase de conclusion**, tout à la fin. Pas une par section.
+**Ne décris pas ce que fait le curseur.** Le spectateur le voit.
+
+**Laisse du blanc.** Les silences notés ne sont pas des trous : c'est là que le
+spectateur regarde l'écran.
+
+**Une seule vraie phrase de conclusion**, à la fin. Pas une par section.
 
 ---
 
@@ -51,13 +61,15 @@ c'est là que le spectateur regarde l'écran. Si tu remplis tout, ça sonne faux
 
 **À l'écran :** la connexion, puis le tableau de bord qui se pose.
 
-> « FleetDesk, c'est le logiciel qui tient le parc. Là c'est le compte d'un
-> transporteur toulousain. Quinze véhicules, douze chauffeurs. »
+> « Bon, FleetDesk, c'est un logiciel de gestion de parc. Là je suis sur le
+> compte d'un transporteur toulousain — quinze véhicules, douze chauffeurs.
+> C'est un compte de démonstration, mais les données ressemblent à ce que vous
+> auriez chez vous. »
 
 **[silence — laisser l'animation finir]**
 
-> « On est lundi matin. Première question : qu'est-ce qui me tombe dessus cette
-> semaine. »
+> « Et on est lundi matin, donc la vraie question c'est : qu'est-ce qui va me
+> tomber dessus cette semaine. »
 
 **Ne rien cliquer pendant l'animation.** Un peu plus de quatre secondes, les
 derniers éléments arrivent en dernier. C'est la seule fois où elle joue.
@@ -70,38 +82,43 @@ derniers éléments arrivent en dernier. C'est la seule fois où elle joue.
 
 1. La pastille **« 2 alertes actives »**, en haut à droite.
 
-   > « Deux alertes. »
+   > « Deux alertes actives en haut. On va voir ce que c'est. »
 
 2. **Le panneau Alertes**, à droite. Descendre lentement.
 
-   > « Le CT du Master saute dans cinq jours. Le Boxer, vingt-deux jours,
-   > celui-là je le note. Révision du Master dans neuf mille six cents
-   > bornes. »
+   > « Alors, le CT du Master saute dans cinq jours — ça, faut que je prenne le
+   > rendez-vous aujourd'hui, sinon je me retrouve avec un camion immobilisé
+   > vendredi. Le Boxer, lui, c'est dans trois semaines, donc je le note et je
+   > m'en occupe la semaine prochaine. Et la révision du Master arrive dans
+   > neuf mille six cents bornes. »
 
    **[silence 2 s]**
 
-   > « Et les chauffeurs. Le casier de Pierre Dubois est périmé depuis huit
-   > jours. La visite médicale de Sophie Renard tombe dans trois semaines. »
+   > « Et en dessous, les chauffeurs. Le casier de Pierre Dubois est périmé
+   > depuis huit jours. Celui de Sophie... pardon, la visite médicale de
+   > Sophie Renard, elle tombe dans trois semaines. »
 
-   **Sur la couleur, ne rien expliquer.** Si quelqu'un demande plus tard :
-   l'ambre appelle une action, le gris se surveille, le rouge est réservé à ce
-   qu'on supprime. Mais ne le dis pas à l'image — ça se voit.
+   **Sur la couleur, ne rien expliquer à l'image.** Si on te pose la question
+   après : l'ambre appelle une action, le gris se surveille, le rouge est
+   réservé à ce qu'on supprime.
 
 3. **Les quatre compteurs.**
 
-   > « Quinze véhicules, douze affectés. Trois qui tournent pas cette
-   > semaine. »
+   > « Quinze véhicules, douze affectés. Les trois autres ils tournent pas
+   > cette semaine, c'est de la réserve. »
 
 4. **« Utilisation des véhicules »**, le graphe.
 
-   > « Le kilométrage sur trois mois. Le Ducato, douze mille six cents. Le
-   > Proace, mille cent. »
+   > « Ça c'est le kilométrage sur trois mois. Le Ducato est à douze mille six
+   > cents, il tourne beaucoup. Le Proace, en bas, mille cent — celui-là, à un
+   > moment, faut se demander pourquoi on le garde. »
 
    **[silence 2 s]**
 
    Cliquer **« Afficher : Plaque »**, choisir **Conducteur**.
 
-   > « Ou par chauffeur, si c'est comme ça que tu raisonnes. »
+   > « Et si vous raisonnez plutôt par chauffeur que par plaque, c'est le même
+   > graphe. »
 
    **Ne pas toucher au sélecteur de période.** Le compte n'a que trois mois de
    relevés : 6 mois et 1 an donnent les mêmes barres.
@@ -112,10 +129,9 @@ derniers éléments arrivent en dernier. C'est la seule fois où elle joue.
 
 **Le cœur de la vidéo.** Tout le reste, les concurrents l'ont.
 
-On prend **Pierre Dubois**, pas Sophie Renard. Son casier est périmé — c'est
-l'alerte forte — et ce document est valable un an, donc l'échéance se
-recalcule à l'écran. La visite médicale, elle, se saisit à la main. Moins
-parlant.
+On prend **Pierre Dubois**, pas Sophie Renard : son casier est périmé, c'est
+l'alerte forte, et ce document est valable un an donc l'échéance se recalcule
+à l'écran. La visite médicale, elle, se saisit à la main. Moins parlant.
 
 1. Cliquer **« Pierre Dubois — Casier judiciaire »** dans le bloc
    « Documents expirés ».
@@ -124,18 +140,21 @@ parlant.
 
    **[silence 2 s — ne rien dire pendant que ça défile]**
 
-   > « Voilà. Direct sur la bonne ligne. »
+   > « Voilà, direct sur la bonne ligne. C'est bête mais c'est tout le
+   > problème : d'habitude tu cliques sur une alerte et tu atterris sur une
+   > fiche, et après tu cherches. »
 
 3. Montrer **« 6/7 conformes »**.
 
-   > « Sept documents obligatoires par chauffeur. Permis, aptitude, casier,
-   > SST, TPMR, éco-conduite, visite médicale. Il en manque un. »
+   > « Sept papiers obligatoires par chauffeur : permis, aptitude, casier, SST,
+   > TPMR, éco-conduite, visite médicale. Là il en manque un. »
 
 4. Cliquer **« Mettre à jour »**. Saisir la date du jour en date de validation.
 
    **[laisser le champ d'échéance se remplir tout seul — silence]**
 
-   > « Le casier c'est un an. La date de fin, il la met. »
+   > « Je mets la date du nouveau papier, et la date de fin il la calcule tout
+   > seul — le casier c'est un an. »
 
    Enregistrer.
 
@@ -150,7 +169,7 @@ parlant.
 
 **À l'écran :** Véhicules → **AB-123-CD**, le Renault Master.
 
-> « Le Master, celui qui était en tête. »
+> « On revient sur le Master, celui qui était en tête tout à l'heure. »
 
 1. **L'en-tête** : plaque, modèle, mise en circulation, kilométrage, et les
    trois pastilles de documents.
@@ -158,14 +177,15 @@ parlant.
 2. Cliquer **Modifier**, déposer la carte grise depuis `demo-assets/`,
    enregistrer.
 
-   > « Carte grise, assurance, licence. »
+   > « Carte grise, assurance, licence de transport. Je prends la carte grise,
+   > je la dépose... »
 
    **[silence pendant le téléversement]**
 
    Cliquer **Voir** : le PDF s'ouvre.
 
-   > « Le fichier est stocké en privé. Le lien qui l'ouvre vit le temps de
-   > l'ouvrir. »
+   > « Et je la ressors quand j'en ai besoin. Le fichier est stocké en privé,
+   > le lien qui l'ouvre vit le temps de l'ouvrir. »
 
    Refermer l'onglet.
 
@@ -177,8 +197,8 @@ parlant.
 
 5. Ouvrir **Maintenance**.
 
-   > « Douze mois ou vingt mille bornes. Le premier des deux qui tombe,
-   > l'alerte part. »
+   > « Là on est sur douze mois ou vingt mille bornes, selon ce qui arrive en
+   > premier. Et c'est le premier des deux qui déclenche l'alerte. »
 
 **Ne pas ouvrir l'onglet Lavages** si tu tournes en début de mois : les lavages
 du jeu de démonstration ont neuf et vingt-six jours, le plus vieux peut basculer
@@ -193,24 +213,22 @@ sur le mois précédent.
 1. **Carburant & Kilométrage.** Saisir un relevé.
 
    > « Les relevés arrivent là. Et les chauffeurs ont leur propre accès, limité
-   > à leurs véhicules. Ils saisissent depuis le téléphone, ils voient rien du
-   > reste. »
+   > à leurs véhicules — ils saisissent depuis leur téléphone au moment du
+   > plein, et ils voient rien du reste du parc. »
 
    **On reste sur l'écran du gestionnaire.** L'accès chauffeur est mentionné,
-   pas montré — il faudrait se déconnecter.
+   pas montré : il faudrait se déconnecter.
 
 2. **Lavages.**
 
-   > « Vingt-quatre lavages. Véhicule, chauffeur, montant. Le total est en
-   > haut. »
-
-   La page liste **tout**, pas seulement le mois en cours. Ne pas dire « ce
-   mois-ci ».
+   > « Les lavages, pareil : véhicule, chauffeur, montant. Et le total est
+   > déjà fait en haut. »
 
 3. **Affectations.**
 
-   > « Douze en cours. Tu réaffectes en deux clics, l'ancienne reste dans
-   > l'historique. »
+   > « Douze affectations en cours. Vous réaffectez en deux clics, et l'ancienne
+   > reste dans l'historique — donc si on vous demande qui conduisait quoi au
+   > mois de mars, c'est là. »
 
 ---
 
@@ -223,25 +241,25 @@ promettre une période libre.
 
 2. **Dépenses par catégorie** — maintenance, carburant, lavages.
 
-   > « Où part l'argent ce mois-ci. Et le mois d'avant, pour comparer. »
+   > « Où part l'argent sur le mois, et la comparaison avec le mois d'avant. »
 
 3. **Véhicules les plus coûteux.**
 
    **[silence 2 s]**
 
-   > « Et sur quel véhicule. C'est la question qu'on te pose en réunion
-   > budget. »
+   > « Et surtout sur quel véhicule. C'est la question qu'on vous pose en
+   > réunion budget, et en général c'est là qu'on ressort le tableur. »
 
 4. **Échéances du mois** — CT et documents chauffeurs.
 
 5. **Télécharger le PDF.** Le montrer s'ouvrir.
 
-   > « Ça part à la compta tel quel. »
+   > « Et ça, ça part à la compta tel quel. »
 
    **Assumer la limite, ici :**
 
-   > « C'est mois par mois. Si tu veux du trimestre ou du sur-mesure, c'est pas
-   > encore là. »
+   > « Après, c'est mois par mois, hein. Si vous voulez du trimestre ou du
+   > sur-mesure, c'est pas encore là. »
 
 ---
 
@@ -249,13 +267,14 @@ promettre une période libre.
 
 **À l'écran :** Paramètres → Notifications.
 
-> « Tout ça, faut que j'ouvre l'appli. Mais une échéance, elle tombe pas quand
-> je regarde. »
+> « Bon, tout ce que je viens de montrer, faut que j'ouvre l'appli. Et une
+> échéance, elle tombe pas forcément le jour où je regarde. »
 
 **[silence 2 s]**
 
-> « Une fois par semaine, un mail avec ce qui arrive dans les trente jours. CT,
-> documents, entretiens. Et plus tôt si un truc passe sous sept jours. »
+> « Donc une fois par semaine il envoie un mail avec ce qui arrive dans les
+> trente jours : les CT, les papiers, les entretiens prévus. Et plus tôt si un
+> truc passe sous les sept jours. »
 
 Montrer l'interrupteur **« Recevoir l'email d'échéances »**.
 
@@ -270,12 +289,12 @@ laisser visible sans rien en dire.
 
 **À l'écran :** retour au tableau de bord.
 
-> « Quinze véhicules, douze chauffeurs. Les échéances sont vues, un document
-> est refait, le rapport est prêt. »
+> « Donc voilà : quinze véhicules, douze chauffeurs. Les échéances sont vues,
+> un papier est refait, le rapport est prêt à partir. »
 
 **[silence 2 s]**
 
-> « Voilà. C'est à peu près une matinée de lundi, en quatre minutes. »
+> « C'est à peu près une matinée de lundi, en quatre minutes. »
 
 Curseur immobile deux secondes avant de couper.
 
@@ -302,16 +321,17 @@ Curseur immobile deux secondes avant de couper.
 À poser en ouverture, à la place de la première phrase.
 
 **Transport de marchandises**
-> « Une licence périmée, c'est le camion à l'arrêt et une amende. »
+> « Une licence périmée, c'est le camion à l'arrêt et une amende. Et ça se joue
+> à une date qu'on a pas notée. »
 
 **Transport de personnes / TPMR**
-> « Aptitude, visite médicale, TPMR. Trois papiers par chauffeur, douze
-> chauffeurs, trente-six dates. »
+> « Aptitude, visite médicale, TPMR : trois papiers par chauffeur. Avec douze
+> chauffeurs, ça fait trente-six dates à suivre. »
 
 **BTP**
-> « Tes véhicules sont sur les chantiers. Le kilométrage se saisit au
-> téléphone, toi tu vois le parc. »
+> « Vos véhicules sont sur les chantiers, pas au bureau. Le kilométrage se
+> saisit au téléphone, et vous, vous voyez le parc. »
 
 **Artisan / petit parc**
-> « Cinq véhicules, ça tient dans un tableur. Jusqu'au CT qui passe à
-> travers. »
+> « Cinq véhicules ça tient dans un tableur, c'est vrai. Jusqu'au CT qui passe
+> à travers. »
