@@ -286,7 +286,7 @@ export default function Drivers() {
                       <Link
                         to={`/Drivers/${d.id}`}
                         onClick={e => e.stopPropagation()}
-                        className="block text-sm font-semibold text-slate-900 truncate hover:text-[#0052D6] hover:underline decoration-[#0066FF]/40 underline-offset-2"
+                        className="inline-block max-w-full align-top text-sm font-semibold text-slate-900 truncate hover:text-[#0052D6] hover:underline decoration-[#0066FF]/40 underline-offset-2"
                       >
                         {d.name}
                       </Link>
@@ -313,7 +313,7 @@ export default function Drivers() {
                     <Initials name={selected.name} warn={selectedFile?.level === 'expired'} />
                     <div className="min-w-0">
                       <Link to={`/Drivers/${selected.id}`}
-                        className="block text-sm font-semibold text-slate-900 truncate hover:text-[#0052D6] hover:underline decoration-[#0066FF]/40 underline-offset-2">
+                        className="inline-block max-w-full align-top text-sm font-semibold text-slate-900 truncate hover:text-[#0052D6] hover:underline decoration-[#0066FF]/40 underline-offset-2">
                         {selected.name}
                       </Link>
                       <p className="text-xs text-slate-400 truncate">
