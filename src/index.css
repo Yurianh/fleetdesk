@@ -109,6 +109,14 @@
    Deux verrous : `motion-on` (Réglages › Affichage) et `is-landing`, posée par
    AppLayout le temps de la séquence. Pas de media query : le choix explicite
    de l'utilisateur prime sur la préférence système, dans les deux sens. */
+/* Armement. Le tableau de bord est rendu derrière le voile de chargement et
+   reste visible pendant que celui-ci s'efface : sans ce masque, il s'affichait
+   en entier puis disparaissait d'un coup quand la chorégraphie démarrait. On
+   masque donc les blocs dès le montage, et on ne les révèle qu'en animant. */
+html.motion-on.is-landing-armed [data-land] {
+  opacity: 0;
+}
+
 html.motion-on.is-landing [data-land] {
   animation: app-land 1500ms cubic-bezier(0.16, 1, 0.3, 1) var(--land-delay, 0ms) both;
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import Sidebar from './Sidebar'
@@ -16,7 +16,7 @@ import {
 } from '@/lib/useFleetData'
 import { usePlanSync } from '@/lib/usePlanSync'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { shouldLand, markLanded, runLanding } from '@/lib/motion'
+import { shouldLand, markLanded, runLanding, motionEnabled } from '@/lib/motion'
 
 // Signals the onboarding context that the loading overlay has lifted, so the
 // first-run tour only auto-starts against a fully rendered page.
@@ -60,22 +60,49 @@ export default function AppLayout() {
     return () => clearTimeout(t)
   }, [allSettled])
 
+  // Armement de la chorégraphie, avant toute peinture : tant que le voile
+  // s'efface, les blocs doivent déjà être invisibles. Sinon on voit le tableau
+  // de bord au complet, puis on le voit disparaître pour se reconstruire.
+  useLayoutEffect(() => {
+    if (!shouldLand() || !motionEnabled()) return
+    const root = document.documentElement
+    root.classList.add('is-landing-armed')
+    // Filet de sécurité : si la séquence ne démarre jamais — écran sans blocs,
+    // erreur de chargement — on ne laisse pas la page masquée.
+    const t = setTimeout(() => root.classList.remove('is-landing-armed'), 6000)
+    return () => { clearTimeout(t); root.classList.remove('is-landing-armed') }
+  }, [])
+
   // Atterrissage : la chorégraphie démarre quand le voile de chargement se lève,
   // pas avant — sinon elle se jouerait derrière lui. Une fois par session, donc
   // une fois par connexion : les navigations suivantes sont instantanées.
-  useEffect(() => {
+  //
+  // useLayoutEffect et non useEffect : un effet ordinaire s'exécute après la
+  // peinture, donc le tableau de bord s'affichait une image entière avant
+  // d'être remis à zéro par l'animation — un clignotement très visible. Ici la
+  // classe est posée entre la mise à jour du DOM et la peinture, et les blocs
+  // n'apparaissent jamais dans leur état final avant de s'animer.
+  useLayoutEffect(() => {
     if (!loaderGone || !shouldLand()) return
     // Rien à orchestrer sur un écran sans blocs à poser : on garde le drapeau
     // pour le premier passage sur le tableau de bord.
     if (!document.querySelector('[data-land]')) return
     markLanded()
     const root = document.documentElement
-    // Les retards sont calculés sur la position réelle à l'écran : il faut donc
-    // mesurer après peinture, juste avant d'armer les animations.
+    // Les retards suivent la position réelle à l'écran. La mesure est faite ici,
+    // après la mise à jour du DOM et avant la peinture : la mise en page est
+    // définitive, et l'opacité nulle du masque ne la change pas.
     const total = runLanding()
     root.classList.add('is-landing')
+    // Le masque cède la place à l'animation dans la même image : les blocs
+    // passent de « invisibles » à « en train d'arriver » sans se montrer.
+    root.classList.remove('is-landing-armed')
     const t = setTimeout(() => root.classList.remove('is-landing'), total + 600)
-    return () => { clearTimeout(t); root.classList.remove('is-landing') }
+    return () => {
+      clearTimeout(t)
+      root.classList.remove('is-landing')
+      root.classList.remove('is-landing-armed')
+    }
   }, [loaderGone, location.pathname])
 
   return (
