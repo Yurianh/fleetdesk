@@ -132,6 +132,10 @@ export default function Mileage() {
       toast.error('Ajoutez la photo du compteur et celle du ticket / compteur essence.')
       return
     }
+    if (isDriver && !(parseFloat(form.amount) > 0)) {
+      toast.error('Indiquez le montant du plein.')
+      return
+    }
     const current = latestMileage[form.vehicle_id]?.mileage
     if (current && parseFloat(form.mileage) < current) {
       toast.error(t('mileage.decreaseError'))
@@ -424,12 +428,18 @@ export default function Mileage() {
           <Input value={form.label} onChange={e => setForm(f => ({...f, label: e.target.value}))} placeholder="Ex : Plein Total A7, gasoil…" />
         </div>
         <div>
-          <Label>Montant du plein (€) <span className="text-slate-400 font-normal">(optionnel)</span></Label>
+          <Label>
+            Montant du plein (€){' '}
+            {isDriver
+              ? <span className="text-red-500">*</span>
+              : <span className="text-slate-400 font-normal">(optionnel)</span>}
+          </Label>
           <Input type="number" step="0.01" min="0" inputMode="decimal" value={form.amount} onChange={e => setForm(f => ({...f, amount: e.target.value}))} placeholder="Ex : 78,50" />
         </div>
         {isDriver && (
           <p className="text-xs text-[#0066FF] bg-[#0066FF]/[0.05] border border-[#0066FF]/15 rounded-lg px-3 py-2">
-            Deux photos sont requises : le compteur kilométrique et le ticket (ou le compteur d'essence).
+            Le montant du plein et deux photos sont requis : le compteur kilométrique et le ticket
+            (ou le compteur d'essence).
           </p>
         )}
         <PhotoField
