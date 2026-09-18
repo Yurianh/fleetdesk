@@ -33,6 +33,8 @@ import { usePlanLimits } from '@/lib/usePlanLimits'
 import { useViewPreference } from '@/lib/viewPreference'
 import { computeForecasts } from '@/lib/maintenanceForecast'
 import { LayoutList, LayoutGrid } from 'lucide-react'
+import { pastBounds } from '@/lib/dateBounds'
+import DateInput from '@/components/shared/DateInput'
 
 function RegistrationUpload({ file, existingUrl, onFileChange, onClear }) {
   const fileRef   = useRef(null)
@@ -401,7 +403,7 @@ export default function Vehicles() {
       setRegistrationFile(null)
       setRegistrationUrl('')
       toast.success('Véhicule mis à jour.')
-    } catch { toast.error('Erreur lors de la mise à jour.') }
+    } catch (e) { toast.error(e?.message || 'Erreur lors de la mise à jour.') }
     finally { setSaving(false) }
   }
 
@@ -411,7 +413,7 @@ export default function Vehicles() {
       await unassignVehicle(vehicleId)
       queryClient.invalidateQueries({ queryKey: ['assignments'] })
       toast.success('Conducteur désaffecté.')
-    } catch { toast.error('Erreur lors de la désaffectation.') }
+    } catch (e) { toast.error(e?.message || 'Erreur lors de la désaffectation.') }
     finally { setUnassigningId(null) }
   }
 
@@ -440,7 +442,7 @@ export default function Vehicles() {
       queryClient.invalidateQueries({ queryKey: ['maintenanceRecords'] })
       setMaintModal(false)
       toast.success('Entretien enregistré.')
-    } catch { toast.error("Erreur lors de l'enregistrement") }
+    } catch (e) { toast.error(e?.message || "Erreur lors de l'enregistrement") }
     finally { setSavingMaint(false) }
   }
 
@@ -468,7 +470,7 @@ export default function Vehicles() {
       queryClient.invalidateQueries({ queryKey: ['technicalInspections'] })
       setInspModal(false)
       toast.success('Contrôle technique enregistré.')
-    } catch { toast.error("Erreur lors de l'enregistrement") }
+    } catch (e) { toast.error(e?.message || "Erreur lors de l'enregistrement") }
     finally { setSavingInsp(false) }
   }
 
@@ -496,7 +498,7 @@ export default function Vehicles() {
       queryClient.invalidateQueries({ queryKey: ['washRecords'] })
       setWashModal(false)
       toast.success('Lavage enregistré.')
-    } catch { toast.error("Erreur lors de l'enregistrement") }
+    } catch (e) { toast.error(e?.message || "Erreur lors de l'enregistrement") }
     finally { setSavingWash(false) }
   }
 
@@ -508,7 +510,7 @@ export default function Vehicles() {
       queryClient.invalidateQueries({ queryKey: ['vehicles'] })
       setDeleteTarget(null)
       toast.success('Véhicule supprimé.')
-    } catch { toast.error('Erreur lors de la suppression.') }
+    } catch (e) { toast.error(e?.message || 'Erreur lors de la suppression.') }
     finally { setSaving(false) }
   }
 
@@ -809,7 +811,7 @@ export default function Vehicles() {
           <div className="space-y-4 mt-2 min-w-0">
             <div><Label>Plaque d&apos;immatriculation</Label><Input value={form.plate_number} onChange={e => setForm({...form, plate_number: e.target.value})} placeholder="AB-123-CD" /></div>
             <div><Label>Modèle</Label><Input value={form.model} onChange={e => setForm({...form, model: e.target.value})} placeholder="Renault Trafic" /></div>
-            <div><Label>Date de mise en circulation <span className="text-slate-400 font-normal">(optionnel)</span></Label><Input type="date" value={form.mec_date} onChange={e => setForm({...form, mec_date: e.target.value})} /></div>
+            <div><Label>Date de mise en circulation <span className="text-slate-400 font-normal">(optionnel)</span></Label><DateInput value={form.mec_date} bounds={pastBounds()} onChange={v => setForm({...form, mec_date: v})} /></div>
             <RegistrationUpload file={registrationFile} existingUrl={registrationUrl}
               onFileChange={setRegistrationFile} onClear={() => { setRegistrationFile(null); setRegistrationUrl('') }} />
             <Button onClick={handleCreate} disabled={saving || !form.plate_number || !form.model} className="w-full bg-[#0066FF] hover:bg-[#0052D6]">
@@ -826,7 +828,7 @@ export default function Vehicles() {
           <div className="space-y-4 mt-2 min-w-0">
             <div><Label>Plaque d&apos;immatriculation</Label><Input value={form.plate_number} onChange={e => setForm({...form, plate_number: e.target.value})} /></div>
             <div><Label>Modèle</Label><Input value={form.model} onChange={e => setForm({...form, model: e.target.value})} /></div>
-            <div><Label>Date de mise en circulation <span className="text-slate-400 font-normal">(optionnel)</span></Label><Input type="date" value={form.mec_date} onChange={e => setForm({...form, mec_date: e.target.value})} /></div>
+            <div><Label>Date de mise en circulation <span className="text-slate-400 font-normal">(optionnel)</span></Label><DateInput value={form.mec_date} bounds={pastBounds()} onChange={v => setForm({...form, mec_date: v})} /></div>
             <RegistrationUpload file={registrationFile} existingUrl={registrationUrl}
               onFileChange={setRegistrationFile} onClear={() => { setRegistrationFile(null); setRegistrationUrl('') }} />
             <Button onClick={handleEdit} disabled={saving || !form.plate_number || !form.model} className="w-full bg-[#0066FF] hover:bg-[#0052D6]">
@@ -888,7 +890,7 @@ export default function Vehicles() {
       >
         <div>
           <Label>Date <span className="text-slate-400 font-normal">(optionnel — aujourd&apos;hui par défaut)</span></Label>
-          <Input type="date" value={maintForm.date} onChange={e => setMaintForm(f => ({ ...f, date: e.target.value }))} />
+          <DateInput value={maintForm.date} bounds={pastBounds()} onChange={v => setMaintForm(f => ({ ...f, date: v }))} />
         </div>
         <div>
           <Label>Kilométrage</Label>
@@ -931,7 +933,7 @@ export default function Vehicles() {
       >
         <div>
           <Label>Date du contrôle <span className="text-slate-400 font-normal">(optionnel — aujourd&apos;hui par défaut)</span></Label>
-          <Input type="date" value={inspForm.date} onChange={e => setInspForm(f => ({ ...f, date: e.target.value }))} />
+          <DateInput value={inspForm.date} bounds={pastBounds()} onChange={v => setInspForm(f => ({ ...f, date: v }))} />
         </div>
         {inspForm.date && (
           <p className="text-xs text-slate-400">
@@ -968,7 +970,7 @@ export default function Vehicles() {
         </div>
         <div>
           <Label>Date <span className="text-slate-400 font-normal">(optionnel — aujourd&apos;hui par défaut)</span></Label>
-          <Input type="date" value={washForm.date} onChange={e => setWashForm(f => ({ ...f, date: e.target.value }))} />
+          <DateInput value={washForm.date} bounds={pastBounds()} onChange={v => setWashForm(f => ({ ...f, date: v }))} />
         </div>
         <div>
           <Label>Montant (€)</Label>

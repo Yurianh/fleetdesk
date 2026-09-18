@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { supabase } from './supabase'
 import * as mock from './mockData'
+import { isPlausibleDate } from '@/lib/dateBounds'
 
 const DEMO = import.meta.env.VITE_DEMO_MODE === 'true'
 
@@ -286,7 +287,18 @@ export async function createMileageEntry(data) {
   logActivity('createMileageEntry', 'mileage', '', label)
 }
 
+// Une date hors bornes fausse tout ce qui en découle — la prochaine échéance,
+// le retard affiché, le tri des prévisions. Les bornes du champ de saisie
+// bloquent le cas courant ; ce garde-fou couvre les autres chemins (collage,
+// import, navigateur permissif).
+function assertPlausibleDate(value, label) {
+  if (!isPlausibleDate(value)) {
+    throw new Error(`${label} : date invalide. Vérifiez l'année.`)
+  }
+}
+
 export async function createMaintenanceRecord(data) {
+  assertPlausibleDate(data.date, "Date de l'entretien")
   if (DEMO) return
   const label = data.type || 'Maintenance'
   // Canonical status enum is uppercase ('OK' / 'PROBLEM') — normalize any caller input
@@ -297,6 +309,7 @@ export async function createMaintenanceRecord(data) {
 }
 
 export async function createTechnicalInspection(data) {
+  assertPlausibleDate(data.inspection_date, "Date du contrôle")
   if (DEMO) return
   const { error } = await supabase.from('technical_inspections').insert({ ...data, user_id: await orgUid() })
   if (error) throw error
@@ -415,6 +428,7 @@ export async function deleteAssignment(id) {
 }
 
 export async function updateTechnicalInspection(id, data) {
+  assertPlausibleDate(data.inspection_date, "Date du contrôle")
   if (DEMO) return
   const { error } = await supabase.from('technical_inspections').update(data).eq('id', id)
   if (error) throw error
@@ -443,6 +457,7 @@ export async function deleteWashRecord(id) {
 }
 
 export async function updateMaintenanceRecord(id, data) {
+  assertPlausibleDate(data.date, "Date de l'entretien")
   if (DEMO) return
   // Same enum normalization as createMaintenanceRecord
   if (data.status) data = { ...data, status: String(data.status).toUpperCase() }

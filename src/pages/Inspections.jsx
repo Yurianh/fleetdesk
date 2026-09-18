@@ -3,7 +3,6 @@ import { format, addYears, differenceInDays } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
 import { Plus, ClipboardCheck, Pencil, Trash2, Paperclip } from 'lucide-react'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { SearchableSelect } from '@/components/ui/searchable-select'
 import { Label } from '@/components/ui/label'
@@ -25,6 +24,8 @@ import {
 } from '@/lib/useFleetData'
 
 import { usePageTitle } from '@/lib/usePageTitle'
+import { pastBounds } from '@/lib/dateBounds'
+import DateInput from '@/components/shared/DateInput'
 
 const EMPTY_FORM = { vehicle_id: '', inspection_date: '' }
 
@@ -112,7 +113,7 @@ export default function Inspections() {
       }
       queryClient.invalidateQueries({ queryKey: ['technicalInspections'] })
       closeModal()
-    } catch { toast.error("Erreur lors de l'enregistrement") }
+    } catch (e) { toast.error(e?.message || "Erreur lors de l'enregistrement") }
     finally { setSaving(false) }
   }
 
@@ -125,7 +126,7 @@ export default function Inspections() {
       await deleteTechnicalInspection(id)
       queryClient.invalidateQueries({ queryKey: ['technicalInspections'] })
       toast.success(t('inspections.deleted'))
-    } catch { toast.error('Erreur lors de la suppression') }
+    } catch (e) { toast.error(e?.message || 'Erreur lors de la suppression') }
     finally { setDeletingId(null); setConfirmDeleteId(null) }
   }
 
@@ -254,7 +255,7 @@ export default function Inspections() {
         </div>
         <div>
           <Label>Date du contrôle <span className="text-slate-400 font-normal">(optionnel — aujourd'hui par défaut)</span></Label>
-          <Input type="date" value={form.inspection_date} onChange={e => setForm(f => ({...f, inspection_date: e.target.value}))} />
+          <DateInput value={form.inspection_date} bounds={pastBounds()} onChange={v => setForm(f => ({...f, inspection_date: v}))} />
         </div>
         {expiryPreview && (
           <p className="text-sm text-slate-500 -mt-1">

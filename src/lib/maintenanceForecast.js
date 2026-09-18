@@ -44,7 +44,19 @@ export function computeForecasts({ schedules, vehicles, maintenanceRecords, mile
       status = 'due_soon'
     }
 
-    return { schedule, vehicle, lastRecord, currentMileage, nextDate, nextKm, daysUntil, kmUntil, status }
+    // Quelle des deux limites a déclenché l'état. Sans ça, un véhicule
+    // dépassé au kilométrage affichait son retard en jours — un nombre exact
+    // mais qui ne décrivait pas ce qui s'est passé.
+    let trigger = null
+    if (status === 'overdue') {
+      trigger = (kmUntil !== null && kmUntil <= 0) ? 'km' : 'date'
+    } else if (status === 'due_soon') {
+      const byKm = kmUntil !== null && kmUntil <= WARN_KM
+      const byDate = daysUntil !== null && daysUntil <= 30
+      trigger = byKm && byDate ? (kmUntil / 60 < daysUntil ? 'km' : 'date') : byKm ? 'km' : 'date'
+    }
+
+    return { schedule, vehicle, lastRecord, currentMileage, nextDate, nextKm, daysUntil, kmUntil, status, trigger }
   }).sort((a, b) => {
     const order = { overdue: 0, due_soon: 1, no_record: 2, ok: 3 }
     return (order[a.status] ?? 3) - (order[b.status] ?? 3)

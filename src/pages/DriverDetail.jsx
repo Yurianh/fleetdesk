@@ -21,6 +21,8 @@ import { useOrgMembers, useSetDriverVehicles } from '@/lib/useOrg'
 import { useCan } from '@/lib/capabilities'
 import { useAuth } from '@/lib/AuthContext'
 import { usePageTitle } from '@/lib/usePageTitle'
+import { birthBounds } from '@/lib/dateBounds'
+import DateInput from '@/components/shared/DateInput'
 
 function CardBadge({ icon: Icon, label, value, color }) {
   return (
@@ -181,7 +183,7 @@ export default function DriverDetail() {
               <div><Label>ID conducteur</Label><Input value={form.employee_id} onChange={e => setForm({...form, employee_id: e.target.value})} placeholder="Ex : C-042" /></div>
               <div><Label>Téléphone</Label><Input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} placeholder="+33 6 00 00 00 00" /></div>
               <div><Label>Email</Label><Input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="jean.dupont@email.com" /></div>
-              <div><Label>Date de naissance</Label><Input type="date" value={form.date_of_birth} onChange={e => setForm({...form, date_of_birth: e.target.value})} /></div>
+              <div><Label>Date de naissance</Label><DateInput value={form.date_of_birth} bounds={birthBounds()} onChange={v => setForm({...form, date_of_birth: v})} /></div>
               <div><Label>Adresse domicile</Label><Input value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="12 rue de la Paix, 75001 Paris" /></div>
             </div>
             <div className="border-t border-slate-100 pt-4">

@@ -17,6 +17,8 @@ import {
 import { uploadDriverDoc, deleteDriverDoc } from '@/lib/driverDocumentStorage'
 import { openSignedFile } from '@/lib/signedFile'
 import { compressImage } from '@/lib/compressImage'
+import DateInput from '@/components/shared/DateInput'
+import { pastBounds, expiryBounds } from '@/lib/dateBounds'
 
 export const DOC_TYPE_CONFIG = {
   permis_conduire: {
@@ -607,11 +609,10 @@ export default function DriverDocuments({ driverId, driver, focusType = null }) 
 
           <div>
             <Label>Date de validation{DOC_TYPE_CONFIG[form.type]?.validityYears ? ' *' : ''}</Label>
-            <Input
-              type="date"
+            <DateInput
               value={form.validation_date}
-              max={new Date().toISOString().split('T')[0]}
-              onChange={e => handleValidationDateChange(e.target.value)}
+              bounds={pastBounds()}
+              onChange={handleValidationDateChange}
             />
           </div>
 
@@ -622,10 +623,10 @@ export default function DriverDocuments({ driverId, driver, focusType = null }) 
                 <span className="text-slate-400 font-normal ml-1">(calculée automatiquement)</span>
               )}
             </Label>
-            <Input
-              type="date"
+            <DateInput
               value={form.expiry_date}
-              onChange={e => setForm(f => ({ ...f, expiry_date: e.target.value }))}
+              bounds={expiryBounds()}
+              onChange={v => setForm(f => ({ ...f, expiry_date: v }))}
             />
           </div>
 

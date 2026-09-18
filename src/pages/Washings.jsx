@@ -29,6 +29,8 @@ import {
 
 import { usePageTitle } from '@/lib/usePageTitle'
 import { useAuth } from '@/lib/AuthContext'
+import { pastBounds } from '@/lib/dateBounds'
+import DateInput from '@/components/shared/DateInput'
 const EMPTY_FORM = { vehicle_id: '', driver_id: '', amount: '', date: '' }
 
 export default function Washings() {
@@ -93,7 +95,9 @@ export default function Washings() {
     setInvoiceExistingUrl('')
   }
 
-  const canSubmit = form.vehicle_id && form.amount && (isDriver || form.driver_id)
+  // « 0 » est une chaîne non vide : sans la comparaison numérique, un montant
+  // nul passait la garde.
+  const canSubmit = !!form.vehicle_id && parseFloat(form.amount) > 0 && (isDriver || !!form.driver_id)
 
   const handleSubmit = async () => {
     if (!canSubmit) return
@@ -264,6 +268,7 @@ export default function Washings() {
         onClose={closeModal}
         title={editing ? 'Modifier le lavage' : 'Ajouter un lavage'}
         onSubmit={handleSubmit}
+        submitDisabled={!canSubmit}
         saving={saving}
         submitLabel={editing ? 'Mettre à jour' : 'Enregistrer'}
       >
@@ -309,13 +314,22 @@ export default function Washings() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <Label>Date <span className="text-slate-400 font-normal">(optionnel — aujourd'hui par défaut)</span></Label>
-            <Input type="date" value={form.date} onChange={e => setForm(f => ({...f, date: e.target.value}))} />
+            <DateInput value={form.date} bounds={pastBounds()} onChange={v => setForm(f => ({...f, date: v}))} />
           </div>
           <div>
-            <Label>Montant (€)</Label>
+            <Label>Montant (€) <span className="text-red-500">*</span></Label>
             <Input type="number" step="0.01" value={form.amount} onChange={e => setForm(f => ({...f, amount: e.target.value}))} placeholder="0.00" />
           </div>
         </div>
+        {!canSubmit && (
+          <p className="text-xs text-slate-500">
+            Il manque : {[
+              !form.vehicle_id && 'le véhicule',
+              !isDriver && !form.driver_id && 'le conducteur',
+              !(parseFloat(form.amount) > 0) && 'le montant',
+            ].filter(Boolean).join(', ')}.
+          </p>
+        )}
         <InvoiceUpload
           file={invoiceFile}
           existingUrl={invoiceExistingUrl}

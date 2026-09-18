@@ -27,10 +27,12 @@ import {
 import { downloadCsv, datedName } from '@/lib/exportCsv'
 import { computeForecasts } from '@/lib/maintenanceForecast'
 import { usePageTitle } from '@/lib/usePageTitle'
+import { pastBounds } from '@/lib/dateBounds'
+import DateInput from '@/components/shared/DateInput'
 
 // ── Forecast Card (overdue / due_soon / no_record) ─────────────────
 function ForecastCard({ forecast, onMarkDone, onLogMaintenance }) {
-  const { vehicle, lastRecord, nextDate, daysUntil, kmUntil, status, schedule, currentMileage } = forecast
+  const { vehicle, lastRecord, nextDate, daysUntil, kmUntil, status, trigger, schedule, currentMileage } = forecast
 
   const intervalLabel = [
     schedule.interval_months && `${schedule.interval_months} mois`,
@@ -107,7 +109,11 @@ function ForecastCard({ forecast, onMarkDone, onLogMaintenance }) {
             </p>
           </div>
           <span className={`text-xs font-bold px-2.5 py-1 rounded-full shrink-0 whitespace-nowrap ${s.badge}`}>
-            {Math.abs(daysUntil ?? 0)} j {s.label}
+            {/* L'unité annoncée est celle qui a déclenché l'état : un véhicule
+                dépassé au kilométrage se raconte en kilomètres. */}
+            {trigger === 'km' && kmUntil !== null
+              ? `${Math.abs(kmUntil).toLocaleString('fr-FR')} km ${s.label}`
+              : `${Math.abs(daysUntil ?? 0)} j ${s.label}`}
           </span>
         </div>
 
@@ -123,12 +129,12 @@ function ForecastCard({ forecast, onMarkDone, onLogMaintenance }) {
           </div>
           <div className="bg-slate-50 rounded-xl px-3 py-2">
             <p className="text-[10px] text-slate-400 mb-0.5">Échéance</p>
-            <p className="text-sm font-bold text-slate-900">{nextDate ? format(nextDate, 'dd/MM/yy') : '—'}</p>
+            <p className="text-sm font-bold text-slate-900">{nextDate ? format(nextDate, 'dd/MM/yyyy') : '—'}</p>
           </div>
           <div className="bg-slate-50 rounded-xl px-3 py-2">
             <p className="text-[10px] text-slate-400 mb-0.5">Dernier</p>
             <p className="text-sm font-bold text-slate-900">
-              {lastRecord ? format(new Date(lastRecord.date), 'dd/MM/yy') : 'Jamais'}
+              {lastRecord ? format(new Date(lastRecord.date), 'dd/MM/yyyy') : 'Jamais'}
             </p>
           </div>
         </div>
@@ -519,7 +525,7 @@ export default function Maintenance() {
       }
       queryClient.invalidateQueries({ queryKey: ['maintenanceRecords'] })
       closeRecordModal()
-    } catch { toast.error("Erreur lors de l'enregistrement") }
+    } catch (e) { toast.error(e?.message || "Erreur lors de l'enregistrement") }
     finally { setSavingRecord(false) }
   }
 
@@ -562,7 +568,7 @@ export default function Maintenance() {
       await updateMaintenanceSchedule(id, data)
       queryClient.invalidateQueries({ queryKey: ['maintenanceSchedules'] })
       toast.success(t('maintenance.scheduleUpdated'))
-    } catch { toast.error(t('common.saveError')) }
+    } catch (e) { toast.error(e?.message || t('common.saveError')) }
   }
 
   const handleDeleteSchedule = async (id) => {
@@ -985,7 +991,7 @@ export default function Maintenance() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <Label>Date <span className="text-slate-400 font-normal">(optionnel — aujourd'hui par défaut)</span></Label>
-            <Input type="date" value={recordForm.date} onChange={e => setRecordForm(f => ({ ...f, date: e.target.value }))} />
+            <DateInput value={recordForm.date} bounds={pastBounds()} onChange={v => setRecordForm(f => ({ ...f, date: v }))} />
           </div>
           <div>
             <Label>Kilométrage (km)</Label>

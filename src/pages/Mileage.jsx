@@ -124,18 +124,15 @@ export default function Mileage() {
   const openEdit = (m) => { setEditTarget(m); setEditForm({ mileage: String(m.mileage ?? ''), vehicle_id: m.vehicle_id }) }
   const closeModal = () => setModal(false)
 
+  // Un relevé sans kilométrage n'est pas un relevé. Pour un chauffeur, le
+  // montant du plein et les deux photos en font partie au même titre : sans
+  // eux, le gestionnaire doit rouvrir le ticket pour retrouver le chiffre.
+  const canSubmit = !!form.vehicle_id
+    && parseFloat(form.mileage) > 0
+    && (!isDriver || (parseFloat(form.amount) > 0 && !!odometerFile && !!receiptFile))
+
   const handleSubmit = async () => {
-    if (!form.vehicle_id || !form.mileage) return
-    // Chauffeurs must prove the reading: a photo of the odometer AND a photo of
-    // the fuel ticket / gauge.
-    if (isDriver && (!odometerFile || !receiptFile)) {
-      toast.error('Ajoutez la photo du compteur et celle du ticket / compteur essence.')
-      return
-    }
-    if (isDriver && !(parseFloat(form.amount) > 0)) {
-      toast.error('Indiquez le montant du plein.')
-      return
-    }
+    if (!canSubmit) return
     const current = latestMileage[form.vehicle_id]?.mileage
     if (current && parseFloat(form.mileage) < current) {
       toast.error(t('mileage.decreaseError'))
@@ -368,6 +365,7 @@ export default function Mileage() {
         title="Enregistrer un kilométrage"
         onSubmit={handleSubmit}
         saving={saving}
+        submitDisabled={!canSubmit}
       >
         <div>
           <Label>Véhicule</Label>
@@ -420,7 +418,7 @@ export default function Mileage() {
           </p>
         )}
         <div>
-          <Label>Nouveau kilométrage (km)</Label>
+          <Label>Nouveau kilométrage (km) <span className="text-red-500">*</span></Label>
           <Input type="number" value={form.mileage} onChange={e => setForm(f => ({...f, mileage: e.target.value}))} placeholder="Ex : 125 000" />
         </div>
         <div>
@@ -456,6 +454,17 @@ export default function Mileage() {
           file={receiptFile}
           setFile={setReceiptFile}
         />
+        {!canSubmit && (
+          <p className="text-xs text-slate-500">
+            Il manque : {[
+              !form.vehicle_id && 'le véhicule',
+              !(parseFloat(form.mileage) > 0) && 'le kilométrage',
+              isDriver && !(parseFloat(form.amount) > 0) && 'le montant du plein',
+              isDriver && !odometerFile && 'la photo du compteur',
+              isDriver && !receiptFile && 'la photo du ticket',
+            ].filter(Boolean).join(', ')}.
+          </p>
+        )}
       </FormModal>
  
       {/* Edit dialog */}

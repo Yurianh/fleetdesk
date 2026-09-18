@@ -92,6 +92,8 @@ import {
   updateMileageEntry, updateVehicle
 } from '@/lib/useFleetData'
 import { usePageTitle } from '@/lib/usePageTitle'
+import DateInput from '@/components/shared/DateInput'
+import { pastBounds } from '@/lib/dateBounds'
 
 // Échéance datée : ambre quand c'est passé ou imminent, graphite quand c'est
 // à surveiller, émeraude au-delà. Même échelle que le badge véhicule et que
@@ -832,7 +834,7 @@ export default function VehicleDetail() {
         title="Informations du véhicule" onSubmit={handleSaveVehicleInfo} saving={savingVehicleInfo} submitLabel="Enregistrer">
         <div>
           <Label>Date de mise en circulation <span className="text-slate-400 font-normal">(optionnel)</span></Label>
-          <Input type="date" value={vehicleInfoForm.mec_date} onChange={e => setVehicleInfoForm(f => ({ ...f, mec_date: e.target.value }))} />
+          <DateInput value={vehicleInfoForm.mec_date} bounds={pastBounds()} onChange={v => setVehicleInfoForm(f => ({ ...f, mec_date: v }))} />
         </div>
         <VehicleDocField label="Carte grise" file={regFile} setFile={setRegFile}
           existingUrl={vehicle.registration_card_url} placeholder="Joindre la carte grise" />
@@ -850,7 +852,7 @@ export default function VehicleDetail() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <Label>Date <span className="text-slate-400 font-normal">(optionnel)</span></Label>
-            <Input type="date" value={maintenanceForm.date} onChange={e => setMaintenanceForm(f => ({ ...f, date: e.target.value }))} />
+            <DateInput value={maintenanceForm.date} bounds={pastBounds()} onChange={v => setMaintenanceForm(f => ({ ...f, date: v }))} />
           </div>
           <div>
             <Label>Kilométrage (km)</Label>
@@ -894,7 +896,7 @@ export default function VehicleDetail() {
         onSubmit={handleInspection} saving={saving} submitLabel="Enregistrer">
         <div>
           <Label>Date du contrôle <span className="text-slate-400 font-normal">(optionnel — aujourd'hui par défaut)</span></Label>
-          <Input type="date" value={inspectionForm.inspection_date} onChange={e => setInspectionForm(f => ({ ...f, inspection_date: e.target.value }))} />
+          <DateInput value={inspectionForm.inspection_date} bounds={pastBounds()} onChange={v => setInspectionForm(f => ({ ...f, inspection_date: v }))} />
         </div>
         {inspectionForm.inspection_date && (
           <p className="text-sm text-slate-500 -mt-1">
@@ -922,7 +924,7 @@ export default function VehicleDetail() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <Label>Date <span className="text-slate-400 font-normal">(optionnel)</span></Label>
-            <Input type="date" value={washForm.date} onChange={e => setWashForm(f => ({ ...f, date: e.target.value }))} />
+            <DateInput value={washForm.date} bounds={pastBounds()} onChange={v => setWashForm(f => ({ ...f, date: v }))} />
           </div>
           <div>
             <Label>Montant (€)</Label>

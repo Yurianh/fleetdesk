@@ -9,6 +9,8 @@ import { toast } from 'sonner'
 import { Loader2, IdCard, Check } from 'lucide-react'
 import PageHeader from '@/components/shared/PageHeader'
 import { usePageTitle } from '@/lib/usePageTitle'
+import { birthBounds } from '@/lib/dateBounds'
+import DateInput from '@/components/shared/DateInput'
 
 // A chauffeur completes their own conducteur record (created pending at invite).
 // RLS lets them update only the drivers row linked to their account.
@@ -100,7 +102,7 @@ export default function DriverProfile() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div><Label>Nom complet *</Label><Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Jean Dupont" /></div>
           <div><Label>Téléphone</Label><Input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="+33 6 00 00 00 00" /></div>
-          <div><Label>Date de naissance</Label><Input type="date" value={form.date_of_birth} onChange={e => setForm({ ...form, date_of_birth: e.target.value })} /></div>
+          <div><Label>Date de naissance</Label><DateInput value={form.date_of_birth} bounds={birthBounds()} onChange={v => setForm({ ...form, date_of_birth: v })} /></div>
           <div><Label>Adresse</Label><Input value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} placeholder="12 rue de la Paix, 75001 Paris" /></div>
         </div>
         <div className="border-t border-zinc-100 pt-4">

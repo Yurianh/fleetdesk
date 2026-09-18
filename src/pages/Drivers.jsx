@@ -26,6 +26,8 @@ import { DOC_TYPE_CONFIG, DOC_TYPES_ORDER, normalizeDocType, docLabel } from '@/
 import { unassignVehicle } from '@/lib/useFleetData'
 import { format } from 'date-fns'
 import { useDateLocale } from '@/lib/useDateLocale'
+import { birthBounds } from '@/lib/dateBounds'
+import DateInput from '@/components/shared/DateInput'
 const LEVEL_CHIP = {
   expired:  'text-amber-900 bg-amber-100',
   expiring: 'text-amber-900 bg-amber-50 border border-amber-200',
@@ -447,7 +449,7 @@ export default function Drivers() {
               <div><Label>Email</Label><Input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="jean.dupont@email.com" /></div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div><Label>Date de naissance</Label><Input type="date" value={form.date_of_birth} onChange={e => setForm({...form, date_of_birth: e.target.value})} /></div>
+              <div><Label>Date de naissance</Label><DateInput value={form.date_of_birth} bounds={birthBounds()} onChange={v => setForm({...form, date_of_birth: v})} /></div>
               <div><Label>Adresse domicile</Label><Input value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="12 rue de la Paix, 75001 Paris" /></div>
             </div>
             <div className="border-t border-slate-100 pt-4">

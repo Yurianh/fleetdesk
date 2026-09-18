@@ -41,6 +41,8 @@ import { useTranslation } from 'react-i18next'
 import { usePlanLimits } from '@/lib/usePlanLimits'
 import { useDateLocale } from '@/lib/useDateLocale'
 import { supabase } from '@/lib/supabase'
+import DateInput from '@/components/shared/DateInput'
+import { pastBounds } from '@/lib/dateBounds'
 
 // ─── Vehicle Usage Analytics — ranked km per vehicle ─────────────────
 
@@ -367,7 +369,7 @@ function RecordMileageModal({ open, onClose, vehicles }) {
           </div>
           <div>
             <Label>{t('dashboard.effectiveDate')}</Label>
-            <Input type="date" value={date} max={today} onChange={e => setDate(e.target.value)} />
+            <DateInput value={date} bounds={pastBounds()} onChange={v => setDate(v)} />
           </div>
           <Button onClick={handle} disabled={saving || !vehicleId || !mileage || !date} className="w-full bg-[#0066FF] hover:bg-[#0052D6]">
             {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t('common.saving')}</> : t('common.save')}
@@ -435,7 +437,7 @@ function AddWashModal({ open, onClose, vehicles, drivers }) {
           </div>
           <div>
             <Label>Date</Label>
-            <Input type="date" value={date} max={today} onChange={e => setDate(e.target.value)} />
+            <DateInput value={date} bounds={pastBounds()} onChange={v => setDate(v)} />
           </div>
           <Button onClick={handle} disabled={saving || !vehicleId || !date} className="w-full bg-[#0066FF] hover:bg-[#0052D6]">
             {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Enregistrement...</> : 'Enregistrer'}

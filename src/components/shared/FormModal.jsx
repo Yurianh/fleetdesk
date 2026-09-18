@@ -11,6 +11,9 @@ export default function FormModal({
   onSubmit,
   saving = false,
   submitLabel,
+  // Champs obligatoires non remplis : le bouton reste inerte plutôt que de
+  // faire échouer l'envoi. La contrainte se voit avant d'être rencontrée.
+  submitDisabled = false,
   children,
 }) {
   const { t } = useTranslation()
@@ -30,8 +33,8 @@ export default function FormModal({
         <div className="flex gap-2 pt-2">
           <Button
             onClick={onSubmit}
-            disabled={saving}
-            className="flex-1 bg-[#0066FF] hover:bg-[#0052D6]"
+            disabled={saving || submitDisabled}
+            className="flex-1 bg-[#0066FF] hover:bg-[#0052D6] disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {saving ? (
               <span className="flex items-center gap-2">
