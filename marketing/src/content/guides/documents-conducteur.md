@@ -19,12 +19,12 @@ faq:
   - q: "Comment suivre les dates d'expiration de tous ces documents ?"
     a: "En centralisant chaque document par conducteur avec sa date de validité, et en étant alerté avant l'expiration. FleetDesk calcule automatiquement les échéances à partir des durées de validité et les remonte dans le centre de conformité."
 related:
+  - title: "Temps de conduite et de repos des conducteurs routiers"
+    href: "/guides/temps-conduite-repos"
   - title: "Contrôle technique des véhicules d'entreprise : obligations et périodicité"
     href: "/guides/controle-technique-flotte"
   - title: "Assurance de flotte automobile : obligations et bonnes pratiques"
     href: "/guides/assurance-flotte"
-  - title: "Gestion de flotte pour le transport routier"
-    href: "/secteurs/transport-routier"
 sources:
   - label: "Service-public.fr — Formation des conducteurs routiers (FIMO, FCO)"
     href: "https://entreprendre.service-public.fr/vosdroits/F31212"
@@ -46,7 +46,7 @@ Selon l'activité et le poste, les documents à suivre varient. Les plus courant
 - **Aptitude médicale à la conduite** : obligatoire pour le groupe lourd et certains usages professionnels. Généralement 5 ans jusqu'à 60 ans, puis à intervalle plus court.
 - **FIMO** (formation initiale minimale obligatoire, 140 heures) : préalable à l'exercice du transport routier de marchandises ou de voyageurs.
 - **FCO** (formation continue obligatoire, 35 heures) : à renouveler tous les 5 ans, matérialisée par la carte de qualification de conducteur.
-- **Carte de conducteur** (chronotachygraphe) : nécessaire dès qu'il y a un tachygraphe à bord ; validité de 5 ans, renouvellement à anticiper plusieurs semaines.
+- **Carte de conducteur** (chronotachygraphe) : nécessaire dès qu'il y a un tachygraphe à bord ; validité de 5 ans, renouvellement à anticiper plusieurs semaines. Elle sert aussi à tracer les [temps de conduite et de repos](/guides/temps-conduite-repos), une obligation distincte à respecter au quotidien.
 - **ADR** : pour le transport de matières dangereuses, avec recyclage périodique.
 - **Sauveteur secouriste du travail (SST) ou PSC1** : selon le poste et la politique de prévention de l'entreprise.
 - **Carte professionnelle VTC ou taxi** : délivrée par la préfecture et renouvelée tous les 5 ans après une formation continue. Le suivi complet d'une [flotte VTC ou taxi](/secteurs/vtc-taxi) en dépend.
