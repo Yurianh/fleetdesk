@@ -19,6 +19,8 @@ faq:
   - q: "Pourquoi mon coût kilométrique est-il plus élevé que la moyenne du marché ?"
     a: "Trois causes dominent : un kilométrage annuel trop faible qui étale mal les charges fixes, un entretien curatif plutôt que préventif, et des véhicules gardés au-delà de leur point d'équilibre économique. Le calcul par véhicule permet d'identifier lequel des trois joue."
 related:
+  - title: "Carte carburant entreprise : comment comparer"
+    href: "/guides/carte-carburant-entreprise-comparatif"
   - title: "Gérer un parc automobile sur Excel : limites, risques et modèle gratuit"
     href: "/guides/gestion-parc-automobile-excel"
   - title: "Assurance de flotte automobile : obligations et bonnes pratiques"
@@ -60,7 +62,7 @@ Elles courent même si le véhicule reste au dépôt :
 
 Elles dépendent directement du kilométrage :
 
-- carburant ou électricité ;
+- [carburant](/guides/carte-carburant-entreprise-comparatif) ou électricité ;
 - pneumatiques ;
 - entretien périodique (vidange, filtres, plaquettes) ;
 - réparations et pièces d'usure ;
