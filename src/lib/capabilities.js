@@ -53,7 +53,9 @@ export function useCan(cap) {
 // verrouiller par erreur un client qui paie.
 export function resolveAccess(user) {
   if (!user) return 'active'
-  if (user.user_metadata?.org_id) return 'active'   // collaborateur : dépend de l'organisation
+  // Un collaborateur suit l'état de son organisation : sync-plan recopie celui
+  // du propriétaire sur son app_metadata. La base applique la même règle sur le
+  // propriétaire de chaque ligne.
   if (user.app_metadata?.comped) return 'active'     // compte offert (démo, partenaires)
   return user.app_metadata?.subscription === 'inactive' ? 'readonly' : 'active'
 }
