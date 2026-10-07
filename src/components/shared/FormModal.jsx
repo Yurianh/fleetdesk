@@ -3,6 +3,8 @@ import { Loader2 } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { useTranslation } from 'react-i18next'
+import { useAccess } from '@/lib/capabilities'
+import { READ_ONLY_MESSAGE } from '@/lib/writeAccess'
 
 export default function FormModal({
   open,
@@ -17,6 +19,7 @@ export default function FormModal({
   children,
 }) {
   const { t } = useTranslation()
+  const { readOnly } = useAccess()
   const label = submitLabel ?? t('common.save')
 
   return (
@@ -28,12 +31,17 @@ export default function FormModal({
 
         <div className="space-y-4 mt-1 min-w-0">
           {children}
+          {readOnly && (
+            <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+              {READ_ONLY_MESSAGE}
+            </p>
+          )}
         </div>
 
         <div className="flex gap-2 pt-2">
           <Button
             onClick={onSubmit}
-            disabled={saving || submitDisabled}
+            disabled={saving || submitDisabled || readOnly}
             className="flex-1 bg-[#0066FF] hover:bg-[#0052D6] disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {saving ? (

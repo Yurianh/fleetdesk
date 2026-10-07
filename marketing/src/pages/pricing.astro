@@ -15,7 +15,7 @@ const plans = [
     annualTotal: '86',
     desc: 'Pour les artisans et indépendants : piloter sa flotte et rester conforme, sans tableur.',
     badge: null,
-    trialNote: null,
+    trialNote: '14 jours gratuits · Sans carte bancaire',
     features: [
       { text: 'Jusqu\'à 5 véhicules et 3 conducteurs', highlight: false },
       { text: 'Documents conducteurs (7) et véhicule suivis', highlight: false },
@@ -23,7 +23,7 @@ const plans = [
       { text: 'Prévisions d\'entretien et tableau de bord', highlight: false },
       { text: 'Support par email', highlight: false },
     ],
-    cta: 'Choisir Starter',
+    cta: 'Démarrer l\'essai gratuit',
     ctaHref: '/souscrire/starter',
     ctaStyle: 'border',
     highlighted: false,
@@ -58,7 +58,7 @@ const plans = [
     annualTotal: '758',
     desc: 'Pour les flottes qui font saisir le terrain : chauffeurs, équipe et traçabilité.',
     badge: null,
-    trialNote: null,
+    trialNote: '14 jours gratuits · Sans carte bancaire',
     features: [
       { text: 'Véhicules et conducteurs illimités', highlight: false },
       { text: 'Invitez votre équipe : admins et membres', highlight: true },
@@ -67,7 +67,7 @@ const plans = [
       { text: 'Journal d\'activité complet, prêt pour les audits', highlight: false },
       { text: 'Onboarding personnalisé et SLA garanti', highlight: false },
     ],
-    cta: 'Contacter l\'équipe',
+    cta: 'Démarrer l\'essai gratuit',
     ctaHref: '/souscrire/enterprise',
     ctaStyle: 'border',
     highlighted: false,
@@ -76,8 +76,8 @@ const plans = [
 
 const faq = [
   {
-    q: 'L\'essai Pro est-il vraiment sans carte bancaire ?',
-    a: 'Oui. 14 jours d\'accès complet au plan Pro, sans rien saisir. Vous choisissez de continuer, ou pas. Aucun prélèvement sans votre accord.'
+    q: 'L\'essai est-il vraiment sans carte bancaire ?',
+    a: 'Oui. 14 jours d\'accès complet à la formule de votre choix, sans rien saisir. Vous choisissez de continuer, ou pas : aucun prélèvement sans votre accord. Sans abonnement à la fin de l\'essai, votre compte passe en lecture seule — vos données restent consultables.'
   },
   {
     q: 'Puis-je changer de formule à tout moment ?',
@@ -137,7 +137,7 @@ const breadcrumb = {
 <Layout
   title="Tarifs d'un logiciel de gestion de flotte"
   jsonLd={[productSchema, faqSchema, breadcrumb]}
-  description="Dès 9 €/mois, 14 jours d'essai sur Pro sans carte. Piloter et rester conforme sur toutes les formules ; équipe et saisie chauffeur sur Enterprise."
+  description="Dès 9 €/mois, 14 jours d'essai sans carte sur toutes les formules. Piloter et rester conforme sur toutes les formules ; équipe et saisie chauffeur sur Enterprise."
 >
   <Navbar client:load currentPath="/pricing" />
 

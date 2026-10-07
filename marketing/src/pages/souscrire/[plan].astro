@@ -11,7 +11,7 @@ const PLANS = {
     price: '9',
     period: '/mois',
     tagline: 'Piloter sa flotte et rester conforme, sans tableur.',
-    trial: null,
+    trial: '14 jours gratuits, sans carte bancaire',
     included: [
       'Jusqu\'à 5 véhicules',
       'Jusqu\'à 3 conducteurs',
@@ -27,7 +27,7 @@ const PLANS = {
       'Invitations d\'équipe (admins, membres)',
       'Comptes chauffeur (saisie depuis le terrain)',
     ],
-    cta: { label: 'Créer mon compte', href: `${APP_URL}/login?plan=starter` },
+    cta: { label: 'Démarrer l\'essai gratuit', href: `${APP_URL}/login?plan=starter` },
   },
   pro: {
     name: 'Pro',
@@ -55,7 +55,7 @@ const PLANS = {
     price: '79',
     period: '/mois',
     tagline: 'Pour les flottes qui font saisir le terrain : chauffeurs, équipe, traçabilité.',
-    trial: null,
+    trial: '14 jours gratuits, sans carte bancaire',
     included: [
       'Véhicules et conducteurs illimités',
       'Tout Pro, sans limite',
@@ -66,7 +66,7 @@ const PLANS = {
       'Onboarding personnalisé et SLA garanti',
     ],
     excluded: [],
-    cta: { label: 'Contacter l\'équipe', href: '/contact' },
+    cta: { label: 'Démarrer l\'essai gratuit', href: `${APP_URL}/login?plan=enterprise` },
   },
 }
 
@@ -151,11 +151,7 @@ if (!p) return Astro.redirect('/pricing')
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
       <p class="text-xs text-zinc-500 text-center mt-3">
-        {plan === 'pro'
-          ? 'Vous créez votre compte, puis confirmez la formule. Aucun prélèvement pendant l\'essai.'
-          : plan === 'enterprise'
-          ? 'Nous vous recontactons pour cadrer votre déploiement.'
-          : 'Vous créez votre compte, puis finalisez le paiement sécurisé par Stripe.'}
+        Vous créez votre compte, puis confirmez la formule. Aucun prélèvement pendant l'essai.
       </p>
     </div>
   </section>

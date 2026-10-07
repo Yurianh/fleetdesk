@@ -119,7 +119,7 @@ Deno.serve(async (req) => {
       user_metadata: { ...existing.user_metadata, plan, onboarding_complete: true, stripe_customer_id: session.customer as string },
       // Trusted copy of the plan — app_metadata is service-role only, so feature
       // gates can rely on it (user_metadata is user-editable and spoofable).
-      app_metadata: { ...existing.app_metadata, plan },
+      app_metadata: { ...existing.app_metadata, plan, subscription: 'active' },
     })
     if (updateErr) throw updateErr
 

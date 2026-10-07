@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
 
     // Collaborators don't own a subscription — their plan derives from the org.
     if (user.user_metadata?.org_id) {
-      return new Response(JSON.stringify({ plan: 'enterprise', changed: false }), {
+      return new Response(JSON.stringify({ plan: 'enterprise', changed: false, subscription: 'active' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
@@ -73,9 +73,23 @@ Deno.serve(async (req) => {
     // through onboarding on login.
     const onboarded = hasLiveSub || !!user.user_metadata?.onboarding_complete
 
+    // Sans abonnement vivant, le compte passe en lecture seule. Le plan reste
+    // affiché comme repère, mais n'ouvre plus l'écriture : avant, l'absence
+    // d'abonnement valait Starter gratuit et illimité dans le temps, et un essai
+    // Pro laissé expirer devenait un Starter offert. Un compte marqué « comped »
+    // (démo, partenaire) reste ouvert sans abonnement.
+    const subscription = (hasLiveSub || user.app_metadata?.comped) ? 'active' : 'inactive'
+
+    // Un compte offert garde le plan qu'on lui a donné : Stripe n'en sait rien,
+    // et le réaligner sur Stripe le ramènerait à Starter.
+    if (user.app_metadata?.comped && !hasLiveSub && user.app_metadata?.plan) {
+      plan = user.app_metadata.plan
+    }
+
     const current = user.app_metadata?.plan ?? null
     const currentTrial = user.app_metadata?.trial_end ?? null
     const changed = current !== plan
+      || (user.app_metadata?.subscription ?? null) !== subscription
       || currentTrial !== trialEnd
       || (customerId && user.user_metadata?.stripe_customer_id !== customerId)
       || (hasLiveSub && !user.user_metadata?.onboarding_complete)
@@ -83,7 +97,7 @@ Deno.serve(async (req) => {
     if (changed) {
       const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
       await admin.auth.admin.updateUserById(user.id, {
-        app_metadata: { ...user.app_metadata, plan, trial_end: trialEnd },
+        app_metadata: { ...user.app_metadata, plan, trial_end: trialEnd, subscription },
         user_metadata: {
           ...user.user_metadata, plan,
           ...(customerId ? { stripe_customer_id: customerId } : {}),
@@ -93,7 +107,7 @@ Deno.serve(async (req) => {
       console.log('[sync-plan] updated', user.id, current, '->', plan, 'trial_end:', trialEnd, 'onboarded:', onboarded)
     }
 
-    return new Response(JSON.stringify({ plan, changed, trial_end: trialEnd, onboarded }), {
+    return new Response(JSON.stringify({ plan, changed, trial_end: trialEnd, onboarded, subscription }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (err: any) {

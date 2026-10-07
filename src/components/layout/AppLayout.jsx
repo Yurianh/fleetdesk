@@ -5,6 +5,7 @@ import Sidebar from './Sidebar'
 import AppLoader from './AppLoader'
 import BillingBanner from './BillingBanner'
 import TrialBanner from './TrialBanner'
+import ReadOnlyBanner from './ReadOnlyBanner'
 import { OnboardingProvider, useOnboarding } from '@/lib/OnboardingContext'
 import ProductTour from '@/components/onboarding/ProductTour'
 import SectionTour from '@/components/onboarding/SectionTour'
@@ -126,6 +127,7 @@ export default function AppLayout() {
 
           <main className="flex-1 overflow-y-auto bg-background">
             <BillingBanner />
+            <ReadOnlyBanner />
             <TrialBanner />
             <Outlet />
           </main>
