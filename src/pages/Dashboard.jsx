@@ -61,13 +61,22 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
   const [customTo, setCustomTo] = useState('')
   const dateLocale = useDateLocale()
 
-  const thisMonth = format(new Date(), 'yyyy-MM')
   const isCustom = !!(customFrom && customTo)
 
   const allMonths = useMemo(
     () => eachMonthOfInterval({ start: subMonths(new Date(), 23), end: new Date() }),
     []
   )
+  // Les mois choisissables sont ceux que le graphe couvre — les 24 derniers.
+  // Le plus récent en tête : c'est presque toujours par là qu'on commence.
+  const monthOptions = useMemo(
+    () => [...allMonths].reverse().map(m => ({
+      value: format(m, 'yyyy-MM'),
+      label: format(m, 'MMMM yyyy', { locale: dateLocale }),
+    })),
+    [allMonths, dateLocale]
+  )
+
   const months = useMemo(() => {
     if (isCustom) {
       let [a, b] = [customFrom, customTo].sort()
@@ -191,17 +200,29 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
 
       {showCustom && (
         <div className="flex flex-wrap items-end gap-3 mb-5 pb-4 border-b border-zinc-100">
+          {/* Deux listes plutôt que deux champs « month » : Safari et Firefox
+              sur ordinateur n'affichent pas de sélecteur pour ce type, juste
+              une case de texte qui exige la saisie exacte « 2026-08 ». Une
+              liste fonctionne partout, et ne propose que des mois couverts. */}
           <div>
-            <label className="block text-[11px] font-medium text-zinc-500 mb-1">Du (mois)</label>
-            <input type="month" value={customFrom} max={customTo || thisMonth}
-              onChange={e => setCustomFrom(e.target.value)}
-              className="border border-zinc-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30" />
+            <label htmlFor="usage-from" className="block text-[11px] font-medium text-zinc-500 mb-1">Du</label>
+            <select id="usage-from" value={customFrom} onChange={e => setCustomFrom(e.target.value)}
+              className="border border-zinc-200 rounded-lg pl-3 pr-8 py-1.5 text-sm bg-white capitalize focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30">
+              <option value="">Mois de début</option>
+              {monthOptions
+                .filter(o => !customTo || o.value <= customTo)
+                .map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-zinc-500 mb-1">Au (mois)</label>
-            <input type="month" value={customTo} min={customFrom} max={thisMonth}
-              onChange={e => setCustomTo(e.target.value)}
-              className="border border-zinc-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30" />
+            <label htmlFor="usage-to" className="block text-[11px] font-medium text-zinc-500 mb-1">Au</label>
+            <select id="usage-to" value={customTo} onChange={e => setCustomTo(e.target.value)}
+              className="border border-zinc-200 rounded-lg pl-3 pr-8 py-1.5 text-sm bg-white capitalize focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30">
+              <option value="">Mois de fin</option>
+              {monthOptions
+                .filter(o => !customFrom || o.value >= customFrom)
+                .map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
           </div>
           {isCustom && (
             <button onClick={() => selectPreset(3)} className="text-xs font-medium text-zinc-500 hover:text-amber-700 py-1.5">Réinitialiser</button>

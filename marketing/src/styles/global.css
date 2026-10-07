@@ -187,3 +187,60 @@
   /* Le chevron suit le même rythme que le dépliage. */
   details > summary svg { transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1); }
 }
+
+/* ── Bouton d'appel à l'action ──────────────────────────────────────────────
+   Le bleu de la marque, traversé au survol par une lumière qui passe une fois,
+   et une étincelle qui éclôt au moment où elle arrive. Un seul passage, pas de
+   boucle : le bouton répond, il ne s'agite pas. */
+.cta-brand {
+  position: relative;
+  background-color: var(--brand);
+  background-image: linear-gradient(110deg,
+    var(--brand) 0%, var(--brand) 32%,
+    #5AA2FF 48%, #8FC0FF 52%, #5AA2FF 56%,
+    var(--brand) 72%, var(--brand) 100%);
+  background-size: 260% 100%;
+  background-position: 118% 0;
+  box-shadow: 0 1px 2px rgba(0, 82, 214, .18);
+  transition:
+    background-position .85s cubic-bezier(.22, 1, .36, 1),
+    box-shadow .25s ease,
+    transform .18s cubic-bezier(.22, 1, .36, 1);
+}
+
+.cta-brand:hover,
+.cta-brand:focus-visible {
+  background-position: -18% 0;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 82, 214, .28);
+}
+
+.cta-brand:active { transform: translateY(1px) }
+
+/* L'étincelle attend que la lumière l'atteigne, puis éclôt et se retire. */
+.cta-brand .spark {
+  position: absolute;
+  top: 5px;
+  right: 9px;
+  width: 11px;
+  height: 11px;
+  opacity: 0;
+  transform: scale(.4) rotate(-25deg);
+  transition: opacity .25s ease, transform .45s cubic-bezier(.22, 1, .36, 1);
+  transition-delay: 0s;
+  pointer-events: none;
+}
+
+.cta-brand:hover .spark,
+.cta-brand:focus-visible .spark {
+  opacity: .95;
+  transform: scale(1) rotate(0deg);
+  transition-delay: .3s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-brand { transition: box-shadow .25s ease }
+  .cta-brand:hover { transform: none; background-position: 118% 0 }
+  .cta-brand .spark { transition: opacity .2s ease }
+  .cta-brand:hover .spark { transform: scale(1) rotate(0deg) }
+}

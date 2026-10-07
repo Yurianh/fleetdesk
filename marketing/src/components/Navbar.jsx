@@ -15,17 +15,44 @@ function isLoggedIn() {
   return document.cookie.split(';').some(c => c.trim().startsWith('fd_auth=1'))
 }
 
+// L'étincelle du survol : quatre branches, dessinée une fois pour les quatre
+// boutons d'appel à l'action.
+function Spark() {
+  return (
+    <svg className="spark" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+      <path d="M12 1.6l1.8 6a2.6 2.6 0 0 0 1.6 1.6l6 1.8-6 1.8a2.6 2.6 0 0 0-1.6 1.6l-1.8 6-1.8-6a2.6 2.6 0 0 0-1.6-1.6l-6-1.8 6-1.8a2.6 2.6 0 0 0 1.6-1.6l1.8-6Z"/>
+    </svg>
+  )
+}
+
 export default function Navbar({ currentPath = '/' }) {
-  const [open,       setOpen]       = useState(false)
-  const [loggedIn,   setLoggedIn]   = useState(false)
+  const [open,     setOpen]     = useState(false)
+  const [loggedIn, setLoggedIn] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
     setLoggedIn(isLoggedIn())
   }, [])
 
+  // En haut de page la barre se pose sans ombre : rien ne la sépare encore du
+  // contenu. Dès qu'on défile, elle se détache franchement.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
-    <header className="enter-soft sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-zinc-200/80">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    // L'enveloppe reste collante et transparente : elle réserve la place, la
+    // barre flotte à l'intérieur et le fond de page passe tout autour.
+    <header className="enter-soft sticky top-0 z-50 px-3 sm:px-5 pt-3 sm:pt-4 pb-2">
+      <div className={`max-w-6xl mx-auto rounded-2xl border bg-white/80 backdrop-blur-xl
+        px-3 sm:px-5 h-14 sm:h-16 flex items-center justify-between transition-[box-shadow,border-color] duration-300 ${
+        scrolled
+          ? 'border-zinc-200/90 shadow-[0_8px_30px_rgba(15,23,42,0.08)]'
+          : 'border-zinc-200/60 shadow-[0_1px_2px_rgba(15,23,42,0.03)]'
+      }`}>
 
         {/* Logo */}
         <a href="/" className="flex items-center gap-2.5 flex-shrink-0">
@@ -58,8 +85,8 @@ export default function Navbar({ currentPath = '/' }) {
           {loggedIn ? (
             <>
               <a href={APP_URL}
-                className="text-sm bg-[#0066FF] hover:bg-[#0052D6] text-white font-medium px-4 py-2 rounded-lg transition-colors">
-                Accéder au dashboard →
+                className="cta-brand text-sm text-white font-medium px-4 py-2 rounded-xl">
+                Accéder au dashboard →<Spark />
               </a>
             </>
           ) : (
@@ -69,8 +96,8 @@ export default function Navbar({ currentPath = '/' }) {
                 Se connecter
               </a>
               <a href={"/souscrire/pro"}
-                className="text-sm bg-[#0066FF] hover:bg-[#0052D6] text-white font-medium px-4 py-2 rounded-lg transition-colors">
-                Essayer gratuitement
+                className="cta-brand text-sm text-white font-medium px-4 py-2 rounded-xl">
+                Essayer gratuitement<Spark />
               </a>
             </>
           )}
@@ -89,9 +116,9 @@ export default function Navbar({ currentPath = '/' }) {
         </button>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — un second bloc flottant, sous la barre */}
       {open && (
-        <div className="md:hidden border-t border-zinc-200 bg-white px-4 py-3 space-y-1">
+        <div className="md:hidden max-w-6xl mx-auto mt-2 rounded-2xl border border-zinc-200/80 bg-white/95 backdrop-blur-xl shadow-[0_8px_30px_rgba(15,23,42,0.08)] px-3 py-3 space-y-1">
           {LINKS.map(l => (
             <a key={l.href} href={l.href} onClick={() => setOpen(false)}
               className={`block px-3 py-2 text-sm rounded-lg ${
@@ -106,8 +133,8 @@ export default function Navbar({ currentPath = '/' }) {
             {loggedIn ? (
               <>
                 <a href={APP_URL} onClick={() => setOpen(false)}
-                  className="block text-center text-sm bg-[#0066FF] hover:bg-[#0052D6] text-white font-medium px-4 py-2.5 rounded-lg transition-colors">
-                  Accéder au dashboard →
+                  className="cta-brand block text-center text-sm text-white font-medium px-4 py-2.5 rounded-xl">
+                  Accéder au dashboard →<Spark />
                 </a>
               </>
             ) : (
@@ -117,8 +144,8 @@ export default function Navbar({ currentPath = '/' }) {
                   Se connecter
                 </a>
                 <a href={"/souscrire/pro"} onClick={() => setOpen(false)}
-                  className="block text-center text-sm bg-[#0066FF] hover:bg-[#0052D6] text-white font-medium px-4 py-2.5 rounded-lg transition-colors">
-                  Essayer gratuitement
+                  className="cta-brand block text-center text-sm text-white font-medium px-4 py-2.5 rounded-xl">
+                  Essayer gratuitement<Spark />
                 </a>
               </>
             )}
