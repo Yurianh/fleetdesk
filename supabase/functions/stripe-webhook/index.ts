@@ -233,7 +233,16 @@ Deno.serve(async (req) => {
   if (event.type === 'invoice.payment_failed') {
     const invoice = event.data.object as Stripe.Invoice
     const customerId = invoice.customer as string
-    const user = await findUserByCustomer(supabase, customerId)
+    // Seul un renouvellement raté est un défaut de paiement. Une carte refusée
+    // pendant une souscription ou un changement de formule n'est qu'une
+    // tentative : le client est encore devant la caisse et en essaie une autre.
+    // Sans ce filtre, il recevait « Paiement échoué — mettez à jour votre carte »
+    // et son compte passait en défaut, au milieu d'un achat.
+    const isRenewal = invoice.billing_reason === 'subscription_cycle'
+    if (!isRenewal) {
+      console.log('[webhook] payment_failed ignored, billing_reason:', invoice.billing_reason)
+    }
+    const user = isRenewal ? await findUserByCustomer(supabase, customerId) : null
     if (user) {
       await supabase.auth.admin.updateUserById(user.id, {
         app_metadata: { ...user.app_metadata, billing_status: 'past_due' },

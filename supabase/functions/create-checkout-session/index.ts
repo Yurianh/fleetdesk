@@ -101,6 +101,28 @@ Deno.serve(async (req) => {
       metadata: { user_id: user.id, plan },
       allow_promotion_codes: true,
       locale: 'fr',
+
+      // Carte uniquement. La caisse proposait aussi Link et Amazon Pay, hérités
+      // de la configuration du tableau de bord : le 30/09/2026, après quatre
+      // cartes volées bloquées par Radar, c'est par Link qu'un fraudeur a fini
+      // par passer. Chaque moyen de paiement en plus est une porte de plus.
+      // Tous les pays restent acceptés : on ferme des canaux, pas des marchés.
+      payment_method_types: ['card'],
+
+      // Adresse complète : Radar et les banques comparent l'adresse saisie à
+      // celle du titulaire. Avec le seul code postal, il n'y avait presque rien
+      // à comparer — aucune des tentatives frauduleuses n'avait été vérifiée.
+      billing_address_collection: 'required',
+
+      // 3-D Secure demandé à chaque premier paiement, quel que soit le pays de
+      // la carte. Pour une carte européenne c'est déjà presque toujours le cas
+      // (DSP2) ; pour les autres, c'est ce qui arrête une carte volée sans le
+      // téléphone de son titulaire. En cas de litige sur un paiement validé en
+      // 3-D Secure, la responsabilité passe à la banque émettrice. Les
+      // renouvellements, prélevés hors session, n'y sont pas soumis.
+      payment_method_options: {
+        card: { request_three_d_secure: 'any' },
+      },
     }
 
     // 14-day free trial for Pro, without a card (matches the marketing promise).
