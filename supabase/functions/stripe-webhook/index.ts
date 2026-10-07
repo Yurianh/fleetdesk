@@ -1,7 +1,13 @@
 import Stripe from 'https://esm.sh/stripe@14'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!)
+// Supabase exécute les fonctions sous Deno, pas sous Node. Le SDK Stripe doit
+// donc y passer par fetch pour ses appels réseau, et par la Web Crypto API
+// (SubtleCrypto) pour vérifier les signatures.
+const stripe = new Stripe((Deno.env.get('STRIPE_SECRET_KEY') || '').trim(), {
+  httpClient: Stripe.createFetchHttpClient(),
+})
+const cryptoProvider = Stripe.createSubtleCryptoProvider()
 
 // Paginate through auth users to find the one whose metadata carries this Stripe
 // customer id. Avoids a fixed perPage:1000 cap that silently misses users past
@@ -122,9 +128,16 @@ Deno.serve(async (req) => {
   const sig = req.headers.get('stripe-signature')
   if (!sig) return new Response('Missing signature', { status: 400 })
 
+  // La vérification doit être asynchrone. constructEvent, la version
+  // synchrone, s'appuie sur la cryptographie de Node : sous Deno elle lève
+  // « SubtleCryptoProvider cannot be used in a synchronous context » avant même
+  // de comparer la signature. Chaque événement recevait donc un 400, et Stripe
+  // a fini par désactiver l'endpoint après 48 échecs.
   let event: Stripe.Event
   try {
-    event = stripe.webhooks.constructEvent(body, sig, Deno.env.get('STRIPE_WEBHOOK_SECRET')!)
+    event = await stripe.webhooks.constructEventAsync(
+      body, sig, (Deno.env.get('STRIPE_WEBHOOK_SECRET') || '').trim(), undefined, cryptoProvider,
+    )
   } catch (err) {
     console.error('[webhook] signature error:', err.message)
     return new Response(`Webhook error: ${err.message}`, { status: 400 })
