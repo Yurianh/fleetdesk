@@ -15,10 +15,11 @@ import { useOnboarding } from '@/lib/OnboardingContext'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useCan } from '@/lib/capabilities'
 import UpgradePrompt from '@/components/shared/UpgradePrompt'
-import { ACTIVITIES, MODULES, activityDefaults, useFeatures } from '@/lib/activity'
+import { ACTIVITIES, MODULES, useFeatures } from '@/lib/activity'
 import { SlidersHorizontal, Briefcase, Wand2, Bell } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 import { useMotionSetting } from '@/lib/motion'
+import { useAccess } from '@/lib/capabilities'
 
 const SECTIONS = [
   { id: 'profile',  icon: User,          labelKey: 'settings.profile' },
@@ -167,6 +168,10 @@ export default function Settings() {
   }
 
   const planInfo = PLAN_INFO[plan] ?? PLAN_INFO.starter
+  // Sans abonnement, le compte n'a pas de formule : il est en lecture seule.
+  // On ne lui affiche pas « Starter · Actif », et Starter redevient une formule
+  // à choisir au même titre que les autres.
+  const { readOnly } = useAccess()
 
   return (
     <div className="p-5 sm:p-8">
@@ -413,8 +418,17 @@ export default function Settings() {
                 <h2 className="text-sm font-semibold text-zinc-900 mb-4">{t('settings.currentPlan')}</h2>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${planInfo.color}`}>{planInfo.label}</span>
-                    <span className="text-sm text-zinc-500">{t('settings.activePlan')}</span>
+                    {readOnly ? (
+                      <>
+                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-zinc-100 text-zinc-700">Aucun abonnement</span>
+                        <span className="text-sm text-amber-800">Lecture seule</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${planInfo.color}`}>{planInfo.label}</span>
+                        <span className="text-sm text-zinc-500">{t('settings.activePlan')}</span>
+                      </>
+                    )}
                   </div>
                   {!isCollaborator && (plan !== 'starter' || user?.user_metadata?.stripe_customer_id) && (
                     <button
@@ -517,11 +531,33 @@ export default function Settings() {
               )}
 
               {/* Upgrade options */}
-              {plan !== 'enterprise' && !isCollaborator && (
+              {(readOnly || plan !== 'enterprise') && !isCollaborator && (
                 <div className="bg-white border border-zinc-200 rounded-xl p-5">
-                  <h2 className="text-sm font-semibold text-zinc-900 mb-4">{t('settings.upgradePlan')}</h2>
+                  <h2 className="text-sm font-semibold text-zinc-900 mb-4">
+                    {readOnly ? 'Choisir une formule' : t('settings.upgradePlan')}
+                  </h2>
                   <div className="space-y-3">
-                    {plan === 'starter' && (
+                    {readOnly && (
+                      <div className="flex items-center justify-between p-4 border border-zinc-200 bg-zinc-50/60 rounded-xl">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-zinc-100 rounded-lg flex items-center justify-center">
+                            <Truck className="w-4 h-4 text-zinc-600" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-zinc-900">Starter</p>
+                            <p className="text-xs text-zinc-500">5 {t('nav.vehicles').toLowerCase()} · 3 {t('nav.drivers').toLowerCase()}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-bold text-zinc-900">9 €<span className="text-xs font-normal text-zinc-400">/mois</span></span>
+                          <button onClick={() => handleUpgrade('starter')} disabled={saving}
+                            className="flex items-center gap-1.5 bg-zinc-900 hover:bg-zinc-700 text-white text-xs font-medium rounded-lg px-3 py-1.5 transition-colors">
+                            Choisir <ChevronRight className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    {(readOnly || plan === 'starter') && (
                       <div className="flex items-center justify-between p-4 border border-blue-100 bg-blue-50/50 rounded-xl">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">

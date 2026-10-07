@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
 
-// Discreet Pro-trial reminder. Deliberately restrained: it only appears in the
+// Discreet trial reminder (every plan starts with a card-free 14-day trial). Deliberately restrained: it only appears in the
 // final stretch of the trial (≤ WINDOW days left), is dismissible for the
 // session, and uses a calm tone — a nudge, not a nag. The card-free trial won't
 // auto-charge, so converting requires the user to add a payment method.
@@ -48,13 +48,15 @@ export default function TrialBanner() {
   }
 
   const when = daysLeft <= 1 ? 'aujourd\'hui' : `dans ${daysLeft} jours`
+  const PLAN_LABEL = { starter: 'Starter', pro: 'Pro', enterprise: 'Enterprise' }
+  const planName = PLAN_LABEL[user?.app_metadata?.plan] || ''
 
   return (
     <div className="bg-[#0066FF]/[0.06] border-b border-[#0066FF]/15 px-4 sm:px-8 py-2.5">
       <div className="flex items-center gap-3 flex-wrap">
         <Clock className="w-4 h-4 text-[#0066FF] flex-shrink-0" />
         <p className="text-sm text-zinc-700 flex-1 min-w-0">
-          Votre essai Pro se termine <span className="font-semibold">{when}</span>. Ajoutez un moyen de paiement pour conserver vos fonctionnalités Pro.
+          Votre essai{planName && ` ${planName}`} se termine <span className="font-semibold">{when}</span>. Ajoutez un moyen de paiement pour continuer à modifier vos données — sans quoi le compte passera en lecture seule.
         </p>
         <button
           onClick={activate}

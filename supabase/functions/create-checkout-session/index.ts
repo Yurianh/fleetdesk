@@ -56,13 +56,19 @@ Deno.serve(async (req) => {
     const existingCustomer = (await stripe.customers.list({ email: user.email!, limit: 1 })).data[0] || null
     const existingCustomerId = existingCustomer?.id || null
 
+    // Un essai par client, une seule fois. Sans ce garde, un compte passé en
+    // lecture seule à la fin de son essai pouvait choisir Pro à nouveau et
+    // obtenir quatorze jours de plus, indéfiniment.
+    let hadTrial = false
+
     // Guard: the email already maps to a live Stripe subscription.
     if (existingCustomerId) {
       const PLAN_BY_PRICE: Record<string, string> = {
         [PRICE_IDS.starter]: 'starter', [PRICE_IDS.pro]: 'pro', [PRICE_IDS.enterprise]: 'enterprise',
       }
-      const allSubs = await stripe.subscriptions.list({ customer: existingCustomerId, status: 'all', limit: 10 })
+      const allSubs = await stripe.subscriptions.list({ customer: existingCustomerId, status: 'all', limit: 100 })
       const live = allSubs.data.find(s => ['active', 'trialing', 'past_due'].includes(s.status))
+      hadTrial = allSubs.data.some(s => s.trial_start != null)
 
       if (live && onboarding) {
         // Sign-up with an already-subscribed email → provision this account from
@@ -73,7 +79,7 @@ Deno.serve(async (req) => {
         const { data: { user: existing } } = await admin.auth.admin.getUserById(user.id)
         await admin.auth.admin.updateUserById(user.id, {
           user_metadata: { ...existing?.user_metadata, plan: livePlan, onboarding_complete: true, stripe_customer_id: existingCustomerId },
-          app_metadata: { ...existing?.app_metadata, plan: livePlan },
+          app_metadata: { ...existing?.app_metadata, plan: livePlan, subscription: 'active' },
         })
         console.log('[checkout] onboarding with existing sub → provisioned:', user.id, livePlan)
         return new Response(JSON.stringify({ already_subscribed: true, plan: livePlan }), {
@@ -125,18 +131,21 @@ Deno.serve(async (req) => {
       },
     }
 
-    // 14-day free trial for Pro, without a card (matches the marketing promise).
-    // payment_method_collection:'if_required' → Stripe collects no card while
-    // nothing is due; at trial end, with no payment method, the subscription is
-    // cancelled (webhook downgrades to starter). The portal guard above already
-    // blocks existing paid customers.
-    if (plan === 'pro') {
+    // Essai de 14 jours sans carte, sur toutes les formules — une seule fois
+    // par client. payment_method_collection:'if_required' : Stripe ne demande
+    // aucune carte tant que rien n'est dû. À la fin de l'essai, sans moyen de
+    // paiement, l'abonnement est annulé et le compte passe en lecture seule (il
+    // ne retombe plus sur un Starter gratuit). D'où le garde hadTrial : sans
+    // lui, essai → lecture seule → nouvel essai, sans fin.
+    if (!hadTrial) {
       sessionParams.subscription_data = {
         trial_period_days: 14,
         trial_settings: { end_behavior: { missing_payment_method: 'cancel' } },
       }
       sessionParams.payment_method_collection = 'if_required'
-      console.log('[checkout] card-free 14-day trial applied for pro')
+      console.log('[checkout] card-free 14-day trial applied for', plan)
+    } else {
+      console.log('[checkout] no trial for', plan, '— this customer already had one')
     }
 
     // Reuse existing customer or create by email

@@ -3,8 +3,17 @@ import { useEffect } from 'react'
 import { supabase } from './supabase'
 import * as mock from './mockData'
 import { isPlausibleDate } from '@/lib/dateBounds'
+import { isWritable, READ_ONLY_MESSAGE } from '@/lib/writeAccess'
 
 const DEMO = import.meta.env.VITE_DEMO_MODE === 'true'
+
+// Un compte sans abonnement est en lecture seule. Le bandeau et les
+// formulaires l'annoncent ; ce garde-fou couvre tout chemin d'écriture qui leur
+// échapperait. La règle est appliquée côté client : elle ferme la porte à
+// l'usage normal de l'application, pas à un appel direct à l'API.
+function assertWritable() {
+  if (!isWritable()) throw new Error(READ_ONLY_MESSAGE)
+}
 
 async function orgUid() {
   const { data: { user } } = await supabase.auth.getUser()
@@ -208,6 +217,7 @@ export function useMaintenanceSchedules() {
 // In demo mode all mutations are no-ops — data is read-only mock data
 
 export async function createVehicle(data) {
+  assertWritable()
   if (DEMO) return
   const label = `${data.plate_number || ''}${data.model ? ' — ' + data.model : ''}`.trim() || 'Véhicule'
   const { error } = await supabase.from('vehicles').insert({ ...data, user_id: await orgUid() })
@@ -216,6 +226,7 @@ export async function createVehicle(data) {
 }
 
 export async function createDriver(data) {
+  assertWritable()
   if (DEMO) return
   const label = data.name || 'Conducteur'
   const { error } = await supabase.from('drivers').insert({ ...data, user_id: await orgUid() })
@@ -224,6 +235,7 @@ export async function createDriver(data) {
 }
 
 export async function createAssignment(data) {
+  assertWritable()
   if (DEMO) return { swapped: false }
   const uid = await orgUid()
   const now = new Date().toISOString()
@@ -270,6 +282,7 @@ export async function createAssignment(data) {
 }
 
 export async function unassignVehicle(vehicleId) {
+  assertWritable()
   if (DEMO) return
   const uid = await orgUid()
   const { error } = await supabase.from('assignments')
@@ -280,6 +293,7 @@ export async function unassignVehicle(vehicleId) {
 }
 
 export async function createMileageEntry(data) {
+  assertWritable()
   if (DEMO) return
   const label = data.mileage ? `${Number(data.mileage).toLocaleString('fr-FR')} km` : 'Relevé kilométrique'
   const { error } = await supabase.from('mileage_entries').insert({ ...data, user_id: await orgUid() })
@@ -298,6 +312,7 @@ function assertPlausibleDate(value, label) {
 }
 
 export async function createMaintenanceRecord(data) {
+  assertWritable()
   assertPlausibleDate(data.date, "Date de l'entretien")
   if (DEMO) return
   const label = data.type || 'Maintenance'
@@ -309,6 +324,7 @@ export async function createMaintenanceRecord(data) {
 }
 
 export async function createTechnicalInspection(data) {
+  assertWritable()
   assertPlausibleDate(data.inspection_date, "Date du contrôle")
   if (DEMO) return
   const { error } = await supabase.from('technical_inspections').insert({ ...data, user_id: await orgUid() })
@@ -317,6 +333,7 @@ export async function createTechnicalInspection(data) {
 }
 
 export async function createWashRecord(data) {
+  assertWritable()
   if (DEMO) return
   const label = data.amount ? `Lavage ${Number(data.amount).toFixed(2)} €` : 'Lavage'
   const { error } = await supabase.from('wash_records').insert({ ...data, user_id: await orgUid() })
@@ -325,6 +342,7 @@ export async function createWashRecord(data) {
 }
 
 export async function createMaintenanceSchedule(data) {
+  assertWritable()
   if (DEMO) return
   const label = data.task || 'Planning maintenance'
   const { error } = await supabase.from('maintenance_schedules').insert({ ...data, user_id: await orgUid() })
@@ -333,6 +351,7 @@ export async function createMaintenanceSchedule(data) {
 }
 
 export async function updateMaintenanceSchedule(id, data) {
+  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('maintenance_schedules').update(data).eq('id', id)
   if (error) throw error
@@ -340,6 +359,7 @@ export async function updateMaintenanceSchedule(id, data) {
 }
 
 export async function deleteMaintenanceSchedule(id) {
+  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('maintenance_schedules').delete().eq('id', id)
   if (error) throw error
@@ -347,6 +367,7 @@ export async function deleteMaintenanceSchedule(id) {
 }
 
 export async function updateDriver(id, data) {
+  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('drivers').update(data).eq('id', id)
   if (error) throw error
@@ -354,6 +375,7 @@ export async function updateDriver(id, data) {
 }
 
 export async function deleteDriver(id) {
+  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('drivers').delete().eq('id', id)
   if (error) throw error
@@ -361,6 +383,7 @@ export async function deleteDriver(id) {
 }
 
 export async function updateVehicle(id, data) {
+  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('vehicles').update(data).eq('id', id)
   if (error) throw error
@@ -371,6 +394,7 @@ export async function updateVehicle(id, data) {
 // mais garde son historique. Les affectations en cours sont closes — un véhicule
 // hors parc n'a plus de conducteur.
 export async function archiveVehicle(id, label = '') {
+  assertWritable()
   if (DEMO) return
   const uid = await orgUid()
   const now = new Date().toISOString()
@@ -382,6 +406,7 @@ export async function archiveVehicle(id, label = '') {
 }
 
 export async function restoreVehicle(id, label = '') {
+  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('vehicles').update({ archived_at: null }).eq('id', id)
   if (error) throw error
@@ -393,6 +418,7 @@ export const activeVehicles = (vehicles = []) => vehicles.filter(v => !v.archive
 export const archivedVehicles = (vehicles = []) => vehicles.filter(v => v.archived_at)
 
 export async function deleteVehicle(id) {
+  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('vehicles').delete().eq('id', id)
   if (error) throw error
@@ -400,6 +426,7 @@ export async function deleteVehicle(id) {
 }
 
 export async function updateMileageEntry(id, data) {
+  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('mileage_entries').update(data).eq('id', id)
   if (error) throw error
@@ -407,6 +434,7 @@ export async function updateMileageEntry(id, data) {
 }
 
 export async function updateAssignment(id, data) {
+  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('assignments').update(data).eq('id', id)
   if (error) throw error
@@ -414,6 +442,7 @@ export async function updateAssignment(id, data) {
 }
 
 export async function deleteMileageEntry(id) {
+  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('mileage_entries').delete().eq('id', id)
   if (error) throw error
@@ -421,6 +450,7 @@ export async function deleteMileageEntry(id) {
 }
 
 export async function deleteAssignment(id) {
+  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('assignments').delete().eq('id', id)
   if (error) throw error
@@ -428,6 +458,7 @@ export async function deleteAssignment(id) {
 }
 
 export async function updateTechnicalInspection(id, data) {
+  assertWritable()
   assertPlausibleDate(data.inspection_date, "Date du contrôle")
   if (DEMO) return
   const { error } = await supabase.from('technical_inspections').update(data).eq('id', id)
@@ -436,6 +467,7 @@ export async function updateTechnicalInspection(id, data) {
 }
 
 export async function deleteTechnicalInspection(id) {
+  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('technical_inspections').delete().eq('id', id)
   if (error) throw error
@@ -443,6 +475,7 @@ export async function deleteTechnicalInspection(id) {
 }
 
 export async function updateWashRecord(id, data) {
+  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('wash_records').update(data).eq('id', id)
   if (error) throw error
@@ -450,6 +483,7 @@ export async function updateWashRecord(id, data) {
 }
 
 export async function deleteWashRecord(id) {
+  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('wash_records').delete().eq('id', id)
   if (error) throw error
@@ -457,6 +491,7 @@ export async function deleteWashRecord(id) {
 }
 
 export async function updateMaintenanceRecord(id, data) {
+  assertWritable()
   assertPlausibleDate(data.date, "Date de l'entretien")
   if (DEMO) return
   // Same enum normalization as createMaintenanceRecord
@@ -467,6 +502,7 @@ export async function updateMaintenanceRecord(id, data) {
 }
 
 export async function deleteMaintenanceRecord(id) {
+  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('maintenance_records').delete().eq('id', id)
   if (error) throw error
@@ -512,6 +548,7 @@ export function useAllDriverDocuments() {
 }
 
 export async function createDriverDocument(data) {
+  assertWritable()
   if (DEMO) return
   const uid = await orgUid()
   const { error } = await supabase.from('driver_documents').insert({ ...data, org_id: uid })
@@ -520,6 +557,7 @@ export async function createDriverDocument(data) {
 }
 
 export async function updateDriverDocument(id, data) {
+  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('driver_documents')
     .update({ ...data, updated_at: new Date().toISOString() })
@@ -529,6 +567,7 @@ export async function updateDriverDocument(id, data) {
 }
 
 export async function deleteDriverDocument(id) {
+  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('driver_documents').delete().eq('id', id)
   if (error) throw error

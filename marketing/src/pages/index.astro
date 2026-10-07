@@ -93,8 +93,8 @@ const faq = [
     a: 'Oui. Vous ajoutez vos véhicules et conducteurs en quelques minutes, sans import complexe. La plupart des gérants sont opérationnels en moins de 5 minutes, sans formation.',
   },
   {
-    q: 'L\'essai Pro est-il vraiment sans carte bancaire ?',
-    a: '14 jours d\'accès complet au plan Pro, sans rien saisir. Vous choisissez de continuer, ou pas. Aucun prélèvement sans votre accord.',
+    q: 'L\'essai est-il vraiment sans carte bancaire ?',
+    a: 'Oui. 14 jours d\'accès complet à la formule de votre choix, sans rien saisir. Vous choisissez de continuer, ou pas : aucun prélèvement sans votre accord. Sans abonnement à la fin de l\'essai, votre compte passe en lecture seule — vos données restent consultables.',
   },
   {
     q: 'Combien de véhicules puis-je suivre ?',
@@ -119,9 +119,9 @@ const faq = [
 ]
 
 const teaserPlans = [
-  { name: 'Starter', price: '9',  note: 'Jusqu\'à 5 véhicules',      highlighted: false, href: '/souscrire/starter', cta: 'Choisir' },
+  { name: 'Starter', price: '9',  note: 'Jusqu\'à 5 véhicules',      highlighted: false, href: '/souscrire/starter', cta: 'Essayer' },
   { name: 'Pro',     price: '29', note: '14 jours d\'essai gratuit', highlighted: true,  href: '/souscrire/pro',     cta: 'Essayer' },
-  { name: 'Enterprise', price: '79', note: 'Flottes illimitées',     highlighted: false, href: '/souscrire/enterprise', cta: 'Voir' },
+  { name: 'Enterprise', price: '79', note: 'Flottes illimitées',     highlighted: false, href: '/souscrire/enterprise', cta: 'Essayer' },
 ]
 
 // Structured data for the homepage: organisation, product and the FAQ.
@@ -345,7 +345,7 @@ const faqSchema = {
             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
           </svg>
         </a>
-        <p class="mt-3 text-xs text-zinc-500">14 jours d'essai sur Pro · sans carte bancaire</p>
+        <p class="mt-3 text-xs text-zinc-500">14 jours d'essai sur toutes les formules · sans carte bancaire</p>
       </div>
     </div>
   </section>
@@ -637,7 +637,7 @@ const faqSchema = {
       <div class="mb-10 text-center">
         <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Tarifs transparents</p>
         <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-3">Un prix qui tient sur une ligne</h2>
-        <p class="text-lg text-zinc-600">Dès 9 €/mois. 14 jours d'essai sur Pro, sans carte.</p>
+        <p class="text-lg text-zinc-600">Dès 9 €/mois. 14 jours d'essai sur toutes les formules, sans carte.</p>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {teaserPlans.map(p => (

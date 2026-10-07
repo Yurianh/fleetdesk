@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from './supabase'
 import { mockUser } from './mockData'
 import { clearLanding } from '@/lib/motion'
+import { resolveAccess } from './capabilities'
+import { setWritable } from './writeAccess'
 
 const DEMO = import.meta.env.VITE_DEMO_MODE === 'true'
 
@@ -43,7 +45,7 @@ export function AuthProvider({ children }) {
   // Version des conditions en vigueur. À incrémenter à chaque modification des
   // CGU : c'est ce qui permet de savoir *quelles* conditions un client a
   // acceptées, et de redemander une acceptation si elles changent.
-  const TERMS_VERSION = '2026-09-15'
+  const TERMS_VERSION = '2026-10-07'
 
   const signUp = async (email, password) => {
     const url = (import.meta.env.VITE_SUPABASE_URL || '').trim()
@@ -77,6 +79,13 @@ export function AuthProvider({ children }) {
   // a sync, without waiting for a token refresh (a refreshed JWT doesn't always
   // re-bake app_metadata). The DB app_metadata is already authoritative and is
   // what the server enforces — this only keeps the client UI in step.
+  // La couche de données suit l'état d'accès du compte courant.
+  useEffect(() => { setWritable(resolveAccess(user) === 'active') }, [user])
+
+  // Même principe que applyPlan, pour l'état d'abonnement renvoyé par sync-plan.
+  const applySubscription = (subscription) =>
+    setUser(u => u ? { ...u, app_metadata: { ...u.app_metadata, subscription } } : u)
+
   const applyPlan = (plan) =>
     setUser(u => u ? { ...u, app_metadata: { ...u.app_metadata, plan } } : u)
 
@@ -94,7 +103,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, setDisplayName, applyPlan, applyOnboarded }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, setDisplayName, applyPlan, applySubscription, applyOnboarded }}>
       {children}
     </AuthContext.Provider>
   )

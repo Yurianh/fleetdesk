@@ -47,9 +47,10 @@ BEGIN
 
   -- ── Formule et identité de la société ─────────────────────
   -- Enterprise : sinon les lavages et l'analytique affichent un écran de
-  -- mise à niveau. digest_opt_out : aucun email automatique pendant la démo.
+  -- mise à niveau. « comped » : compte offert, jamais mis en lecture seule ni
+  -- réaligné sur Stripe, puisqu'il n'y a pas d'abonnement derrière. digest_opt_out : aucun email automatique pendant la démo.
   UPDATE auth.users
-     SET raw_app_meta_data  = COALESCE(raw_app_meta_data, '{}'::jsonb)  || '{"plan":"enterprise"}'::jsonb,
+     SET raw_app_meta_data  = COALESCE(raw_app_meta_data, '{}'::jsonb)  || '{"plan":"enterprise","comped":true,"subscription":"active"}'::jsonb,
          raw_user_meta_data = COALESCE(raw_user_meta_data, '{}'::jsonb) ||
            '{"full_name":"Thomas Lemaire","company":"Occitrans Services","org_company":"Occitrans Services","activity":"transport","onboarding_complete":true,"digest_opt_out":true}'::jsonb
    WHERE id = org;

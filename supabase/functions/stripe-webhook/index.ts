@@ -65,11 +65,11 @@ function dunningContent(variant: string, first: string, portalUrl: string, nextD
   const RED = '#dc2626', GREEN = '#16a34a'
   if (variant === 'trial_ending') {
     return {
-      subject: 'Votre essai Pro se termine bientôt — FleetDesk',
+      subject: 'Votre essai se termine bientôt — FleetDesk',
       accent: BRAND,
       html: shell(BRAND, `<h1 style="margin:0 0 12px;font-size:20px;font-weight:700;color:${INK}">Plus que quelques jours, ${first}.</h1>
-        <p style="margin:0 0 16px;font-size:14px;color:${INK};line-height:1.65">Votre essai <strong>Pro</strong> se termine ${nextDate ? `le <strong>${esc(nextDate)}</strong>` : 'bientôt'}. Pour conserver vos véhicules, analytics et alertes sans interruption, ajoutez un moyen de paiement — <strong>rien n'a été prélevé jusqu'ici</strong>.</p>
-        <p style="margin:0 0 20px;font-size:13px;color:${MUTE};line-height:1.6">Sans action de votre part, votre compte repassera simplement sur la formule Starter. Vos données sont conservées.</p>
+        <p style="margin:0 0 16px;font-size:14px;color:${INK};line-height:1.65">Votre essai FleetDesk se termine ${nextDate ? `le <strong>${esc(nextDate)}</strong>` : 'bientôt'}. Pour continuer à suivre votre flotte sans interruption, ajoutez un moyen de paiement — <strong>rien n'a été prélevé jusqu'ici</strong>.</p>
+        <p style="margin:0 0 20px;font-size:13px;color:${MUTE};line-height:1.6">Sans action de votre part, votre compte passera en lecture seule à la fin de l'essai : vos données sont conservées et restent consultables, et vous pourrez reprendre à tout moment en choisissant une formule.</p>
         ${cta(portalUrl, 'Activer mon abonnement', BRAND)}`),
     }
   }
@@ -87,7 +87,7 @@ function dunningContent(variant: string, first: string, portalUrl: string, nextD
       subject: 'Abonnement suspendu — FleetDesk',
       accent: RED,
       html: shell(RED, `<h1 style="margin:0 0 12px;font-size:20px;font-weight:700;color:${INK}">Votre abonnement a été suspendu.</h1>
-        <p style="margin:0 0 16px;font-size:14px;color:${INK};line-height:1.65">Après plusieurs tentatives de paiement infructueuses, votre abonnement a été résilié et votre compte est repassé sur la formule <strong>Starter</strong>. Vos données sont conservées. Réactivez une formule payante quand vous le souhaitez.</p>
+        <p style="margin:0 0 16px;font-size:14px;color:${INK};line-height:1.65">Après plusieurs tentatives de paiement infructueuses, votre abonnement a été résilié et votre compte est passé en <strong>lecture seule</strong>. Vos données sont conservées et restent consultables ; choisissez une formule pour les modifier à nouveau.</p>
         ${cta(`${APP_URL}/Settings`, 'Réactiver une formule', RED)}`),
     }
   }
@@ -96,7 +96,7 @@ function dunningContent(variant: string, first: string, portalUrl: string, nextD
       subject: 'Dernière tentative de paiement échouée — action requise',
       accent: RED,
       html: shell(RED, `<h1 style="margin:0 0 12px;font-size:20px;font-weight:700;color:${INK}">Dernière tentative échouée, ${first}.</h1>
-        <p style="margin:0 0 16px;font-size:14px;color:${INK};line-height:1.65">Nous n'avons pas pu prélever votre abonnement malgré plusieurs essais. <strong>Sans mise à jour de votre moyen de paiement, votre abonnement sera résilié</strong> et votre compte repassera sur Starter.</p>
+        <p style="margin:0 0 16px;font-size:14px;color:${INK};line-height:1.65">Nous n'avons pas pu prélever votre abonnement malgré plusieurs essais. <strong>Sans mise à jour de votre moyen de paiement, votre abonnement sera résilié</strong> et votre compte passera en lecture seule.</p>
         ${cta(portalUrl, 'Mettre à jour ma carte maintenant', RED)}`),
     }
   }
@@ -169,7 +169,7 @@ Deno.serve(async (req) => {
             stripe_customer_id: session.customer as string,
           },
           // Trusted plan for feature gates (service-role only, not spoofable).
-          app_metadata: { ...user?.app_metadata, plan },
+          app_metadata: { ...user?.app_metadata, plan, subscription: 'active' },
         })
         if (error) console.error('[webhook] failed to update user:', error.message)
         else console.log('[webhook] user activated:', user_id, 'plan:', plan)
@@ -195,7 +195,7 @@ Deno.serve(async (req) => {
     if (user) {
       await supabase.auth.admin.updateUserById(user.id, {
         user_metadata: { ...user.user_metadata, plan: newPlan },
-        app_metadata: { ...user.app_metadata, plan: newPlan },
+        app_metadata: { ...user.app_metadata, plan: newPlan, subscription: 'active' },
       })
       console.log('[webhook] plan updated:', user.id, '->', newPlan)
     }
@@ -210,11 +210,19 @@ Deno.serve(async (req) => {
     const user = await findUserByCustomer(supabase, customerId)
     if (user) {
       const wasPastDue = user.app_metadata?.billing_status === 'past_due'
+      // Plus d'abonnement : le compte garde ses données mais passe en lecture
+      // seule, au lieu de retomber sur un Starter gratuit et sans fin. Le plan
+      // reste « starter » comme repère d'affichage ; c'est `subscription` qui
+      // ouvre ou ferme l'écriture. Un compte offert (« comped ») n'est jamais
+      // fermé.
       await supabase.auth.admin.updateUserById(user.id, {
         user_metadata: { ...user.user_metadata, plan: 'starter', stripe_customer_id: null },
-        app_metadata: { ...user.app_metadata, plan: 'starter', billing_status: 'active' },
+        app_metadata: {
+          ...user.app_metadata, plan: 'starter', billing_status: 'active',
+          subscription: user.app_metadata?.comped ? 'active' : 'inactive',
+        },
       })
-      console.log('[webhook] user downgraded to starter:', user.id)
+      console.log('[webhook] subscription ended, account read-only:', user.id)
       // If the cancellation followed a dunning failure, tell them access dropped
       // to Starter (voluntary cancellations get the Stripe-side confirmation).
       if (wasPastDue) {
@@ -284,7 +292,7 @@ Deno.serve(async (req) => {
   }
 
   // ── customer.subscription.trial_will_end (Stripe fires ~3 days before) ──
-  // One discreet reminder to add a card before the card-free Pro trial ends.
+  // One discreet reminder to add a card before the card-free trial ends.
   if (event.type === 'customer.subscription.trial_will_end') {
     const sub = event.data.object as Stripe.Subscription
     const customerId = sub.customer as string
