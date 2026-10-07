@@ -35,9 +35,32 @@ Deno.serve(async (req) => {
     const { data: { user }, error: authErr } = await supabaseUser.auth.getUser()
     if (authErr || !user) return new Response(JSON.stringify({ error: 'Non autorisé' }), { status: 401, headers: corsHeaders })
 
-    // Collaborators don't own a subscription — their plan derives from the org.
+    // Collaborators don't own a subscription — their access derives from the
+    // org owner's. The org is read from org_members (service-role written), not
+    // from user_metadata, which the user can edit. The result is mirrored onto
+    // the collaborator's own app_metadata so the app can show the read-only
+    // state; the database enforces it independently, on the row owner.
     if (user.user_metadata?.org_id) {
-      return new Response(JSON.stringify({ plan: 'enterprise', changed: false, subscription: 'active' }), {
+      const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
+      const { data: membership } = await admin
+        .from('org_members').select('org_id')
+        .eq('user_id', user.id).eq('status', 'active')
+        .limit(1).maybeSingle()
+
+      let subscription = 'active'
+      if (membership?.org_id) {
+        const { data: { user: owner } } = await admin.auth.admin.getUserById(membership.org_id)
+        const ownerOpen = owner?.app_metadata?.comped || owner?.app_metadata?.subscription !== 'inactive'
+        subscription = ownerOpen ? 'active' : 'inactive'
+      }
+
+      const changed = (user.app_metadata?.subscription ?? 'active') !== subscription
+      if (changed) {
+        await admin.auth.admin.updateUserById(user.id, {
+          app_metadata: { ...user.app_metadata, subscription },
+        })
+      }
+      return new Response(JSON.stringify({ plan: 'enterprise', changed, subscription }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }

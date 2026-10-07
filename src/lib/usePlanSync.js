@@ -12,7 +12,7 @@ export function usePlanSync() {
   const isCollaborator = !!user?.user_metadata?.org_id
 
   useEffect(() => {
-    if (!userId || isCollaborator) return
+    if (!userId) return
     const key = `plan_synced_${userId}`
     if (sessionStorage.getItem(key)) return
     sessionStorage.setItem(key, '1')
@@ -27,7 +27,8 @@ export function usePlanSync() {
         // côté serveur : le webhook a pu le modifier entre-temps, et le jeton de
         // la session en cours peut encore porter l'ancienne valeur.
         if (!error && data?.subscription) applySubscription(data.subscription)
-        if (!error && data?.changed && data?.plan) {
+        // Un collaborateur n'a pas de plan à lui : seul l'état d'accès compte.
+        if (!error && !isCollaborator && data?.changed && data?.plan) {
           // Reflect the corrected plan in the UI immediately (gates re-read the
           // local user), then refresh the JWT in the background so it catches up.
           applyPlan(data.plan)

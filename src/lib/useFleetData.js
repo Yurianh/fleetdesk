@@ -9,8 +9,10 @@ const DEMO = import.meta.env.VITE_DEMO_MODE === 'true'
 
 // Un compte sans abonnement est en lecture seule. Le bandeau et les
 // formulaires l'annoncent ; ce garde-fou couvre tout chemin d'écriture qui leur
-// échapperait. La règle est appliquée côté client : elle ferme la porte à
-// l'usage normal de l'application, pas à un appel direct à l'API.
+// échapperait, et la base applique la même règle (readonly_rls.sql).
+// Les suppressions restent permises, comme en base : effacer ses données ne
+// donne accès à rien, et le RGPD impose de pouvoir retirer celles d'un
+// conducteur parti.
 function assertWritable() {
   if (!isWritable()) throw new Error(READ_ONLY_MESSAGE)
 }
@@ -359,7 +361,6 @@ export async function updateMaintenanceSchedule(id, data) {
 }
 
 export async function deleteMaintenanceSchedule(id) {
-  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('maintenance_schedules').delete().eq('id', id)
   if (error) throw error
@@ -375,7 +376,6 @@ export async function updateDriver(id, data) {
 }
 
 export async function deleteDriver(id) {
-  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('drivers').delete().eq('id', id)
   if (error) throw error
@@ -418,7 +418,6 @@ export const activeVehicles = (vehicles = []) => vehicles.filter(v => !v.archive
 export const archivedVehicles = (vehicles = []) => vehicles.filter(v => v.archived_at)
 
 export async function deleteVehicle(id) {
-  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('vehicles').delete().eq('id', id)
   if (error) throw error
@@ -442,7 +441,6 @@ export async function updateAssignment(id, data) {
 }
 
 export async function deleteMileageEntry(id) {
-  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('mileage_entries').delete().eq('id', id)
   if (error) throw error
@@ -450,7 +448,6 @@ export async function deleteMileageEntry(id) {
 }
 
 export async function deleteAssignment(id) {
-  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('assignments').delete().eq('id', id)
   if (error) throw error
@@ -467,7 +464,6 @@ export async function updateTechnicalInspection(id, data) {
 }
 
 export async function deleteTechnicalInspection(id) {
-  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('technical_inspections').delete().eq('id', id)
   if (error) throw error
@@ -483,7 +479,6 @@ export async function updateWashRecord(id, data) {
 }
 
 export async function deleteWashRecord(id) {
-  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('wash_records').delete().eq('id', id)
   if (error) throw error
@@ -502,7 +497,6 @@ export async function updateMaintenanceRecord(id, data) {
 }
 
 export async function deleteMaintenanceRecord(id) {
-  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('maintenance_records').delete().eq('id', id)
   if (error) throw error
@@ -567,7 +561,6 @@ export async function updateDriverDocument(id, data) {
 }
 
 export async function deleteDriverDocument(id) {
-  assertWritable()
   if (DEMO) return
   const { error } = await supabase.from('driver_documents').delete().eq('id', id)
   if (error) throw error
