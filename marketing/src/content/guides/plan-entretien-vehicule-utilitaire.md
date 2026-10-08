@@ -23,7 +23,7 @@ related:
     href: "/guides/cout-revient-kilometrique"
   - title: "Contrôle technique des véhicules d'entreprise"
     href: "/guides/controle-technique-flotte"
-  - title: "Logiciel de gestion de flotte : ce qu'il doit faire"
+  - title: "Logiciel de gestion de parc automobile : ce qu'il doit faire"
     href: "/logiciel-gestion-de-flotte"
 sources:
   - label: "Légifrance — Code de la route, article R323-1 (bon état de marche et entretien satisfaisant)"
@@ -48,7 +48,7 @@ Il n'existe pas de périodicité légale unique pour la vidange, le remplacement
 
 La plupart des plans constructeur fonctionnent sur un principe simple : chaque opération est associée à un seuil kilométrique et à un seuil calendaire, et l'échéance retenue est la première des deux atteinte. Un véhicule qui roule peu peut ainsi arriver à échéance par la date, même s'il est loin du seuil kilométrique. C'est ce mécanisme, pas un chiffre unique, qu'il faut reproduire dans le suivi de flotte.
 
-L'usage du véhicule joue aussi sur la vigilance à porter à certains postes, sans changer la règle de fond : se référer au carnet. Un utilitaire qui tracte régulièrement une remorque ou qui roule chargé sur des chantiers sollicite davantage freins, pneumatiques et suspensions qu'un véhicule utilisé pour des livraisons urbaines à vide. Certains constructeurs prévoient d'ailleurs un plan d'entretien renforcé pour les usages classés comme sévères ; là encore, c'est la notice du véhicule qui fait foi, pas une estimation.
+L'usage du véhicule joue aussi sur la vigilance à porter à certains postes, sans changer la règle de fond : se référer au carnet. Un utilitaire qui tracte régulièrement une remorque ou qui roule chargé sur des chantiers — cas courant dans une [flotte BTP ou d'artisans](/secteurs/btp) — sollicite davantage freins, pneumatiques et suspensions qu'un véhicule utilisé pour des livraisons urbaines à vide. Certains constructeurs prévoient d'ailleurs un plan d'entretien renforcé pour les usages classés comme sévères ; là encore, c'est la notice du véhicule qui fait foi, pas une estimation.
 
 Les postes qui reviennent dans la plupart des plans constructeur, sans que leur fréquence soit généralisable :
 
@@ -76,7 +76,7 @@ Le contrôle technique et le plan d'entretien répondent à des logiques différ
 
 ## Le coût d'un entretien reporté
 
-L'écart entre entretien préventif et entretien curatif se creuse vite : une vidange ou un jeu de plaquettes différé de quelques milliers de kilomètres peut transformer une opération planifiée et peu coûteuse en réparation lourde, doublée d'une immobilisation non prévue. Sur un plan financier, ces réparations subies pèsent directement sur le coût de revient du véhicule concerné, et sur un plan opérationnel, elles tombent toujours au pire moment : en pleine tournée, jamais pendant un créneau atelier réservé à l'avance.
+L'écart entre entretien préventif et entretien curatif se creuse vite : une vidange ou un jeu de plaquettes différé de quelques milliers de kilomètres peut transformer une opération planifiée et peu coûteuse en réparation lourde, doublée d'une immobilisation non prévue. Sur un plan financier, ces réparations subies pèsent directement sur le coût de revient du véhicule concerné, et sur un plan opérationnel, elles tombent toujours au pire moment : en pleine tournée, jamais pendant un créneau atelier réservé à l'avance. En [transport routier](/secteurs/transport-routier), où le véhicule immobilisé emporte la tournée avec lui, c'est le premier poste à sécuriser.
 
 <p class="note">En cas de doute sur l'impact d'un entretien non réalisé sur une garantie ou un contrat d'assurance, la réponse dépend des conditions précises du contrat concerné : se référer aux conditions générales ou à l'assureur plutôt qu'à une règle générale.</p>
 
@@ -85,7 +85,7 @@ L'écart entre entretien préventif et entretien curatif se creuse vite : une vi
 À l'échelle d'une flotte, trois pratiques évitent que le plan d'entretien ne devienne une liste ignorée :
 
 - **Centraliser les échéances** plutôt que de laisser chaque carnet papier dans sa boîte à gants : un carnet perdu, c'est un historique perdu.
-- **Faire remonter le signal terrain** : le conducteur repère un bruit, un voyant ou une perte de pression avant que cela devienne une panne. Un plan d'entretien qui ne capte pas ces remontées passe à côté d'une partie des incidents.
+- **Faire remonter le signal terrain** : le conducteur repère un bruit, un voyant ou une perte de pression avant que cela devienne une panne. Un plan d'entretien qui ne capte pas ces remontées passe à côté d'une partie des incidents. Sur des [véhicules de société](/secteurs/vehicules-de-societe) confiés à des collaborateurs, c'est souvent le seul signal disponible.
 - **Anticiper l'échéance**, en kilomètres et en date, plutôt que de la découvrir au moment du rendez-vous atelier manqué.
 
-Un [logiciel de gestion de flotte](/logiciel-gestion-de-flotte) sert précisément à tenir ces trois points sans dépendre de la mémoire d'une seule personne : échéance par véhicule, alerte avant dépassement, historique des interventions et remontées des conducteurs au même endroit. Pour démarrer ce suivi sans changer d'outil dans l'immédiat, notre [modèle de suivi de parc automobile](/outils/modele-suivi-parc-automobile-excel) permet de poser les quatre informations clés par véhicule dès aujourd'hui.
+Un [logiciel de gestion de parc automobile](/logiciel-gestion-de-flotte) sert précisément à tenir ces trois points sans dépendre de la mémoire d'une seule personne : échéance par véhicule, alerte avant dépassement, historique des interventions et remontées des conducteurs au même endroit. Pour démarrer ce suivi sans changer d'outil dans l'immédiat, notre [modèle de suivi de parc automobile](/outils/modele-suivi-parc-automobile-excel) permet de poser les quatre informations clés par véhicule dès aujourd'hui.

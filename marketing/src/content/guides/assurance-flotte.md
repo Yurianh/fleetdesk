@@ -34,7 +34,7 @@ sources:
 
 Une entreprise qui multiplie les véhicules a intérêt à regrouper leur couverture. Le contrat de flotte assure l'ensemble du parc sous un seul contrat, au lieu d'un contrat isolé par véhicule. Résultat : moins de paperasse, des conditions harmonisées, une seule échéance à suivre, et surtout un levier de négociation à l'échelle du parc.
 
-Le basculement se justifie en général à partir de 3 à 5 véhicules. Autre avantage concret : l'entrée et la sortie de véhicules se gèrent par avenant, sans renégocier un contrat à chaque acquisition.
+Le basculement se justifie en général à partir de 3 à 5 véhicules, ce qui concerne déjà la plupart des entreprises qui confient des [véhicules de société](/secteurs/vehicules-de-societe) à leurs commerciaux ou techniciens. Autre avantage concret : l'entrée et la sortie de véhicules se gèrent par avenant, sans renégocier un contrat à chaque acquisition.
 
 ## Les garanties à considérer
 
@@ -43,8 +43,8 @@ Le socle minimal est la responsabilité civile, obligatoire pour tout véhicule 
 - **Responsabilité civile** : couvre les dommages causés aux tiers. C'est le minimum légal.
 - **Dommages tous accidents, vol, incendie, bris de glace** : à arbitrer selon la valeur résiduelle et l'exposition. Sur un véhicule ancien et peu exposé, la garantie dommages coûte parfois plus qu'elle ne rapporte.
 - **Garantie du conducteur** : souvent négligée, elle couvre le conducteur salarié qui est responsable de l'accident.
-- **Assistance et véhicule de remplacement** : déterminante pour limiter l'immobilisation, donc la perte d'exploitation.
-- **Marchandise transportée et contenu** : pour les activités qui transportent outillage ou stock.
+- **Assistance et véhicule de remplacement** : déterminante pour limiter l'immobilisation, donc la perte d'exploitation. Sur une [flotte VTC ou taxi](/secteurs/vtc-taxi), une voiture à l'arrêt ne fait plus de chiffre d'affaires.
+- **Marchandise transportée et contenu** : pour les activités qui transportent outillage ou stock, comme les [artisans et le BTP](/secteurs/btp) ou le [transport routier](/secteurs/transport-routier).
 - **Aménagements et équipements** : un utilitaire aménagé vaut plus que le véhicule nu ; l'aménagement doit être déclaré.
 
 <p class="note">Les besoins varient fortement d'une flotte à l'autre. Faites le point avec votre assureur ou votre courtier pour ajuster les garanties à votre activité réelle, plutôt que de reconduire le contrat existant par défaut.</p>

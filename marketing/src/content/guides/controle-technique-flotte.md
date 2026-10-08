@@ -23,7 +23,7 @@ related:
     href: "/guides/controle-technique-expire-sanctions"
   - title: "Les documents obligatoires du conducteur professionnel"
     href: "/guides/documents-conducteur"
-  - title: "Logiciel de gestion de flotte : ce qu'il doit faire"
+  - title: "Logiciel de gestion de parc automobile : ce qu'il doit faire"
     href: "/logiciel-gestion-de-flotte"
 sources:
   - label: "Service-public.fr — Contrôle technique d'une voiture"
@@ -44,11 +44,11 @@ Le contrôle technique constate un état à un instant donné ; il ne remplace p
 
 La fréquence dépend de la catégorie et de l'usage du véhicule. Les grandes lignes en France :
 
-- **Voitures particulières et utilitaires de moins de 3,5 tonnes** : premier contrôle dans les 6 mois précédant le 4e anniversaire de la première mise en circulation, puis tous les 2 ans.
+- **Voitures particulières et utilitaires de moins de 3,5 tonnes** : premier contrôle dans les 6 mois précédant le 4e anniversaire de la première mise en circulation, puis tous les 2 ans. C'est le rythme de la plupart des [utilitaires du BTP et des artisans](/secteurs/btp) comme des [véhicules de société](/secteurs/vehicules-de-societe).
 - **Utilitaires légers** : en complément du contrôle technique, un contrôle des émissions polluantes est réalisé entre deux contrôles périodiques.
-- **Poids lourds de plus de 3,5 tonnes** : visite technique annuelle, avec des contrôles complémentaires selon le type de véhicule et son usage.
+- **Poids lourds de plus de 3,5 tonnes** : visite technique annuelle, avec des contrôles complémentaires selon le type de véhicule et son usage — le calendrier de base de la [gestion de flotte pour le transport routier](/secteurs/transport-routier).
 - **Transport de personnes** (autocars, minibus de transport en commun) : régime plus strict, avec des visites complémentaires en cours d'année.
-- **Taxis, VTC, VSL, ambulances, auto-écoles** : contrôle technique annuel, du fait de l'usage intensif et du transport de tiers.
+- **Taxis, VTC, VSL, ambulances, auto-écoles** : contrôle technique annuel, du fait de l'usage intensif et du transport de tiers. Les autres échéances d'une [flotte VTC ou taxi](/secteurs/vtc-taxi) suivent le même rythme serré.
 - **Véhicules destinés à la vente** : un contrôle de moins de 6 mois est exigé lors de la cession à un particulier. À anticiper quand vous renouvelez votre parc.
 
 <p class="note">Les périodicités évoluent avec la réglementation et varient selon le genre inscrit sur la carte grise (VP, CTTE, CAM…). Prenez ces repères comme une base et confirmez la règle exacte applicable à chaque véhicule, en particulier pour les usages spécifiques.</p>

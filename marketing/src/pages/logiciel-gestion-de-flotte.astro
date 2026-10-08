@@ -58,8 +58,8 @@ const compare = [
 
 const faq = [
   {
-    q: "Qu'est-ce qu'un logiciel de gestion de flotte ?",
-    a: "C'est un outil qui centralise les véhicules d'une entreprise, leurs conducteurs, leurs documents et leurs échéances réglementaires. Il calcule les dates d'expiration (contrôle technique, assurance, permis, visite médicale), alerte avant échéance, conserve les justificatifs et suit les coûts par véhicule.",
+    q: "Qu'est-ce qu'un logiciel de gestion de parc automobile ?",
+    a: "C'est un outil, aussi appelé logiciel de gestion de flotte, qui centralise les véhicules d'une entreprise, leurs conducteurs, leurs documents et leurs échéances réglementaires. Il calcule les dates d'expiration (contrôle technique, assurance, permis, visite médicale), alerte avant échéance, conserve les justificatifs et suit les coûts par véhicule.",
   },
   {
     q: "À partir de combien de véhicules faut-il un logiciel de flotte ?",
@@ -70,8 +70,8 @@ const faq = [
     a: "Le boîtier télématique renseigne sur le déplacement du véhicule : position, trajets, conduite. Le logiciel de gestion de flotte gère la vie administrative et économique du parc : documents, échéances réglementaires, entretien, coûts. Les deux se complètent, mais ne répondent pas au même besoin.",
   },
   {
-    q: "Combien coûte un logiciel de gestion de flotte pour une PME ?",
-    a: "Les offres pour PME se situent généralement entre quelques euros et quelques dizaines d'euros par mois selon la taille du parc. FleetDesk démarre à 9 € par mois pour 5 véhicules, avec un essai de 14 jours sans carte bancaire sur la formule Pro.",
+    q: "Combien coûte un logiciel de gestion de parc automobile pour une PME ?",
+    a: "Les offres pour PME se situent généralement entre quelques euros et quelques dizaines d'euros par mois selon la taille du parc. FleetDesk démarre à 9 € par mois pour 5 véhicules, avec un essai de 14 jours sans carte bancaire sur toutes les formules.",
   },
   {
     q: "Combien de temps faut-il pour mettre en place un outil de gestion de flotte ?",
@@ -92,7 +92,7 @@ const breadcrumb = {
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://fleetdesk.fr/' },
-    { '@type': 'ListItem', position: 2, name: 'Logiciel de gestion de flotte', item: 'https://fleetdesk.fr/logiciel-gestion-de-flotte' },
+    { '@type': 'ListItem', position: 2, name: 'Logiciel de gestion de parc automobile', item: 'https://fleetdesk.fr/logiciel-gestion-de-flotte' },
   ],
 }
 const softwareSchema = {
@@ -111,8 +111,8 @@ const softwareSchema = {
 }
 ---
 <Layout
-  title="Logiciel de gestion de flotte automobile pour PME"
-  description="Ce qu'un logiciel de gestion de flotte doit faire : échéances calculées, alertes, documents centralisés, coûts par véhicule. Critères de choix pour une PME."
+  title="Logiciel de gestion de parc automobile pour PME"
+  description="Ce qu'un logiciel de gestion de parc automobile doit faire : échéances calculées, alertes, documents centralisés, coûts par véhicule. Critères de choix pour une PME."
   jsonLd={[softwareSchema, faqSchema, breadcrumb]}
 >
   <Navbar client:load currentPath="/logiciel-gestion-de-flotte" />
@@ -122,11 +122,11 @@ const softwareSchema = {
     <div class="max-w-5xl mx-auto px-4 sm:px-6">
       <nav class="text-xs text-zinc-500 mb-8 flex items-center gap-1.5" aria-label="Fil d'ariane">
         <a href="/" class="hover:text-[#0066FF]">Accueil</a><span>/</span>
-        <span class="text-zinc-600">Logiciel de gestion de flotte</span>
+        <span class="text-zinc-600">Logiciel de gestion de parc automobile</span>
       </nav>
       <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-4">Guide d'achat</p>
       <h1 class="font-display text-4xl sm:text-5xl font-semibold text-zinc-900 tracking-tight leading-[1.05] max-w-3xl mb-6">
-        Logiciel de gestion de flotte : ce qu'il doit vraiment faire
+        Logiciel de gestion de parc automobile : ce qu'il doit vraiment faire
       </h1>
       <p class="text-lg text-zinc-600 max-w-2xl leading-relaxed mb-8">
         Suivre des véhicules n'est pas le problème. Ne rien oublier l'est. Voici les six critères qui séparent un outil
@@ -148,11 +148,11 @@ const softwareSchema = {
   <section class="py-16 sm:py-20 border-b border-zinc-100">
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
       <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-5 leading-tight">
-        Ce qu'est un logiciel de gestion de flotte
+        Ce qu'est un logiciel de gestion de parc automobile
       </h2>
       <div class="space-y-4 text-zinc-600 leading-relaxed">
         <p>
-          Un logiciel de gestion de flotte centralise les véhicules d'une entreprise, leurs conducteurs, leurs documents
+          Un logiciel de gestion de parc automobile — on parle aussi de <a href="/" class="text-[#0066FF] font-medium hover:underline">logiciel de gestion de flotte</a> — centralise les véhicules d'une entreprise, leurs conducteurs, leurs documents
           et leurs échéances. Il remplace le trio classique — un tableur, une boîte mail et la mémoire du gestionnaire —
           par une source unique qui calcule et qui prévient.
         </p>

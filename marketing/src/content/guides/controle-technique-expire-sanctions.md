@@ -55,7 +55,7 @@ Aucun retrait de point n'est associé à cette infraction, mais elle s'accumule 
 
 Au-delà de l'amende, les forces de l'ordre peuvent immobiliser le véhicule et retenir le certificat d'immatriculation. Une fiche de circulation provisoire permet alors, dans un délai court, de rejoindre un centre de contrôle. Pendant ce temps, le véhicule ne fait pas sa tournée.
 
-C'est souvent le vrai coût : quelques centaines d'euros d'amende, mais une journée d'exploitation perdue, un client non livré et un conducteur immobilisé.
+C'est souvent le vrai coût : quelques centaines d'euros d'amende, mais une journée d'exploitation perdue, un client non livré et un conducteur immobilisé. Le risque revient d'autant plus souvent que le contrôle est annuel : c'est le cas de chaque poids lourd d'une [flotte de transport routier](/secteurs/transport-routier) et de chaque voiture d'une [flotte VTC ou taxi](/secteurs/vtc-taxi).
 
 ### Les conséquences en cas de sinistre
 
@@ -63,7 +63,7 @@ La responsabilité civile continue d'indemniser les tiers — c'est son objet m�
 
 ## Qui est responsable dans l'entreprise
 
-L'avis de contravention part vers le titulaire du certificat d'immatriculation, donc l'entreprise. Mais la question de fond est ailleurs : l'employeur a l'obligation de mettre à disposition de ses salariés un équipement de travail conforme et entretenu. Un véhicule dont le contrôle technique est périmé n'entre pas dans cette catégorie.
+L'avis de contravention part vers le titulaire du certificat d'immatriculation, donc l'entreprise. C'est vrai aussi pour les [véhicules de société](/secteurs/vehicules-de-societe) confiés à des collaborateurs dont la conduite n'est pas le métier. Mais la question de fond est ailleurs : l'employeur a l'obligation de mettre à disposition de ses salariés un équipement de travail conforme et entretenu. Un véhicule dont le contrôle technique est périmé n'entre pas dans cette catégorie.
 
 En cas d'accident grave impliquant un véhicule non conforme, la responsabilité de l'employeur peut être recherchée, y compris au titre de la faute inexcusable. Le conducteur, lui, peut légitimement refuser de prendre un véhicule non conforme.
 
@@ -72,7 +72,7 @@ En cas d'accident grave impliquant un véhicule non conforme, la responsabilité
 ## Les réflexes qui évitent l'infraction
 
 - **Anticiper de 30 jours** : le contrôle peut être passé avant l'échéance sans perdre de validité.
-- **Bloquer un créneau à l'avance** : les centres saturent en fin de mois et en période de congés.
+- **Bloquer un créneau à l'avance** : les centres saturent en fin de mois et en période de congés. Pour les [utilitaires du BTP et des artisans](/secteurs/btp), mieux vaut aussi éviter la pleine saison des chantiers.
 - **Tracer la contre-visite** : elle a son propre délai, en général 2 mois, et c'est l'oubli le plus fréquent.
 - **Rattacher le procès-verbal au véhicule** : en cas de contrôle, la preuve doit être trouvable en quelques secondes.
 - **Prévoir le remplacement** : une immobilisation planifiée coûte beaucoup moins cher qu'une immobilisation subie.
