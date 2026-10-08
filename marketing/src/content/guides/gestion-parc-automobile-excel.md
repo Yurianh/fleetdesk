@@ -1,15 +1,17 @@
 ---
-title: "Suivi de parc automobile sur Excel : limites"
-description: "Ce qu'un tableur de suivi de parc automobile sait faire, là où il casse, et à partir de combien de véhicules il devient risqué. Modèle Excel gratuit."
-heading: "Gérer un parc automobile sur Excel : jusqu'où ça tient"
-intro: "Le tableur est le premier outil de toutes les flottes, et le bon choix au début. Le problème n'est pas Excel : c'est le moment où l'on continue à s'en servir alors qu'il ne prévient plus personne."
+title: "Suivi de parc automobile sur Excel : modèle gratuit et limites"
+description: "Modèle Excel gratuit pour suivre votre parc automobile : véhicules, conducteurs, échéances. Et les limites du tableur, avant de passer à un logiciel."
+heading: "Suivre son parc automobile sur Excel : le modèle gratuit, et jusqu'où ça tient"
+intro: "Le tableur est le premier outil de toutes les flottes, et le bon choix au début. Voici un modèle gratuit pour le tenir proprement — puis le moment où il faut passer à autre chose, parce qu'il ne prévient plus personne."
 tag: "Pilotage"
-cardTitle: "Gérer un parc automobile sur Excel"
+cardTitle: "Parc automobile sur Excel : modèle gratuit"
 cardDesc: "Ce que le tableur sait faire, là où il casse, et le modèle gratuit pour démarrer proprement."
 published: "2026-09-12"
-updated: "2026-09-12"
+updated: "2026-10-08"
 order: 45
 faq:
+  - q: "Existe-t-il un logiciel de gestion de parc automobile gratuit ?"
+    a: "Le plus simple reste un tableur : notre modèle Excel est gratuit et téléchargeable sans inscription. Côté logiciel, FleetDesk s'essaie gratuitement pendant 14 jours, sans carte bancaire, sur toutes les formules ; il coûte ensuite à partir de 9 € par mois. Méfiez-vous des outils « gratuits » sans limite de durée : ils se financent en général par la revente de données ou par des fonctions essentielles verrouillées."
   - q: "Excel suffit-il pour gérer une flotte de véhicules ?"
     a: "Jusqu'à 3 ou 4 véhicules et un seul gestionnaire, oui. Au-delà, le tableur atteint ses limites : il ne calcule pas les échéances à votre place, ne vous alerte pas, ne stocke pas les justificatifs et supporte mal le travail à plusieurs."
   - q: "Quels sont les vrais risques d'un suivi sur tableur ?"
@@ -27,6 +29,19 @@ related:
     href: "/logiciel-gestion-de-flotte"
 ---
 
+## Le modèle gratuit
+
+Avant de parler de limites, de quoi démarrer correctement. Notre [modèle de suivi de parc automobile](/outils/modele-suivi-parc-automobile-excel) est gratuit, sans inscription, et s'ouvre dans Excel, Google Sheets, LibreOffice ou Numbers. Il compte quatre onglets :
+
+- **Véhicules** — immatriculation, modèle, mise en circulation, échéances de contrôle technique ;
+- **Conducteurs** — permis, visite médicale, véhicule attribué ;
+- **Entretiens et dépenses** — chaque intervention, avec son coût ;
+- **Coût par véhicule** — le coût kilométrique calculé à partir des dépenses.
+
+Les échéances proches se colorent d'elles-mêmes : c'est le maximum qu'un tableur sache faire pour vous prévenir.
+
+<p class="note"><a href="/outils/modele-suivi-parc-automobile-excel">Télécharger le modèle Excel gratuit →</a></p>
+
 ## Ce qu'Excel fait très bien
 
 Il faut lui rendre justice : pour démarrer, le tableur est imbattable. Gratuit ou déjà payé, connu de tout le monde, modifiable en trente secondes, il ne demande aucun paramétrage. Sur deux ou trois véhicules, un onglet bien tenu suffit largement.
@@ -38,7 +53,7 @@ Ce qu'il fait bien :
 - produire un total ou une moyenne en une formule ;
 - se partager facilement.
 
-Si c'est votre situation, ne changez rien : téléchargez plutôt notre [modèle de suivi de parc automobile](/outils/modele-suivi-parc-automobile-excel) et structurez proprement ce que vous avez déjà.
+Si c'est votre situation, ne changez rien : le modèle ci-dessus suffit, et structure proprement ce que vous avez déjà.
 
 ## Les cinq points de rupture
 
@@ -78,4 +93,4 @@ Quelques signaux montrent qu'on a dépassé la zone de confort du tableur :
 
 Un logiciel de gestion de flotte reprend les mêmes données, mais leur ajoute trois propriétés que le tableur n'aura jamais : le calcul automatique des échéances, l'alerte avant expiration, et le stockage des justificatifs rattachés à l'entité concernée. S'ajoutent les accès différenciés (un chauffeur saisit son kilométrage sans voir la facturation) et l'historique qui ne se perd pas.
 
-FleetDesk fait précisément cela, sans la lourdeur d'un outil de grand groupe : [échéances calculées et alertées](/conformite), documents stockés par véhicule et par conducteur, saisie terrain par les chauffeurs. Voir ce qu'un [logiciel de gestion de flotte](/logiciel-gestion-de-flotte) doit couvrir, ou reprendre d'abord votre parc dans notre [modèle Excel gratuit](/outils/modele-suivi-parc-automobile-excel).
+FleetDesk fait précisément cela, sans la lourdeur d'un outil de grand groupe : [échéances calculées et alertées](/conformite), documents stockés par véhicule et par conducteur, saisie terrain par les chauffeurs. Il s'essaie **gratuitement pendant 14 jours, sans carte bancaire**, sur toutes les formules — de quoi y reprendre votre tableur et juger sur pièce. Voir aussi ce qu'un [logiciel de gestion de flotte](/logiciel-gestion-de-flotte) doit couvrir.

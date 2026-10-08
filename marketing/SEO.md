@@ -49,11 +49,17 @@ pointe vers 3 guides ; le hub guides et le footer couvrent tout le reste.
 
 ## Prochain lot (par ordre de priorité)
 
-1. **Entretien et pannes** — « plan d'entretien véhicule utilitaire », « intervalle vidange utilitaire ».
-2. **Coûts** — « TCO véhicule entreprise », « carte carburant entreprise comparatif ».
-3. **Réglementaire** — « temps de conduite et de repos », « chronotachygraphe obligations », « ZFE flotte ».
-4. **Comparatifs concurrents** — à ouvrir seulement quand le produit aura plus de recul client.
-5. **Pages secteur additionnelles** — ambulances/VSL, auto-écoles, paysagistes, déménageurs.
+Réordonné le 2026-10-08 d'après Search Console (28 derniers jours, France : 69 impressions, 3 clics, tous sur la marque). Les sujets qui ont déjà un signal passent devant ceux qui n'en ont pas.
+
+1. **Guide « Logiciel de gestion de parc automobile gratuit : ce qui existe vraiment »** — « gestion parc automobile gratuit » : 8 impressions en position 7,8, 0 clic ; « gestion de parc automobile gratuit » en position 2. L'intention « gratuit » est la plus présente des requêtes hors marque. Contenu honnête : le modèle Excel, les offres gratuites du marché et leurs contreparties, l'essai FleetDesk de 14 jours sans carte sur toutes les formules. Relié au guide Excel et à l'outil.
+2. **Page secteur « Artisans »** — « gestion flotte pour artisans » : 4 impressions en position 44, aucune page dédiée. La formule Starter est présentée « pour les artisans et indépendants » ; la page doit le reprendre. Slug `artisans`, dans `src/data/secteurs.js`.
+3. **Entretien et pannes** — « plan d'entretien véhicule utilitaire », « intervalle vidange utilitaire ».
+4. **Coûts** — « TCO véhicule entreprise », « carte carburant entreprise comparatif ».
+5. **Réglementaire** — « temps de conduite et de repos », « chronotachygraphe obligations », « ZFE flotte ».
+6. **Comparatifs concurrents** — à ouvrir seulement quand le produit aura plus de recul client.
+7. **Pages secteur additionnelles** — ambulances/VSL, auto-écoles, paysagistes, déménageurs.
+
+Fait le 2026-10-08 : guide Excel réaligné sur l'intention « modèle gratuit » (titre, description, modèle présenté en tête, FAQ « logiciel gratuit »). Il recevait 17 impressions en position 12, la meilleure page hors marque, mais son titre promettait des « limites » à des gens qui cherchaient un outil — 0 clic, y compris en position 2 sur « suivi parc automobile ». À revoir dans 4 semaines : position et clics de `/guides/gestion-parc-automobile-excel`, et apparition de `/outils/modele-suivi-parc-automobile-excel` dans les impressions.
 
 Cadence conseillée : 2 guides par mois, chacun relié au pilier et à une page secteur.
 
