@@ -34,9 +34,12 @@ dist-ssr
 supabase/.temp/
 
 # Claude Code internal
-.claude/
+# Réglages locaux de Claude Code hors du dépôt ; les skills, eux, sont
+# partagés — la routine cloud clone le dépôt et doit les trouver.
+.claude/*
+!.claude/skills/
 .agents/
-skills/
+/skills/
 skills-lock.json
 DESIGN-*.md
 
