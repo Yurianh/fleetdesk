@@ -19,6 +19,8 @@ faq:
   - q: "Qui doit tenir le plan d'entretien sur une flotte ?"
     a: "Le gestionnaire de flotte centralise les échéances, mais le conducteur reste le premier capteur : bruit anormal, voyant allumé, perte de pression. Un plan d'entretien qui ne remonte pas ces signaux terrain rate la moitié des pannes évitables."
 related:
+  - title: "Intervalle de vidange utilitaire : la règle"
+    href: "/guides/intervalle-vidange-utilitaire"
   - title: "Coût de revient kilométrique : la méthode de calcul"
     href: "/guides/cout-revient-kilometrique"
   - title: "Contrôle technique des véhicules d'entreprise"
@@ -52,7 +54,7 @@ L'usage du véhicule joue aussi sur la vigilance à porter à certains postes, s
 
 Les postes qui reviennent dans la plupart des plans constructeur, sans que leur fréquence soit généralisable :
 
-- vidange moteur et filtre à huile ;
+- [vidange moteur et filtre à huile](/guides/intervalle-vidange-utilitaire) ;
 - filtres à air, à carburant et d'habitacle ;
 - plaquettes, disques et liquide de frein ;
 - pneumatiques : pression, usure, permutation ;
