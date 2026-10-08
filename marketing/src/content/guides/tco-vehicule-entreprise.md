@@ -23,7 +23,7 @@ related:
     href: "/guides/cout-revient-kilometrique"
   - title: "Assurance de flotte automobile : obligations et bonnes pratiques"
     href: "/guides/assurance-flotte"
-  - title: "Logiciel de gestion de flotte : ce qu'il doit faire"
+  - title: "Logiciel de gestion de parc automobile : ce qu'il doit faire"
     href: "/logiciel-gestion-de-flotte"
 sources:
   - label: "Service-Public Entreprendre — Taxes sur l'affectation des véhicules de tourisme à des fins économiques"
@@ -54,7 +54,7 @@ Le TCO rassemble des dépenses de nature différente, sur la période de détent
 
 ## La fiscalité du véhicule d'entreprise : des règles qui évoluent
 
-Deux volets fiscaux pèsent sur le TCO d'un véhicule de tourisme détenu ou loué par une entreprise :
+Deux volets fiscaux pèsent sur le TCO d'un véhicule de tourisme détenu ou loué par une entreprise — le poste qui distingue le plus les [véhicules de société](/secteurs/vehicules-de-societe), voitures de fonction et de service, des utilitaires :
 
 - **deux taxes annuelles sur l'affectation des véhicules de tourisme à des fins économiques** (ex-TVS) : l'une assise sur les émissions de CO2, l'autre sur les émissions de polluants atmosphériques ;
 - un **avantage en nature** dès que le véhicule est aussi utilisé à titre privé par un salarié, évalué selon un barème forfaitaire ou sur la base des dépenses réelles.

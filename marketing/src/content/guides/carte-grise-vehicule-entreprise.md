@@ -36,6 +36,8 @@ sources:
 
 La carte grise identifie le véhicule et son titulaire. Sur une flotte, c'est elle qui détermine qui reçoit les avis de contravention, quelles taxes s'appliquent, et quel genre de véhicule (VP, CTTE, CAM) conditionne la périodicité du [contrôle technique](/guides/controle-technique-flotte).
 
+Un camion immatriculé CAM ne suit pas le même calendrier qu'une voiture de fonction : c'est tout l'écart entre une [flotte de transport routier](/secteurs/transport-routier) et un parc de [véhicules de société](/secteurs/vehicules-de-societe).
+
 Une carte grise à jour n'est donc pas un détail administratif : c'est le point d'entrée de toute la conformité du véhicule.
 
 ## Immatriculer un véhicule au nom de la société

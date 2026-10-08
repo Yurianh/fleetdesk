@@ -7,7 +7,9 @@ description: Weekly SEO review of fleetdesk.fr from a Search Console export — 
 
 ## Input
 
-Ask the user for two Search Console exports (Performance → Export): the last
+Exports live in `marketing/search-console/<YYYY-MM-DD>/` (the user drops them
+there). Use the two most recent. If there is only one, or none, and a user
+is present, ask them for two Search Console exports (Performance → Export): the last
 28 days, and the 28 days before (Compare → export, or two date ranges). If
 the ChatSEO MCP is connected, ask it instead:
 « Compare my last 28 days to the previous 28. Which pages gained impressions,

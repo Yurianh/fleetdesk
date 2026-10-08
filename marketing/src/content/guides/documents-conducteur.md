@@ -7,7 +7,7 @@ tag: "Conducteurs"
 cardTitle: "Les documents obligatoires du conducteur professionnel"
 cardDesc: "Permis, aptitude médicale, FIMO, FCO : quels documents suivre et comment garder chaque conducteur en règle."
 published: "2026-09-05"
-updated: "2026-09-12"
+updated: "2026-10-08"
 order: 20
 faq:
   - q: "Quels documents un employeur doit-il suivre pour ses conducteurs ?"
@@ -36,21 +36,22 @@ sources:
 
 La responsabilité de l'employeur ne s'arrête pas à la remise des clés. Confier un véhicule à un conducteur dont le permis est suspendu, expiré ou de la mauvaise catégorie engage l'entreprise, y compris pénalement en cas d'accident. Suivre ces documents protège le conducteur, l'entreprise et les tiers.
 
-C'est aussi un sujet d'exploitation : un conducteur dont la FCO est périmée ne peut plus prendre son véhicule le lundi matin. La tournée, elle, était déjà planifiée.
+C'est aussi un sujet d'exploitation, en particulier dans la [gestion de flotte pour le transport routier](/secteurs/transport-routier) : un conducteur dont la FCO est périmée ne peut plus prendre son véhicule le lundi matin. La tournée, elle, était déjà planifiée.
 
 ## Les documents à garder à jour
 
 Selon l'activité et le poste, les documents à suivre varient. Les plus courants :
 
-- **Permis de conduire** : valide et de la catégorie correspondant au véhicule confié (B, C, CE, D…). À vérifier à l'embauche puis périodiquement.
+- **Permis de conduire** : valide et de la catégorie correspondant au véhicule confié (B, C, CE, D…). À vérifier à l'embauche puis périodiquement, y compris pour les collaborateurs qui conduisent un [véhicule de société](/secteurs/vehicules-de-societe) sans que ce soit leur métier.
 - **Aptitude médicale à la conduite** : obligatoire pour le groupe lourd et certains usages professionnels. Généralement 5 ans jusqu'à 60 ans, puis à intervalle plus court.
 - **FIMO** (formation initiale minimale obligatoire, 140 heures) : préalable à l'exercice du transport routier de marchandises ou de voyageurs.
 - **FCO** (formation continue obligatoire, 35 heures) : à renouveler tous les 5 ans, matérialisée par la carte de qualification de conducteur.
 - **Carte de conducteur** (chronotachygraphe) : nécessaire dès qu'il y a un tachygraphe à bord ; validité de 5 ans, renouvellement à anticiper plusieurs semaines.
 - **ADR** : pour le transport de matières dangereuses, avec recyclage périodique.
 - **Sauveteur secouriste du travail (SST) ou PSC1** : selon le poste et la politique de prévention de l'entreprise.
+- **Carte professionnelle VTC ou taxi** : délivrée par la préfecture et renouvelée tous les 5 ans après une formation continue. Le suivi complet d'une [flotte VTC ou taxi](/secteurs/vtc-taxi) en dépend.
 - **TPMR** : pour le transport de personnes à mobilité réduite.
-- **Habilitations internes** : éco-conduite, hayon élévateur, CACES pour les engins, attestations propres à l'entreprise.
+- **Habilitations internes** : éco-conduite, hayon élévateur, CACES pour les engins — courant sur une [flotte BTP ou d'artisans](/secteurs/btp) —, attestations propres à l'entreprise.
 
 <p class="note">La liste exacte et les durées de validité dépendent du métier, du véhicule et de la réglementation en vigueur. Traitez ces repères comme un point de départ, à confirmer pour votre activité.</p>
 
@@ -77,4 +78,4 @@ Une gestion sereine repose sur quelques réflexes :
 - Recevoir une alerte à l'approche de chaque échéance, priorisée par urgence.
 - Conserver le justificatif rattaché au conducteur, en accès restreint.
 
-FleetDesk suit sept documents conducteur, plus des documents libres, calcule les échéances et les regroupe dans le [centre de conformité](/conformite). Vous savez en permanence quel conducteur est en règle et lequel demande une action — et vos chauffeurs peuvent déposer eux-mêmes leurs justificatifs depuis le terrain. Pour comprendre ce qu'un outil doit couvrir au-delà des conducteurs, voir notre page [logiciel de gestion de flotte](/logiciel-gestion-de-flotte).
+FleetDesk suit sept documents conducteur, plus des documents libres, calcule les échéances et les regroupe dans le [centre de conformité](/conformite). Vous savez en permanence quel conducteur est en règle et lequel demande une action — et vos chauffeurs peuvent déposer eux-mêmes leurs justificatifs depuis le terrain. Pour comprendre ce qu'un outil doit couvrir au-delà des conducteurs, voir notre page [logiciel de gestion de parc automobile](/logiciel-gestion-de-flotte).

@@ -23,7 +23,7 @@ related:
     href: "/guides/gestion-parc-automobile-excel"
   - title: "Assurance de flotte automobile : obligations et bonnes pratiques"
     href: "/guides/assurance-flotte"
-  - title: "Logiciel de gestion de flotte : ce qu'il doit faire"
+  - title: "Logiciel de gestion de parc automobile : ce qu'il doit faire"
     href: "/logiciel-gestion-de-flotte"
 sources:
   - label: "URSSAF — Barème kilométrique et frais professionnels"
@@ -34,11 +34,13 @@ sources:
 
 Le coût de revient kilométrique, ou CRK, est le coût complet d'un kilomètre parcouru par un véhicule donné. Il sert à trois décisions concrètes :
 
-- **Facturer juste** : une intervention à 60 kilomètres a un coût de déplacement mesurable, pas une estimation au doigt mouillé.
+- **Facturer juste** : une intervention à 60 kilomètres a un coût de déplacement mesurable, pas une estimation au doigt mouillé — le calcul de tous les [artisans et entreprises du BTP](/secteurs/btp) qui facturent leurs déplacements.
 - **Arbitrer un renouvellement** : un véhicule ancien peut coûter plus cher en entretien que la mensualité du véhicule qui le remplacerait.
 - **Repérer l'anomalie** : quand un véhicule sort du lot, c'est presque toujours un symptôme — usage inadapté, entretien négligé, ou conducteur à accompagner.
 
-Attention à ne pas confondre le CRK avec le barème kilométrique fiscal. Le barème sert à indemniser un salarié qui utilise son véhicule personnel ; le CRK mesure ce que vous coûte votre propre véhicule.
+Attention à ne pas confondre le CRK avec le barème kilométrique fiscal. Le barème sert à indemniser un salarié qui utilise son véhicule personnel ; le CRK mesure ce que vous coûte votre propre véhicule. C'est la comparaison à faire avant de mettre des [véhicules de société](/secteurs/vehicules-de-societe) à disposition plutôt que de rembourser des indemnités kilométriques.
+
+En [transport routier](/secteurs/transport-routier), le CRK est l'indicateur de référence pour construire un prix ; pour une [flotte VTC ou taxi](/secteurs/vtc-taxi), c'est lui qui dit si une course couvre vraiment ce que coûte la voiture.
 
 Le CRK se lit sur une base annuelle. Pour raisonner sur l'ensemble de la durée de détention d'un véhicule — achat et revente inclus — voir notre guide sur le [TCO d'un véhicule d'entreprise](/guides/tco-vehicule-entreprise).
 
