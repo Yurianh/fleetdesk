@@ -1,0 +1,278 @@
+---
+import Layout from '../layouts/Layout.astro'
+import Navbar from '../components/Navbar.jsx'
+import CTASection from '../components/CTASection.astro'
+import Footer from '../components/Footer.astro'
+
+const steps = [
+  {
+    title: 'Le plan, véhicule par véhicule',
+    desc: "Pour chaque véhicule, vous reportez les intervalles de son carnet d'entretien : vidange, filtres, freins, distribution… en kilomètres, en mois, ou les deux. FleetDesk ne fixe aucune périodicité à la place du constructeur.",
+  },
+  {
+    title: 'Le kilométrage, relevé régulièrement',
+    desc: "Le compteur fait avancer le plan. Chaque relevé met à jour la distance qui reste avant la prochaine opération. Sur la formule Enterprise, les chauffeurs le saisissent eux-mêmes depuis leur téléphone.",
+  },
+  {
+    title: "L'échéance, calculée seule",
+    desc: "À partir du dernier entretien enregistré, FleetDesk calcule la prochaine échéance en date et en kilométrage, et retient la première des deux atteinte. Le tableau indique laquelle a déclenché l'alerte.",
+  },
+  {
+    title: "L'alerte, avant qu'il soit trop tard",
+    desc: "Un entretien passe « à prévoir » 5 000 km ou 30 jours avant l'échéance, puis « en retard » une fois dépassé. Les échéances arrivent aussi par e-mail, une fois par semaine, et plus tôt si l'une devient urgente.",
+  },
+  {
+    title: "L'historique, avec ses factures",
+    desc: "Chaque intervention est enregistrée avec sa date, son kilométrage, son coût et sa facture. Le carnet ne dort plus dans une boîte à gants, et le coût d'entretien se lit par véhicule.",
+  },
+]
+
+const compare = [
+  {
+    name: 'Le carnet papier',
+    good: "La référence du constructeur, accepté partout",
+    limit: "Un par véhicule, dans la boîte à gants. Il ne prévient personne et se perd avec le véhicule.",
+  },
+  {
+    name: 'Le tableur',
+    good: 'Gratuit, souple, une ligne par véhicule',
+    limit: "Il faut l'ouvrir pour voir une échéance, et recalculer à la main à chaque relevé de compteur.",
+  },
+  {
+    name: "Un logiciel de suivi d'entretien",
+    good: "Échéance recalculée à chaque relevé, alerte avant l'échéance, historique et factures au même endroit",
+    limit: "Ne remplace pas l'atelier ni le diagnostic : il dit quand intervenir, pas quoi réparer.",
+  },
+]
+
+const faq = [
+  {
+    q: "Qu'est-ce qu'un logiciel de suivi d'entretien de véhicules ?",
+    a: "C'est un outil qui tient le plan d'entretien de chaque véhicule, calcule la prochaine échéance à partir du dernier entretien et du kilométrage réel, et prévient avant qu'elle soit dépassée. Il conserve aussi l'historique des interventions, leurs coûts et leurs factures.",
+  },
+  {
+    q: "Quels entretiens peut-on suivre ?",
+    a: "Tous ceux que prévoit le carnet du véhicule : vidange, filtres, plaquettes et disques, pneumatiques, distribution, liquide de refroidissement… Chaque opération a son propre intervalle, en kilomètres, en mois ou les deux. Les valeurs viennent du carnet constructeur, pas de l'outil.",
+  },
+  {
+    q: "Les chauffeurs peuvent-ils saisir le kilométrage eux-mêmes ?",
+    a: "Oui, sur la formule Enterprise : chaque chauffeur a un compte limité à son véhicule et saisit ses relevés depuis son téléphone. Sur les formules Starter et Pro, c'est le gestionnaire qui saisit les relevés.",
+  },
+  {
+    q: "Combien coûte le suivi d'entretien avec FleetDesk ?",
+    a: "Le suivi d'entretien est inclus dans toutes les formules. FleetDesk démarre à 9 € par mois pour 5 véhicules, avec un essai de 14 jours sans carte bancaire sur toutes les formules.",
+  },
+  {
+    q: "Faut-il un boîtier GPS dans les véhicules ?",
+    a: "Non. Le plan avance avec les relevés de kilométrage saisis dans l'application. Rien à installer dans les véhicules.",
+  },
+]
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map(item => ({
+    '@type': 'Question', name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+}
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://fleetdesk.fr/' },
+    { '@type': 'ListItem', position: 2, name: "Logiciel de suivi d'entretien des véhicules", item: 'https://fleetdesk.fr/logiciel-suivi-entretien-vehicule' },
+  ],
+}
+const softwareSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'FleetDesk',
+  applicationCategory: 'BusinessApplication',
+  applicationSubCategory: "Logiciel de suivi d'entretien des véhicules",
+  operatingSystem: 'Web',
+  inLanguage: 'fr-FR',
+  url: 'https://fleetdesk.fr/logiciel-suivi-entretien-vehicule',
+  offers: {
+    '@type': 'AggregateOffer',
+    lowPrice: '9', highPrice: '79', priceCurrency: 'EUR', offerCount: 3,
+  },
+}
+---
+<Layout
+  title="Logiciel de suivi d'entretien des véhicules"
+  description="Plan d'entretien par véhicule en km et en mois, alerte avant chaque échéance, historique et factures au même endroit. Dès 9 €/mois, essai 14 jours sans carte."
+  jsonLd={[softwareSchema, faqSchema, breadcrumb]}
+>
+  <Navbar client:load currentPath="/logiciel-suivi-entretien-vehicule" />
+
+  <!-- Hero -->
+  <section class="bg-white border-b border-zinc-100 pt-20 pb-16">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <nav class="text-xs text-zinc-500 mb-8 flex items-center gap-1.5" aria-label="Fil d'ariane">
+        <a href="/" class="hover:text-[#0066FF]">Accueil</a><span>/</span>
+        <span class="text-zinc-600">Suivi d'entretien des véhicules</span>
+      </nav>
+      <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-4">Entretien</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-semibold text-zinc-900 tracking-tight leading-[1.05] max-w-3xl mb-6">
+        Logiciel de suivi d'entretien des véhicules d'entreprise
+      </h1>
+      <p class="text-lg text-zinc-600 max-w-2xl leading-relaxed mb-8">
+        Une vidange repoussée devient une panne, et une panne arrive toujours en pleine tournée. FleetDesk tient le plan
+        d'entretien de chaque véhicule, le fait avancer avec le compteur et vous prévient avant l'échéance.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a href="/souscrire/pro" class="inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
+          Essayer FleetDesk 14 jours
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="/pricing" class="inline-flex items-center justify-center text-sm font-medium text-zinc-600 hover:text-zinc-900 px-6 py-3">
+          Voir les tarifs
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fonctionnement -->
+  <section class="py-16 sm:py-20 bg-zinc-50 border-b border-zinc-100">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <div class="max-w-2xl mb-12">
+        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Fonctionnement</p>
+        <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-4 leading-tight">
+          Du carnet d'entretien à l'alerte, en cinq étapes
+        </h2>
+        <p class="text-zinc-600 leading-relaxed">
+          Le principe est celui du carnet constructeur. La différence : le calcul se refait seul à chaque relevé de
+          compteur, sur toute la flotte.
+        </p>
+      </div>
+      <div class="grid md:grid-cols-2 gap-5">
+        {steps.map((c, i) => (
+          <div class="bg-white border border-zinc-200 rounded-2xl p-6">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#E5EEFF] text-[#0066FF] text-xs font-semibold mb-4">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <h3 class="font-display text-lg font-semibold text-zinc-900 mb-2 leading-snug">{c.title}</h3>
+            <p class="text-sm text-zinc-600 leading-relaxed">{c.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Exemple -->
+  <section class="py-16 sm:py-20 border-b border-zinc-100">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-5 leading-tight">
+        Même plan, deux échéances différentes
+      </h2>
+      <div class="space-y-4 text-zinc-600 leading-relaxed">
+        <p>
+          Prenons deux utilitaires identiques, avec une vidange prévue tous les 30 000 km ou tous les 12 mois. Les deux
+          ont été vidangés le 15 janvier, à 60 000 km.
+        </p>
+        <ul class="list-disc pl-5 space-y-2">
+          <li>
+            <strong class="text-zinc-900">Le premier roule 3 000 km par mois.</strong> Il atteint 90 000 km vers la
+            mi-novembre, avant la date anniversaire : c'est le compteur qui fixe l'échéance. L'alerte part à
+            85 000 km, début octobre.
+          </li>
+          <li>
+            <strong class="text-zinc-900">Le second roule 1 000 km par mois.</strong> Le 15 janvier suivant, il n'est
+            qu'à 72 000 km : c'est la date qui fixe l'échéance. L'alerte part 30 jours avant, mi-décembre.
+          </li>
+        </ul>
+        <p>
+          Dans un tableur, il faudrait refaire ce calcul à chaque relevé, pour chaque opération de chaque véhicule.
+          C'est là que les vidanges se perdent.
+        </p>
+        <p class="text-sm text-zinc-500">
+          Les intervalles de cet exemple sont illustratifs. Les vrais sont dans le carnet d'entretien de chaque
+          véhicule : notre guide sur le
+          <a href="/guides/plan-entretien-vehicule-utilitaire" class="text-[#0066FF] font-medium hover:underline">plan d'entretien d'un véhicule utilitaire</a>
+          explique comment les construire.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparatif -->
+  <section class="py-16 sm:py-20 bg-zinc-50 border-b border-zinc-100">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <div class="max-w-2xl mb-10">
+        <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-4 leading-tight">
+          Carnet, tableur ou logiciel
+        </h2>
+        <p class="text-zinc-600 leading-relaxed">
+          Les trois conservent l'information. Un seul la fait remonter au bon moment.
+        </p>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse min-w-[640px]">
+          <thead>
+            <tr class="border-b border-zinc-200">
+              <th class="text-left font-semibold text-zinc-900 py-3 pr-4">Outil</th>
+              <th class="text-left font-semibold text-zinc-900 py-3 pr-4">Ce qu'il fait bien</th>
+              <th class="text-left font-semibold text-zinc-900 py-3">Sa limite</th>
+            </tr>
+          </thead>
+          <tbody>
+            {compare.map(row => (
+              <tr class="border-b border-zinc-200/70 align-top">
+                <td class="py-4 pr-4 font-medium text-zinc-900">{row.name}</td>
+                <td class="py-4 pr-4 text-zinc-600">{row.good}</td>
+                <td class="py-4 text-zinc-600">{row.limit}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="text-sm text-zinc-600 leading-relaxed mt-6 max-w-2xl">
+        Pas encore prêt à changer d'outil ? Notre
+        <a href="/outils/modele-suivi-parc-automobile-excel" class="text-[#0066FF] font-medium hover:underline">modèle de suivi de parc automobile</a>
+        a un onglet « Entretiens & dépenses » prêt à remplir.
+      </p>
+    </div>
+  </section>
+
+  <!-- Au-delà de l'entretien -->
+  <section class="py-16 sm:py-20 border-b border-zinc-100">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-5 leading-tight">
+        L'entretien, le contrôle technique et les coûts au même endroit
+      </h2>
+      <div class="space-y-4 text-zinc-600 leading-relaxed">
+        <p>
+          Un véhicule bien entretenu passe son contrôle technique sans contre-visite, mais les deux échéances ne suivent
+          pas le même calendrier. FleetDesk les suit côte à côte : le
+          <a href="/conformite" class="text-[#0066FF] font-medium hover:underline">centre de conformité</a> réunit
+          contrôles techniques, documents et entretiens à prévoir, classés par urgence.
+        </p>
+        <p>
+          Les coûts d'entretien enregistrés alimentent le coût par véhicule : c'est le poste qui fait basculer le
+          <a href="/guides/cout-revient-kilometrique" class="text-[#0066FF] font-medium hover:underline">coût de revient kilométrique</a>
+          d'un véhicule vieillissant. Pour l'ensemble des fonctions, voir notre page
+          <a href="/logiciel-gestion-de-flotte" class="text-[#0066FF] font-medium hover:underline">logiciel de gestion de parc automobile</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="py-16 sm:py-20">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-8">Questions fréquentes</h2>
+      <div class="divide-y divide-zinc-100 border-t border-zinc-100">
+        {faq.map(f => (
+          <div class="py-6">
+            <h3 class="font-semibold text-zinc-900 mb-2">{f.q}</h3>
+            <p class="text-sm text-zinc-600 leading-relaxed">{f.a}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CTASection />
+  <Footer />
+</Layout>

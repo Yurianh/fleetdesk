@@ -44,7 +44,7 @@ Le TCO rassemble des dépenses de nature différente, sur la période de détent
 
 - **Acquisition ou financement** : prix d'achat et décote, ou loyers si le véhicule est en LOA, LLD ou crédit-bail.
 - **Énergie** : carburant ou électricité consommés sur toute la période.
-- **Entretien et réparations** : opérations préventives et curatives, pièces d'usure comprises.
+- **Entretien et réparations** : opérations préventives et curatives, pièces d'usure comprises. Un entretien préventif suivi, par exemple avec un [logiciel de suivi d'entretien](/logiciel-suivi-entretien-vehicule), limite la part du curatif.
 - **Assurance** : primes, franchises, sinistralité sur la durée de détention.
 - **Fiscalité** : taxes propres au véhicule d'entreprise, et avantage en nature si le véhicule sert aussi à un usage privé.
 - **Immobilisation** : jours d'indisponibilité, qui ne coûtent rien en facture directe mais coûtent en exploitation.

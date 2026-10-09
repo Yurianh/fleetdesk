@@ -37,9 +37,9 @@ Les exports Search Console sont déposés à la main dans
 1. Ouvrir `marketing/keywords.md`. D'abord, toute ligne **à optimiser** ou
    **attente** dont la date est passée, tous motifs confondus. Sinon, motif 1
    (pages secteur) : la première ligne **à créer** dont les conditions sont
-   remplies (date passée, brief demandé). Le motif 2 (pages fonction) n'a pas
-   encore de page de référence : la routine n'en crée pas, la première se
-   fait en session avec Julian.
+   remplies (date passée, brief demandé). Ensuite, motif 2 (pages fonction,
+   référence `/logiciel-suivi-entretien-vehicule`) : décrire uniquement ce que
+   le produit fait réellement, vérifié dans `src/` (code de l'application).
 2. Appliquer `page-brief` dessus. Si la décision est **optimiser** une page
    existante : ne rien créer. Si la page à optimiser a été modifiée il y a
    60 jours ou plus, l'optimiser ; sinon noter « attente » avec la date dans
