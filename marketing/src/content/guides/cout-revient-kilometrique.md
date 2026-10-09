@@ -96,7 +96,7 @@ Même véhicule, mais 12 000 km par an seulement : les charges fixes (6 000 €)
 ## Les erreurs classiques
 
 - **Oublier l'immobilisation** : les jours d'arrêt pour panne ou contrôle technique réduisent le kilométrage et gonflent le coût unitaire. Un parc bien suivi roule plus.
-- **Négliger l'entretien préventif** : une vidange reportée est une économie de 120 euros qui se transforme parfois en réparation à 2 000 euros.
+- **Négliger l'entretien préventif** : une vidange reportée est une économie de 120 euros qui se transforme parfois en réparation à 2 000 euros. Un [logiciel de suivi d'entretien](/logiciel-suivi-entretien-vehicule) prévient avant l'échéance, en kilomètres comme en date.
 - **Travailler sur des relevés kilométriques approximatifs** : si le compteur est saisi trois fois par an, le CRK est faux toute l'année.
 - **Raisonner en moyenne de flotte** : c'est le véhicule atypique qui porte l'essentiel du gain.
 
