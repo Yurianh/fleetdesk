@@ -6,8 +6,8 @@ reconfigurer côté planification.
 
 Depuis le 2026-10-08, la routine ne publie plus un guide par semaine par
 défaut. Chaque exécution fait **au plus une page**, dans cet ordre de
-priorité : une page money (page secteur), puis, à défaut, un guide qui sert
-une page money. Les méthodes détaillées sont dans `.claude/skills/` :
+priorité : une page money à optimiser, puis une page secteur à créer, puis,
+à défaut, un guide qui sert une page money. Les méthodes détaillées sont dans `.claude/skills/` :
 `weekly-seo`, `page-brief`, `pattern-drip`, `ship-page`. Les lire avant de
 commencer.
 
@@ -34,14 +34,17 @@ Les exports Search Console sont déposés à la main dans
 
 ## 2. Choisir la page
 
-1. Ouvrir `marketing/keywords.md`, motif 1 (pages secteur). Prendre la
-   première ligne au statut **à créer** dont les conditions sont remplies
-   (date passée, brief demandé).
+1. Ouvrir `marketing/keywords.md`. D'abord, toute ligne **à optimiser** ou
+   **attente** dont la date est passée, tous motifs confondus. Sinon, motif 1
+   (pages secteur) : la première ligne **à créer** dont les conditions sont
+   remplies (date passée, brief demandé). Le motif 2 (pages fonction) n'a pas
+   encore de page de référence : la routine n'en crée pas, la première se
+   fait en session avec Julian.
 2. Appliquer `page-brief` dessus. Si la décision est **optimiser** une page
    existante : ne rien créer. Si la page à optimiser a été modifiée il y a
    60 jours ou plus, l'optimiser ; sinon noter « attente » avec la date dans
    `keywords.md` et passer à la ligne suivante.
-3. Si le motif 1 n'a plus rien de prêt : motif 3 (guides au service d'une page
+3. Si le motif 1 n'a plus rien de prêt : motif 4 (guides au service d'une page
    money), même procédure.
 4. Aucune ligne prête : ne rien publier, proposer trois requêtes dans le
    compte rendu.
