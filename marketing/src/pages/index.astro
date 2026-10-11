@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro'
 import Navbar from '../components/Navbar.jsx'
 import HeroSection from '../components/HeroSection.jsx'
 import CTASection from '../components/CTASection.astro'
+import FeatureVideo from '../components/FeatureVideo.astro'
 import Footer from '../components/Footer.astro'
 import { ICONS } from '../lib/icons.js'
 
@@ -374,24 +375,7 @@ const faqSchema = {
             <h3 class="text-2xl font-semibold text-zinc-900 mb-3">Vos véhicules, d'un coup d'œil</h3>
             <p class="text-lg text-zinc-600 leading-relaxed">Statut, kilométrage, historique de chaque véhicule au même endroit. Vous savez, sans chercher.</p>
           </div>
-          <div class="rounded-xl border border-zinc-200 shadow-xl shadow-zinc-200/50 overflow-hidden bg-white">
-            <div class="flex items-center gap-1.5 bg-zinc-100 border-b border-zinc-200 px-4 py-2.5">
-              <div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div>
-              <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-500">app.fleetdesk.fr/vehicules</div>
-            </div>
-            <div class="bg-zinc-50 p-5">
-              <div class="flex items-center px-3 py-1 mb-2 border-b border-zinc-200">
-                <span class="text-[10px] font-medium text-zinc-500 uppercase tracking-wide flex-1">Immatriculation</span>
-                <span class="text-[10px] font-medium text-zinc-500 uppercase tracking-wide w-24 text-center">Statut</span>
-                <span class="text-[10px] font-medium text-zinc-500 uppercase tracking-wide w-24 text-right">Kilométrage</span>
-              </div>
-              <div class="space-y-1.5">
-                <div class="flex items-center bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><span class="text-xs text-zinc-700 flex-1">AB-123-CD</span><span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full w-24 text-center">Actif</span><span class="text-xs text-zinc-500 w-24 text-right">45 200 km</span></div>
-                <div class="flex items-center bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><span class="text-xs text-zinc-700 flex-1">EF-456-GH</span><span class="text-[10px] bg-amber-50 text-amber-800 px-2 py-0.5 rounded-full w-24 text-center">Révision</span><span class="text-xs text-zinc-500 w-24 text-right">31 800 km</span></div>
-                <div class="flex items-center bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><span class="text-xs text-zinc-700 flex-1">IJ-789-KL</span><span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full w-24 text-center">Actif</span><span class="text-xs text-zinc-500 w-24 text-right">78 400 km</span></div>
-              </div>
-            </div>
-          </div>
+          <FeatureVideo name="fiche" label="Démonstration : un clic sur le Peugeot Boxer ouvre sa fiche, avec son conducteur, son kilométrage, son contrôle technique et sa prochaine vidange." />
         </div>
 
         <!-- Row 2: Conducteurs (mockup left, text right) -->
@@ -403,17 +387,7 @@ const faqSchema = {
             <h3 class="text-2xl font-semibold text-zinc-900 mb-3">Zéro document expiré</h3>
             <p class="text-lg text-zinc-600 leading-relaxed">Permis, visite médicale, formations côté conducteur ; carte grise, assurance, licence de transport côté véhicule. FleetDesk calcule les échéances et vous alerte avant qu'un conducteur ou un véhicule soit hors la loi.</p>
           </div>
-          <div class="lg:order-1 rounded-xl border border-zinc-200 shadow-xl shadow-zinc-200/50 overflow-hidden bg-white">
-            <div class="flex items-center gap-1.5 bg-zinc-100 border-b border-zinc-200 px-4 py-2.5">
-              <div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div>
-              <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-500">app.fleetdesk.fr/conducteurs</div>
-            </div>
-            <div class="bg-zinc-50 p-5 space-y-2">
-              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-7 h-7 rounded-full bg-[#E5EEFF] flex items-center justify-center text-[10px] font-bold text-[#0066FF] flex-shrink-0">ML</div><span class="text-xs text-zinc-700 flex-1">Marc Lefebvre</span><span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">Conforme</span></div>
-              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-7 h-7 rounded-full bg-amber-50 flex items-center justify-center text-[10px] font-bold text-amber-800 flex-shrink-0">SR</div><span class="text-xs text-zinc-700 flex-1">Sophie Renard</span><span class="text-[10px] bg-amber-50 text-amber-800 px-2 py-0.5 rounded-full">Expire 15 j</span></div>
-              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-7 h-7 rounded-full bg-[#E5EEFF] flex items-center justify-center text-[10px] font-bold text-[#0066FF] flex-shrink-0">KA</div><span class="text-xs text-zinc-700 flex-1">Karim Aïssa</span><span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">Conforme</span></div>
-            </div>
-          </div>
+          <FeatureVideo name="documents" class="lg:order-1" label="Démonstration : la visite médicale de Sophie Renard expire dans 15 jours ; le nouveau certificat est déposé sur sa fiche et l'échéance est recalculée jusqu'en 2031." />
         </div>
 
         <!-- Row 3: Maintenance (text left, mockup right) -->
@@ -425,17 +399,7 @@ const faqSchema = {
             <h3 class="text-2xl font-semibold text-zinc-900 mb-3">Anticipez les pannes</h3>
             <p class="text-lg text-zinc-600 leading-relaxed">Par intervalle kilométrique ou temporel, FleetDesk prévoit l'entretien et vous prévient avant la casse.</p>
           </div>
-          <div class="rounded-xl border border-zinc-200 shadow-xl shadow-zinc-200/50 overflow-hidden bg-white">
-            <div class="flex items-center gap-1.5 bg-zinc-100 border-b border-zinc-200 px-4 py-2.5">
-              <div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div>
-              <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-500">app.fleetdesk.fr/maintenance</div>
-            </div>
-            <div class="bg-zinc-50 p-5 space-y-2">
-              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></div><span class="text-xs text-zinc-700 flex-1">CT · AB-123-CD</span><span class="text-[10px] font-semibold text-amber-900 bg-amber-100 px-2 py-0.5 rounded-full">Dans 3 j</span></div>
-              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></div><span class="text-xs text-zinc-700 flex-1">Vidange · EF-456-GH</span><span class="text-[10px] font-medium text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full">Dans 12 j</span></div>
-              <div class="flex items-center gap-3 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><div class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></div><span class="text-xs text-zinc-700 flex-1">Freins · IJ-789-KL</span><span class="text-[10px] font-medium text-zinc-600 bg-zinc-100 px-2 py-0.5 rounded-full">Dans 28 j</span></div>
-            </div>
-          </div>
+          <FeatureVideo name="entretien" label="Démonstration : trois utilitaires et leur prochaine vidange, calculée sur le kilométrage réel ; l'alerte passe à l'ambre 5 000 km avant, puis l'entretien est enregistré." />
         </div>
 
         <!-- Row 4: Analytique (mockup left, text right) -->
@@ -447,23 +411,7 @@ const faqSchema = {
             <h3 class="text-2xl font-semibold text-zinc-900 mb-3">Comprenez vos coûts réels</h3>
             <p class="text-lg text-zinc-600 leading-relaxed">Coûts, kilométrages, tendances : pas dans un tableur, dans un vrai tableau de bord qui décide pour vous.</p>
           </div>
-          <div class="lg:order-1 rounded-xl border border-zinc-200 shadow-xl shadow-zinc-200/50 overflow-hidden bg-white">
-            <div class="flex items-center gap-1.5 bg-zinc-100 border-b border-zinc-200 px-4 py-2.5">
-              <div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div>
-              <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-500">app.fleetdesk.fr/analytique</div>
-            </div>
-            <div class="bg-zinc-50 p-5">
-              <div class="flex gap-2 mb-3">
-                <div class="flex-1 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><p class="text-[10px] text-zinc-500 mb-0.5">Km ce mois</p><p class="text-base font-bold text-zinc-800">12 450</p></div>
-                <div class="flex-1 bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><p class="text-[10px] text-zinc-500 mb-0.5">Coût entretien</p><p class="text-base font-bold text-emerald-700">↓ 18%</p></div>
-              </div>
-              <div class="bg-white border border-zinc-100 rounded-lg px-3 py-3">
-                <div class="flex items-end gap-1.5 h-16">
-                  <div class="flex-1 bg-[#0066FF]/15 rounded-sm" style="height:45%"></div><div class="flex-1 bg-[#0066FF]/25 rounded-sm" style="height:60%"></div><div class="flex-1 bg-[#0066FF]/35 rounded-sm" style="height:40%"></div><div class="flex-1 bg-[#0066FF]/55 rounded-sm" style="height:75%"></div><div class="flex-1 bg-[#0066FF]/45 rounded-sm" style="height:55%"></div><div class="flex-1 bg-[#0066FF] rounded-sm" style="height:90%"></div><div class="flex-1 bg-[#0066FF]/65 rounded-sm" style="height:68%"></div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <FeatureVideo name="couts" class="lg:order-1" label="Démonstration : le rapport du mois se construit, avec le total des dépenses, la répartition entretien, carburant et lavages, et les véhicules les plus coûteux." />
         </div>
 
         <!-- Row 5: Terrain / chauffeurs (text left, mockup right) -->
@@ -475,27 +423,7 @@ const faqSchema = {
             <h3 class="text-2xl font-semibold text-zinc-900 mb-3">Vos chauffeurs saisissent au volant</h3>
             <p class="text-lg text-zinc-600 leading-relaxed">Un accès dédié, limité à leur véhicule. Ils notent le kilométrage et le plein en un geste, photo de facture à l'appui. Vous récupérez la donnée sans la ressaisir.</p>
           </div>
-          <div class="rounded-xl border border-zinc-200 shadow-xl shadow-zinc-200/50 overflow-hidden bg-white">
-            <div class="flex items-center gap-1.5 bg-zinc-100 border-b border-zinc-200 px-4 py-2.5">
-              <div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div><div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div>
-              <div class="ml-2 flex-1 max-w-xs bg-white border border-zinc-200 rounded px-3 py-0.5 text-[10px] text-zinc-500">app.fleetdesk.fr/kilometrage</div>
-            </div>
-            <div class="bg-zinc-50 p-5 space-y-3">
-              <div class="bg-white border border-zinc-100 rounded-lg px-3 py-2.5">
-                <p class="text-[10px] text-zinc-500 mb-0.5">Véhicule</p>
-                <div class="flex items-center gap-2"><span class="text-xs font-medium text-zinc-800">GY-578-KX — MG3 Hybride</span><span class="text-[9px] bg-zinc-100 text-zinc-600 px-1.5 py-0.5 rounded">verrouillé</span></div>
-              </div>
-              <div class="flex items-center gap-2 bg-[#0066FF]/[0.04] border border-[#0066FF]/15 rounded-lg px-3 py-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-                <span class="text-[11px] text-zinc-600">Karim Aïssa · <span class="font-medium text-zinc-800">Carte DKV 009</span></span>
-              </div>
-              <div class="bg-white border border-zinc-100 rounded-lg px-3 py-2.5"><p class="text-[10px] text-zinc-500 mb-0.5">Nouveau kilométrage</p><p class="text-sm font-semibold text-zinc-800">51 177 km</p></div>
-              <div class="flex items-center gap-2 bg-white border border-dashed border-zinc-200 rounded-lg px-3 py-2.5">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                <span class="text-[11px] text-zinc-600">Plein Total · facture jointe</span>
-              </div>
-            </div>
-          </div>
+          <FeatureVideo name="saisie" label="Démonstration : une conductrice saisit son kilométrage, le montant du plein et deux photos sur son téléphone ; la saisie apparaît aussitôt dans l'activité du bureau." />
         </div>
 
       </div>

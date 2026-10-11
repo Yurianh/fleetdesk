@@ -79,11 +79,10 @@
   }
 }
 
-/* ── Révélation de la maquette produit (accueil) ────────────────────────────
-   La maquette arrive inclinée, floue et décalée, puis se redresse : l'écran
-   « se pose » devant le visiteur, élément par élément. Tout est en CSS pur —
-   aucune dépendance à l'hydratation JS, sinon la zone resterait vide le temps
-   de l'hydratation React. Rien ne bouge sous prefers-reduced-motion. */
+/* ── Arrivée de l'écran du hero ─────────────────────────────────────────────
+   Le cadre de la vidéo arrive incliné, flou et décalé, puis se redresse : il
+   « se pose » devant le visiteur. La vidéo ne démarre qu'à la fin de cette
+   animation (HeroSection). Rien ne bouge sous prefers-reduced-motion. */
 .reveal-stage { perspective: 1600px; perspective-origin: 50% 0%; }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -97,47 +96,11 @@
     60%  { filter: blur(2px); }
     to   { opacity: 1; transform: none; filter: none; }
   }
-
-  /* Halo bleu diffus qui monte derrière l'écran */
-  .reveal-glow { animation: reveal-glow 2400ms ease-out 900ms both; }
-  @keyframes reveal-glow {
-    from { opacity: 0; transform: scale(0.88); }
-    to   { opacity: 1; transform: none; }
-  }
-
-  /* Contenu interne : chaque bloc suit, décalage porté par animation-delay */
-  .reveal-item { animation: reveal-item 850ms var(--ease-cine) both; }
-  @keyframes reveal-item {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: none; }
-  }
-
-  /* Les barres d'utilisation se remplissent au lieu d'apparaître */
-  .reveal-bar { transform-origin: left center; animation: reveal-bar 1500ms var(--ease-cine) both; }
-  @keyframes reveal-bar {
-    from { transform: scaleX(0); }
-    to   { transform: none; }
-  }
-
-  /* Balayage lumineux unique, une fois l'écran posé */
-  .reveal-sheen {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.5) 50%, transparent 62%);
-    animation: reveal-sheen 1600ms cubic-bezier(0.22, 1, 0.36, 1) 2600ms both;
-  }
-  @keyframes reveal-sheen {
-    0%   { transform: translateX(-125%); opacity: 0; }
-    35%  { opacity: 1; }
-    100% { transform: translateX(125%); opacity: 0; }
-  }
 }
 
-/* ── Parallaxe au survol de la maquette ─────────────────────────────────────
+/* ── Parallaxe au survol de l'écran du hero ─────────────────────────────────
    Les variables --tilt-x / --tilt-y (−1 → 1) sont écrites par HeroSection au
-   rythme de l'écran. Elles pilotent deux calques distincts de ceux qu'anime la
-   révélation, pour que les deux effets cohabitent sans se marcher dessus. */
+   rythme de l'écran, sur un calque distinct de celui de l'arrivée. */
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .reveal-tilt {
     transform:
@@ -150,14 +113,6 @@
   }
   /* Pendant le survol, la réponse est immédiate ; au départ du curseur, retour lent. */
   .reveal-stage.is-tilting .reveal-tilt { transition: transform 120ms linear; }
-
-  /* Le halo glisse en sens inverse : c'est ce décalage qui crée la profondeur. */
-  .reveal-depth {
-    transform: translate3d(calc(var(--tilt-x, 0) * -14px), calc(var(--tilt-y, 0) * -10px), 0);
-    will-change: transform;
-    transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .reveal-stage.is-tilting .reveal-depth { transition: transform 200ms linear; }
 }
 
 

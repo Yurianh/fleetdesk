@@ -1,0 +1,14 @@
+{
+  "name": "fleetdesk-motion",
+  "private": true,
+  "type": "module",
+  "description": "Vidéos motion design de FleetDesk, rendues depuis du code (seek(t) + Playwright + ffmpeg).",
+  "scripts": {
+    "hero": "node render.mjs hero && node render.mjs hero --format portrait",
+    "videos": "for s in fiche documents entretien couts saisie; do node render.mjs $s; done",
+    "check": "for s in hero fiche documents entretien couts saisie; do node render.mjs $s --check-loop; done && node render.mjs hero --format portrait --check-loop"
+  },
+  "dependencies": {
+    "playwright-core": "^1.64.0"
+  }
+}

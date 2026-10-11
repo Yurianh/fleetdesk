@@ -40,8 +40,8 @@ function choreograph() {
   }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' })
 
   for (const section of sections) {
-    // La maquette produit a sa propre chorégraphie, en CSS pur.
-    if (section.querySelector('.reveal-frame')) continue
+    // Le hero a sa propre chorégraphie (classes .enter et vidéo).
+    if (section.hasAttribute('data-own-motion')) continue
 
     const targets = targetsOf(section)
     if (!targets.length) continue
