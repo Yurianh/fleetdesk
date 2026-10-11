@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>FleetDesk — hero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Spectral:wght@500&display=block" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1536px; height: 864px; overflow: hidden; background: #f4f4f5; }
+  #stage { position: absolute; left: -32px; top: -30px; width: 1600px; height: 1000px; }
+  body { font-family: 'Onest', system-ui, sans-serif; color: #18181b; -webkit-font-smoothing: antialiased; }
+  .abs { position: absolute; }
+  #board { left: 80px; top: 72px; width: 1440px; height: 780px; background: #fff; border: 1px solid #e4e4e7; border-radius: 22px; }
+  .brand { left: 128px; top: 112px; display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 20px; letter-spacing: -0.01em; }
+  .brand i { width: 34px; height: 34px; border-radius: 9px; background: #0066FF; display: grid; place-items: center; }
+  h1 { left: 128px; top: 172px; font-family: 'Spectral', Georgia, serif; font-weight: 500; font-size: 40px; letter-spacing: -0.02em; }
+  .sub { left: 128px; top: 228px; font-size: 18px; color: #71717a; }
+  #counter { top: 116px; height: 44px; border-radius: 999px; display: flex; align-items: center; gap: 10px; padding: 0 20px; font-weight: 600; font-size: 17px; white-space: nowrap; }
+  #counter .dot { width: 9px; height: 9px; border-radius: 99px; }
+  .row { left: 128px; width: 720px; height: 104px; border-top: 1px solid #f4f4f5; display: flex; align-items: center; }
+  .row .plate { font-weight: 600; font-size: 22px; letter-spacing: 0.01em; }
+  .row .model { font-size: 16px; color: #71717a; margin-top: 4px; }
+  .row .ico { width: 48px; height: 48px; border-radius: 12px; background: #f4f4f5; display: grid; place-items: center; margin-right: 20px; }
+  .chip { height: 40px; border-radius: 999px; display: flex; align-items: center; gap: 9px; padding: 0 16px; font-weight: 600; font-size: 15.5px; white-space: nowrap; }
+  .chip .dot { width: 8px; height: 8px; border-radius: 99px; }
+  .ok { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+  .ok .dot { background: #10B981; }
+  #divider { left: 900px; top: 72px; width: 1px; height: 780px; background: #f4f4f5; }
+  .ptitle { left: 940px; top: 196px; font-weight: 600; font-size: 20px; display: flex; align-items: center; gap: 10px; }
+  #empty { left: 940px; top: 250px; width: 540px; height: 300px; border: 1px dashed #e4e4e7; border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: #71717a; font-size: 17px; }
+  #empty .check { width: 52px; height: 52px; border-radius: 99px; background: #ECFDF5; display: grid; place-items: center; }
+  #ghost { border: 1.5px dashed #d4d4d8; border-radius: 999px; }
+  #shape { overflow: hidden; border-style: solid; border-width: 1px; }
+  #shape .layer { position: absolute; inset: 0; }
+  #chipL { display: flex; align-items: center; gap: 9px; padding: 0 16px; font-weight: 600; font-size: 15.5px; white-space: nowrap; }
+  #chipL .dot, #cardL .dot { width: 8px; height: 8px; border-radius: 99px; flex: none; }
+  #cardL { padding: 28px 30px; }
+  #cardL .top { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 21px; }
+  #cardL .meta { margin-top: 8px; font-size: 16.5px; color: #52525b; }
+  #cardL .days { position: absolute; right: 30px; top: 26px; font-weight: 600; font-size: 21px; }
+  #mail { margin-top: 22px; display: flex; align-items: center; gap: 10px; font-size: 15.5px; color: #52525b; }
+  #btn { position: absolute; left: 30px; bottom: 28px; height: 50px; border-radius: 12px; display: flex; align-items: center; gap: 10px; padding: 0 20px; font-weight: 600; font-size: 16.5px; white-space: nowrap; overflow: hidden; }
+  #pv { position: absolute; right: 30px; bottom: 28px; height: 50px; border-radius: 12px; background: #fff; border: 1px solid #e4e4e7; display: flex; align-items: center; gap: 10px; padding: 0 16px; font-size: 15px; color: #3f3f46; white-space: nowrap; }
+  #pv b { width: 28px; height: 34px; border-radius: 5px; background: #f4f4f5; border: 1px solid #e4e4e7; display: grid; place-items: center; font-size: 9px; font-weight: 700; color: #71717a; }
+  #cursor { left: 0; top: 0; width: 30px; height: 30px; z-index: 10; }
+  .txt { position: absolute; left: 0; top: 0; white-space: nowrap; }
+
+  /* Format portrait (mobile) : même histoire, mise en page en colonne. */
+  body.portrait, html.portrait { width: 540px; height: 675px; }
+  .portrait #stage { left: 0; top: 0; width: 540px; height: 675px; }
+  .portrait #board { left: 16px; top: 16px; width: 508px; height: 643px; border-radius: 18px; }
+  .portrait .brand { left: 36px; top: 36px; font-size: 17px; gap: 10px; }
+  .portrait .brand i { width: 28px; height: 28px; border-radius: 8px; }
+  .portrait h1 { left: 36px; top: 78px; font-size: 32px; }
+  .portrait .sub { left: 36px; top: 122px; font-size: 14px; }
+  .portrait #counter { top: 34px; height: 34px; font-size: 14px; padding: 0 14px; gap: 8px; }
+  .portrait #counter .dot { width: 8px; height: 8px; }
+  .portrait .row { left: 36px; width: 468px; height: 76px; }
+  .portrait .row .plate { font-size: 18px; }
+  .portrait .row .model { font-size: 13.5px; margin-top: 2px; }
+  .portrait .row .ico { width: 40px; height: 40px; border-radius: 10px; margin-right: 14px; }
+  .portrait .chip, .portrait #chipL { height: 34px; font-size: 13.5px; padding: 0 12px; gap: 7px; }
+  .portrait #chipL { height: auto; }
+  .portrait #divider { left: 16px; top: 384px; width: 508px; height: 1px; }
+  .portrait .ptitle { left: 36px; top: 402px; font-size: 16px; gap: 8px; }
+  .portrait .ptitle svg { width: 18px; height: 18px; }
+  .portrait #empty { left: 36px; top: 440px; width: 468px; height: 200px; font-size: 14px; gap: 10px; border-radius: 14px; }
+  .portrait #empty .check { width: 42px; height: 42px; }
+  .portrait #cardL { padding: 20px 20px; }
+  .portrait #cardL .top { font-size: 17px; gap: 8px; }
+  .portrait #cardL .meta { font-size: 13.5px; margin-top: 6px; }
+  .portrait #cardL .days { right: 20px; top: 18px; font-size: 17px; }
+  .portrait #mail { margin-top: 12px; font-size: 13px; gap: 8px; }
+  .portrait #mail svg { width: 15px; height: 15px; }
+  .portrait #btn { left: 20px; bottom: 18px; height: 42px; font-size: 13.5px; padding: 0 14px; gap: 8px; border-radius: 10px; }
+  .portrait #btn svg { width: 15px; height: 15px; }
+  .portrait #pv { right: 20px; bottom: 18px; height: 42px; font-size: 12.5px; padding: 0 10px; gap: 8px; border-radius: 10px; }
+  .portrait #pv b { width: 22px; height: 28px; font-size: 7.5px; }
+  .portrait #cursor { width: 24px; height: 24px; }
+</style>
+</head>
+<body>
+<div id="stage">
+<div id="board" class="abs"></div>
+<div class="brand abs"><i><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="12" height="11" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-4"/></svg></i>FleetDesk</div>
+<h1 class="abs">Véhicules</h1>
+<p class="sub abs">14 véhicules · Transports Lemaire</p>
+<div id="counter" class="abs"><span class="dot"></span><span id="counterTxt" style="position:relative;display:inline-block;height:22px;"></span></div>
+
+<div id="rows"></div>
+<div id="ghost" class="abs"></div>
+
+<div id="divider" class="abs"></div>
+<div class="ptitle abs"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#18181b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>Centre d'alertes</div>
+<div id="empty" class="abs"><span class="check"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Aucune échéance sous 30 jours</div>
+
+<div id="shape" class="abs">
+  <div id="chipL" class="layer"><span class="dot"></span><span id="chipTxt" style="position:relative;display:inline-block;height:20px;"></span></div>
+  <div id="cardL" class="layer">
+    <div class="top"><span class="dot"></span><span id="cardTitle" style="position:relative;display:inline-block;height:26px;width:330px;"></span></div>
+    <div class="days" id="days"></div>
+    <div class="meta" id="cardMeta" style="position:relative;height:22px;"></div>
+    <div id="mail"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>Alerte envoyée par e-mail à Thomas</div>
+    <div id="btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span id="btnTxt" style="position:relative;display:inline-block;height:20px;"></span></div>
+    <div id="pv"><b>PDF</b>PV contrôle technique</div>
+  </div>
+</div>
+
+<svg id="cursor" class="abs" viewBox="0 0 24 24"><path d="M4 2.5 19.5 12l-7 1.6L9 20.5z" fill="#18181b" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+</div>
+
+<script>
+// ─── Ressorts calculés : fonction pure du temps, sans simulation ───────────
+const SPRING = {
+  snappy:  { period: 0.34, zeta: 0.78 },
+  default: { period: 0.55, zeta: 0.86 },
+  heavy:   { period: 0.80, zeta: 1.0 },
+}
+function spring(t, cfg = SPRING.default) {
+  if (t <= 0) return 0
+  const w = 2 * Math.PI / cfg.period, z = cfg.zeta
+  if (z >= 1) { const e = Math.exp(-w * t) * (1 + w * t); return e < 1e-5 ? 1 : 1 - e }
+  if (Math.exp(-z * w * t) < 1e-5) return 1
+  const wd = w * Math.sqrt(1 - z * z)
+  return 1 - Math.exp(-z * w * t) * (Math.cos(wd * t) + (z * w / wd) * Math.sin(wd * t))
+}
+// Valeur qui change de cible plusieurs fois : un ressort par changement,
+// chacun à son instant. Le mouvement reste continu et seek(t) reste pur.
+function track(t, start, steps, cfg) {
+  let v = start, prev = start
+  for (const [at, target, c] of steps) { v += (target - prev) * spring(t - at, c || cfg); prev = target }
+  return v
+}
+const lerp = (a, b, k) => a + (b - a) * k
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x))
+const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16))
+const mixc = (a, b, k) => { const A = hex(a), B = hex(b); return `rgb(${A.map((v, i) => Math.round(lerp(v, B[i], clamp(k)))).join(',')})` }
+const fade = (t, t0, d = 0.25) => clamp((t - t0) / d)
+
+// ─── Palette ──────────────────────────────────────────────────────────────
+const OK    = { bg: '#ECFDF5', fg: '#047857', bd: '#A7F3D0', dot: '#10B981' }
+const WARN  = { bg: '#FFFBEB', fg: '#B45309', bd: '#FDE68A', dot: '#F59E0B' }
+
+// ─── Plans (secondes) ─────────────────────────────────────────────────────
+const T = { amber: 0.8, lift: 2.0, mail: 2.75, cursorIn: 3.3, click: 4.25, pv: 5.25, green: 5.6,
+            counterOk: 5.9, cursorOut: 6.0, back: 7.2 }
+const DURATION = 9.6
+
+// ─── Décor ────────────────────────────────────────────────────────────────
+const VEHICLES = [
+  ['AB-123-CD', 'Renault Master'],
+  ['EF-456-GH', 'Peugeot Boxer'],
+  ['IJ-789-KL', 'Citroën Jumpy'],
+  ['MN-012-OP', 'Ford Transit'],
+  ['QR-345-ST', 'Renault Trafic'],
+]
+// Une seule histoire, deux mises en page : on recompose par format au lieu
+// de recadrer une vidéo 16:9 en vertical.
+const FORMAT = new URLSearchParams(location.search).get('format') === 'portrait' ? 'portrait' : 'landscape'
+if (FORMAT === 'portrait') { document.documentElement.classList.add('portrait'); document.body.classList.add('portrait') }
+const LAYOUTS = {
+  landscape: {
+    rows: 5, rowY0: 296, rowH: 104, rowRight: 848,
+    chip: { w: 118, h: 40, warnW: 164, inner: 50 },
+    card: { x: 940, y: 250, w: 540, h: 252 },
+    counter: { right: 1480, okW: 212, warnW: 172, inner: 59 },
+    btn: { left: 30, bottom: 28, h: 50, w: 244, bookedW: 268, inner: 78 },
+    cursor: { from: [1640, 900], out: [1660, 960] },
+  },
+  portrait: {
+    rows: 3, rowY0: 150, rowH: 76, rowRight: 504,
+    chip: { w: 88, h: 34, warnW: 132, inner: 40 },
+    card: { x: 36, y: 440, w: 468, h: 200 },
+    counter: { right: 504, okW: 160, warnW: 130, inner: 47 },
+    btn: { left: 20, bottom: 18, h: 42, w: 196, bookedW: 214, inner: 59 },
+    cursor: { from: [600, 700], out: [620, 740] },
+  },
+}
+const L = LAYOUTS[FORMAT]
+const ROW_Y0 = L.rowY0, ROW_H = L.rowH, FOCUS = 1
+const CHIP = { w: L.chip.w, h: L.chip.h }
+const CHIP_WARN_W = L.chip.warnW
+const chipX = w => L.rowRight - w
+const chipY = i => ROW_Y0 + i * ROW_H + (ROW_H - CHIP.h) / 2
+const CARD = L.card
+
+const truck = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#52525b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>'
+document.getElementById('rows').innerHTML = VEHICLES.slice(0, L.rows).map(([p, m], i) =>
+  `<div class="row abs" style="top:${ROW_Y0 + i * ROW_H}px"><span class="ico">${truck}</span><div><div class="plate">${p}</div><div class="model">${m}</div></div></div>` +
+  (i === FOCUS ? '' : `<div class="chip ok abs" style="left:${chipX(CHIP.w)}px;top:${chipY(i)}px;width:${CHIP.w}px"><span class="dot"></span>À jour</div>`)
+).join('')
+
+// Texte qui change : l'ancien glisse vers le haut, le nouveau arrive d'en bas.
+function swapText(el, t, steps) {
+  let html = ''
+  for (let i = 0; i < steps.length; i++) {
+    const [at, label] = steps[i]
+    const next = steps[i + 1]
+    const kIn = i === 0 ? 1 : spring(t - at, SPRING.snappy)
+    const kOut = next ? spring(t - next[0], SPRING.snappy) : 0
+    const y = (1 - kIn) * 18 - kOut * 18
+    const o = clamp(kIn * 1.4 - kOut * 1.4, 0, 1) * (1 - kOut)
+    if (o > 0.01) html += `<span class="txt" style="transform:translateY(${y.toFixed(2)}px);opacity:${o.toFixed(3)}">${label}</span>`
+  }
+  el.innerHTML = html
+}
+
+const $ = id => document.getElementById(id)
+
+// ─── seek(t) : dessine l'instant t, sans état ─────────────────────────────
+window.seek = function seek(t) {
+  t = ((t % DURATION) + DURATION) % DURATION
+
+  // État ambre → émeraude (0 = à jour, 1 = échéance)
+  const warn = track(t, 0, [[T.amber, 1], [T.green, 0]], SPRING.default)
+  const warnC = clamp(warn)
+
+  // Compteur en haut à droite
+  const cWarn = track(t, 0, [[T.amber + 0.1, 1], [T.counterOk, 0]], SPRING.default)
+  const counterW = lerp(L.counter.okW, L.counter.warnW, clamp(cWarn))
+  const counter = $('counter')
+  counter.style.width = counterW + 'px'
+  counter.style.left = (L.counter.right - counterW) + 'px'
+  counter.style.background = mixc(OK.bg, WARN.bg, cWarn)
+  counter.style.color = mixc(OK.fg, WARN.fg, cWarn)
+  counter.style.border = '1px solid ' + mixc(OK.bd, WARN.bd, cWarn)
+  counter.querySelector('.dot').style.background = mixc(OK.dot, WARN.dot, cWarn)
+  swapText($('counterTxt'), t, t < T.counterOk ? [[0, 'Tout est à jour'], [T.amber + 0.1, '1 échéance'], [T.counterOk, 'Tout est à jour']] : [[T.counterOk, 'Tout est à jour']])
+  $('counterTxt').style.width = (counterW - L.counter.inner) + 'px'
+
+  // Forme unique : pastille ↔ carte (0 = pastille dans la ligne, 1 = carte)
+  const m = track(t, 0, [[T.lift, 1], [T.back, 0]], SPRING.heavy)
+  const chipW = lerp(CHIP.w, CHIP_WARN_W, clamp(track(t, 0, [[T.amber, 1], [T.green, 0]], SPRING.snappy)))
+  const x = lerp(chipX(chipW), CARD.x, m)
+  const y = lerp(chipY(FOCUS), CARD.y, m)
+  const w = lerp(chipW, CARD.w, m)
+  const h = lerp(CHIP.h, CARD.h, m)
+  const shape = $('shape')
+  Object.assign(shape.style, {
+    left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px',
+    borderRadius: lerp(CHIP.h / 2, FORMAT === 'portrait' ? 14 : 18, clamp(m)) + 'px',
+    background: mixc(OK.bg, WARN.bg, warnC),
+    borderColor: mixc(OK.bd, WARN.bd, warnC),
+    boxShadow: `0 ${lerp(0, 18, clamp(m)).toFixed(1)}px ${lerp(0, 40, clamp(m)).toFixed(1)}px -${lerp(0, 18, clamp(m)).toFixed(1)}px rgba(24,24,27,${(0.18 * clamp(m)).toFixed(3)})`,
+  })
+  // Le contenu de la pastille disparaît vite, celui de la carte n'arrive qu'une fois la forme grande.
+  $('chipL').style.opacity = clamp((0.5 - m) * 4)
+  $('chipL').style.color = mixc(OK.fg, WARN.fg, warnC)
+  $('chipL').querySelector('.dot').style.background = mixc(OK.dot, WARN.dot, warnC)
+  swapText($('chipTxt'), t, t < T.green ? [[0, 'À jour'], [T.amber, 'CT dans 30 j'], [T.green, 'À jour']] : [[T.green, 'À jour']])
+  $('chipTxt').style.width = (chipW - L.chip.inner) + 'px'
+  const cardO = clamp((m - 0.6) / 0.25)
+  const card = $('cardL')
+  card.style.opacity = cardO
+  card.style.transform = `translateY(${((1 - cardO) * 10).toFixed(2)}px)`
+  card.querySelector('.dot').style.background = mixc(OK.dot, WARN.dot, warnC)
+  card.querySelector('.top').style.color = mixc(OK.fg, '#18181b', warnC)
+  swapText($('cardTitle'), t, t < T.green ? [[0, 'Contrôle technique'], [T.green, 'Contrôle passé']] : [[T.green, 'Contrôle passé']])
+  swapText($('cardMeta'), t, t < T.green ? [[0, 'Peugeot Boxer · EF-456-GH · échéance le 05/11']] : [[T.green - 0.3, 'Peugeot Boxer · valide jusqu’au 05/11/2028']])
+  const days = $('days')
+  days.textContent = '30 j'
+  days.style.color = WARN.fg
+  days.style.opacity = clamp(1 - fade(t, T.green - 0.2, 0.3))
+  const mail = $('mail')
+  const mk = spring(t - T.mail, SPRING.default)
+  mail.style.opacity = clamp(mk)
+  mail.style.transform = `translateY(${((1 - mk) * 12).toFixed(2)}px)`
+
+  // Bouton : « Planifier le contrôle » → « RDV jeudi 5 novembre »
+  const press = t > T.click ? Math.exp(-(((t - T.click) / 0.09) ** 2)) : 0
+  const booked = spring(t - (T.click + 0.12), SPRING.snappy)
+  const btn = $('btn')
+  btn.style.transform = `scale(${(1 - 0.05 * press).toFixed(4)})`
+  btn.style.background = mixc('#0066FF', '#E5EEFF', booked)
+  btn.style.color = mixc('#FFFFFF', '#0052D6', booked)
+  btn.style.width = lerp(L.btn.w, L.btn.bookedW, clamp(booked)) + 'px'
+  swapText($('btnTxt'), t, t < T.click + 0.12 ? [[0, 'Planifier le contrôle']] : [[0, 'Planifier le contrôle'], [T.click + 0.12, 'RDV jeudi 5 novembre']])
+  $('btnTxt').style.width = (lerp(L.btn.w, L.btn.bookedW, clamp(booked)) - L.btn.inner) + 'px'
+
+  // Procès-verbal qui arrive dans la carte
+  const pk = spring(t - T.pv, SPRING.default)
+  const pv = $('pv')
+  pv.style.opacity = clamp(pk * 1.5)
+  pv.style.transform = `translateY(${((1 - pk) * 46).toFixed(2)}px)`
+
+  // Emplacement laissé dans la ligne
+  const ghost = $('ghost')
+  const gk = clamp(m * 3) * clamp((1 - m) * 6 + (m > 0.5 ? 1 : 0))
+  Object.assign(ghost.style, { left: chipX(chipW) + 'px', top: chipY(FOCUS) + 'px', width: chipW + 'px', height: CHIP.h + 'px', opacity: clamp(m * 3) * (m < 0.02 ? 0 : 1) })
+
+  // État vide du centre d'alertes
+  const emptyO = 1 - clamp(track(t, 0, [[T.lift - 0.15, 1], [T.back + 0.25, 0]], SPRING.snappy))
+  $('empty').style.opacity = emptyO
+
+  // Curseur : entre, clique, ressort
+  const cx = track(t, L.cursor.from[0], [[T.cursorIn, CARD.x + L.btn.left + L.btn.w * 0.6], [T.cursorOut, L.cursor.out[0]]], SPRING.default)
+  const cy = track(t, L.cursor.from[1], [[T.cursorIn, CARD.y + CARD.h - L.btn.bottom - L.btn.h / 2 + 4], [T.cursorOut, L.cursor.out[1]]], SPRING.default)
+  const cur = $('cursor')
+  cur.style.transform = `translate(${cx.toFixed(2)}px, ${cy.toFixed(2)}px) scale(${(1 - 0.12 * press).toFixed(4)})`
+}
+
+window.DURATION = DURATION
+window.ready = document.fonts.ready.then(() => { seek(0); return true })
+</script>
+</body>
+</html>

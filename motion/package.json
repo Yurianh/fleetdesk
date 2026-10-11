@@ -1,0 +1,14 @@
+{
+  "name": "fleetdesk-motion",
+  "private": true,
+  "type": "module",
+  "description": "Vidéos motion design de FleetDesk, rendues depuis du code (seek(t) + Playwright + ffmpeg).",
+  "scripts": {
+    "hero:stills": "node hero/render.mjs --stills 0,1.2,2.5,3.2,4.6,6.2,7.5,9.59",
+    "hero:loop": "node hero/render.mjs --check-loop",
+    "hero": "node hero/render.mjs"
+  },
+  "dependencies": {
+    "playwright-core": "^1.64.0"
+  }
+}
