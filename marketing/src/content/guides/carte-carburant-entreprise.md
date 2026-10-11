@@ -1,13 +1,13 @@
 ---
-title: "Carte carburant entreprise : comment comparer"
+title: "Carte carburant d'entreprise : comment la choisir"
 description: "Carte carburant professionnelle pour une flotte d'entreprise : critères de comparaison, risque d'avantage en nature, ce qu'elle ne remplace pas au quotidien."
-heading: "Carte carburant d'entreprise : le comparatif par critères"
+heading: "Choisir une carte carburant d'entreprise : les critères qui comptent"
 intro: "Toutes les cartes carburant professionnelles ne se comparent pas sur le même plan : réseau accepté, produits couverts, contrôle des dépenses, rattachement par véhicule. Voici les critères qui comptent réellement, et ce qu'une carte carburant ne fait pas à votre place."
 tag: "Pilotage"
-cardTitle: "Carte carburant entreprise : comment comparer"
+cardTitle: "Carte carburant d'entreprise : comment la choisir"
 cardDesc: "Les critères qui distinguent vraiment les offres, le risque d'avantage en nature, et ce qu'une carte carburant ne remplace pas."
-published: "2026-10-05"
-updated: "2026-10-05"
+published: "2026-10-11"
+updated: "2026-10-11"
 order: 41
 faq:
   - q: "Une carte carburant est-elle obligatoire pour une flotte d'entreprise ?"
@@ -21,9 +21,9 @@ faq:
 related:
   - title: "TCO d'un véhicule d'entreprise : calculer le coût total de possession"
     href: "/guides/tco-vehicule-entreprise"
-  - title: "Coût de revient kilométrique : la méthode de calcul"
+  - title: "Prix de revient kilométrique : formule, calcul et exemple"
     href: "/guides/cout-revient-kilometrique"
-  - title: "Logiciel de gestion de flotte : ce qu'il doit faire"
+  - title: "Logiciel de gestion de parc automobile : ce qu'il doit faire"
     href: "/logiciel-gestion-de-flotte"
 sources:
   - label: "Urssaf — Évaluation des avantages en nature (dont véhicule)"
@@ -36,13 +36,15 @@ Sans carte carburant, un conducteur avance la dépense à la pompe, puis la fait
 
 Ce changement de circuit ne dit rien, en soi, sur la qualité d'une offre. C'est la comparaison des critères qui suit qui permet de choisir, pas le seul fait d'avoir une carte plutôt qu'une note de frais.
 
-Il existe globalement deux familles d'émetteurs : les réseaux pétroliers, qui couvrent en priorité leurs propres stations, et les émetteurs multi-réseaux, qui agrègent plusieurs enseignes sous une seule carte. Aucune des deux familles n'est supérieure dans l'absolu : une flotte qui roule presque toujours dans un même bassin, bien couvert par une enseigne, peut très bien se satisfaire d'une carte mono-réseau ; une flotte aux trajets dispersés a davantage intérêt à un réseau large.
+Il existe globalement deux familles d'émetteurs : les réseaux pétroliers, qui couvrent en priorité leurs propres stations (par exemple TotalEnergies, Shell, Esso ou BP), et les émetteurs multi-réseaux, qui agrègent plusieurs enseignes sous une seule carte (par exemple DKV ou UTA). Aucune des deux familles n'est supérieure dans l'absolu : une flotte qui roule presque toujours dans un même bassin, bien couvert par une enseigne, peut très bien se satisfaire d'une carte mono-réseau ; une flotte aux trajets dispersés a davantage intérêt à un réseau large.
+
+<p class="note">Ces noms sont cités à titre d'exemple, sans classement ni liste exhaustive. Frais, réseaux acceptés et services changent souvent : vérifiez-les auprès de chaque émetteur, sur les trajets réels de votre flotte.</p>
 
 ## Les critères qui distinguent vraiment les offres
 
 ### Le réseau réellement accepté
 
-Un comparatif de cartes carburant se fait sur les trajets réels de la flotte, pas sur un réseau annoncé en général. Une carte acceptée dans un grand réseau national mais absente des axes régionaux ou départementaux parcourus par vos véhicules oblige les conducteurs à régler sur leurs propres moyens, ce qui annule l'intérêt de la carte sur ces trajets. Le test le plus fiable reste de vérifier, station par station sur les itinéraires habituels de la flotte, quelles cartes y sont acceptées.
+Comparer des cartes carburant se fait sur les trajets réels de la flotte, pas sur un réseau annoncé en général. Une carte acceptée dans un grand réseau national mais absente des axes régionaux ou départementaux parcourus par vos véhicules oblige les conducteurs à régler sur leurs propres moyens, ce qui annule l'intérêt de la carte sur ces trajets. Le test le plus fiable reste de vérifier, station par station sur les itinéraires habituels de la flotte, quelles cartes y sont acceptées.
 
 ### Les produits couverts au-delà du carburant
 
@@ -83,4 +85,4 @@ Dans tous les cas, mieux vaut tester l'offre sur un échantillon de véhicules a
 
 La carte carburant simplifie le paiement et donne une donnée de consommation par transaction. Elle ne donne pas, seule, une vision du coût complet d'un véhicule : elle ne voit ni l'assurance, ni l'entretien hors réseau partenaire, ni l'amortissement. Cette vision complète relève du calcul de [TCO du véhicule d'entreprise](/guides/tco-vehicule-entreprise), dans lequel le carburant n'est qu'un poste parmi d'autres.
 
-Un [logiciel de gestion de flotte](/logiciel-gestion-de-flotte) sert justement à rassembler cette donnée carburant avec le reste du suivi — entretien, kilométrage, documents par véhicule — plutôt que de la laisser isolée dans le relevé d'un émetteur de carte.
+Un [logiciel de gestion de parc automobile](/logiciel-gestion-de-flotte) sert justement à rassembler cette donnée carburant avec le reste du suivi — entretien, kilométrage, documents par véhicule — plutôt que de la laisser isolée dans le relevé d'un émetteur de carte.

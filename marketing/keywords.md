@@ -89,7 +89,7 @@ Un guide n'entre ici que s'il renvoie naturellement vers une page des motifs
 | temps de conduite et de repos | `/secteurs/transport-routier` | PR #24 ouverte |
 | chronotachygraphe obligations | `/secteurs/transport-routier` | à créer, après la fusion de #24 (vérifier le recouvrement) |
 | intervalle vidange utilitaire | `/guides/plan-entretien-vehicule-utilitaire` | PR #23 ouverte. Risque de recouvrement avec le plan d'entretien : à trancher avant de fusionner. |
-| carte carburant entreprise comparatif | `/logiciel-gestion-de-flotte` | PR #25 ouverte |
+| carte carburant entreprise (choisir) — URL `/guides/carte-carburant-entreprise` | `/logiciel-gestion-de-flotte` | PR #25 ouverte. Recentrée le 2026-10-11 sur « choisir » : un vrai comparatif demanderait des prix d'émetteurs qu'on ne vérifie pas. |
 | ZFE flotte entreprise | `/secteurs/vehicules-de-societe` | à créer |
 
 ## Hors site : annuaires de logiciels
