@@ -25,7 +25,7 @@ related:
     href: "/guides/cout-revient-kilometrique"
   - title: "Modèle de suivi de parc automobile (Excel)"
     href: "/outils/modele-suivi-parc-automobile-excel"
-  - title: "Logiciel de gestion de flotte : ce qu'il doit faire"
+  - title: "Logiciel de gestion de parc automobile : ce qu'il doit faire"
     href: "/logiciel-gestion-de-flotte"
 ---
 

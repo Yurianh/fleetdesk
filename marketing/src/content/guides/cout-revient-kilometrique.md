@@ -4,7 +4,7 @@ description: "Prix de revient kilométrique (PRK) ou coût de revient au km : la
 heading: "Prix de revient kilométrique : formule, calcul et exemple chiffré"
 intro: "Combien vous coûte réellement un kilomètre parcouru ? Sans ce chiffre, impossible de facturer juste, d'arbitrer un renouvellement ou de repérer le véhicule qui plombe la flotte. Voici la méthode, appliquée à un exemple."
 tag: "Pilotage"
-cardTitle: "Coût de revient kilométrique : la méthode"
+cardTitle: "Prix de revient kilométrique : la méthode"
 cardDesc: "Charges fixes, charges variables, formule et exemple chiffré pour connaître le vrai coût du kilomètre."
 published: "2026-09-12"
 updated: "2026-10-11"
