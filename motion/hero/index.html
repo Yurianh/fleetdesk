@@ -96,24 +96,29 @@ if (PORTRAIT) document.documentElement.classList.add('portrait')
 // ─── Plans (secondes) ─────────────────────────────────────────────────────
 // Un problème à la fois : l'alerte arrive, on laisse le temps de la lire, on la
 // règle, on laisse le temps de voir le résultat, puis on passe au suivant.
-const D = 22.8
+// Chaque histoire tient dans un segment de 6,4 s qui commence et finit sur la
+// même image (repos) : le site peut rejouer une carte en boucle au survol.
+// Segments : [1.0, 7.4] contrôle technique, [7.4, 13.8] documents, [13.8, 20.2] entretien.
+// Les reporter dans marketing/src/components/HeroSection.jsx s'ils changent.
+const D = 24.4
+const SEGMENTS = [[1.0, 7.4], [7.4, 13.8], [13.8, 20.2]]
 const T = {
-  alert: [1.4, 7.2, 13.0],                  // une alerte toutes les ~6 s
+  alert: [1.4, 7.8, 14.2],                  // une alerte par segment
   ctClick: 4.2, ctDone: 4.65,               // contrôle technique : planifié
-  grab: 9.4, drop: 10.6, docDone: 10.7,     // visite médicale : certificat déposé
-  vClick: 15.8, vDone: 15.9,                // vidange : enregistrée
-  close: [6.2, 12.0, 17.8],                 // chaque carte se referme une fois réglée
-  summary: 18.6, summaryOut: 21.8,
+  grab: 10.0, drop: 11.2, docDone: 11.3,    // visite médicale : certificat déposé
+  vClick: 17.0, vDone: 17.1,                // vidange : enregistrée
+  close: [6.0, 12.4, 18.4],                 // chaque carte se referme, posée avant la fin du segment
+  summary: 20.4, summaryOut: 23.4,
 }
 // Légendes : ce qui se passe, dit en une phrase, le temps que l'œil suive.
 const CAPTIONS = PORTRAIT ? [
-  [1.7, 'Contrôle technique dans 30 jours : vous êtes prévenu.'], [4.75, 'Planifié en un clic.'], [6.4, ''],
-  [7.5, 'Visite médicale de Sophie : repérée 15 jours avant.'], [10.8, 'Certificat déposé : à jour jusqu\u2019en 2031.'], [12.2, ''],
-  [13.3, 'Vidange calculée sur le kilométrage réel.'], [16.0, 'Entretien enregistré.'], [18.0, ''],
+  [1.7, 'Contrôle technique dans 30 jours : vous êtes prévenu.'], [4.75, 'Planifié en un clic.'], [6.2, ''],
+  [8.1, 'Visite médicale de Sophie : repérée 15 jours avant.'], [11.4, 'Certificat déposé : à jour jusqu\u2019en 2031.'], [12.6, ''],
+  [14.5, 'Vidange calculée sur le kilométrage réel.'], [17.2, 'Entretien enregistré.'], [18.6, ''],
 ] : [
-  [1.7, 'Le contrôle technique approche : FleetDesk vous prévient 30 jours avant.'], [4.75, 'Planifié en un clic.'], [6.4, ''],
-  [7.5, 'La visite médicale de Sophie expire dans 15 jours : repérée à temps.'], [10.8, 'Certificat déposé : à jour jusqu\u2019en 2031.'], [12.2, ''],
-  [13.3, 'La vidange approche, calculée sur le kilométrage réel.'], [16.0, 'Entretien enregistré, prochaine dans 30 000 km.'], [18.0, ''],
+  [1.7, 'Le contrôle technique approche : FleetDesk vous prévient 30 jours avant.'], [4.75, 'Planifié en un clic.'], [6.2, ''],
+  [8.1, 'La visite médicale de Sophie expire dans 15 jours : repérée à temps.'], [11.4, 'Certificat déposé : à jour jusqu\u2019en 2031.'], [12.6, ''],
+  [14.5, 'La vidange approche, calculée sur le kilométrage réel.'], [17.2, 'Entretien enregistré, prochaine dans 30 000 km.'], [18.6, ''],
 ]
 const DONE = [T.ctDone, T.docDone, T.vDone]
 
@@ -185,6 +190,7 @@ const btnCenter = i => { const r = L.card(i), b = L.block; return [r.x + b.x + L
 const DROP = (() => { const r = L.card(1), b = L.block; return [r.x + b.x + b.w * (PORTRAIT ? 0.4 : 0.22), r.y + b.y + b.h * (PORTRAIT ? 0.5 : 0.62)] })()
 const counterW = label => label === 'Tout est à jour' ? L.counter.ok : L.counter.warn[Math.min(2, Number(label[0]) - 1)]
 
+window.SEGMENTS = SEGMENTS
 scene({
   duration: D,
   seek(t) {
@@ -197,7 +203,7 @@ scene({
       // 1 = alerte (ambre), 0 = à jour ou réglée (émeraude)
       const wk = clamp(track(t, 0, [[T.alert[i], 1], [DONE[i], 0]], SPRING.default))
       // Forme unique : la pastille « À jour » devient le bloc d'alerte, puis redevient pastille.
-      const m = track(t, 0, [[T.alert[i] + 0.12, 1], [T.close[i], 0]], SPRING.heavy)
+      const m = track(t, 0, [[T.alert[i] + 0.12, 1, SPRING.heavy], [T.close[i], 0, SPRING.default]])
       const mk = clamp(m)
       const chipX = r.w - L.chip.right - L.chip.w
       Object.assign($('blk' + i).style, {
@@ -277,8 +283,8 @@ scene({
     const fw = L.file.size
     cursor($('cursor'), t, {
       from: L.cur.from,
-      steps: [[3.3, [c0x, c0y]], [5.2, L.cur.out], [T.grab - 0.25, [L.file.from[0] + fw[0] * 0.6, L.file.from[1] - 120 + fw[1] * 0.5]],
-              [T.grab + 0.3, [DROP[0] + fw[0] * 0.6, DROP[1] + fw[1] * 0.5]], [11.3, L.cur.out], [14.9, [c2x, c2y]], [16.6, L.cur.out]],
+      steps: [[3.3, [c0x, c0y]], [5.0, L.cur.out], [T.grab - 0.25, [L.file.from[0] + fw[0] * 0.6, L.file.from[1] - 120 + fw[1] * 0.5]],
+              [T.grab + 0.3, [DROP[0] + fw[0] * 0.6, DROP[1] + fw[1] * 0.5]], [11.8, L.cur.out], [16.1, [c2x, c2y]], [17.6, L.cur.out]],
     }, [T.ctClick, T.drop, T.vClick])
   },
 })

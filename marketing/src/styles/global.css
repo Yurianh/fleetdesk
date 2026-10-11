@@ -79,6 +79,43 @@
   }
 }
 
+/* ── Arrivée de l'écran du hero ─────────────────────────────────────────────
+   Le cadre de la vidéo arrive incliné, flou et décalé, puis se redresse : il
+   « se pose » devant le visiteur. La vidéo ne démarre qu'à la fin de cette
+   animation (HeroSection). Rien ne bouge sous prefers-reduced-motion. */
+.reveal-stage { perspective: 1600px; perspective-origin: 50% 0%; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-frame {
+    transform-origin: 50% 0%;
+    will-change: transform, opacity, filter;
+    animation: reveal-frame 2200ms var(--ease-cine) 900ms both;
+  }
+  @keyframes reveal-frame {
+    from { opacity: 0; transform: rotateX(12deg) translateY(72px) scale(0.94); filter: blur(14px); }
+    60%  { filter: blur(2px); }
+    to   { opacity: 1; transform: none; filter: none; }
+  }
+}
+
+/* ── Parallaxe au survol de l'écran du hero ─────────────────────────────────
+   Les variables --tilt-x / --tilt-y (−1 → 1) sont écrites par HeroSection au
+   rythme de l'écran, sur un calque distinct de celui de l'arrivée. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .reveal-tilt {
+    transform:
+      rotateY(calc(var(--tilt-x, 0) * 3.2deg))
+      rotateX(calc(var(--tilt-y, 0) * -2.4deg))
+      translate3d(calc(var(--tilt-x, 0) * 6px), calc(var(--tilt-y, 0) * 4px), 0);
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* Pendant le survol, la réponse est immédiate ; au départ du curseur, retour lent. */
+  .reveal-stage.is-tilting .reveal-tilt { transition: transform 120ms linear; }
+}
+
+
 /* ── Accordéon des questions fréquentes ─────────────────────────────────────
    La hauteur est animée en JS (src/scripts/motion.js) ; ici, le cadrage et le
    balayage qui fait apparaître la réponse de gauche à droite. Le masque n'est

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ICONS } from '../lib/icons.js'
 
 const APP_URL = 'https://app.fleetdesk.fr'
@@ -19,38 +19,157 @@ function Icon({ name, size = 20, className = '', strokeWidth = 1.75 }) {
 // Décalage de la révélation, en millisecondes.
 const delay = ms => ({ animationDelay: `${ms}ms` })
 
-// Vidéo du hero, rendue depuis du code (motion/hero) : les trois promesses du
-// titre en un plan. Trois échéances arrivent et se règlent. Boucle muette.
-// Si l'utilisateur préfère moins d'animations, on reste sur l'image fixe.
-function HeroVideo() {
-  const ref = useRef(null)
+// Parallaxe au survol : l'écran s'incline légèrement vers le curseur. La
+// transformation vit sur un calque dédié (.reveal-tilt) pour ne pas entrer en
+// conflit avec l'animation d'arrivée, qui occupe déjà `transform` sur le cadre.
+function useParallax() {
+  const stage = useRef(null)
+
   useEffect(() => {
-    const v = ref.current
-    if (!v) return
+    const el = stage.current
+    if (!el) return
+    // Ni sur écran tactile, ni si l'utilisateur veut moins d'animations.
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    let frame = 0
+    let target = { x: 0, y: 0 }
+    let current = { x: 0, y: 0 }
+
+    const tick = () => {
+      // Lissage : le mouvement suit le curseur avec un peu d'inertie.
+      current.x += (target.x - current.x) * 0.12
+      current.y += (target.y - current.y) * 0.12
+      el.style.setProperty('--tilt-x', current.x.toFixed(3))
+      el.style.setProperty('--tilt-y', current.y.toFixed(3))
+      if (Math.abs(target.x - current.x) > 0.001 || Math.abs(target.y - current.y) > 0.001) {
+        frame = requestAnimationFrame(tick)
+      } else {
+        frame = 0
+      }
+    }
+    const run = () => { if (!frame) frame = requestAnimationFrame(tick) }
+
+    const onMove = (e) => {
+      const r = el.getBoundingClientRect()
+      target = {
+        x: ((e.clientX - r.left) / r.width - 0.5) * 2,
+        y: ((e.clientY - r.top) / r.height - 0.5) * 2,
+      }
+      el.classList.add('is-tilting')
+      run()
+    }
+    const onLeave = () => {
+      target = { x: 0, y: 0 }
+      el.classList.remove('is-tilting')
+      run()
+    }
+
+    el.addEventListener('pointermove', onMove)
+    el.addEventListener('pointerleave', onLeave)
+    return () => {
+      el.removeEventListener('pointermove', onMove)
+      el.removeEventListener('pointerleave', onLeave)
+      if (frame) cancelAnimationFrame(frame)
+    }
+  }, [])
+
+  return stage
+
+}
+
+// Vidéo du hero, rendue depuis du code (motion/hero) : les trois promesses du
+// titre, une échéance à la fois. Boucle muette.
+//
+// Chaque carte de la vidéo a son segment, qui commence et finit sur la même
+// image : au survol d'une carte, on rejoue son segment en boucle. À reporter
+// depuis SEGMENTS dans motion/hero/index.html si le minutage change.
+const SEGMENTS = [[1.0, 7.4], [7.4, 13.8], [13.8, 20.2]]
+// Position des cartes dans la vidéo 16:9 (toile 1536 × 864), en pourcentages.
+const ZONES = [0, 1, 2].map(i => ({
+  left: `${((80 + i * 467) / 1536) * 100}%`, top: `${(240 / 864) * 100}%`,
+  width: `${(442 / 1536) * 100}%`, height: `${(480 / 864) * 100}%`,
+}))
+const ZONE_LABELS = ['Contrôles techniques', 'Documents conducteurs', 'Entretien']
+
+function HeroVideo() {
+  const frame = useRef(null)
+  const video = useRef(null)
+  const segment = useRef(null)
+  const [interactive, setInteractive] = useState(false)
+
+  useEffect(() => {
+    const v = video.current, f = frame.current
+    if (!v || !f) return
     // React ne pose pas toujours `muted` à l'hydratation : sans lui, la lecture
     // automatique est refusée sur mobile.
     v.muted = true
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const apply = () => { if (reduce.matches) { v.pause(); v.currentTime = 0 } else { v.play().catch(() => {}) } }
-    apply()
-    reduce.addEventListener('change', apply)
-    return () => reduce.removeEventListener('change', apply)
+    const hover = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 640px)')
+    if (reduce.matches) { v.pause(); return }
+    setInteractive(hover.matches)
+
+    // La vidéo démarre une fois le cadre posé : l'histoire se lit depuis le début.
+    let started = false
+    const start = () => { if (started) return; started = true; v.currentTime = 0; v.play().catch(() => {}) }
+    const onEnd = e => { if (e.target === f) start() }
+    f.addEventListener('animationend', onEnd)
+    const fallback = setTimeout(start, 3400)
+
+    // Survol d'une carte : on reste dans son segment.
+    let raf = 0
+    const loop = () => {
+      const s = segment.current
+      if (s !== null) {
+        const [a, b] = SEGMENTS[s]
+        if (v.currentTime < a - 0.05 || v.currentTime >= b - 0.03) v.currentTime = a
+      }
+      raf = requestAnimationFrame(loop)
+    }
+    raf = requestAnimationFrame(loop)
+    return () => { f.removeEventListener('animationend', onEnd); clearTimeout(fallback); cancelAnimationFrame(raf) }
   }, [])
+
+  const enter = i => {
+    segment.current = i
+    const v = video.current
+    if (v && (v.currentTime < SEGMENTS[i][0] || v.currentTime >= SEGMENTS[i][1])) v.currentTime = SEGMENTS[i][0]
+  }
+  const leave = () => { segment.current = null }
+
   return (
-    <video
-      ref={ref}
-      className="block w-full h-full object-cover"
-      muted loop playsInline preload="auto"
-      aria-label="Démonstration FleetDesk : trois échéances arrivent, un contrôle technique, une visite médicale et une vidange. Chacune est réglée en un geste et le tableau de bord repasse à « Tout est à jour » : zéro contrôle raté, zéro document expiré, zéro panne surprise."
+    <div
+      ref={frame}
+      className="reveal-frame relative rounded-2xl border border-zinc-200 bg-zinc-100 overflow-hidden aspect-[4/5] sm:aspect-video bg-cover bg-center bg-[url('/hero/fleetdesk-hero-portrait-poster.jpg')] sm:bg-[url('/hero/fleetdesk-hero-poster.jpg')]"
     >
-      {/* Mobile : version portrait recomposée, pas un recadrage du 16:9. */}
-      <source media="(max-width: 639px)" src="/hero/fleetdesk-hero-portrait.mp4" type="video/mp4" />
-      <source src="/hero/fleetdesk-hero.mp4" type="video/mp4" />
-    </video>
+      <video
+        ref={video}
+        className="block w-full h-full object-cover"
+        muted loop playsInline preload="auto"
+        aria-label="Démonstration FleetDesk : une échéance de contrôle technique, puis une visite médicale, puis une vidange arrivent, chacune réglée en un geste ; le tableau de bord repasse à « Tout est à jour » : zéro contrôle raté, zéro document expiré, zéro panne surprise."
+      >
+        {/* Mobile : version portrait recomposée, pas un recadrage du 16:9. */}
+        <source media="(max-width: 639px)" src="/hero/fleetdesk-hero-portrait.mp4" type="video/mp4" />
+        <source src="/hero/fleetdesk-hero.mp4" type="video/mp4" />
+      </video>
+      {interactive && ZONES.map((z, i) => (
+        <button
+          key={i}
+          type="button"
+          style={z}
+          aria-label={`Revoir l'exemple : ${ZONE_LABELS[i]}`}
+          onPointerEnter={() => enter(i)} onPointerLeave={leave}
+          onFocus={() => enter(i)} onBlur={leave}
+          className="absolute rounded-[1.4%] cursor-default outline-none transition-shadow duration-300 hover:shadow-[0_0_0_2px_rgba(0,102,255,0.45)] focus-visible:shadow-[0_0_0_2px_rgba(0,102,255,0.7)]"
+        />
+      ))}
+    </div>
   )
 }
 
 export default function HeroSection() {
+  const stageRef = useParallax()
+
   return (
     <section data-own-motion className="bg-white overflow-hidden border-b border-zinc-100">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20 lg:pt-24 pb-16 lg:pb-20">
@@ -97,11 +216,11 @@ export default function HeroSection() {
         </div>
 
         {/* Produit : reproduction de l'écran Tableau de bord */}
-        <div
-          style={delay(900)}
-          className="enter rounded-2xl border border-zinc-200 bg-zinc-100 overflow-hidden aspect-[4/5] sm:aspect-video bg-cover bg-center bg-[url('/hero/fleetdesk-hero-portrait-poster.jpg')] sm:bg-[url('/hero/fleetdesk-hero-poster.jpg')]"
-        >
-          <HeroVideo />
+        {/* L'écran arrive incliné puis se pose ; au survol, il suit le curseur. */}
+        <div ref={stageRef} className="reveal-stage relative">
+          <div className="reveal-tilt">
+            <HeroVideo />
+          </div>
         </div>
       </div>
     </section>
