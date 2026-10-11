@@ -6,8 +6,8 @@ intro: "Aucun texte n'impose un kilométrage de vidange identique pour tous les 
 tag: "Véhicules"
 cardTitle: "Intervalle de vidange utilitaire"
 cardDesc: "Ce qui fixe la fréquence de vidange, où trouver la valeur exacte et comment la suivre véhicule par véhicule."
-published: "2026-09-21"
-updated: "2026-09-21"
+published: "2026-10-11"
+updated: "2026-10-11"
 order: 36
 faq:
   - q: "Quel est l'intervalle de vidange pour un véhicule utilitaire ?"
@@ -21,10 +21,10 @@ faq:
 related:
   - title: "Plan d'entretien d'un véhicule utilitaire : la méthode"
     href: "/guides/plan-entretien-vehicule-utilitaire"
-  - title: "Coût de revient kilométrique : la méthode de calcul"
+  - title: "Logiciel de suivi d'entretien des véhicules"
+    href: "/logiciel-suivi-entretien-vehicule"
+  - title: "Prix de revient kilométrique : formule, calcul et exemple"
     href: "/guides/cout-revient-kilometrique"
-  - title: "Logiciel de gestion de flotte : ce qu'il doit faire"
-    href: "/logiciel-gestion-de-flotte"
 sources:
   - label: "Légifrance — Code de la route, article R323-1 (bon état de marche et entretien satisfaisant)"
     href: "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000053003281"
@@ -42,7 +42,7 @@ Cette absence de règle générale n'est pas une zone grise : c'est le principe 
 
 Trois éléments fixent la fréquence de vidange d'un véhicule donné, et ils se combinent au niveau du constructeur, pas au niveau du gestionnaire de flotte.
 
-**Le seuil kilométrique et le seuil calendaire.** La plupart des plans d'entretien associent à la vidange deux seuils : un nombre de kilomètres et une durée depuis la dernière opération. L'échéance retenue est la première des deux atteinte. Un véhicule qui roule peu peut donc arriver à échéance par la date, bien avant d'atteindre le seuil kilométrique indiqué au carnet.
+**Le seuil kilométrique et le seuil calendaire.** Comme pour les autres opérations du plan d'entretien, la vidange a deux seuils, en kilomètres et en mois, et c'est le premier atteint qui compte. Pour la vidange, le seuil en mois pèse plus qu'on ne le croit : une huile vieillit même dans un moteur qui roule peu. Un utilitaire qui reste souvent au dépôt arrive donc à échéance par la date, loin du seuil kilométrique.
 
 **Le type d'huile préconisé.** Le constructeur associe l'intervalle à une huile précise, définie par sa viscosité et ses normes. Une huile différente de celle préconisée, même présentée comme supérieure, peut ne pas correspondre à l'intervalle indiqué : la cohérence entre l'huile utilisée et l'intervalle appliqué relève de la fiche technique du véhicule, pas d'une règle générale sur les huiles.
 
@@ -69,7 +69,7 @@ Un intervalle constructeur suppose un usage normal. Certains signaux justifient 
 - **Huile très sombre ou texture inhabituelle** au contrôle visuel de la jauge.
 - **Bruit moteur inhabituel**, notamment au démarrage à froid.
 
-Un conducteur qui remonte ces signaux rapidement évite qu'une vidange en retard de quelques semaines ne se transforme en réparation moteur. C'est le même principe que pour l'ensemble du [plan d'entretien](/guides/plan-entretien-vehicule-utilitaire) : le terrain repère le problème avant qu'il devienne une panne.
+Un conducteur qui remonte ces signaux rapidement évite qu'une vidange en retard de quelques semaines ne se transforme en réparation moteur.
 
 ## Vidange, garantie et contrôle technique
 
@@ -81,14 +81,10 @@ La vidange n'entre pas directement dans les points de contrôle du contrôle tec
 
 Une vidange repoussée de quelques milliers de kilomètres reste, dans la majorité des cas, une opération sans conséquence visible immédiate. Le risque n'est pas linéaire : au-delà d'un certain point, une huile dégradée n'assure plus correctement la lubrification et le refroidissement des pièces internes du moteur, ce qui peut transformer une opération planifiée à faible coût en réparation moteur lourde, assortie d'une immobilisation non prévue du véhicule.
 
-Cette bascule pèse directement sur le [coût de revient kilométrique](/guides/cout-revient-kilometrique) du véhicule concerné : une réparation subie coûte toujours plus cher, en pièces et en immobilisation, qu'un entretien planifié à l'avance dans un créneau atelier choisi.
+Cette bascule pèse directement sur le [prix de revient kilométrique](/guides/cout-revient-kilometrique) du véhicule concerné : une réparation subie coûte toujours plus cher, en pièces et en immobilisation, qu'un entretien planifié à l'avance dans un créneau atelier choisi.
 
-## Suivre l'intervalle sur toute la flotte
+## Suivre les vidanges sur toute la flotte
 
-À l'échelle d'une flotte de plusieurs utilitaires, la difficulté n'est pas de connaître l'intervalle d'un véhicule : c'est de suivre les échéances de tous les véhicules en même temps, sans qu'aucune ne passe entre les mailles. Trois informations suffisent, par véhicule :
+À l'échelle d'une flotte de plusieurs utilitaires, la difficulté n'est pas de connaître l'intervalle d'un véhicule : c'est de savoir, chaque semaine, quels véhicules approchent de leur vidange. Pour chacun, il faut la date et le kilométrage de la dernière vidange, le kilométrage actuel et l'intervalle du carnet. La méthode pour organiser l'ensemble des entretiens est détaillée dans notre guide sur le [plan d'entretien d'un véhicule utilitaire](/guides/plan-entretien-vehicule-utilitaire).
 
-1. le kilométrage actuel, relevé régulièrement ;
-2. la date et le kilométrage de la dernière vidange ;
-3. la prochaine échéance, calculée à partir du carnet constructeur, en kilomètres et en date.
-
-Un tableau partagé permet de démarrer ce suivi immédiatement : notre [modèle de suivi de parc automobile](/outils/modele-suivi-parc-automobile-excel) offre une structure prête à l'emploi pour ces trois informations. À mesure que le nombre de véhicules augmente, un [logiciel de gestion de flotte](/logiciel-gestion-de-flotte) prend le relais pour centraliser les échéances, alerter avant dépassement et conserver l'historique complet par véhicule, sans dépendre d'un carnet papier rangé dans une boîte à gants.
+Pour démarrer, notre [modèle de suivi de parc automobile](/outils/modele-suivi-parc-automobile-excel) a un onglet « Entretiens & dépenses » prêt à remplir. Au-delà de quelques véhicules, un [logiciel de suivi d'entretien des véhicules](/logiciel-suivi-entretien-vehicule) recalcule l'échéance de vidange à chaque relevé de compteur et prévient avant qu'elle soit dépassée, en kilomètres comme en date.
