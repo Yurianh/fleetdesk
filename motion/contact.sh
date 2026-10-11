@@ -1,9 +1,10 @@
 #!/bin/sh
 # Planche contact des images fixes d'une scène : 4 colonnes, triées par instant.
-# Usage : sh contact.sh <scene>
+# Usage : sh contact.sh <scene> [format]
 set -e
 dir="$1/review"
-files=$(ls "$dir"/still-*.png | sort -t- -k2 -n)
+if [ -n "$2" ]; then files=$(ls "$dir"/still-"$2"-*.png | sort -t- -k3 -n)
+else files=$(ls "$dir"/still-[0-9]*.png | sort -t- -k2 -n); fi
 n=$(echo "$files" | wc -l | tr -d ' ')
 inputs=""; labels=""; layout=""
 i=0
@@ -15,5 +16,5 @@ for f in $files; do
   layout="$layout|${x}_${y}"
   i=$((i + 1))
 done
-ffmpeg -loglevel error -y $inputs -filter_complex "${labels}xstack=inputs=$n:layout=${layout#|}:fill=white,scale=1600:-1" "$dir/contact.png"
-echo "$dir/contact.png"
+ffmpeg -loglevel error -y $inputs -filter_complex "${labels}xstack=inputs=$n:layout=${layout#|}:fill=white,scale=1600:-1" "$dir/contact${2:+-$2}.png"
+echo "$dir/contact${2:+-$2}.png"

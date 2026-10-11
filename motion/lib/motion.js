@@ -28,6 +28,8 @@ export const lerp = (a, b, k) => a + (b - a) * k
 export const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x))
 const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16))
 export const mixc = (a, b, k) => { const A = hex(a), B = hex(b); return `rgb(${A.map((v, i) => Math.round(lerp(v, B[i], clamp(k)))).join(',')})` }
+// Même mélange, rendu en hexadécimal pour pouvoir le mélanger à nouveau.
+export const mixh = (a, b, k) => { const A = hex(a), B = hex(b); return '#' + A.map((v, i) => Math.round(lerp(v, B[i], clamp(k))).toString(16).padStart(2, '0')).join('') }
 export const fade = (t, t0, d = 0.25) => clamp((t - t0) / d)
 export const $ = id => document.getElementById(id)
 
@@ -90,6 +92,7 @@ export const ICON = {
   camera: (s, c) => svg('<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>', s, c),
   drop: (s, c) => svg('<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>', s, c),
   trend: (s, c) => svg('<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>', s, c),
+  mail: (s, c) => svg('<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>', s, c),
   calendar: (s, c) => svg('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>', s, c),
   send: (s, c) => svg('<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>', s, c),
   brand: (s, c) => svg('<rect x="3" y="7" width="12" height="11" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-4"/>', s, c, 2.5),

@@ -11,7 +11,7 @@ texte assez gros pour rester lisible sur téléphone.
 
 | Vidéo | Ce qu'elle prouve | Où | Vérifié dans l'application |
 | --- | --- | --- | --- |
-| `hero` | FleetDesk voit l'échéance 30 jours avant, on la traite, tout revient à jour. | Hero | Alertes à 30 jours, centre d'alertes, e-mail des échéances. |
+| `hero` | Les trois promesses du titre : un contrôle technique, une visite médicale et une vidange arrivent, chacune se règle, le compteur revient à zéro. 16:9 et 4:5. | Hero | Alertes à 30 jours, documents conducteurs, vidange au kilométrage (5 000 km avant), e-mail des échéances. |
 | `fiche` | Tout sur un véhicule en un clic : conducteur, kilométrage, prochaines échéances. | « Vos véhicules, d'un coup d'œil » | `VehicleDetail.jsx` : affectation, kilométrage, échéances, prévision d'entretien. |
 | `documents` | Un document conducteur qui expire est vu à temps ; une fois la pièce déposée, l'échéance est recalculée. | « Zéro document expiré » | `DriverDocuments.jsx` : dépôt par le gestionnaire, échéance recalculée. Le chauffeur ne dépose pas lui-même. |
 | `entretien` | L'entretien se déclenche au kilométrage réel : alerte 5 000 km avant, remise à zéro après l'atelier. | « Anticipez les pannes » | `maintenanceForecast.js` : `WARN_KM = 5000`, première des deux limites. |

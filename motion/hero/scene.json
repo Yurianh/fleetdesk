@@ -1,0 +1,6 @@
+{
+  "formats": {
+    "landscape": { "width": 1536, "height": 864, "scale": 1.25, "query": "", "out": "../marketing/public/hero/fleetdesk-hero" },
+    "portrait":  { "width": 540,  "height": 675, "scale": 2,    "query": "?format=portrait", "out": "../marketing/public/hero/fleetdesk-hero-portrait" }
+  }
+}

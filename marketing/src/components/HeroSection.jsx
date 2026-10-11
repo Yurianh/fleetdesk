@@ -19,8 +19,8 @@ function Icon({ name, size = 20, className = '', strokeWidth = 1.75 }) {
 // Décalage de la révélation, en millisecondes.
 const delay = ms => ({ animationDelay: `${ms}ms` })
 
-// Vidéo du hero, rendue depuis du code (motion/hero) : une échéance détectée
-// 30 jours avant, traitée, et la flotte revient « à jour ». Boucle muette.
+// Vidéo du hero, rendue depuis du code (motion/hero) : les trois promesses du
+// titre en un plan. Trois échéances arrivent et se règlent. Boucle muette.
 // Si l'utilisateur préfère moins d'animations, on reste sur l'image fixe.
 function HeroVideo() {
   const ref = useRef(null)
@@ -41,7 +41,7 @@ function HeroVideo() {
       ref={ref}
       className="block w-full h-full object-cover"
       muted loop playsInline preload="auto"
-      aria-label="Démonstration FleetDesk : une échéance de contrôle technique détectée 30 jours avant, planifiée puis validée, et toute la flotte repasse à jour."
+      aria-label="Démonstration FleetDesk : trois échéances arrivent, un contrôle technique, une visite médicale et une vidange. Chacune est réglée en un geste et le tableau de bord repasse à « Tout est à jour » : zéro contrôle raté, zéro document expiré, zéro panne surprise."
     >
       {/* Mobile : version portrait recomposée, pas un recadrage du 16:9. */}
       <source media="(max-width: 639px)" src="/hero/fleetdesk-hero-portrait.mp4" type="video/mp4" />
