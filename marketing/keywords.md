@@ -70,8 +70,8 @@ flotte ».
 | --- | --- | --- | --- | --- | --- |
 | logiciel de gestion de flotte (automobile, PME) | n/a (Suggest) | — | `/` | publiée | La home porte seule ce terme depuis le 2026-10-08. |
 | logiciel gestion parc automobile | n/a (Suggest) | — | `/logiciel-gestion-de-flotte` | attente → 2026-12-07 | Page recentrée le 2026-10-08. |
-| logiciel gestion de flotte gratuit / gestion parc automobile gratuit | n/a (SC 08/10 : 8 impressions, position 7,8 ; nombreuses variantes Suggest) | comparatifs « que peut-on vraiment faire gratuitement » et annuaires filtrés « gratuit » | `/guides/gestion-parc-automobile-excel` | attente → 2026-12-07 | La page 1 répond « tableur ou Odoo Community », exactement ce que dit notre guide. Ne pas créer de guide « logiciel gratuit ». |
-| gestion parc automobile excel (gratuit) | n/a (SC 08/10 : 2 impressions, position 21) | non vérifié | `/guides/gestion-parc-automobile-excel` + `/outils/…` | attente → 2026-12-07 | |
+| logiciel gestion de flotte gratuit / gestion parc automobile gratuit | n/a (SC 08/10 : 8 impressions, position 7,8 ; nombreuses variantes Suggest) | comparatifs « que peut-on vraiment faire gratuitement » et annuaires filtrés « gratuit » | `/guides/gestion-parc-automobile-excel` | attente → 2026-12-10 | Retouché le 2026-10-11 (sprint SEO n°1). La page 1 répond « tableur ou Odoo Community », exactement ce que dit notre guide. Ne pas créer de guide « logiciel gratuit ». |
+| gestion parc automobile excel (gratuit) | n/a (SC 08/10 : 2 impressions, position 21) | non vérifié | `/guides/gestion-parc-automobile-excel` + `/outils/…` | attente → 2026-12-10 | |
 | logiciel gestion parc automobile open source | n/a (Suggest) | comparatifs et fiches Odoo Fleet | — | écartée | FleetDesk n'est pas open source : la page décevrait le visiteur. |
 | plateforme / solution / outil gestion de flotte | n/a (Suggest) | non vérifié | `/` | publiée | Synonymes de la requête principale : pas de page à part. |
 
@@ -115,4 +115,4 @@ Fabrique du Net.
    Une fiche par annuaire, faite une fois, travaille sur tous les motifs.
 
 « Gratuit » et « excel » ont du signal, mais la page qui les porte vient
-d'être modifiée : on n'y touche plus avant le 2026-12-07.
+d'être modifiée (le 08/10 puis le 11/10) : on n'y touche plus avant le 2026-12-10.

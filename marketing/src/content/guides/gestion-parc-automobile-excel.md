@@ -1,13 +1,13 @@
 ---
-title: "Suivi de parc automobile sur Excel : modèle gratuit et limites"
-description: "Modèle Excel gratuit pour suivre votre parc automobile : véhicules, conducteurs, échéances. Et les limites du tableur, avant de passer à un logiciel."
-heading: "Suivre son parc automobile sur Excel : le modèle gratuit, et jusqu'où ça tient"
+title: "Gestion et suivi de parc automobile : modèle Excel gratuit"
+description: "Modèle Excel gratuit pour la gestion et le suivi de parc automobile : véhicules, conducteurs, échéances, coûts. Ce qu'il permet, ce qu'il ne permet pas."
+heading: "Gestion et suivi de parc automobile : le modèle Excel gratuit"
 intro: "Le tableur est le premier outil de toutes les flottes, et le bon choix au début. Voici un modèle gratuit pour le tenir proprement — puis le moment où il faut passer à autre chose, parce qu'il ne prévient plus personne."
 tag: "Pilotage"
 cardTitle: "Parc automobile sur Excel : modèle gratuit"
 cardDesc: "Ce que le tableur sait faire, là où il casse, et le modèle gratuit pour démarrer proprement."
 published: "2026-09-12"
-updated: "2026-10-08"
+updated: "2026-10-11"
 order: 45
 faq:
   - q: "Existe-t-il un logiciel de gestion de parc automobile gratuit ?"
@@ -21,7 +21,7 @@ faq:
   - q: "Existe-t-il un modèle Excel gratuit de suivi de parc automobile ?"
     a: "Oui, nous en proposons un, prêt à l'emploi, avec les colonnes utiles pour les véhicules, les conducteurs et les échéances. Il est téléchargeable librement, sans inscription."
 related:
-  - title: "Coût de revient kilométrique : la méthode de calcul"
+  - title: "Prix de revient kilométrique : formule, calcul et exemple"
     href: "/guides/cout-revient-kilometrique"
   - title: "Modèle de suivi de parc automobile (Excel)"
     href: "/outils/modele-suivi-parc-automobile-excel"
@@ -29,18 +29,46 @@ related:
     href: "/logiciel-gestion-de-flotte"
 ---
 
-## Le modèle gratuit
+<div class="cta-box">
+<p class="cta-box-title">Le modèle Excel de suivi de parc automobile, gratuit</p>
+<p>Quatre onglets prêts à l'emploi : véhicules, conducteurs, entretiens et dépenses, coût par véhicule. Téléchargement direct, sans inscription ni adresse e-mail.</p>
+<p class="cta-box-actions"><a class="cta-box-button" href="/modele-suivi-parc-automobile-fleetdesk.xlsx" download>Télécharger le modèle (.xlsx)</a> <a href="/outils/modele-suivi-parc-automobile-excel">Voir le détail du modèle →</a></p>
+</div>
+
+## Le modèle Excel gratuit : ce qu'il contient
 
 Avant de parler de limites, de quoi démarrer correctement. Notre [modèle de suivi de parc automobile](/outils/modele-suivi-parc-automobile-excel) est gratuit, sans inscription, et s'ouvre dans Excel, Google Sheets, LibreOffice ou Numbers. Il compte quatre onglets :
 
-- **Véhicules** — immatriculation, modèle, mise en circulation, échéances de contrôle technique ;
-- **Conducteurs** — permis, visite médicale, véhicule attribué ;
-- **Entretiens et dépenses** — chaque intervention, avec son coût ;
-- **Coût par véhicule** — le coût kilométrique calculé à partir des dépenses.
+- **Véhicules** — immatriculation, genre, date de première mise en circulation, conducteur assigné, kilométrage, dernier et prochain contrôle technique, échéance d'assurance ;
+- **Conducteurs** — permis et sa validité, visite médicale, FIMO et FCO, habilitations ; une colonne donne l'échéance la plus proche de chaque conducteur ;
+- **Entretiens et dépenses** — une ligne par intervention ou dépense (entretien, réparation, pneus, carburant), avec son montant et son justificatif ;
+- **Coût par véhicule** — charges fixes, charges variables et kilométrage de la période, pour obtenir le [prix de revient kilométrique](/guides/cout-revient-kilometrique) de chaque véhicule.
 
 Les échéances proches se colorent d'elles-mêmes : c'est le maximum qu'un tableur sache faire pour vous prévenir.
 
 <p class="note"><a href="/outils/modele-suivi-parc-automobile-excel">Télécharger le modèle Excel gratuit →</a></p>
+
+## Gestion de parc automobile gratuite : ce qu'Excel permet, et ce qu'il ne permet pas
+
+Une gestion de flotte automobile sur Excel couvre très bien la partie registre du suivi de parc automobile. Elle ne couvre pas la partie surveillance.
+
+- **Ce que le tableur gratuit permet** : tenir l'inventaire des véhicules, noter les dates d'échéance, consigner les dépenses, calculer un coût par véhicule, colorer les échéances proches.
+- **Ce qu'il ne permet pas** : prévenir quelqu'un sans qu'il ouvre le fichier, recalculer seul la prochaine échéance après un contrôle, stocker les justificatifs avec le véhicule, limiter l'accès aux données des conducteurs, faire saisir le kilométrage par les chauffeurs.
+
+Entre le tableur et le logiciel dédié, il existe des logiciels gratuits ou d'entrée de gamme. Ils sont souvent limités en nombre de véhicules ou en fonctions, ou, pour les solutions open source, à installer et à maintenir soi-même.
+
+<div class="table-wrap">
+
+| | Tableur Excel | Logiciel gratuit ou basique | Logiciel de gestion de flotte dédié |
+| --- | --- | --- | --- |
+| Coût | Gratuit | Gratuit ou faible, avec des limites | Abonnement mensuel |
+| Calcul des échéances | À la main, par formule | Selon l'outil | Automatique |
+| Alerte avant échéance | Aucune, il faut ouvrir le fichier | Selon l'outil | Oui, par e-mail et dans l'outil |
+| Justificatifs (PV, carte grise, permis) | Ailleurs : mails, dossiers | Selon l'outil | Rattachés au véhicule ou au conducteur |
+| Travail à plusieurs | Versions qui divergent | Variable | Accès par rôle |
+| Mise en route | Immédiate | Variable, parfois une installation | Quelques minutes à une heure |
+
+</div>
 
 ## Ce qu'Excel fait très bien
 
@@ -55,7 +83,7 @@ Ce qu'il fait bien :
 
 Si c'est votre situation, ne changez rien : le modèle ci-dessus suffit, et structure proprement ce que vous avez déjà.
 
-## Les cinq points de rupture
+## Les limites d'Excel pour le suivi de parc automobile : cinq points de rupture
 
 ### 1. Le tableur ne prévient personne
 
@@ -93,4 +121,4 @@ Quelques signaux montrent qu'on a dépassé la zone de confort du tableur :
 
 Un logiciel de gestion de flotte reprend les mêmes données, mais leur ajoute trois propriétés que le tableur n'aura jamais : le calcul automatique des échéances, l'alerte avant expiration, et le stockage des justificatifs rattachés à l'entité concernée. S'ajoutent les accès différenciés (un chauffeur saisit son kilométrage sans voir la facturation) et l'historique qui ne se perd pas.
 
-FleetDesk fait précisément cela, sans la lourdeur d'un outil de grand groupe : [échéances calculées et alertées](/conformite), documents stockés par véhicule et par conducteur, saisie terrain par les chauffeurs. Il s'essaie **gratuitement pendant 14 jours, sans carte bancaire**, sur toutes les formules — de quoi y reprendre votre tableur et juger sur pièce. Voir aussi ce qu'un [logiciel de gestion de flotte](/logiciel-gestion-de-flotte) doit couvrir.
+FleetDesk fait précisément cela, sans la lourdeur d'un outil de grand groupe : [échéances calculées et alertées](/conformite), documents stockés par véhicule et par conducteur, saisie terrain par les chauffeurs. Il s'essaie **gratuitement pendant 14 jours, sans carte bancaire**, sur toutes les formules — de quoi y reprendre votre tableur et juger sur pièce. Voir aussi ce qu'un [logiciel de gestion de flotte](/logiciel-gestion-de-flotte) doit couvrir, et, si votre tableur calcule déjà un coût par véhicule, la méthode complète du [prix de revient kilométrique](/guides/cout-revient-kilometrique).
