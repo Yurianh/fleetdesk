@@ -35,6 +35,11 @@
 -- Ouverte si : compte offert, OU état « active », OU état absent (compte pas
 -- encore synchronisé — mieux vaut laisser écrire que verrouiller un client qui
 -- paie). Même règle que resolveAccess() côté application.
+--
+-- Chaque comparaison est protégée par coalesce : sans « comped », la
+-- comparaison vaut NULL, « NULL or false » vaut NULL, et le coalesce extérieur
+-- (prévu pour un compte introuvable) en faisait « true ». Tout compte non
+-- offert restait donc ouvert en écriture.
 create or replace function public.fd_org_writable(owner uuid)
 returns boolean
 language sql
@@ -44,7 +49,7 @@ set search_path = public, auth
 as $$
   select coalesce(
     (
-      select (u.raw_app_meta_data->>'comped') = 'true'
+      select coalesce(u.raw_app_meta_data->>'comped', '') = 'true'
           or coalesce(u.raw_app_meta_data->>'subscription', 'active') <> 'inactive'
       from auth.users u
       where u.id = owner
