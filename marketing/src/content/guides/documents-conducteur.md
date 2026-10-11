@@ -25,6 +25,8 @@ related:
     href: "/guides/controle-technique-flotte"
   - title: "Assurance de flotte automobile : obligations et bonnes pratiques"
     href: "/guides/assurance-flotte"
+  - title: "Gestion de flotte pour le transport routier"
+    href: "/secteurs/transport-routier"
 sources:
   - label: "Service-public.fr — Formation des conducteurs routiers (FIMO, FCO)"
     href: "https://entreprendre.service-public.fr/vosdroits/F31212"

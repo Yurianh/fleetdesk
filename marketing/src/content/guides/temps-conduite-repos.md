@@ -6,14 +6,14 @@ intro: "Dépasser le temps de conduite autorisé n'est pas qu'une infraction ind
 tag: "Réglementaire"
 cardTitle: "Temps de conduite et de repos"
 cardDesc: "Durée de conduite maximale, pauses, repos journalier et hebdomadaire : les règles applicables aux conducteurs routiers et à l'entreprise qui les emploie."
-published: "2026-09-28"
-updated: "2026-09-28"
+published: "2026-10-11"
+updated: "2026-10-11"
 order: 45
 faq:
   - q: "Quelles sont les règles de temps de conduite pour un chauffeur routier ?"
     a: "Le règlement européen encadre quatre durées : la conduite continue (pause obligatoire au bout de 4h30), la conduite journalière (9h, extensible à 10h deux fois par semaine), la conduite hebdomadaire (56h) et la conduite sur deux semaines consécutives (90h). S'y ajoutent des repos journaliers et hebdomadaires minimaux, avec des possibilités de réduction encadrées."
   - q: "Quels véhicules et quels conducteurs sont concernés ?"
-    a: "Le règlement (CE) n° 561/2006 s'applique aux conducteurs de véhicules de transport de marchandises dont le poids total autorisé en charge dépasse 3,5 tonnes, et aux véhicules de transport de personnes de plus de 9 places, conducteur compris. Certaines exemptions existent (transport privé, véhicules d'intervention, certains trajets courts) : elles se vérifient au cas par cas, catégorie de véhicule et usage à l'appui."
+    a: "Le règlement (CE) n° 561/2006 s'applique aux conducteurs de véhicules de transport de marchandises dont le poids total autorisé en charge dépasse 3,5 tonnes, et aux véhicules de transport de personnes de plus de 9 places, conducteur compris. Depuis le 1er juillet 2026, il vise aussi les véhicules de plus de 2,5 tonnes, remorque comprise, qui font du transport international de marchandises pour compte d'autrui ou du cabotage. Certaines exemptions existent (transport privé, véhicules d'intervention, certains trajets courts) : elles se vérifient au cas par cas, catégorie de véhicule et usage à l'appui."
   - q: "Que risque une entreprise dont un conducteur ne respecte pas ces temps ?"
     a: "Le non-respect des temps de conduite et de repos est sanctionné pénalement, pour le conducteur comme pour l'employeur qui a organisé un planning incompatible avec la réglementation. Le niveau de sanction dépend de la nature et de la répétition de l'infraction, constatée notamment via les données du chronotachygraphe. Pour le barème exact applicable à votre situation, référez-vous au Code des transports ou à un conseil juridique : ce n'est pas un point sur lequel improviser."
   - q: "Comment ces temps sont-ils contrôlés ?"
@@ -23,9 +23,11 @@ related:
     href: "/guides/documents-conducteur"
   - title: "Gestion de flotte pour le transport routier"
     href: "/secteurs/transport-routier"
-  - title: "Logiciel de gestion de flotte : ce qu'il doit faire"
+  - title: "Logiciel de gestion de parc automobile : ce qu'il doit faire"
     href: "/logiciel-gestion-de-flotte"
 sources:
+  - label: "EUR-Lex — Règlement (CE) n° 561/2006 relatif aux temps de conduite et de repos"
+    href: "https://eur-lex.europa.eu/eli/reg/2006/561/oj"
   - label: "Légifrance — Code des transports, temps de conduite et de repos des conducteurs (art. R3313-1 à R3313-21)"
     href: "https://www.legifrance.gouv.fr/codes/id/LEGISCTA000033450375"
   - label: "Légifrance — Code des transports, temps de conduite et de repos (art. L3313-1 à L3313-5)"
@@ -34,20 +36,23 @@ sources:
 
 ## Pourquoi ces règles existent
 
-Un chauffeur fatigué au volant d'un poids lourd est un risque disproportionné par rapport à un salarié fatigué dans un bureau. C'est pourquoi le temps de conduite et de repos des conducteurs routiers est encadré au niveau européen, par le règlement (CE) n° 561/2006, transposé dans le Code des transports.
+Un chauffeur fatigué au volant d'un poids lourd est un risque disproportionné par rapport à un salarié fatigué dans un bureau. C'est pourquoi le temps de conduite et de repos des conducteurs routiers est encadré au niveau européen, par le règlement (CE) n° 561/2006. Ce règlement s'applique directement en France ; le Code des transports y renvoie et fixe les sanctions.
 
-Pour un gestionnaire de flotte, ce n'est pas un sujet théorique. Une tournée mal calculée qui pousse un conducteur à dépasser les seuils autorisés engage la responsabilité de l'entreprise, pas seulement celle du chauffeur. Le planning doit être construit en tenant compte de ces contraintes, pas ajusté après coup.
+Pour un gestionnaire de flotte, et en particulier dans la [gestion de flotte pour le transport routier](/secteurs/transport-routier), ce n'est pas un sujet théorique. Une tournée mal calculée qui pousse un conducteur à dépasser les seuils autorisés engage la responsabilité de l'entreprise, pas seulement celle du chauffeur. Le planning doit être construit en tenant compte de ces contraintes, pas ajusté après coup.
 
 ## Qui est concerné
 
 Le règlement s'applique :
 
 - aux conducteurs de véhicules de **transport de marchandises** dont le poids total autorisé en charge dépasse 3,5 tonnes ;
-- aux conducteurs de véhicules de **transport de personnes** de plus de 9 places, conducteur compris.
+- aux conducteurs de véhicules de **transport de personnes** de plus de 9 places, conducteur compris ;
+- depuis le **1er juillet 2026**, aux conducteurs de véhicules de **plus de 2,5 tonnes**, remorque comprise, qui font du **transport international de marchandises pour compte d'autrui ou du cabotage**. Ces véhicules doivent aussi être équipés d'un chronotachygraphe intelligent.
+
+<p class="note">Cette dernière extension concerne directement les flottes d'utilitaires : un fourgon de 3,5 tonnes qui livre de l'autre côté d'une frontière pour un client entre désormais dans le champ du règlement. Le transport national en véhicule léger n'est pas concerné par ce changement.</p>
 
 <p class="note">Des exemptions existent pour certains usages (véhicules d'intervention, transport privé non commercial, certains trajets courts ou véhicules anciens). Le périmètre exact dépend du type de véhicule, de l'activité et parfois de la distance parcourue : vérifiez le cas de votre flotte auprès du Code des transports plutôt que de vous fier à une règle générale.</p>
 
-Si votre flotte est composée uniquement de véhicules légers hors de ce périmètre, ces règles précises ne s'appliquent pas — mais la vigilance sur la fatigue et l'organisation des tournées reste une bonne pratique, indépendamment de toute obligation.
+Si votre flotte est composée uniquement de véhicules hors de ce périmètre, ces règles précises ne s'appliquent pas — mais la vigilance sur la fatigue et l'organisation des tournées reste une bonne pratique, indépendamment de toute obligation.
 
 ## Les quatre temps de conduite à connaître
 
@@ -94,7 +99,7 @@ Exploiter ces données suppose de les relier au planning prévu : un écart entr
 
 Le temps de conduite et de repos ne se pilote pas isolément. Il s'articule avec les autres documents et habilitations du conducteur : carte de conducteur pour le chronotachygraphe, FIMO, FCO, aptitude médicale. Notre guide sur les [documents obligatoires du conducteur professionnel](/guides/documents-conducteur) détaille ces échéances et leur suivi.
 
-Sur une flotte de plusieurs véhicules, la difficulté n'est pas de connaître la règle — elle est simple à énoncer — mais de la faire respecter en continu, tournée après tournée, conducteur après conducteur. C'est exactement ce que couvre le [centre de conformité](/conformite) d'un outil de gestion de flotte : centraliser les échéances réglementaires et alerter avant le dépassement plutôt que de le constater.
+Sur une flotte de plusieurs véhicules, la difficulté n'est pas de connaître la règle — elle est simple à énoncer — mais de la faire respecter en continu, tournée après tournée, conducteur après conducteur. Les temps de conduite eux-mêmes se lisent dans les données du chronotachygraphe. Ce qu'un [centre de conformité](/conformite) apporte, c'est le suivi des échéances qui conditionnent le droit de conduire : carte conducteur, FCO, aptitude médicale, avec une alerte avant expiration.
 
 ## Centraliser le suivi plutôt que le reconstituer
 
@@ -104,4 +109,4 @@ En pratique, trois réflexes limitent le risque :
 2. **Exploiter les données du chronotachygraphe** pour vérifier a posteriori que les plannings prévus ont été tenus, et ajuster s'ils ne le sont pas.
 3. **Former les conducteurs** aux règles de pause et de repos : ce sont eux qui décident, sur la route, de s'arrêter à temps ou de pousser jusqu'au client suivant.
 
-Un [logiciel de gestion de flotte](/logiciel-gestion-de-flotte) qui centralise les échéances réglementaires par véhicule et par conducteur ne remplace pas le chronotachygraphe, obligatoire et probant par nature. Il évite en revanche qu'une entreprise découvre un dépassement au moment d'un contrôle plutôt qu'au moment de construire le planning.
+Un [logiciel de gestion de parc automobile](/logiciel-gestion-de-flotte) qui centralise les échéances réglementaires par véhicule et par conducteur ne remplace pas le chronotachygraphe, obligatoire et probant par nature, et ne calcule pas les temps de conduite. Il évite en revanche qu'un conducteur prenne la route avec une carte ou une qualification expirée.
