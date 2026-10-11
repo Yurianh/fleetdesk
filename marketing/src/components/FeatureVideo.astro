@@ -1,0 +1,43 @@
+---
+// Vidéo de démonstration d'une fonction, rendue depuis du code (dossier motion/).
+// Elle ne se charge qu'à l'approche de l'écran, joue tant qu'elle est visible et
+// se met en pause hors écran. Avec « moins d'animations », seule l'image fixe reste.
+interface Props {
+  name: string        // fichier dans /videos : <name>.mp4 et <name>-poster.jpg
+  label: string       // ce que montre la vidéo, pour les lecteurs d'écran
+  class?: string
+}
+const { name, label, class: className = '' } = Astro.props
+---
+<div class={`rounded-2xl border border-zinc-200 bg-zinc-100 overflow-hidden aspect-[5/4] ${className}`}>
+  <video
+    data-feature-video
+    class="block w-full h-full object-cover"
+    poster={`/videos/${name}-poster.jpg`}
+    data-src={`/videos/${name}.mp4`}
+    width="1280" height="1024"
+    muted loop playsinline preload="none"
+    aria-label={label}
+  ></video>
+</div>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
+  const videos = document.querySelectorAll<HTMLVideoElement>('video[data-feature-video]')
+
+  const io = new IntersectionObserver(entries => {
+    for (const { target, isIntersecting } of entries) {
+      const v = target as HTMLVideoElement
+      if (isIntersecting) {
+        if (!v.src && v.dataset.src) v.src = v.dataset.src
+        // Chaque retour à l'écran repart du début : l'histoire se lit en entier.
+        else if (v.paused) v.currentTime = 0
+        if (!reduce.matches) v.play().catch(() => {})
+      } else if (!v.paused) {
+        v.pause()
+      }
+    }
+  }, { rootMargin: '200px 0px', threshold: 0.25 })
+
+  for (const v of videos) { v.muted = true; io.observe(v) }
+</script>

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>FleetDesk — Zéro document expiré</title>
+<link rel="stylesheet" href="../lib/base.css">
+<style>
+  #panel { left: 24px; top: 24px; width: 592px; height: 464px; }
+  .head { position: absolute; left: 52px; top: 50px; }
+  .head .title { font-size: 28px; margin-top: 6px; }
+  .row { position: absolute; left: 52px; width: 536px; height: 76px; border-top: 1px solid #f4f4f5; }
+  .avatar { position: absolute; left: 0; top: 18px; width: 40px; height: 40px; border-radius: 99px; background: #E5EEFF; color: #0052D6; display: grid; place-items: center; font-size: 13.5px; font-weight: 700; }
+  .row .name { position: absolute; left: 56px; top: 16px; font-weight: 600; font-size: 18px; }
+  .row .role { position: absolute; left: 56px; top: 41px; font-size: 13.5px; color: #71717a; }
+  .row .chip { position: absolute; right: 0; top: 23px; }
+  #shape { position: absolute; background: #fff; border: 1px solid transparent; overflow: hidden; z-index: 5; }
+  #rowL { position: absolute; left: 0; top: 0; width: 536px; height: 76px; }
+  #docs { position: absolute; left: 26px; top: 24px; right: 26px; bottom: 24px; }
+  #docs .avatar { top: 0; width: 46px; height: 46px; font-size: 15px; }
+  #docs .name { position: absolute; left: 62px; top: 0; font-weight: 600; font-size: 22px; }
+  #docs .role { position: absolute; left: 62px; top: 29px; font-size: 14px; color: #71717a; }
+  .doc { position: absolute; left: 0; right: 0; height: 74px; border: 1px solid #f0f0f1; border-radius: 14px; background: #fafafa; }
+  .doc .ico { position: absolute; left: 16px; top: 16px; width: 40px; height: 40px; background: #fff; border: 1px solid #ececee; }
+  .doc .dn { position: absolute; left: 70px; top: 15px; font-weight: 600; font-size: 16.5px; }
+  .doc .dd { position: absolute; left: 70px; top: 40px; font-size: 13.5px; color: #71717a; height: 20px; width: 300px; }
+  .doc .chip { position: absolute; right: 16px; top: 22px; }
+  #file { position: absolute; z-index: 20; white-space: nowrap; height: 58px; background: #fff; border: 1px solid #e4e4e7; border-radius: 12px; display: flex; align-items: center; gap: 10px; padding: 0 14px; font-size: 13.5px; font-weight: 500; box-shadow: 0 14px 30px -14px rgba(24,24,27,.35); }
+  #file b { width: 30px; height: 36px; border-radius: 6px; background: #f4f4f5; border: 1px solid #e4e4e7; display: grid; place-items: center; font-size: 8.5px; color: #71717a; }
+  #toast { position: absolute; left: 50%; bottom: 40px; z-index: 30; transform: translateX(-50%); background: #18181b; color: #fff; font-size: 13.5px; font-weight: 500; padding: 10px 16px; border-radius: 10px; display: flex; gap: 8px; align-items: center; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div id="panel" class="panel"></div>
+<div class="head"><div class="label">Conducteurs</div><div class="title">Documents à jour</div></div>
+<div id="rows"></div>
+
+<div id="shape">
+  <div id="rowL"></div>
+  <div id="docs">
+    <div class="avatar">SR</div><div class="name">Sophie Renard</div><div class="role">Conductrice · Peugeot Boxer EF-456-GH</div>
+    <div class="doc" style="top:70px"><div class="ico" id="i0"></div><div class="dn">Permis de conduire</div><div class="dd">Valide jusqu'au 08/2031</div><div class="chip ok"><span class="dot"></span>À jour</div></div>
+    <div class="doc" id="vm" style="top:156px"><div class="ico" id="i1"></div><div class="dn">Visite médicale</div><div class="dd swap" id="vmTxt"></div><div class="chip" id="vmChip"><span class="dot"></span><span class="swap" id="vmChipTxt" style="height:18px"></span></div></div>
+    <div class="doc" style="top:242px"><div class="ico" id="i2"></div><div class="dn">FCO</div><div class="dd">Valide jusqu'au 03/2029</div><div class="chip ok"><span class="dot"></span>À jour</div></div>
+  </div>
+</div>
+<div id="file"><b>PDF</b>visite-medicale-sophie.pdf</div>
+<div id="toast"><span id="tIco"></span>Échéance recalculée : 10/2031</div>
+<div id="cursor"></div>
+
+<script type="module">
+import { scene, spring, SPRING, track, lerp, clamp, mixc, swapText, $, OK, WARN, ICON, CURSOR_SVG, cursor, paint } from '../lib/motion.js'
+
+const D = 9.6
+const T = { due: 0.8, click: 1.75, open: 1.85, grab: 3.0, drop: 3.9, valid: 4.0, toast: 4.1, close: 6.7, shut: 6.8 }
+const DRIVERS = [['ML', 'Marc Lefebvre', 'Renault Master'], ['SR', 'Sophie Renard', 'Peugeot Boxer'], ['KA', 'Karim Aïssa', 'Citroën Jumpy'], ['NB', 'Nadia Benali', 'Ford Transit']]
+const Y0 = 122, H = 76, FOCUS = 1
+const rowHTML = ([ini, n, v], chip) => `<div class="avatar">${ini}</div><div class="name">${n}</div><div class="role">${v}</div>${chip}`
+const okChip = '<div class="chip ok"><span class="dot"></span>À jour</div>'
+$('rows').innerHTML = DRIVERS.map((d, i) => i === FOCUS ? '' : `<div class="row" style="top:${Y0 + i * H}px">${rowHTML(d, okChip)}</div>`).join('')
+$('rowL').innerHTML = `<div class="row" style="left:0;top:0;border-top:0">${rowHTML(DRIVERS[FOCUS], '<div class="chip" id="rChip"><span class="dot"></span><span class="swap" id="rChipTxt" style="height:18px"></span></div>')}</div>`
+;['i0', 'i1', 'i2'].forEach(id => $(id).innerHTML = ICON.file(18, '#52525b'))
+$('tIco').innerHTML = ICON.check(16, '#34d399')
+$('cursor').innerHTML = CURSOR_SVG
+
+const ROW = { x: 52, y: Y0 + FOCUS * H, w: 536, h: H }
+const OPEN = { x: 40, y: 40, w: 560, h: 432 }
+const VM = { x: OPEN.x + 26, y: OPEN.y + 24 + 156 }   // ligne « Visite médicale » dans la fiche
+
+scene({
+  duration: D,
+  seek(t) {
+    // 0 → à jour, 1 → expire bientôt
+    const due = track(t, 0, [[T.due, 1], [T.valid, 0]], SPRING.default)
+
+    const rChip = $('rChip')
+    paint(rChip, OK, WARN, due)
+    swapText($('rChipTxt'), t, t < T.valid ? [[0, 'À jour'], [T.due, 'Visite médicale · 15 j']] : [[T.valid, 'À jour']], 12)
+    $('rChipTxt').style.width = lerp(46, 150, clamp(due)) + 'px'
+
+    // Forme unique : la ligne de Sophie devient sa fiche documents.
+    const m = track(t, 0, [[T.open, 1], [T.shut, 0]], SPRING.heavy)
+    Object.assign($('shape').style, {
+      left: lerp(ROW.x, OPEN.x, m) + 'px', top: lerp(ROW.y, OPEN.y, m) + 'px',
+      width: lerp(ROW.w, OPEN.w, m) + 'px', height: lerp(ROW.h, OPEN.h, m) + 'px',
+      borderRadius: lerp(10, 18, clamp(m)) + 'px', borderColor: m > 0.02 ? '#e4e4e7' : 'transparent',
+      boxShadow: `0 ${(20 * clamp(m)).toFixed(1)}px ${(48 * clamp(m)).toFixed(1)}px -20px rgba(24,24,27,${(0.22 * clamp(m)).toFixed(3)})`,
+    })
+    $('rowL').style.opacity = clamp((0.5 - m) * 4)
+    $('docs').style.opacity = clamp((m - 0.32) / 0.25)
+
+    // Ligne « Visite médicale » : ambre jusqu'au dépôt, puis émeraude.
+    const vm = $('vm')
+    vm.style.background = mixc('#FFFBEB', '#fafafa', 1 - due)
+    vm.style.borderColor = mixc('#FDE68A', '#f0f0f1', 1 - due)
+    const hover = spring(t - (T.drop - 0.35), SPRING.snappy) * (1 - spring(t - T.drop, SPRING.snappy))
+    vm.style.boxShadow = `0 0 0 ${(3 * hover).toFixed(2)}px rgba(0,102,255,${(0.35 * hover).toFixed(3)})`
+    paint($('vmChip'), OK, WARN, due)
+    swapText($('vmChipTxt'), t, t < T.valid ? [[0, 'Expire dans 15 j']] : [[0, 'Expire dans 15 j'], [T.valid, 'À jour']], 12)
+    $('vmChipTxt').style.width = lerp(46, 118, clamp(due)) + 'px'
+    swapText($('vmTxt'), t, t < T.valid ? [[0, 'Expire le 26/10/2026']] : [[0, 'Expire le 26/10/2026'], [T.valid, 'Valide jusqu’au 10/2031']], 12)
+
+    // Le gestionnaire glisse le nouveau certificat sur la ligne.
+    const g = spring(t - T.grab, SPRING.default)
+    const d = spring(t - T.drop, SPRING.snappy)
+    const fx = lerp(lerp(440, 400, g), VM.x + 200, spring(t - (T.grab + 0.35), SPRING.default))
+    const fy = lerp(lerp(560, 410, g), VM.y + 8, spring(t - (T.grab + 0.35), SPRING.default))
+    const file = $('file')
+    file.style.left = fx + 'px'; file.style.top = fy + 'px'
+    file.style.opacity = clamp(g * 2) * (1 - d)
+    file.style.transform = `scale(${(1 - 0.25 * d).toFixed(4)}) rotate(${(-3 * (1 - spring(t - (T.grab + 0.35)))).toFixed(2)}deg)`
+
+    const toast = $('toast')
+    const tk = spring(t - T.toast, SPRING.default) * (1 - spring(t - (T.toast + 1.8), SPRING.default))
+    toast.style.opacity = clamp(tk * 1.4)
+    toast.style.transform = `translate(-50%, ${((1 - tk) * 16).toFixed(2)}px)`
+
+    cursor($('cursor'), t, {
+      from: [700, 580],
+      steps: [[0.9, [320, ROW.y + 42]], [T.grab - 0.2, [fx + 120, 590]], [T.grab, [500, 448]], [T.grab + 0.35, [VM.x + 360, VM.y + 40]],
+              [T.close - 0.6, [560, 470]], [T.shut + 0.5, [720, 620]]],
+    }, [T.click, T.drop, T.close])
+  },
+})
+</script>
+</body>
+</html>

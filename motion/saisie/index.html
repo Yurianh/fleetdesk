@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>FleetDesk — Vos chauffeurs saisissent au volant</title>
+<link rel="stylesheet" href="../lib/base.css">
+<style>
+  #phone { left: 34px; top: 26px; width: 236px; height: 460px; border-radius: 34px; background: #18181b; padding: 9px; }
+  #screen { position: absolute; left: 9px; top: 9px; right: 9px; bottom: 9px; border-radius: 26px; background: #fff; overflow: hidden; }
+  .notch { position: absolute; left: 50%; top: 8px; width: 74px; height: 20px; margin-left: -37px; background: #18181b; border-radius: 99px; }
+  .ph { position: absolute; left: 16px; right: 16px; }
+  .ph .t { font-weight: 600; font-size: 15.5px; }
+  .field { border: 1px solid #e4e4e7; border-radius: 10px; height: 42px; padding: 0 12px; display: flex; align-items: center; font-size: 16px; font-weight: 600; }
+  .field.focus { border-color: #0066FF; box-shadow: 0 0 0 3px rgba(0,102,255,.15); }
+  .flabel { font-size: 11.5px; color: #71717a; font-weight: 600; margin-bottom: 5px; }
+  .caret { display: inline-block; width: 2px; height: 18px; background: #0066FF; margin-left: 1px; }
+  .shots { display: flex; gap: 8px; }
+  .shot { flex: 1; height: 64px; border: 1px dashed #d4d4d8; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 11px; color: #71717a; position: relative; overflow: hidden; }
+  .shot .img { position: absolute; inset: 0; background: #e4e4e7; display: grid; place-items: center; }
+  #send { height: 44px; border-radius: 12px; background: #0066FF; color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; font-size: 15px; }
+  #desk { left: 296px; top: 64px; width: 320px; height: 384px; }
+  .dh { position: absolute; left: 22px; top: 20px; }
+  .dh .title { font-size: 22px; margin-top: 4px; }
+  .item { position: absolute; left: 14px; width: 292px; height: 80px; border-radius: 12px; }
+  .item .ico { position: absolute; left: 10px; top: 14px; width: 36px; height: 36px; }
+  .item .a { position: absolute; left: 58px; top: 12px; font-weight: 600; font-size: 14.5px; }
+  .item .b { position: absolute; left: 58px; top: 34px; font-size: 12.5px; color: #52525b; }
+  .item .c { position: absolute; left: 58px; top: 53px; font-size: 12px; color: #a1a1aa; }
+  #fly { position: absolute; z-index: 20; overflow: hidden; border: 1px solid #cfe0ff; background: #fff; }
+</style>
+</head>
+<body>
+<div id="desk" class="panel">
+  <div class="dh"><div class="label">Bureau</div><div class="title">Activité récente</div></div>
+  <div id="feed"></div>
+</div>
+<div id="phone" class="abs">
+  <div id="screen">
+    <div class="notch"></div>
+    <div class="ph" style="top:44px"><div class="label" style="font-size:10.5px">EF-456-GH · Peugeot Boxer</div><div class="t" style="margin-top:4px">Saisir un kilométrage</div></div>
+    <div class="ph" style="top:104px"><div class="flabel">Kilométrage</div><div class="field" id="f1"><span id="v1"></span><span class="caret" id="c1"></span></div></div>
+    <div class="ph" style="top:172px"><div class="flabel">Montant du plein</div><div class="field" id="f2"><span id="v2"></span><span class="caret" id="c2"></span></div></div>
+    <div class="ph" style="top:240px"><div class="flabel">Photos</div><div class="shots"><div class="shot"><span id="cam1"></span>Compteur<div class="img" id="img1"></div></div><div class="shot"><span id="cam2"></span>Ticket<div class="img" id="img2"></div></div></div></div>
+    <div class="ph" style="top:362px"><div id="send"><span id="sendIco"></span><span class="swap" id="sendTxt" style="height:20px;width:74px"></span></div></div>
+  </div>
+</div>
+<div id="fly"></div>
+
+<script type="module">
+import { scene, spring, SPRING, track, lerp, clamp, mixc, swapText, $, ICON, OK, press } from '../lib/motion.js'
+
+const D = 9.6
+const T = { k1: 0.7, k2: 2.0, shot1: 2.9, shot2: 3.25, send: 3.9, fly: 4.25, land: 4.75, reset: 8.0 }
+const KM = '51 177', AMT = '82,40 €'
+
+const ITEM = (ico, a, b, c) => `<div class="ico" style="background:#f4f4f5">${ico}</div><div class="a">${a}</div><div class="b">${b}</div><div class="c">${c}</div>`
+const OLD = [
+  ITEM(ICON.drop(18, '#52525b'), 'Lavage enregistré', 'AB-123-CD · 24,00 €', 'Marc Lefebvre · il y a 2 h'),
+  ITEM(ICON.shield(18, '#52525b'), 'Contrôle technique', 'IJ-789-KL · valide jusqu’au 04/2028', 'hier'),
+  ITEM(ICON.wrench(18, '#52525b'), 'Entretien', 'MN-012-OP · vidange', 'lundi'),
+]
+const NEW = ITEM(ICON.gauge(18, '#0066FF'), 'Kilométrage saisi', `EF-456-GH · ${KM} km · plein ${AMT}`, 'Sophie Renard · à l’instant · 2 photos')
+$('feed').innerHTML = OLD.map((h, i) => `<div class="item" id="o${i}">${h}</div>`).join('')
+$('fly').innerHTML = `<div class="item" style="left:0;top:0;position:absolute">${NEW}</div>`
+$('cam1').innerHTML = ICON.camera(18, '#a1a1aa'); $('cam2').innerHTML = ICON.camera(18, '#a1a1aa')
+$('img1').innerHTML = ICON.check(20, '#047857'); $('img2').innerHTML = ICON.check(20, '#047857')
+
+const FEED_Y0 = 84, FEED_H = 88
+const SEND = { x: 34 + 9 + 16, y: 26 + 9 + 362, w: 236 - 18 - 32, h: 44 }   // bouton dans le téléphone
+const SLOT = { x: 296 + 14, y: 64 + FEED_Y0, w: 292, h: 80 }                // première place du fil
+
+// Frappe : n caractères au temps t, une touche toutes les 0,12 s.
+const typed = (s, t, at) => s.slice(0, clamp(Math.floor((t - at) / 0.12), 0, s.length))
+
+scene({
+  duration: D,
+  seek(t) {
+    const reset = spring(t - T.reset, SPRING.default)
+    const live = 1 - reset
+
+    // Champs du téléphone
+    const v1 = t < T.reset ? typed(KM, t, T.k1) : ''
+    const v2 = t < T.reset ? typed(AMT, t, T.k2) : ''
+    $('v1').textContent = v1; $('v2').textContent = v2
+    const f1 = t > T.k1 - 0.2 && t < T.k2 - 0.1, f2 = t > T.k2 - 0.1 && t < T.shot1
+    $('f1').className = 'field' + (f1 ? ' focus' : ''); $('f2').className = 'field' + (f2 ? ' focus' : '')
+    const blink = Math.floor(t / 0.45) % 2 === 0
+    $('c1').style.opacity = f1 && blink ? 1 : 0; $('c2').style.opacity = f2 && blink ? 1 : 0
+    for (const [id, at] of [['img1', T.shot1], ['img2', T.shot2]]) {
+      const k = spring(t - at, SPRING.snappy) * live
+      $(id).style.opacity = clamp(k * 1.5)
+      $(id).style.background = mixc('#e4e4e7', OK.bg, clamp(k))
+    }
+
+    // Bouton : « Envoyer » → « Envoyé »
+    const sent = spring(t - (T.send + 0.1), SPRING.snappy) * live
+    const send = $('send')
+    send.style.background = mixc('#0066FF', OK.dot, sent)
+    send.style.transform = `scale(${(1 - 0.05 * press(t, T.send)).toFixed(4)})`
+    $('sendIco').innerHTML = sent > 0.5 ? ICON.check(17, '#fff') : ICON.send(16, '#fff')
+    swapText($('sendTxt'), t, t < T.reset ? (t < T.send + 0.1 ? [[0, 'Envoyer']] : [[0, 'Envoyer'], [T.send + 0.1, 'Envoyé']]) : [[T.reset, 'Envoyer']], 12)
+
+    // Forme unique : la saisie quitte le téléphone et devient la ligne du fil.
+    const f = spring(t - T.fly, SPRING.heavy)
+    const shown = t > T.fly && t < T.reset + 0.6
+    const fly = $('fly')
+    const box = { x: lerp(SEND.x, SLOT.x, f), y: lerp(SEND.y, SLOT.y, f), w: lerp(SEND.w, SLOT.w, f), h: lerp(SEND.h, SLOT.h, f) }
+    Object.assign(fly.style, {
+      left: box.x + 'px', top: box.y + 'px', width: box.w + 'px', height: box.h + 'px',
+      borderRadius: lerp(12, 12, f) + 'px', opacity: shown ? clamp(spring(t - T.fly, SPRING.snappy) * 2) * live : 0,
+      background: mixc('#EFF5FF', '#ffffff', spring(t - (T.land + 1.4), SPRING.heavy)),
+      borderColor: mixc('#BFD6FF', '#f4f4f5', spring(t - (T.land + 1.4), SPRING.heavy)),
+      boxShadow: `0 ${(14 * (1 - f)).toFixed(1)}px ${(30 * (1 - f)).toFixed(1)}px -14px rgba(24,24,27,${(0.3 * (1 - f)).toFixed(3)})`,
+    })
+    fly.firstElementChild.style.opacity = clamp((f - 0.5) / 0.35)
+    // Les anciennes lignes descendent pour lui laisser la place, puis remontent.
+    const push = track(t, 0, [[T.fly + 0.15, 1, SPRING.heavy], [T.reset + 0.1, 0, SPRING.default]])
+    OLD.forEach((_, i) => {
+      const o = $('o' + i)
+      o.style.top = (FEED_Y0 + (i + push) * FEED_H) + 'px'
+      o.style.opacity = i === 2 ? clamp(1 - push * 1.5) : 1
+    })
+  },
+})
+</script>
+</body>
+</html>

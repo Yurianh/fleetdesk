@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>FleetDesk — Anticipez les pannes</title>
+<link rel="stylesheet" href="../lib/base.css">
+<style>
+  #panel { left: 24px; top: 24px; width: 592px; height: 464px; }
+  .head { position: absolute; left: 52px; top: 50px; }
+  .head .title { font-size: 28px; margin-top: 6px; }
+  #counter { position: absolute; top: 56px; right: 52px; }
+  .row { position: absolute; left: 52px; width: 536px; height: 108px; border-top: 1px solid #f4f4f5; }
+  .row .ico { position: absolute; left: 0; top: 22px; width: 42px; height: 42px; }
+  .row .plate { position: absolute; left: 58px; top: 22px; font-weight: 600; font-size: 18px; }
+  .row .model { position: absolute; left: 58px; top: 47px; font-size: 13.5px; color: #71717a; }
+  .row .rem { position: absolute; right: 0; top: 20px; height: 26px; width: 240px; text-align: right; font-weight: 600; font-size: 18px; }
+  .row .rem .txt { left: auto; right: 0; }
+  .row .sub { position: absolute; right: 0; top: 47px; height: 20px; width: 240px; font-size: 13px; color: #71717a; }
+  .row .sub .txt { left: auto; right: 0; }
+  .row .bar { position: absolute; left: 58px; right: 0; top: 80px; height: 8px; border-radius: 99px; background: #f4f4f5; overflow: hidden; }
+  .row .fill { position: relative; height: 100%; border-radius: 99px; background: #0066FF; overflow: hidden; }
+  .row .fill i { position: absolute; inset: 0; border-radius: 99px; }
+  .foot { position: absolute; left: 52px; top: 446px; font-size: 13px; color: #71717a; display: flex; gap: 8px; align-items: center; }
+</style>
+</head>
+<body>
+<div id="panel" class="panel"></div>
+<div class="head"><div class="label">Prévisions d'entretien</div><div class="title">Prochaines vidanges</div></div>
+<div id="counter" class="chip"><span class="dot"></span><span id="counterTxt" class="swap" style="height:18px"></span></div>
+<div id="rows"></div>
+<div class="foot"><span id="footIco"></span>Calculé sur le kilométrage réel · alerte 5 000 km avant</div>
+
+<script type="module">
+import { scene, spring, SPRING, lerp, clamp, mixc, swapText, fr, $, OK, WARN, ICON, BLUE } from '../lib/motion.js'
+
+const D = 9.0                    // durée de la boucle
+const INTERVAL = 30000           // vidange tous les 30 000 km
+const WARN_KM = 5000             // seuil d'alerte de l'application
+const V = INTERVAL / D           // chaque véhicule fait un cycle complet par boucle
+const EVENT = 1.3                // durée de l'état « Entretien enregistré »
+
+const ROWS = [
+  { plate: 'AB-123-CD', model: 'Renault Master', r0: 9000 },
+  { plate: 'EF-456-GH', model: 'Peugeot Boxer',  r0: 19000 },
+  { plate: 'IJ-789-KL', model: 'Citroën Jumpy',  r0: 29000 },
+]
+const Y0 = 122, H = 108
+
+$('rows').innerHTML = ROWS.map((r, i) => `
+  <div class="row" style="top:${Y0 + i * H}px">
+    <div class="ico">${ICON.truck(22, '#52525b')}</div>
+    <div class="plate">${r.plate}</div><div class="model">${r.model}</div>
+    <div class="rem swap" id="rem${i}"></div>
+    <div class="sub swap" id="sub${i}"></div>
+    <div class="bar"><div class="fill" id="fill${i}"><i id="amb${i}" style="background:#F59E0B"></i><i id="okf${i}" style="background:#10B981"></i></div></div>
+  </div>`).join('')
+$('footIco').innerHTML = ICON.gauge(16, '#71717a')
+
+const mod = (a, n) => ((a % n) + n) % n
+// Instant (périodique) de la dernière vidange et du dernier passage sous 5 000 km.
+const eventAt = r => r.r0 / V
+const warnAt = r => (r.r0 - WARN_KM) / V
+const since = (t, at) => mod(t - at, D)       // temps écoulé depuis l'événement, en boucle
+
+function rowState(r, t) {
+  const remaining = mod(r.r0 - V * t, INTERVAL)
+  const sEvent = since(t, eventAt(r))
+  const inEvent = sEvent < EVENT
+  // Ambre dès 5 000 km restants, émeraude à nouveau après l'atelier.
+  const sWarn = since(t, warnAt(r))
+  const warnOn = sWarn < (WARN_KM / V)        // fenêtre entre l'alerte et la vidange
+  const amber = warnOn ? spring(sWarn, SPRING.default) : 1 - spring(sEvent, SPRING.default)
+  // La barre se remplit d'un coup de ressort après la vidange.
+  const refill = 1 - spring(sEvent, SPRING.heavy)
+  const fill = clamp(remaining / INTERVAL - refill)
+  return { remaining, inEvent, sEvent, amber: clamp(warnOn ? amber : (sEvent < 1.5 ? amber : 0)), fill }
+}
+
+// Libellés : on reconstruit les étapes de chaque ligne sur la boucle en cours.
+function remSteps(r, t) {
+  const e = eventAt(r), w = warnAt(r)
+  // Étapes ordonnées sur [t-D, t] : avant l'alerte, à prévoir, enregistré, à jour.
+  const marks = [[w, 'warn'], [e, 'event'], [e + EVENT, 'ok']]
+    .flatMap(([at, k]) => [[at - D, k], [at, k], [at + D, k]])
+    .filter(([at]) => at <= t && at > t - D)
+    .sort((a, b) => a[0] - b[0])
+  return marks
+}
+
+scene({
+  duration: D,
+  seek(t) {
+    let warnCount = 0
+    const changes = []
+    ROWS.forEach((r, i) => {
+      const s = rowState(r, t)
+      const k = s.amber
+      if (s.remaining <= WARN_KM && !s.inEvent) warnCount++
+      const fill = $('fill' + i)
+      fill.style.width = (s.fill * 100).toFixed(3) + '%'
+      // Calques superposés : pas de mélange bleu → ambre, qui virerait au kaki.
+      $('amb' + i).style.opacity = s.inEvent ? 0 : clamp(k * 2.2)
+      $('okf' + i).style.opacity = s.inEvent ? 1 - clamp((s.sEvent - (EVENT - 0.3)) / 0.3) : 0
+      $('rem' + i).style.color = mixc('#18181b', WARN.fg, k)
+
+      // Texte principal : le compteur défile, sauf pendant l'enregistrement.
+      const label = s.inEvent ? '<span style="color:#047857">Entretien enregistré</span>' : `dans ${fr(Math.round(s.remaining / 100) * 100)} km`
+      const marks = remSteps(r, t)
+      const last = marks.filter(([, k]) => k === 'event' || k === 'ok').pop()
+      const steps = last ? [[last[0] - 10, ''], [last[0], label]] : [[0, label]]
+      swapText($('rem' + i), t, steps.map(([at, l], j) => [at, j === steps.length - 1 ? label : l]))
+
+      const sub = s.inEvent ? `Prochaine dans ${fr(INTERVAL)} km` : (s.remaining <= WARN_KM ? '<span style="color:#B45309">À prévoir</span>' : 'À jour')
+      const lastSub = marks.pop()
+      swapText($('sub' + i), t, lastSub ? [[lastSub[0] - 10, ''], [lastSub[0], sub]] : [[0, sub]], 12)
+      marks.forEach(m => changes.push(m))
+    })
+
+    // Compteur d'en-tête : « Tout est à jour » ou « n à prévoir ».
+    const counter = $('counter')
+    const last = changes.filter(([, kind]) => kind !== 'ok').sort((a, b) => a[0] - b[0]).pop()
+    // Couleur tirée de l'état réel des lignes : ambre tant qu'une vidange est à prévoir.
+    const ck = clamp(Math.max(0, ...ROWS.map(r => { const s = rowState(r, t); return s.inEvent ? 0 : s.amber })))
+    counter.style.background = mixc(OK.bg, WARN.bg, ck)
+    counter.style.color = mixc(OK.fg, WARN.fg, ck)
+    counter.style.borderColor = mixc(OK.bd, WARN.bd, ck)
+    counter.querySelector('.dot').style.background = mixc(OK.dot, WARN.dot, ck)
+    const txt = warnCount ? `${warnCount} vidange à prévoir` : 'Tout est à jour'
+    swapText($('counterTxt'), t, last ? [[last[0] - 10, ''], [last[0], txt]] : [[0, txt]], 12)
+    $('counterTxt').style.width = (warnCount ? 148 : 112) + 'px'
+  },
+})
+</script>
+</body>
+</html>
