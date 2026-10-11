@@ -19,7 +19,7 @@ faq:
   - q: "Sur quelle durée calculer le TCO d'un véhicule ?"
     a: "Sur la durée réelle de détention prévue ou effective du véhicule, pas sur une année type. Comparer deux TCO n'a de sens que si les durées de détention retenues sont identiques ou ramenées à une même base, par exemple un coût annuel moyen."
 related:
-  - title: "Coût de revient kilométrique : la méthode de calcul"
+  - title: "Prix de revient kilométrique : formule, calcul et exemple"
     href: "/guides/cout-revient-kilometrique"
   - title: "Assurance de flotte automobile : obligations et bonnes pratiques"
     href: "/guides/assurance-flotte"

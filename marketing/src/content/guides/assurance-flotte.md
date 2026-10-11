@@ -21,7 +21,7 @@ faq:
 related:
   - title: "Contrôle technique des véhicules d'entreprise : obligations et périodicité"
     href: "/guides/controle-technique-flotte"
-  - title: "Coût de revient kilométrique : la méthode de calcul"
+  - title: "Prix de revient kilométrique : formule, calcul et exemple"
     href: "/guides/cout-revient-kilometrique"
   - title: "Carte grise d'un véhicule d'entreprise : démarches et délais"
     href: "/guides/carte-grise-vehicule-entreprise"

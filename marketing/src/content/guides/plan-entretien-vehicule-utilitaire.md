@@ -19,7 +19,7 @@ faq:
   - q: "Qui doit tenir le plan d'entretien sur une flotte ?"
     a: "Le gestionnaire de flotte centralise les échéances, mais le conducteur reste le premier capteur : bruit anormal, voyant allumé, perte de pression. Un plan d'entretien qui ne remonte pas ces signaux terrain rate la moitié des pannes évitables."
 related:
-  - title: "Coût de revient kilométrique : la méthode de calcul"
+  - title: "Prix de revient kilométrique : formule, calcul et exemple"
     href: "/guides/cout-revient-kilometrique"
   - title: "Contrôle technique des véhicules d'entreprise"
     href: "/guides/controle-technique-flotte"

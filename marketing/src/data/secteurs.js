@@ -52,7 +52,7 @@ export const SECTEURS = [
     guides: [
       { title: "Les documents obligatoires du conducteur professionnel", href: '/guides/documents-conducteur' },
       { title: "Contrôle technique : obligations et périodicité", href: '/guides/controle-technique-flotte' },
-      { title: "Coût de revient kilométrique : la méthode", href: '/guides/cout-revient-kilometrique' },
+      { title: "Prix de revient kilométrique : formule, calcul et exemple", href: '/guides/cout-revient-kilometrique' },
     ],
   },
   {
@@ -103,7 +103,7 @@ export const SECTEURS = [
       },
     ],
     guides: [
-      { title: "Gérer un parc automobile sur Excel : jusqu'où ça tient", href: '/guides/gestion-parc-automobile-excel' },
+      { title: "Gestion et suivi de parc automobile : le modèle Excel gratuit", href: '/guides/gestion-parc-automobile-excel' },
       { title: "Contrôle technique : obligations et périodicité", href: '/guides/controle-technique-flotte' },
       { title: "Carte grise d'un véhicule d'entreprise", href: '/guides/carte-grise-vehicule-entreprise' },
     ],
@@ -209,9 +209,9 @@ export const SECTEURS = [
       },
     ],
     guides: [
-      { title: "Coût de revient kilométrique : la méthode", href: '/guides/cout-revient-kilometrique' },
+      { title: "Prix de revient kilométrique : formule, calcul et exemple", href: '/guides/cout-revient-kilometrique' },
       { title: "Carte grise d'un véhicule d'entreprise", href: '/guides/carte-grise-vehicule-entreprise' },
-      { title: "Gérer un parc automobile sur Excel", href: '/guides/gestion-parc-automobile-excel' },
+      { title: "Gestion et suivi de parc automobile : le modèle Excel gratuit", href: '/guides/gestion-parc-automobile-excel' },
     ],
   },
 ]
