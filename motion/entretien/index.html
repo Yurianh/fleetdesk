@@ -33,11 +33,11 @@
 <script type="module">
 import { scene, spring, SPRING, lerp, clamp, mixc, swapText, fr, $, OK, WARN, ICON, BLUE } from '../lib/motion.js'
 
-const D = 9.0                    // durée de la boucle
+const D = 15.0                   // durée de la boucle : une vidange toutes les 5 s
 const INTERVAL = 30000           // vidange tous les 30 000 km
 const WARN_KM = 5000             // seuil d'alerte de l'application
 const V = INTERVAL / D           // chaque véhicule fait un cycle complet par boucle
-const EVENT = 1.3                // durée de l'état « Entretien enregistré »
+const EVENT = 2.0                // durée de l'état « Entretien enregistré »
 
 const ROWS = [
   { plate: 'AB-123-CD', model: 'Renault Master', r0: 9000 },

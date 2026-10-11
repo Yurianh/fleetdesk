@@ -35,6 +35,8 @@
   .blk .btn .swap { height: 20px; }
   #summary { position: absolute; left: 0; width: 1536px; top: 752px; font-size: 19px; font-weight: 600; color: #047857; display: flex; justify-content: center; gap: 28px; }
   #summary span { display: inline-flex; align-items: center; gap: 8px; }
+  #caption { position: absolute; left: 0; width: 1536px; top: 752px; height: 30px; font-size: 21px; font-weight: 600; color: #27272a; }
+  #caption .txt { left: 0; right: 0; text-align: center; }
   #file { position: absolute; left: 0; top: 0; z-index: 40; height: 56px; background: #fff; border: 1px solid #e4e4e7; border-radius: 12px; display: flex; align-items: center; gap: 10px; padding: 0 16px; font-size: 15px; font-weight: 500; white-space: nowrap; box-shadow: 0 14px 30px -14px rgba(24,24,27,.35); }
   #file b { width: 30px; height: 36px; border-radius: 6px; background: #f4f4f5; border: 1px solid #e4e4e7; display: grid; place-items: center; font-size: 8.5px; color: #71717a; }
   #cursor { width: 30px; height: 30px; }
@@ -67,6 +69,7 @@
   .portrait .blk .btn .swap { height: 16px; }
   .portrait #summary { width: 540px; top: 622px; font-size: 12px; gap: 12px; }
   .portrait #summary svg { width: 13px; height: 13px; }
+  .portrait #caption { width: 540px; top: 621px; height: 20px; font-size: 13px; }
   .portrait #file { height: 40px; font-size: 12px; padding: 0 10px; gap: 8px; border-radius: 10px; }
   .portrait #file b { width: 22px; height: 27px; font-size: 7px; }
   .portrait #cursor { width: 22px; height: 22px; }
@@ -80,6 +83,7 @@
 <div id="counter" class="chip"><span class="dot"></span><span id="counterTxt" class="swap"></span></div>
 <div id="cards"></div>
 <div id="summary"></div>
+<div id="caption"></div>
 <div id="file"><b>PDF</b>visite-medicale-sophie.pdf</div>
 <div id="cursor"></div>
 
@@ -90,14 +94,27 @@ const PORTRAIT = new URLSearchParams(location.search).get('format') === 'portrai
 if (PORTRAIT) document.documentElement.classList.add('portrait')
 
 // ─── Plans (secondes) ─────────────────────────────────────────────────────
-const D = 10.4
+// Un problème à la fois : l'alerte arrive, on laisse le temps de la lire, on la
+// règle, on laisse le temps de voir le résultat, puis on passe au suivant.
+const D = 22.8
 const T = {
-  alert: [1.0, 1.35, 1.7],                  // les trois alertes tombent, l'une après l'autre
-  ctClick: 3.0, ctDone: 3.45,               // contrôle technique : planifié
-  grab: 3.85, drop: 4.65, docDone: 4.75,    // visite médicale : certificat déposé
-  vClick: 5.85, vDone: 5.95,                // vidange : enregistrée
-  summary: 6.6, close: [7.5, 7.65, 7.8], summaryOut: 9.3,
+  alert: [1.4, 7.2, 13.0],                  // une alerte toutes les ~6 s
+  ctClick: 4.2, ctDone: 4.65,               // contrôle technique : planifié
+  grab: 9.4, drop: 10.6, docDone: 10.7,     // visite médicale : certificat déposé
+  vClick: 15.8, vDone: 15.9,                // vidange : enregistrée
+  close: [6.2, 12.0, 17.8],                 // chaque carte se referme une fois réglée
+  summary: 18.6, summaryOut: 21.8,
 }
+// Légendes : ce qui se passe, dit en une phrase, le temps que l'œil suive.
+const CAPTIONS = PORTRAIT ? [
+  [1.7, 'Contrôle technique dans 30 jours : vous êtes prévenu.'], [4.75, 'Planifié en un clic.'], [6.4, ''],
+  [7.5, 'Visite médicale de Sophie : repérée 15 jours avant.'], [10.8, 'Certificat déposé : à jour jusqu\u2019en 2031.'], [12.2, ''],
+  [13.3, 'Vidange calculée sur le kilométrage réel.'], [16.0, 'Entretien enregistré.'], [18.0, ''],
+] : [
+  [1.7, 'Le contrôle technique approche : FleetDesk vous prévient 30 jours avant.'], [4.75, 'Planifié en un clic.'], [6.4, ''],
+  [7.5, 'La visite médicale de Sophie expire dans 15 jours : repérée à temps.'], [10.8, 'Certificat déposé : à jour jusqu\u2019en 2031.'], [12.2, ''],
+  [13.3, 'La vidange approche, calculée sur le kilométrage réel.'], [16.0, 'Entretien enregistré, prochaine dans 30 000 km.'], [18.0, ''],
+]
 const DONE = [T.ctDone, T.docDone, T.vDone]
 
 // ─── Mise en page par format ──────────────────────────────────────────────
@@ -144,7 +161,7 @@ $('brandIco').innerHTML = ICON.brand(18, '#fff')
 $('cursor').innerHTML = CURSOR_SVG
 $('cards').innerHTML = CARDS.map((c, i) => {
   const r = L.card(i)
-  return `<div class="card" style="left:${r.x}px;top:${r.y}px">
+  return `<div class="card" id="card${i}" style="left:${r.x}px;top:${r.y}px">
     <div class="ic">${c.ico(24, '#0066FF')}</div><div class="lab">${c.lab}</div><div class="cnt">${c.cnt}</div>
     <div class="list" id="list${i}">${c.list.slice(0, PORTRAIT ? 1 : 3).map(([a, b]) => `<div class="li"><span>${a}</span><span>${b}</span></div>`).join('')}</div>
     <div class="blk" id="blk${i}">
@@ -171,8 +188,12 @@ const counterW = label => label === 'Tout est à jour' ? L.counter.ok : L.counte
 scene({
   duration: D,
   seek(t) {
+    // Mise en avant : la carte active reste nette, les autres s'estompent.
+    const focus = CARDS.map((_, i) => clamp(track(t, 0, [[T.alert[i] - 0.15, 1], [T.close[i] + 0.1, 0]], SPRING.default)))
     CARDS.forEach((c, i) => {
       const r = L.card(i)
+      const others = clamp(focus.reduce((sum, f, j) => sum + (j === i ? 0 : f), 0))
+      $('card' + i).style.opacity = (1 - 0.6 * others).toFixed(3)
       // 1 = alerte (ambre), 0 = à jour ou réglée (émeraude)
       const wk = clamp(track(t, 0, [[T.alert[i], 1], [DONE[i], 0]], SPRING.default))
       // Forme unique : la pastille « À jour » devient le bloc d'alerte, puis redevient pastille.
@@ -221,14 +242,14 @@ scene({
     })
 
     // Compteur : 1, 2, 3 échéances, puis il redescend jusqu'à « Tout est à jour ».
-    const steps = [[0, 'Tout est à jour'], [T.alert[0], '1 échéance'], [T.alert[1], '2 échéances'], [T.alert[2], '3 échéances'],
-                   [T.ctDone, '2 échéances'], [T.docDone, '1 échéance'], [T.vDone, 'Tout est à jour']]
+    const steps = [[0, 'Tout est à jour'], [T.alert[0], '1 échéance'], [T.ctDone, 'Tout est à jour'],
+                   [T.alert[1], '1 échéance'], [T.docDone, 'Tout est à jour'], [T.alert[2], '1 échéance'], [T.vDone, 'Tout est à jour']]
     const live = steps.filter(([at]) => at <= t)
     swapText($('counterTxt'), t, live.slice(-2), 14)
     const cur = live[live.length - 1], prev = live[live.length - 2] || cur
     const width = lerp(counterW(prev[1]), counterW(cur[1]), spring(t - cur[0], SPRING.snappy))
     const counter = $('counter')
-    const ck = clamp(track(t, 0, [[T.alert[0], 1], [T.vDone, 0]], SPRING.default))
+    const ck = clamp(track(t, 0, [[T.alert[0], 1], [T.ctDone, 0], [T.alert[1], 1], [T.docDone, 0], [T.alert[2], 1], [T.vDone, 0]], SPRING.default))
     counter.style.background = mixc(OK.bg, WARN.bg, ck)
     counter.style.color = mixc(OK.fg, WARN.fg, ck)
     counter.style.borderColor = mixc(OK.bd, WARN.bd, ck)
@@ -237,6 +258,8 @@ scene({
     counter.style.left = (L.counter.right - width) + 'px'
     $('counterTxt').style.width = (width - L.counter.inner) + 'px'
     $('counterTxt').style.height = L.counter.txtH + 'px'
+
+    swapText($('caption'), t, [[0, ''], ...CAPTIONS].filter(([at]) => at <= t).slice(-2), 12)
 
     // Phrase de fin : les trois « zéro » tenus.
     const sk = spring(t - T.summary, SPRING.default) * (1 - spring(t - T.summaryOut, SPRING.default))
@@ -254,8 +277,8 @@ scene({
     const fw = L.file.size
     cursor($('cursor'), t, {
       from: L.cur.from,
-      steps: [[2.3, [c0x, c0y]], [T.grab - 0.25, [L.file.from[0] + fw[0] * 0.6, L.file.from[1] - 120 + fw[1] * 0.5]],
-              [T.grab + 0.3, [DROP[0] + fw[0] * 0.6, DROP[1] + fw[1] * 0.5]], [T.drop + 0.35, [c2x, c2y]], [T.summary, L.cur.out]],
+      steps: [[3.3, [c0x, c0y]], [5.2, L.cur.out], [T.grab - 0.25, [L.file.from[0] + fw[0] * 0.6, L.file.from[1] - 120 + fw[1] * 0.5]],
+              [T.grab + 0.3, [DROP[0] + fw[0] * 0.6, DROP[1] + fw[1] * 0.5]], [11.3, L.cur.out], [14.9, [c2x, c2y]], [16.6, L.cur.out]],
     }, [T.ctClick, T.drop, T.vClick])
   },
 })

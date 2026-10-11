@@ -50,8 +50,9 @@
 <script type="module">
 import { scene, spring, SPRING, track, lerp, clamp, mixc, swapText, $, OK, WARN, ICON, CURSOR_SVG, cursor, paint } from '../lib/motion.js'
 
-const D = 9.6
-const T = { due: 0.8, click: 1.75, open: 1.85, grab: 3.0, drop: 3.9, valid: 4.0, toast: 4.1, close: 6.7, shut: 6.8 }
+// Rythme : l'alerte, puis la fiche, puis le dépôt, chacun avec le temps d'être lu.
+const D = 12.6
+const T = { due: 1.0, click: 3.0, open: 3.1, grab: 5.0, drop: 6.2, valid: 6.3, toast: 6.4, close: 9.8, shut: 9.9 }
 const DRIVERS = [['ML', 'Marc Lefebvre', 'Renault Master'], ['SR', 'Sophie Renard', 'Peugeot Boxer'], ['KA', 'Karim Aïssa', 'Citroën Jumpy'], ['NB', 'Nadia Benali', 'Ford Transit']]
 const Y0 = 122, H = 76, FOCUS = 1
 const rowHTML = ([ini, n, v], chip) => `<div class="avatar">${ini}</div><div class="name">${n}</div><div class="role">${v}</div>${chip}`
@@ -110,13 +111,13 @@ scene({
     file.style.transform = `scale(${(1 - 0.25 * d).toFixed(4)}) rotate(${(-3 * (1 - spring(t - (T.grab + 0.35)))).toFixed(2)}deg)`
 
     const toast = $('toast')
-    const tk = spring(t - T.toast, SPRING.default) * (1 - spring(t - (T.toast + 1.8), SPRING.default))
+    const tk = spring(t - T.toast, SPRING.default) * (1 - spring(t - (T.toast + 2.6), SPRING.default))
     toast.style.opacity = clamp(tk * 1.4)
     toast.style.transform = `translate(-50%, ${((1 - tk) * 16).toFixed(2)}px)`
 
     cursor($('cursor'), t, {
       from: [700, 580],
-      steps: [[0.9, [320, ROW.y + 42]], [T.grab - 0.2, [fx + 120, 590]], [T.grab, [500, 448]], [T.grab + 0.35, [VM.x + 360, VM.y + 40]],
+      steps: [[2.2, [320, ROW.y + 42]], [T.grab - 0.2, [fx + 120, 590]], [T.grab, [500, 448]], [T.grab + 0.35, [VM.x + 360, VM.y + 40]],
               [T.close - 0.6, [560, 470]], [T.shut + 0.5, [720, 620]]],
     }, [T.click, T.drop, T.close])
   },

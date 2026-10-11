@@ -1,6 +1,6 @@
 # Vidéo du hero : spécification
 
-Boucle muette de 10,4 s. Elle illustre le titre du hero : « Zéro contrôle raté.
+Boucle muette de 22,8 s. Elle illustre le titre du hero : « Zéro contrôle raté.
 Zéro document expiré. Zéro panne surprise. »
 
 ## Idée en une ligne
@@ -30,18 +30,30 @@ Contrôles techniques, Documents conducteurs, Entretien.
 - Portrait 4:5 : 540 × 675 CSS, rendu 1080 × 1350 (`?format=portrait`). Cartes
   empilées, sans la ligne e-mail faute de place. Recomposé, pas recadré.
 
+## Rythme
+
+Un problème à la fois. Chaque échéance suit le même schéma : l'alerte arrive,
+on laisse le temps de la lire (environ 2,5 s), elle se règle, on laisse le
+temps de voir le résultat (environ 1,5 s), la carte se referme. Pendant ce
+temps, les deux autres cartes s'estompent pour guider le regard, et une
+légende sous les cartes dit ce qui se passe en une phrase.
+
 ## Plans
 
 | Temps | État |
 | --- | --- |
-| 0 → 1,0 s | Repos. « Tout est à jour ». |
-| 1,0 / 1,35 / 1,7 s | Les trois alertes tombent l'une après l'autre ; le compteur monte à 1, 2, 3 échéances. |
-| 3,0 s | Clic sur « Planifier le contrôle » : RDV le 5 novembre, la carte passe au vert. Compteur 2. |
-| 3,85 → 4,65 s | Le certificat médical est glissé sur la visite médicale : valide jusqu'au 10/2031. Compteur 1. |
-| 5,85 s | Clic sur « Enregistrer l'entretien » : prochaine vidange dans 30 000 km. « Tout est à jour ». |
-| 6,6 s | « 0 contrôle raté · 0 document expiré · 0 panne surprise ». |
-| 7,5 → 7,8 s | Les blocs redeviennent des pastilles « À jour ». |
-| 9,3 → 10,4 s | La phrase s'efface, retour à l'image de départ. |
+| 0 → 1,4 s | Repos. « Tout est à jour ». |
+| 1,4 s | Contrôle technique du Boxer dans 30 jours. Légende : « Le contrôle technique approche : FleetDesk vous prévient 30 jours avant. » |
+| 4,2 s | Clic sur « Planifier le contrôle ». Légende : « Planifié en un clic. » |
+| 6,2 s | La carte se referme. |
+| 7,2 s | Visite médicale de Sophie dans 15 jours. Légende : « … repérée à temps. » |
+| 9,4 → 10,6 s | Le certificat est glissé sur la carte. Légende : « Certificat déposé : à jour jusqu'en 2031. » |
+| 12,0 s | La carte se referme. |
+| 13,0 s | Vidange du Master. Légende : « La vidange approche, calculée sur le kilométrage réel. » |
+| 15,8 s | Clic sur « Enregistrer l'entretien ». Légende : « Entretien enregistré, prochaine dans 30 000 km. » |
+| 17,8 s | La carte se referme. |
+| 18,6 → 21,8 s | « 0 contrôle raté · 0 document expiré · 0 panne surprise ». |
+| 22,8 s | Retour à l'image de départ. |
 
 ## Refaire la vidéo
 

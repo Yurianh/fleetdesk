@@ -38,8 +38,9 @@
 <script type="module">
 import { scene, spring, SPRING, track, lerp, clamp, fr, $, ICON } from '../lib/motion.js'
 
-const D = 9.6
-const T = { build: 0.5, reset: 8.0 }
+// Rythme : le total, puis la répartition, puis les véhicules, un temps chacun.
+const D = 13.2
+const T = { build: 0.6, reset: 11.4 }
 // Répartition cohérente : 1 960 + 1 640 + 242 = 3 842 €
 const PARTS = [['Entretien', 1960, '#0066FF'], ['Carburant', 1640, '#16a34a'], ['Lavages', 242, '#0ea5e9']]
 const TOTAL = PARTS.reduce((s, p) => s + p[1], 0)
@@ -57,22 +58,22 @@ scene({
   seek(t) {
     const k = grow(t, T.build)
     $('total').innerHTML = `<span class="txt">${fr(Math.round(TOTAL * clamp(k)))} €</span>`
-    const tk = grow(t, T.build + 1.1, SPRING.default)
+    const tk = grow(t, T.build + 1.6, SPRING.default)
     $('trend').style.opacity = clamp(tk * 1.3)
     $('trend').style.transform = `translateY(${((1 - tk) * 10).toFixed(2)}px)`
     PARTS.forEach(([, v], i) => {
-      const s = grow(t, T.build + 0.3 + i * 0.18)
+      const s = grow(t, T.build + 2.6 + i * 0.45)
       $('s' + i).style.width = `${(v / TOTAL * 100 * clamp(s)).toFixed(3)}%`
-      const lk = grow(t, T.build + 0.5 + i * 0.18, SPRING.default)
+      const lk = grow(t, T.build + 2.8 + i * 0.45, SPRING.default)
       $('lg' + i).style.opacity = clamp(lk * 1.3)
     })
     TOP.forEach(([, v], i) => {
-      const s = grow(t, T.build + 1.4 + i * 0.22)
+      const s = grow(t, T.build + 5.0 + i * 0.5)
       $('vb' + i).style.width = (300 * v / TOP[0][1] * clamp(s)).toFixed(2) + 'px'
       $('vb' + i).style.background = i === 0 ? '#0066FF' : '#93B8FF'
       $('va' + i).innerHTML = `<span class="txt">${fr(Math.round(v * clamp(s)))} €</span>`
       const w = $('vw' + i)
-      if (w) { const wk = grow(t, T.build + 2.3 + i * 0.25, SPRING.default); w.style.opacity = clamp(wk * 1.3); w.style.transform = `translateY(${((1 - wk) * 6).toFixed(2)}px)` }
+      if (w) { const wk = grow(t, T.build + 6.8 + i * 0.6, SPRING.default); w.style.opacity = clamp(wk * 1.3); w.style.transform = `translateY(${((1 - wk) * 6).toFixed(2)}px)` }
     })
   },
 })

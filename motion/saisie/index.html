@@ -49,8 +49,9 @@
 <script type="module">
 import { scene, spring, SPRING, track, lerp, clamp, mixc, swapText, $, ICON, OK, press } from '../lib/motion.js'
 
-const D = 9.6
-const T = { k1: 0.7, k2: 2.0, shot1: 2.9, shot2: 3.25, send: 3.9, fly: 4.25, land: 4.75, reset: 8.0 }
+// Rythme : frappe posée, photos, envoi, puis le temps de voir la saisie arriver au bureau.
+const D = 12.8
+const T = { k1: 0.9, k2: 2.6, shot1: 4.4, shot2: 5.0, send: 5.9, fly: 6.3, land: 6.8, reset: 11.0 }
 const KM = '51 177', AMT = '82,40 €'
 
 const ITEM = (ico, a, b, c) => `<div class="ico" style="background:#f4f4f5">${ico}</div><div class="a">${a}</div><div class="b">${b}</div><div class="c">${c}</div>`
@@ -70,7 +71,7 @@ const SEND = { x: 34 + 9 + 16, y: 26 + 9 + 362, w: 236 - 18 - 32, h: 44 }   // b
 const SLOT = { x: 296 + 14, y: 64 + FEED_Y0, w: 292, h: 80 }                // première place du fil
 
 // Frappe : n caractères au temps t, une touche toutes les 0,12 s.
-const typed = (s, t, at) => s.slice(0, clamp(Math.floor((t - at) / 0.12), 0, s.length))
+const typed = (s, t, at) => s.slice(0, clamp(Math.floor((t - at) / 0.17), 0, s.length))
 
 scene({
   duration: D,
@@ -82,7 +83,7 @@ scene({
     const v1 = t < T.reset ? typed(KM, t, T.k1) : ''
     const v2 = t < T.reset ? typed(AMT, t, T.k2) : ''
     $('v1').textContent = v1; $('v2').textContent = v2
-    const f1 = t > T.k1 - 0.2 && t < T.k2 - 0.1, f2 = t > T.k2 - 0.1 && t < T.shot1
+    const f1 = t > T.k1 - 0.2 && t < T.k2 - 0.3, f2 = t > T.k2 - 0.3 && t < T.shot1 - 0.2
     $('f1').className = 'field' + (f1 ? ' focus' : ''); $('f2').className = 'field' + (f2 ? ' focus' : '')
     const blink = Math.floor(t / 0.45) % 2 === 0
     $('c1').style.opacity = f1 && blink ? 1 : 0; $('c2').style.opacity = f2 && blink ? 1 : 0
