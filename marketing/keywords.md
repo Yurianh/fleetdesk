@@ -47,8 +47,11 @@ Pages money. Page de référence : `/secteurs/btp`. Les pages vivent dans
 
 ## Motif 2 — « logiciel / application » + fonction
 
-Nouveau motif repéré le 2026-10-09. Pas encore de page de référence : la
-première page fonction se fait en session, pas par la routine. La personne cherche un outil pour **une**
+Nouveau motif repéré le 2026-10-09. Page de référence :
+`/logiciel-suivi-entretien-vehicule` (`src/pages/`), publiée le 2026-10-09.
+La routine peut décliner le motif à partir d'elle, une page par semaine, en
+remplaçant tout ce qui est propre à la fonction (fonctionnement réel du
+produit, exemple, FAQ). La personne cherche un outil pour **une**
 tâche précise. En page 1 : annuaires et pages produit, c'est-à-dire une
 intention d'achat. Aucune page FleetDesk ne vise ces requêtes : `/features`
 les couvre toutes à la fois, sous le titre « Fonctionnalités de gestion de
@@ -56,7 +59,7 @@ flotte ».
 
 | Priorité | Requête | Volume | Ce que Google classe | Notre URL | Statut | Note |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | logiciel suivi entretien véhicule | n/a (Suggest, + « application », + « gratuit ») | annuaires (GetApp, Capterra, Appvizer catégorie « entretien flotte ») et pages produit | — | à créer | `page-brief` d'abord : `/guides/plan-entretien-vehicule-utilitaire` est le guide sur le sujet. Il n'a aucune impression au 08/10 et vise une intention de lecture : la page fonction ne lui prendrait rien. |
+| 1 | logiciel suivi entretien véhicule | n/a (Suggest, + « application », + « gratuit ») | annuaires (GetApp, Capterra, Appvizer catégorie « entretien flotte ») et pages produit | `/logiciel-suivi-entretien-vehicule` | publiée (2026-10-09) | `page-brief` d'abord : `/guides/plan-entretien-vehicule-utilitaire` est le guide sur le sujet. Il n'a aucune impression au 08/10 et vise une intention de lecture : la page fonction ne lui prendrait rien. |
 | 2 | logiciel alerte contrôle technique flotte | n/a (pas de Suggest) | non vérifié | `/conformite` | à optimiser | Demande non confirmée. `/conformite` couvre déjà le sujet. |
 | 3 | suivi véhicule entreprise (carnet, fiche) | n/a (Suggest : « excel », « carnet », « fiche ») | non vérifié | `/outils/modele-suivi-parc-automobile-excel` | à optimiser | Intention « modèle à télécharger ». L'outil est la bonne page : ajouter « carnet » et « fiche » à son texte. |
 | — | application gestion de flotte automobile | n/a (Suggest) | non vérifié | `/` | à optimiser | L'application chauffeur sur téléphone est un argument que la home met peu en avant. |

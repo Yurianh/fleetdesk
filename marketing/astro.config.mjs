@@ -15,7 +15,7 @@ export default defineConfig({
       serialize(item) {
         const path = new URL(item.url).pathname
         if (path === '/') return { ...item, changefreq: 'weekly', priority: 1.0 }
-        if (/^\/(logiciel-gestion-de-flotte|pricing|features|conformite)$/.test(path))
+        if (/^\/(logiciel-gestion-de-flotte|logiciel-suivi-entretien-vehicule|pricing|features|conformite)$/.test(path))
           return { ...item, changefreq: 'monthly', priority: 0.9 }
         if (path.startsWith('/secteurs')) return { ...item, changefreq: 'monthly', priority: 0.8 }
         if (path.startsWith('/guides') || path.startsWith('/outils'))
