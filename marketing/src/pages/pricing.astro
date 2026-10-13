@@ -18,11 +18,11 @@ const plans = [
     badge: null,
     trialNote: '7 jours gratuits · Sans carte bancaire',
     features: [
-      { text: 'Jusqu\'à 5 véhicules et 3 conducteurs', highlight: false },
-      { text: 'Documents conducteurs (7) et véhicule suivis', highlight: false },
-      { text: 'Alertes contrôles techniques et échéances', highlight: false },
-      { text: 'Prévisions d\'entretien et tableau de bord', highlight: false },
-      { text: 'Support par email', highlight: false },
+      { text: 'Jusqu\'à 5 véhicules et 3 conducteurs' },
+      { text: 'Documents conducteurs (7) et véhicule suivis' },
+      { text: 'Alertes contrôles techniques et échéances' },
+      { text: 'Prévisions d\'entretien et tableau de bord' },
+      { text: 'Support par email' },
     ],
     cta: 'Démarrer l\'essai gratuit',
     ctaHref: `${APP_URL}/login?plan=starter`,
@@ -40,12 +40,12 @@ const plans = [
     badge: 'Le plus populaire',
     trialNote: '7 jours gratuits · Sans carte bancaire',
     features: [
-      { text: 'Jusqu\'à 25 véhicules · conducteurs illimités', highlight: true },
-      { text: 'Tout Starter, sans la limite de flotte', highlight: false },
-      { text: 'Alertes 30 jours avant chaque échéance', highlight: false },
-      { text: 'Prévisions de maintenance et analytics complets', highlight: false },
-      { text: 'Suivi des lavages et justificatifs', highlight: false },
-      { text: 'Support prioritaire', highlight: false },
+      { text: 'Jusqu\'à 25 véhicules · conducteurs illimités' },
+      { text: 'Tout Starter, sans la limite de flotte' },
+      { text: 'Alertes 30 jours avant chaque échéance' },
+      { text: 'Prévisions de maintenance et analytics complets' },
+      { text: 'Suivi des lavages et justificatifs' },
+      { text: 'Support prioritaire' },
     ],
     cta: 'Démarrer l\'essai gratuit',
     ctaHref: `${APP_URL}/login?plan=pro`,
@@ -63,12 +63,12 @@ const plans = [
     badge: null,
     trialNote: '7 jours gratuits · Sans carte bancaire',
     features: [
-      { text: 'Véhicules et conducteurs illimités', highlight: false },
-      { text: 'Invitez votre équipe : admins et membres', highlight: true },
-      { text: 'Accès chauffeur : saisie km, pleins et factures depuis le terrain', highlight: true },
-      { text: 'Rôles et permissions appliqués côté serveur', highlight: false },
-      { text: 'Journal d\'activité complet, prêt pour les audits', highlight: false },
-      { text: 'Onboarding personnalisé et SLA garanti', highlight: false },
+      { text: 'Véhicules et conducteurs illimités' },
+      { text: 'Invitez votre équipe : admins et membres' },
+      { text: 'Accès chauffeur : saisie km, pleins et factures depuis le terrain' },
+      { text: 'Rôles et permissions appliqués côté serveur' },
+      { text: 'Journal d\'activité complet, prêt pour les audits' },
+      { text: 'Onboarding personnalisé et SLA garanti' },
     ],
     cta: 'Démarrer l\'essai gratuit',
     ctaHref: `${APP_URL}/login?plan=enterprise`,
@@ -193,26 +193,26 @@ const breadcrumb = {
 
             {/* Plan name + price */}
             <div class="mb-5">
-              <p class={`text-xs font-semibold uppercase tracking-widest mb-2 ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-500'}`}>{p.name}</p>
+              <p class={`text-xs font-medium uppercase tracking-widest mb-2 ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-500'}`}>{p.name}</p>
               <div class="flex items-end gap-1 mb-1">
                 <span
                   class="price-amount text-4xl font-bold tracking-tight text-zinc-900 font-mono"
                   data-monthly={p.monthlyPrice}
-                  data-annual={p.annualPrice}
+                  data-annual={p.annualMonthly}
                 >
-                  {p.annualPrice}
+                  {p.annualMonthly}
                 </span>
                 <span class="text-xl font-bold text-zinc-900 mb-0.5">€</span>
-                <span class="price-period text-sm mb-1.5 text-zinc-500">/an</span>
+                <span class="text-sm mb-1.5 text-zinc-500">/mois</span>
               </div>
               {/* Annual subtotal line */}
               <p
                 class="annual-total text-xs text-zinc-500"
               >
-                soit {p.annualMonthly} € par mois · {p.annualSaving} € d'économie sur l'année
+                facturé {p.annualPrice} € par an · {p.annualSaving} € d'économie
               </p>
               {p.trialNote && (
-                <p class="text-xs font-semibold text-emerald-700 mt-1">{p.trialNote}</p>
+                <p class="text-xs text-emerald-700 mt-1">{p.trialNote}</p>
               )}
             </div>
 
@@ -226,7 +226,7 @@ const breadcrumb = {
                   <svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-[#0066FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
-                  <span class={`text-sm ${f.highlight ? 'text-zinc-800 font-medium' : 'text-zinc-600'}`}>{f.text}</span>
+                  <span class="text-sm text-zinc-600">{f.text}</span>
                 </li>
               ))}
             </ul>
@@ -235,7 +235,7 @@ const breadcrumb = {
             <a
               href={`${p.ctaHref}&billing=annual`}
               data-plan-cta
-              class={`block w-full text-center text-sm font-semibold px-5 py-3 rounded-xl transition-colors ${
+              class={`block w-full text-center text-sm font-medium px-5 py-3 rounded-xl transition-colors ${
                 p.ctaStyle === 'primary'
                   ? 'bg-[#0066FF] text-white hover:bg-[#0052D6]'
                   : 'border border-zinc-200 text-zinc-700 hover:bg-zinc-50'
@@ -295,7 +295,6 @@ const breadcrumb = {
   const btnAnnual  = document.getElementById('btn-annual')
   const amounts    = document.querySelectorAll('.price-amount')
   const totals     = document.querySelectorAll('.annual-total')
-  const periods    = document.querySelectorAll('.price-period')
 
   const ctas = document.querySelectorAll('a[data-plan-cta]')
   const setBilling = annual => ctas.forEach(a => {
@@ -313,7 +312,6 @@ const breadcrumb = {
     amounts.forEach(el => {
       el.textContent = el.dataset.monthly
     })
-    periods.forEach(el => { el.textContent = '/mois' })
     totals.forEach(el => el.classList.add('hidden'))
   }
 
@@ -326,7 +324,6 @@ const breadcrumb = {
     amounts.forEach(el => {
       el.textContent = el.dataset.annual
     })
-    periods.forEach(el => { el.textContent = '/an' })
     totals.forEach(el => el.classList.remove('hidden'))
   }
 

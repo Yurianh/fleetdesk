@@ -122,9 +122,9 @@ const faq = [
 
 // Annuel affiché d'abord ; le visiteur bascule lui-même sur le mensuel.
 const teaserPlans = [
-  { name: 'Starter', price: '9',  annual: '70',  note: 'Jusqu\'à 5 véhicules',      highlighted: false, href: '/pricing', cta: 'Essayer' },
-  { name: 'Pro',     price: '29', annual: '220', note: '7 jours d\'essai gratuit', highlighted: true,  href: '/pricing',     cta: 'Essayer' },
-  { name: 'Enterprise', price: '79', annual: '600', note: 'Flottes illimitées',     highlighted: false, href: '/pricing', cta: 'Essayer' },
+  { name: 'Starter', price: '9',  annual: '70', annualMonthly: '5,83',  note: 'Jusqu\'à 5 véhicules',      highlighted: false, href: '/pricing', cta: 'Essayer' },
+  { name: 'Pro',     price: '29', annual: '220', annualMonthly: '18,33', note: '7 jours d\'essai gratuit', highlighted: true,  href: '/pricing',     cta: 'Essayer' },
+  { name: 'Enterprise', price: '79', annual: '600', annualMonthly: '50', note: 'Flottes illimitées',     highlighted: false, href: '/pricing', cta: 'Essayer' },
 ]
 
 // Structured data for the homepage: organisation, product and the FAQ.
@@ -586,7 +586,7 @@ const faqSchema = {
       <div class="mb-10 text-center">
         <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Tarifs transparents</p>
         <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-3">Un prix qui tient sur une ligne</h2>
-        <p class="text-lg text-zinc-600">Dès 70 € par an, ou 9 € par mois sans engagement. 7 jours d'essai sur toutes les formules, sans carte.</p>
+        <p class="text-lg text-zinc-600">Dès 5,83 € par mois en annuel (70 € par an), ou 9 € par mois sans engagement. 7 jours d'essai sur toutes les formules, sans carte.</p>
       </div>
       <div class="flex justify-center mb-8">
         <div class="inline-flex bg-white border border-zinc-200 rounded-full p-1" role="group" aria-label="Facturation">
@@ -600,14 +600,15 @@ const faqSchema = {
         {teaserPlans.map(p => (
           <a href={p.href}
             class={`group rounded-2xl p-6 transition-all ${p.highlighted ? 'bg-white border-2 border-[#0066FF] shadow-lg shadow-[#0066FF]/10' : 'bg-white border border-zinc-200 hover:border-zinc-300'}`}>
-            <p class={`text-xs font-semibold uppercase tracking-widest mb-3 ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-500'}`}>{p.name}</p>
+            <p class={`text-xs font-medium uppercase tracking-widest mb-3 ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-500'}`}>{p.name}</p>
             <div class="flex items-end gap-1 mb-1">
-              <span class="teaser-amount text-3xl font-bold text-zinc-900" data-monthly={p.price} data-annual={p.annual}>{p.annual}</span>
+              <span class="teaser-amount text-3xl font-bold text-zinc-900" data-monthly={p.price} data-annual={p.annualMonthly}>{p.annualMonthly}</span>
               <span class="text-base font-bold text-zinc-900 mb-0.5">€</span>
-              <span class="teaser-period text-xs text-zinc-500 mb-1.5">/an</span>
+              <span class="text-xs text-zinc-500 mb-1.5">/mois</span>
             </div>
+            <p class="teaser-annual text-xs text-zinc-500 mb-1">facturé {p.annual} € par an</p>
             <p class="text-sm text-zinc-600 mb-5">{p.note}</p>
-            <span class={`inline-flex items-center gap-1.5 text-sm font-semibold ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-700'}`}>
+            <span class={`inline-flex items-center gap-1.5 text-sm font-medium ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-700'}`}>
               {p.cta}
               <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </span>
@@ -688,7 +689,7 @@ const faqSchema = {
       b.classList.toggle('bg-[#E5EEFF]', on); b.classList.toggle('text-[#0052D6]', on); b.classList.toggle('text-zinc-600', !on)
     })
     document.querySelectorAll('.teaser-amount').forEach(el => { el.textContent = annual ? el.dataset.annual : el.dataset.monthly })
-    document.querySelectorAll('.teaser-period').forEach(el => { el.textContent = annual ? '/an' : '/mois' })
+    document.querySelectorAll('.teaser-annual').forEach(el => { el.classList.toggle('hidden', !annual) })
   }))
 </script>
 
