@@ -230,11 +230,24 @@
 .is-phase2 .story-check { transform: none; }
 .is-phase2 .story-check polyline { stroke-dashoffset: 0; }
 
-.story-bar { transition: width 1400ms cubic-bezier(.16,1,.3,1) 700ms; }
+
+/* Défilement rendu visible en continu entre deux arrivées (variables posées
+   par DiagnosticStory à chaque image) : le contenu dérive doucement et
+   s'estompe en fin de diapo, le rail, la barre et l'anneau « Suivant » se remplissent. */
+.story-slide.is-active .story-inner {
+  transform: translate3d(0, calc((0.35 - var(--p)) * 70px), 0);
+  opacity: calc(1 - max(0, var(--p) - 0.82) * 3.2);
+  will-change: transform, opacity;
+}
+.story-rail-fill { height: calc(var(--p) * 100%); min-height: 8px; }
+.story-bar-fill { width: calc(var(--g) * 100%); }
+.story-next-ring { stroke-dashoffset: calc(56.55px * (1 - var(--q))); }
+.story-next-chip { animation: story-land 700ms cubic-bezier(.16,1,.3,1) both; }
 .story-hint { animation: story-bob 1.6s ease-in-out infinite; }
 @keyframes story-bob { 50% { transform: translateY(6px); } }
 
 @media (prefers-reduced-motion: reduce) {
   .story-slide, .story-slide.is-active, .story-risk, .story-gain, .story-check, .story-check polyline, .story-bar { transition-duration: 1ms !important; transition-delay: 0ms !important; }
-  .story-slide.is-active .land, .story-slide.is-active .pop, .story-hint { animation: none; opacity: 1; }
+  .story-slide.is-active .land, .story-slide.is-active .pop, .story-hint, .story-next-chip { animation: none; opacity: 1; }
+  .story-slide.is-active .story-inner { transform: none; opacity: 1; }
 }
