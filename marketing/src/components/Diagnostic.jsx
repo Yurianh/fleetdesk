@@ -187,6 +187,7 @@ function analyse(a) {
   let share = AUTOMATABLE[a.suivi] ?? 0.3
   if (a.km === 'sms' || a.km === 'moi') share += 0.05
   const heures = Math.max(1, Math.round((HOURS[a.temps] ?? 2) * 4.33 * share))
+  const heuresAn = Math.max(6, Math.round((HOURS[a.temps] ?? 2) * 4.33 * share * 12))
 
   const items = []
   if (a.suivi && INSIGHTS.suivi[a.suivi]) items.push(INSIGHTS.suivi[a.suivi])
@@ -204,7 +205,7 @@ function analyse(a) {
 
   return {
     score, level, items, plan, secteur: SECTEURS[a.secteur],
-    stats: { echeances, heures, heuresNow: Math.max(1, Math.round((HOURS[a.temps] ?? 2) * 4.33)), drivers, fleet, ctAnnuel, sharePct: Math.round(share * 100), vigilance: items.length },
+    stats: { echeances, heures, heuresAn, heuresNow: Math.max(1, Math.round((HOURS[a.temps] ?? 2) * 4.33)), drivers, fleet, ctAnnuel, sharePct: Math.round(share * 100), vigilance: items.length },
   }
 }
 

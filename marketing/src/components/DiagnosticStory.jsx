@@ -7,8 +7,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 // FleetDesk), temps récupéré, puis un résumé qui mène à la formule conseillée.
 //
 // Les animations d'arrivée sont des keyframes CSS (global.css, .story-*) qui se
-// rejouent quand une diapo redevient active. Le défilement ne fait que choisir
-// la diapo active et la phase d'un point de vigilance.
+// rejouent quand une diapo redevient active. Entre deux arrivées, le défilement
+// reste visible en continu : variables CSS mises à jour à chaque image (--p
+// avancée dans la diapo, --q avancée vers la prochaine étape, --g avancée
+// globale) qui font dériver le contenu, remplir le rail et l'anneau « Suivant ».
 
 const MONTHS = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
 const MAX_ITEMS = 9
@@ -16,6 +18,8 @@ const MAX_ITEMS = 9
 // temps : il lui faut plus de course.
 const STEP_VH = 85
 const WEIGHT = { item: 1.3 }
+// Avancée dans un point de vigilance à partir de laquelle la réponse arrive.
+const PHASE2 = 0.4
 
 const reduced = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
@@ -118,28 +122,53 @@ function ItemSlide({ item: [risk, gain], n, total }) {
   )
 }
 
-function TimeSlide({ s, on }) {
-  const v = useCount(s.heures, on)
-  const after = Math.max(0, s.heuresNow - s.heures)
+// Coût horaire retenu pour chiffrer le temps récupéré, affiché tel quel au
+// visiteur : un ordre de grandeur prudent pour une heure de gestion chargée.
+const HOURLY = 30
+const DAY_H = 7
+
+function TimeSlide({ s, plan, on }) {
+  const v = useCount(s.heuresAn, on)
+  const days = Math.max(1, Math.round(s.heuresAn / DAY_H))
+  const shown = Math.min(days, 15)
+  const value = s.heuresAn * HOURLY
+  const price = Number(plan.annual)
+  const roi = value >= price * 1.5
+  const fmt = n => n.toLocaleString('fr-FR')
   return (
-    <div className="max-w-2xl mx-auto text-center">
+    <div className="max-w-3xl mx-auto text-center">
       <p className="text-sm font-semibold tracking-wide uppercase text-zinc-500 land" style={d(0)}>Le temps que vous récupérez</p>
       <p className="mt-4 font-display font-semibold text-zinc-900 tabular-nums leading-none text-7xl sm:text-9xl land" style={d(120)}>≈ {v} h</p>
-      <p className="mt-2 text-2xl sm:text-3xl font-display text-zinc-800 land" style={d(220)}>rendues chaque mois</p>
-      <div className="mt-10 space-y-4 text-left">
-        <div className="land" style={d(450)}>
-          <div className="flex justify-between text-sm"><span className="font-medium text-zinc-600">Aujourd’hui</span><span className="tabular-nums text-zinc-500">≈ {s.heuresNow} h / mois</span></div>
-          <div className="mt-1.5 h-3.5 rounded-full bg-zinc-100 overflow-hidden"><div className="h-full rounded-full bg-zinc-400" style={{ width: '100%' }} /></div>
-        </div>
-        <div className="land" style={d(600)}>
-          <div className="flex justify-between text-sm"><span className="font-semibold text-[#0052D6]">Avec FleetDesk</span><span className="tabular-nums text-[#0052D6]">≈ {after} h / mois</span></div>
-          <div className="mt-1.5 h-3.5 rounded-full bg-zinc-100 overflow-hidden">
-            <div className="story-bar h-full rounded-full bg-[#0066FF]" style={{ width: on ? `${Math.max(4, (after / s.heuresNow) * 100)}%` : '100%' }} />
+      <p className="mt-2 text-2xl sm:text-3xl font-display text-zinc-800 land" style={d(220)}>rendues chaque année</p>
+
+      <div className="mt-9 flex flex-wrap justify-center gap-2 sm:gap-2.5" aria-hidden="true">
+        {Array.from({ length: shown }, (_, k) => (
+          <span key={k} className="pop w-9 h-11 sm:w-11 sm:h-[3.25rem] rounded-lg bg-white border border-[#0066FF]/25 shadow-sm overflow-hidden flex flex-col" style={d(500 + k * 90)}>
+            <span className="h-2.5 sm:h-3 bg-[#0066FF]" />
+            <span className="flex-1 flex items-center justify-center text-[11px] sm:text-xs font-semibold text-[#0052D6]">{k + 1}</span>
+          </span>
+        ))}
+      </div>
+      <p className="mt-4 text-lg sm:text-xl text-zinc-700 land" style={d(600 + shown * 90)}>
+        Soit <strong className="text-zinc-900">≈ {days} journée{days > 1 ? 's' : ''} de travail</strong>{days > shown ? ` (${shown} affichées)` : ''}, environ {s.heures} h par mois.
+      </p>
+
+      {roi && (
+        <div className="mt-8 grid grid-cols-2 gap-px rounded-2xl overflow-hidden border border-zinc-200 bg-zinc-200 text-left land" style={d(900 + shown * 90)}>
+          <div className="bg-white p-4 sm:p-5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Ce temps vaut</p>
+            <p className="mt-1 font-display text-3xl sm:text-4xl font-semibold text-zinc-900 tabular-nums">≈ {fmt(value)} €</p>
+            <p className="mt-1 text-xs text-zinc-500">par an, à {HOURLY} € de l’heure</p>
+          </div>
+          <div className="bg-[#F5F8FF] p-4 sm:p-5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#0052D6]">FleetDesk {plan.name}</p>
+            <p className="mt-1 font-display text-3xl sm:text-4xl font-semibold text-[#0052D6] tabular-nums">{fmt(price)} €</p>
+            <p className="mt-1 text-xs text-zinc-500">par an</p>
           </div>
         </div>
-      </div>
-      <p className="mt-8 text-base sm:text-lg text-zinc-600 leading-relaxed land" style={d(1400)}>
-        Environ {s.sharePct} % du temps que vous y passez : relances, recopie de relevés, recherche de documents.
+      )}
+      <p className="mt-5 text-sm text-zinc-500 leading-relaxed land" style={d(1100 + shown * 90)}>
+        Environ {s.sharePct} % du temps que vous y passez aujourd’hui : relances, recopie de relevés, recherche de documents.
       </p>
     </div>
   )
@@ -148,7 +177,7 @@ function TimeSlide({ s, on }) {
 function SummarySlide({ s, plan }) {
   const lines = [
     `≈ ${s.echeances} échéances suivies, et rappelées 30 jours avant`,
-    `≈ ${s.heures} h rendues chaque mois`,
+    `≈ ${s.heuresAn} h rendues chaque année`,
     s.vigilance ? `${s.vigilance} point${s.vigilance > 1 ? 's' : ''} de vigilance couvert${s.vigilance > 1 ? 's' : ''}` : 'Un e-mail chaque semaine avec ce qui arrive',
   ]
   return (
@@ -174,14 +203,15 @@ function SummarySlide({ s, plan }) {
 export default function DiagnosticStory({ result, lvl, plan }) {
   const s = result.stats
   const trackRef = useRef(null)
+  const stageRef = useRef(null)
   const slides = useMemo(() => {
     const items = result.items.slice(0, MAX_ITEMS)
     return [
-      { key: 'score', tone: result.level === 'faible' ? 'cool' : 'warm' },
-      { key: 'deadlines', tone: 'warm' },
+      { key: 'score' },
+      { key: 'deadlines' },
       ...items.map((item, n) => ({ key: `item${n}`, type: 'item', item, n, total: items.length })),
-      { key: 'time', tone: 'cool' },
-      { key: 'summary', tone: 'cool' },
+      { key: 'time' },
+      { key: 'summary' },
     ]
   }, [result])
   const weights = slides.map(sl => WEIGHT[sl.type] || 1)
@@ -200,7 +230,16 @@ export default function DiagnosticStory({ result, lvl, plan }) {
       let acc = 0, idx = 0
       for (; idx < weights.length - 1 && p >= acc + weights[idx]; idx++) acc += weights[idx]
       const local = (p - acc) / weights[idx]
-      const phase2 = slides[idx].type === 'item' && local > 0.4
+      const isItem = slides[idx].type === 'item'
+      const phase2 = isItem && local > PHASE2
+      // Avancée vers la prochaine étape : un point de vigilance en a deux.
+      const q = !isItem ? local : phase2 ? (local - PHASE2) / (1 - PHASE2) : local / PHASE2
+      const st = stageRef.current?.style
+      if (st) {
+        st.setProperty('--p', local.toFixed(4))
+        st.setProperty('--q', q.toFixed(4))
+        st.setProperty('--g', (p / total).toFixed(4))
+      }
       setState(prev => (prev.idx === idx && prev.phase2 === phase2 ? prev : { idx, phase2 }))
     }
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(read) }
@@ -211,7 +250,9 @@ export default function DiagnosticStory({ result, lvl, plan }) {
   }, [slides, total])
 
   const active = slides[state.idx]
-  const tone = active.type === 'item' ? (state.phase2 ? 'cool' : 'warm') : active.tone
+  const label = sl => sl.key === 'score' ? 'Votre score' : sl.key === 'deadlines' ? 'Vos échéances de l’année' : sl.type === 'item' ? `Point de vigilance ${sl.n + 1}` : sl.key === 'time' ? 'Le temps récupéré' : 'Le résumé'
+  const nextLabel = active.type === 'item' && !state.phase2 ? 'Ce que FleetDesk change'
+    : state.idx < slides.length - 1 ? label(slides[state.idx + 1]) : 'Votre formule'
 
   // Cliquer sur un repère du rail fait défiler jusqu'à la diapo correspondante.
   const goTo = i => {
@@ -225,21 +266,19 @@ export default function DiagnosticStory({ result, lvl, plan }) {
 
   return (
     <div ref={trackRef} className="relative left-1/2 w-screen -ml-[50vw]" style={{ height: `calc(${total * STEP_VH}vh + 100svh)` }}>
-      <div className="sticky top-0 h-[100svh] overflow-hidden">
-        {/* Fond : chaud pour ce qui expose, froid (bleu) pour ce que FleetDesk change. */}
-        <div aria-hidden="true" className={`absolute inset-0 transition-opacity duration-1000 bg-[radial-gradient(ellipse_at_50%_35%,#FEF3C7_0%,#FFFBEB_35%,#FFFFFF_75%)] ${tone === 'warm' ? 'opacity-100' : 'opacity-0'}`} />
-        <div aria-hidden="true" className={`absolute inset-0 transition-opacity duration-1000 bg-[radial-gradient(ellipse_at_50%_35%,#DBEAFE_0%,#EFF6FF_35%,#FFFFFF_75%)] ${tone === 'cool' ? 'opacity-100' : 'opacity-0'}`} />
+      <div ref={stageRef} className="sticky top-0 h-[100svh] overflow-hidden bg-white" style={{ '--p': 0, '--q': 0, '--g': 0 }}>
+        {/* Fond blanc uni : le contraste reste maximal, le ton passe par les libellés. */}
 
         {slides.map((sl, i) => {
           const on = i === state.idx
           const cls = `story-slide ${on ? 'is-active' : i < state.idx ? 'is-past' : ''} ${on && state.phase2 ? 'is-phase2' : ''}`
           return (
             <section key={sl.key} className={cls} aria-hidden={!on}>
-              <div className="w-full max-w-4xl mx-auto px-5 sm:px-8 pt-24 pb-16">
+              <div className="story-inner w-full max-w-4xl mx-auto px-5 sm:px-8 pt-24 pb-24">
                 {sl.key === 'score' && <ScoreSlide result={result} lvl={lvl} on={on} />}
                 {sl.key === 'deadlines' && <DeadlinesSlide s={s} on={on} />}
                 {sl.type === 'item' && <ItemSlide item={sl.item} n={sl.n} total={sl.total} />}
-                {sl.key === 'time' && <TimeSlide s={s} on={on} />}
+                {sl.key === 'time' && <TimeSlide s={s} plan={plan} on={on} />}
                 {sl.key === 'summary' && <SummarySlide s={s} plan={plan} />}
               </div>
             </section>
@@ -249,21 +288,31 @@ export default function DiagnosticStory({ result, lvl, plan }) {
         {/* Rail de progression */}
         <nav aria-label="Étapes du résultat" className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 hidden sm:flex flex-col gap-2.5">
           {slides.map((sl, i) => (
-            <button key={sl.key} type="button" onClick={() => goTo(i)} aria-label={`Aller à l’étape ${i + 1}`} aria-current={i === state.idx ? 'step' : undefined}
-              className={`w-2 rounded-full transition-all duration-500 ${i === state.idx ? 'h-7 bg-[#0066FF]' : i < state.idx ? 'h-2 bg-[#0066FF]/40' : 'h-2 bg-zinc-300'}`} />
+            <button key={sl.key} type="button" onClick={() => goTo(i)} aria-label={`Aller à : ${label(sl)}`} aria-current={i === state.idx ? 'step' : undefined}
+              className={`relative w-2 rounded-full overflow-hidden transition-all duration-500 ${i === state.idx ? 'h-9 bg-[#0066FF]/20' : i < state.idx ? 'h-2 bg-[#0066FF]/50' : 'h-2 bg-zinc-300'}`}>
+              {i === state.idx && <span className="story-rail-fill absolute inset-x-0 top-0 bg-[#0066FF] rounded-full" />}
+            </button>
           ))}
         </nav>
         <div aria-hidden="true" className="sm:hidden absolute top-[84px] left-5 right-5 h-1 rounded-full bg-zinc-200/70 overflow-hidden">
-          <div className="h-full bg-[#0066FF] transition-all duration-500" style={{ width: `${((state.idx + 1) / slides.length) * 100}%` }} />
+          <div className="story-bar-fill h-full bg-[#0066FF]" />
         </div>
 
         <div className="absolute bottom-5 inset-x-0 flex items-center justify-between px-5 sm:px-8 text-xs text-zinc-400">
           <span>Ordres de grandeur calculés à partir de vos réponses, pas un audit.</span>
           <a href="#diag-plan" className="hidden sm:inline text-zinc-500 hover:text-zinc-800">Passer à ma formule ↓</a>
         </div>
-        <p aria-hidden="true" className={`absolute bottom-14 inset-x-0 text-center text-sm text-zinc-500 transition-opacity duration-500 ${state.idx === 0 ? 'opacity-100' : 'opacity-0'}`}>
-          Faites défiler <span className="story-hint inline-block">↓</span>
-        </p>
+        {/* « Suivant » : l'anneau se remplit au fil du défilement, jusqu'à la prochaine étape. */}
+        <div aria-hidden="true" className="story-next absolute bottom-[4.5rem] sm:bottom-14 inset-x-0 flex justify-center pointer-events-none">
+          <div key={nextLabel} className="story-next-chip inline-flex items-center gap-2.5 rounded-full bg-white/85 backdrop-blur border border-zinc-200 shadow-sm pl-2 pr-4 py-1.5 text-sm text-zinc-600">
+            <svg viewBox="0 0 24 24" className="w-6 h-6 -rotate-90">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="#E4E4E7" strokeWidth="2.5" />
+              <circle className="story-next-ring" cx="12" cy="12" r="9" fill="none" stroke="#0066FF" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="56.55" />
+            </svg>
+            <span>{state.idx === 0 && !state.phase2 ? 'Faites défiler' : 'Suivant'} · <span className="font-medium text-zinc-800">{nextLabel}</span></span>
+            <span className="story-hint inline-block text-[#0066FF]">↓</span>
+          </div>
+        </div>
       </div>
     </div>
   )
