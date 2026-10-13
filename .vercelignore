@@ -1,0 +1,11 @@
+# Le projet Vercel de l'application n'a besoin que de src/, public/, api/ et de
+# la configuration de build. Le reste ne part pas : le site marketing est un
+# projet Vercel à part, et motion/ contient des milliers d'images de travail.
+motion/
+marketing/
+prototypes/
+demo-assets/
+supabase/
+dist/
+devis-*
+facture-*
