@@ -86,11 +86,11 @@ Un guide n'entre ici que s'il renvoie naturellement vers une page des motifs
 
 | Requête | Page money servie | Statut |
 | --- | --- | --- |
-| temps de conduite et de repos | `/secteurs/transport-routier` | PR #24 ouverte |
-| chronotachygraphe obligations | `/secteurs/transport-routier` | à créer, après la fusion de #24 (vérifier le recouvrement) |
-| intervalle vidange utilitaire | `/guides/plan-entretien-vehicule-utilitaire` | PR #23 ouverte. Risque de recouvrement avec le plan d'entretien : à trancher avant de fusionner. |
-| carte carburant entreprise (choisir) — URL `/guides/carte-carburant-entreprise` | `/logiciel-gestion-de-flotte` | PR #25 ouverte. Recentrée le 2026-10-11 sur « choisir » : un vrai comparatif demanderait des prix d'émetteurs qu'on ne vérifie pas. |
-| ZFE flotte entreprise | `/secteurs/vehicules-de-societe` | à créer |
+| temps de conduite et de repos | `/secteurs/transport-routier` | publiée (#24, fusionnée) |
+| chronotachygraphe obligations | `/secteurs/transport-routier` | écartée (2026-10-12). Recouvrement vérifié : le guide « temps de conduite et de repos » a déjà sa propre section « Le rôle du chronotachygraphe » et une entrée de FAQ sur le sujet (ce qu'il enregistre, son caractère obligatoire). Un guide séparé redirait la même chose. |
+| intervalle vidange utilitaire | `/guides/plan-entretien-vehicule-utilitaire` | publiée (#23, fusionnée). Recouvrement avec le plan d'entretien tranché à la fusion. |
+| carte carburant entreprise (choisir) — URL `/guides/carte-carburant-entreprise` | `/logiciel-gestion-de-flotte` | publiée (#25, fusionnée). Recentrée le 2026-10-11 sur « choisir » : un vrai comparatif demanderait des prix d'émetteurs qu'on ne vérifie pas. |
+| ZFE flotte entreprise | `/secteurs/vehicules-de-societe` | à créer. Tenté le 2026-10-12 : écarté pour cette exécution. Le cadre légal des ZFE est en mouvement (une loi supprimant l'obligation a été censurée par le Conseil constitutionnel pour un motif de procédure, de nouvelles propositions sont annoncées) et les décomptes d'agglomérations concernées varient selon la source. `service-public.fr`, `legifrance.gouv.fr` et `urssaf.fr` sont inaccessibles depuis cet environnement (DNS), donc impossible de citer une source officielle vérifiée dans l'immédiat. À reprendre quand une source officielle sera consultable et le cadre stabilisé — ne pas avancer de liste de villes, de calendrier ni de montant d'amende en attendant. |
 
 ## Hors site : annuaires de logiciels
 
