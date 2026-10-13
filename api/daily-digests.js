@@ -5,7 +5,7 @@
 // la suite — ils restent deux fonctions edge distinctes, avec leurs cadences et
 // leurs journaux propres. Les routes individuelles restent disponibles pour un
 // déclenchement manuel.
-const FUNCTIONS = ['deadline-digest', 'activation-digest']
+const FUNCTIONS = ['deadline-digest', 'activation-digest', 'trial-reminder']
 
 export default async function handler(req, res) {
   const cronSecret = (process.env.CRON_SECRET || '').trim()

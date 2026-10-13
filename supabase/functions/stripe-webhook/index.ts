@@ -187,6 +187,7 @@ Deno.serve(async (req) => {
       'price_1TEiw8B6Ej53MTDrp4sDJxQS': 'starter',
       'price_1TEiw7B6Ej53MTDrTW3RbjfW': 'pro',
       'price_1TEiw1B6Ej53MTDrzE2nmyDR': 'enterprise',
+      // Prix annuels : identifiants à reporter ici aussi (create-checkout-session).
     }
     const newPlan = PLAN_BY_PRICE[priceId] ?? null
     if (!newPlan) return new Response(JSON.stringify({ received: true }), { headers: { 'Content-Type': 'application/json' } })
@@ -291,25 +292,10 @@ Deno.serve(async (req) => {
     }
   }
 
-  // ── customer.subscription.trial_will_end (Stripe fires ~3 days before) ──
-  // One discreet reminder to add a card before the card-free trial ends.
-  if (event.type === 'customer.subscription.trial_will_end') {
-    const sub = event.data.object as Stripe.Subscription
-    const customerId = sub.customer as string
-    const user = await findUserByCustomer(supabase, customerId)
-    if (user) {
-      try {
-        const endDate = sub.trial_end
-          ? new Date(sub.trial_end * 1000).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
-          : null
-        const link = await portalLink(customerId)
-        await sendDunning(user.email ?? '', user.user_metadata?.full_name ?? '', 'trial_ending', link, endDate)
-        console.log('[webhook] trial_will_end reminder sent:', user.id)
-      } catch (e) {
-        console.error('[webhook] trial reminder error:', (e as Error).message)
-      }
-    }
-  }
+  // ── customer.subscription.trial_will_end ──
+  // Plus d'e-mail ici : Stripe déclenche cet événement 3 jours avant la fin,
+  // soit au 4ᵉ jour d'un essai de 7 jours. Le rappel promis « 48 h avant » est
+  // envoyé par la fonction trial-reminder (cron quotidien).
 
   return new Response(JSON.stringify({ received: true }), {
     headers: { 'Content-Type': 'application/json' },

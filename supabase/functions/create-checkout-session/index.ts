@@ -4,6 +4,14 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const stripeKey = (Deno.env.get('STRIPE_SECRET_KEY') || '').trim()
 const stripe = new Stripe(stripeKey)
 
+// Prix annuels (5,60 / 18,40 / 50,40 € par mois, facturés 67,20 / 220,80 /
+// 604,80 € par an). À renseigner avec les identifiants Stripe : tant qu'un
+// identifiant est vide, le choix annuel retombe sur le prix mensuel.
+const ANNUAL_PRICE_IDS: Record<string, string> = {
+  starter:    '',
+  pro:        '',
+  enterprise: '',
+}
 const PRICE_IDS: Record<string, string> = {
   starter:    'price_1TEiw8B6Ej53MTDrp4sDJxQS',
   pro:        'price_1TEiw7B6Ej53MTDrTW3RbjfW',
@@ -24,7 +32,8 @@ Deno.serve(async (req) => {
     // that already maps to a live Stripe subscription must NOT be dropped into
     // the billing portal — we provision the new account from the existing sub
     // instead of charging again or trapping the user on billing/success.
-    const { plan, return_url, onboarding = false } = body
+    const { plan, return_url, onboarding = false, billing = 'monthly' } = body
+    const priceId = (billing === 'annual' && ANNUAL_PRICE_IDS[plan]) || PRICE_IDS[plan]
 
     console.log('[checkout] plan:', plan, 'key_prefix:', stripeKey.substring(0, 12))
 
@@ -58,13 +67,14 @@ Deno.serve(async (req) => {
 
     // Un essai par client, une seule fois. Sans ce garde, un compte passé en
     // lecture seule à la fin de son essai pouvait choisir Pro à nouveau et
-    // obtenir quatorze jours de plus, indéfiniment.
+    // obtenir sept jours de plus, indéfiniment.
     let hadTrial = false
 
     // Guard: the email already maps to a live Stripe subscription.
     if (existingCustomerId) {
       const PLAN_BY_PRICE: Record<string, string> = {
         [PRICE_IDS.starter]: 'starter', [PRICE_IDS.pro]: 'pro', [PRICE_IDS.enterprise]: 'enterprise',
+        ...Object.fromEntries(Object.entries(ANNUAL_PRICE_IDS).filter(([, id]) => id).map(([p, id]) => [id, p])),
       }
       const allSubs = await stripe.subscriptions.list({ customer: existingCustomerId, status: 'all', limit: 100 })
       const live = allSubs.data.find(s => ['active', 'trialing', 'past_due'].includes(s.status))
@@ -101,7 +111,7 @@ Deno.serve(async (req) => {
 
     const sessionParams: any = {
       mode: 'subscription',
-      line_items: [{ price: PRICE_IDS[plan], quantity: 1 }],
+      line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${return_url}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${return_url}?cancelled=true`,
       metadata: { user_id: user.id, plan },
@@ -131,7 +141,7 @@ Deno.serve(async (req) => {
       },
     }
 
-    // Essai de 14 jours sans carte, sur toutes les formules — une seule fois
+    // Essai de 7 jours sans carte, sur toutes les formules — une seule fois
     // par client. payment_method_collection:'if_required' : Stripe ne demande
     // aucune carte tant que rien n'est dû. À la fin de l'essai, sans moyen de
     // paiement, l'abonnement est annulé et le compte passe en lecture seule (il
@@ -139,11 +149,11 @@ Deno.serve(async (req) => {
     // lui, essai → lecture seule → nouvel essai, sans fin.
     if (!hadTrial) {
       sessionParams.subscription_data = {
-        trial_period_days: 14,
+        trial_period_days: 7,
         trial_settings: { end_behavior: { missing_payment_method: 'cancel' } },
       }
       sessionParams.payment_method_collection = 'if_required'
-      console.log('[checkout] card-free 14-day trial applied for', plan)
+      console.log('[checkout] card-free 7-day trial applied for', plan)
     } else {
       console.log('[checkout] no trial for', plan, '— this customer already had one')
     }

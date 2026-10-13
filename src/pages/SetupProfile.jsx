@@ -98,7 +98,9 @@ export default function SetupProfile() {
     setLoading(true)
     setError('')
     try {
+      const billing = sessionStorage.getItem('selected_billing') === 'annual' ? 'annual' : 'monthly'
       sessionStorage.removeItem('selected_plan')
+      sessionStorage.removeItem('selected_billing')
       const { error: profileErr } = await supabase.auth.updateUser({
         data: {
           full_name: name.trim(),
@@ -112,7 +114,7 @@ export default function SetupProfile() {
 
       const { data: { session } } = await supabase.auth.getSession()
       const { data, error: fnErr } = await supabase.functions.invoke('create-checkout-session', {
-        body: { plan, return_url: `${window.location.origin}/billing/success`, onboarding: true },
+        body: { plan, billing, return_url: `${window.location.origin}/billing/success`, onboarding: true },
         headers: { Authorization: `Bearer ${session?.access_token}` },
       })
       if (fnErr) {
@@ -317,13 +319,13 @@ export default function SetupProfile() {
                         <div className="text-right flex-shrink-0">
                           <span className="text-sm font-bold text-zinc-900">{p.price}</span>
                           {p.period && <span className="text-[11px] text-zinc-400">{p.period}</span>}
-                          <span className="block text-[10px] font-semibold text-emerald-600 mt-0.5">14 j gratuits</span>
+                          <span className="block text-[10px] font-semibold text-emerald-600 mt-0.5">7 j gratuits</span>
                         </div>
                       </div>
                       {selected && (
                         <div className="flex items-center gap-1.5 mb-2.5 text-[11px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg px-2.5 py-1.5">
                           <Check className="w-3 h-3 flex-shrink-0" />
-                          14 jours d'essai gratuits, sans carte bancaire. Prélèvement seulement si vous continuez.
+                          7 jours d'essai gratuits, sans carte bancaire. On vous prévient 48 h avant la fin, et rien n'est prélevé si vous ne continuez pas.
                         </div>
                       )}
                       <ul className="space-y-1">

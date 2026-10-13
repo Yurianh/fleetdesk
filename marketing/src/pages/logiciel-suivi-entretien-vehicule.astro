@@ -60,7 +60,7 @@ const faq = [
   },
   {
     q: "Combien coûte le suivi d'entretien avec FleetDesk ?",
-    a: "Le suivi d'entretien est inclus dans toutes les formules. FleetDesk démarre à 9 € par mois pour 5 véhicules, avec un essai de 14 jours sans carte bancaire sur toutes les formules.",
+    a: "Le suivi d'entretien est inclus dans toutes les formules. FleetDesk démarre à 9 € par mois pour 5 véhicules, avec un essai de 7 jours sans carte bancaire sur toutes les formules, sans engagement.",
   },
   {
     q: "Faut-il un boîtier GPS dans les véhicules ?",
@@ -101,7 +101,7 @@ const softwareSchema = {
 ---
 <Layout
   title="Logiciel de suivi d'entretien des véhicules"
-  description="Plan d'entretien par véhicule en km et en mois, alerte avant chaque échéance, historique et factures au même endroit. Dès 9 €/mois, essai 14 jours sans carte."
+  description="Plan d'entretien par véhicule en km et en mois, alerte avant chaque échéance, historique et factures au même endroit. Dès 9 €/mois, essai 7 jours sans carte."
   jsonLd={[softwareSchema, faqSchema, breadcrumb]}
 >
   <Navbar client:load currentPath="/logiciel-suivi-entretien-vehicule" />
@@ -122,8 +122,8 @@ const softwareSchema = {
         d'entretien de chaque véhicule, le fait avancer avec le compteur et vous prévient avant l'échéance.
       </p>
       <div class="flex flex-col sm:flex-row gap-3">
-        <a href="/souscrire/pro" class="inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
-          Essayer FleetDesk 14 jours
+        <a href="/pricing" class="inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
+          Essayer FleetDesk 7 jours
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
         <a href="/pricing" class="inline-flex items-center justify-center text-sm font-medium text-zinc-600 hover:text-zinc-900 px-6 py-3">

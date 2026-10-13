@@ -86,9 +86,15 @@ masquage réactivable.
 - [x] **T-C01** — Page récap par plan `souscrire/[plan]` (getStaticPaths starter/pro/enterprise) : prix, essai, **liste inclus ✓ / non inclus ✗**, CTA. Funnel `noindex`. _(2026-09-05)_
 - [x] **T-C02** — Reroute tous les CTA plan (home, pricing, hero, navbar, footer, CTASection, guides, conformité) → `/souscrire/<plan>` avant la création de compte. Flow : récap → signup app → SetupProfile → Stripe. _(2026-09-05)_
 - [x] **T-C03** — Rappel fin d'essai Pro, non-invasif : `sync-plan` expose `trial_end` (app_metadata) ; bannière in-app discrète (≤3j restants, dismissible/session, ton calme) → portail Stripe ; 1 email J-3 via webhook `customer.subscription.trial_will_end`. Déployé. _(2026-09-05)_
-- [ ] **T-C04** — Activer l'event `customer.subscription.trial_will_end` sur l'endpoint webhook Stripe (dashboard). _(côté Julian)_
+- [x] **T-C04** — Remplacée par T-C05 (rappel envoyé par nos soins 48 h avant la fin, `trial_will_end` n'envoie plus rien). Ancien libellé : Activer l'event `customer.subscription.trial_will_end` sur l'endpoint webhook Stripe (dashboard). _(côté Julian)_
 
 ---
+
+- [x] **T-C05** — Essai de **7 jours** (au lieu de 14) sur toutes les formules, présenté en toute transparence : sans carte bancaire, **prévenu par e-mail 48 h avant la fin**, rien n'est prélevé sans accord, mensuel sans engagement et arrêt sans frais (page tarifs, accueil, bandeaux, guides, CGU du 13/10, application, FAQ). Le rappel « 48 h » est envoyé par une nouvelle fonction `trial-reminder` (cron quotidien, essais finissant dans 36 à 60 h, un seul envoi par abonnement noté dans Stripe) ; l'ancien e-mail Stripe `trial_will_end`, qui partait 3 jours avant (au 4ᵉ jour d'un essai de 7), est retiré. _(2026-10-13)_
+- [x] **T-C06** — Plus de page intermédiaire `/souscrire/<formule>` : « Essayer gratuitement » mène partout à la page tarifs, dont les boutons ouvrent directement l'inscription. Ancienne adresse redirigée (301) vers `/pricing`. _(2026-10-13)_
+- [~] **T-C07** — Annuel à **5,60 / 18,40 / 50,40 € par mois** (67,20 / 220,80 / 604,80 € par an, jusqu'à −38 % par rapport au mensuel), achetable en ligne : choix « Annuel » transmis de la page tarifs à l'inscription puis au paiement (`billing=annual`). Reste à faire : créer les trois prix annuels dans Stripe et reporter leurs identifiants dans create-checkout-session, stripe-webhook et sync-plan ; d'ici là, l'annuel retombe sur le prix mensuel. _(2026-10-13)_
+- [x] **T-C08** — Diagnostic de flotte : page `/diagnostic` (5 questions : taille, suivi actuel, activité, relevé du kilométrage, incidents des 12 derniers mois) et encart de 2 questions sur l'accueil qui ouvre le diagnostic complet. Résultat personnalisé : niveau d'exposition, pour chaque réponse « Aujourd'hui » face à « Avec FleetDesk », ligne propre au secteur, formule conseillée et essai de 7 jours. Uniquement des promesses vérifiées dans l'application ; lien depuis le hero. _(2026-10-13)_
+- [x] **T-C09** — Hero : plus de survol interactif des cartes de la vidéo, parallaxe environ trois fois plus discrète et plus lente. La démo commentée (branche `feat/demo-video`) n'est pas publiée : ce n'était pas ce que Julian recherchait. _(2026-10-13)_
 
 ## Phase P — Preuve sociale _(fait 2026-09-04)_
 
