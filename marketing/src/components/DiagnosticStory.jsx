@@ -207,11 +207,11 @@ export default function DiagnosticStory({ result, lvl, plan }) {
   const slides = useMemo(() => {
     const items = result.items.slice(0, MAX_ITEMS)
     return [
-      { key: 'score', tone: result.level === 'faible' ? 'cool' : 'warm' },
-      { key: 'deadlines', tone: 'warm' },
+      { key: 'score' },
+      { key: 'deadlines' },
       ...items.map((item, n) => ({ key: `item${n}`, type: 'item', item, n, total: items.length })),
-      { key: 'time', tone: 'cool' },
-      { key: 'summary', tone: 'cool' },
+      { key: 'time' },
+      { key: 'summary' },
     ]
   }, [result])
   const weights = slides.map(sl => WEIGHT[sl.type] || 1)
@@ -250,7 +250,6 @@ export default function DiagnosticStory({ result, lvl, plan }) {
   }, [slides, total])
 
   const active = slides[state.idx]
-  const tone = active.type === 'item' ? (state.phase2 ? 'cool' : 'warm') : active.tone
   const label = sl => sl.key === 'score' ? 'Votre score' : sl.key === 'deadlines' ? 'Vos échéances de l’année' : sl.type === 'item' ? `Point de vigilance ${sl.n + 1}` : sl.key === 'time' ? 'Le temps récupéré' : 'Le résumé'
   const nextLabel = active.type === 'item' && !state.phase2 ? 'Ce que FleetDesk change'
     : state.idx < slides.length - 1 ? label(slides[state.idx + 1]) : 'Votre formule'
@@ -267,10 +266,8 @@ export default function DiagnosticStory({ result, lvl, plan }) {
 
   return (
     <div ref={trackRef} className="relative left-1/2 w-screen -ml-[50vw]" style={{ height: `calc(${total * STEP_VH}vh + 100svh)` }}>
-      <div ref={stageRef} className="sticky top-0 h-[100svh] overflow-hidden" style={{ '--p': 0, '--q': 0, '--g': 0 }}>
-        {/* Fond : chaud pour ce qui expose, froid (bleu) pour ce que FleetDesk change. */}
-        <div aria-hidden="true" className={`absolute inset-0 transition-opacity duration-1000 bg-[radial-gradient(ellipse_at_50%_35%,#FEF3C7_0%,#FFFBEB_35%,#FFFFFF_75%)] ${tone === 'warm' ? 'opacity-100' : 'opacity-0'}`} />
-        <div aria-hidden="true" className={`absolute inset-0 transition-opacity duration-1000 bg-[radial-gradient(ellipse_at_50%_35%,#DBEAFE_0%,#EFF6FF_35%,#FFFFFF_75%)] ${tone === 'cool' ? 'opacity-100' : 'opacity-0'}`} />
+      <div ref={stageRef} className="sticky top-0 h-[100svh] overflow-hidden bg-white" style={{ '--p': 0, '--q': 0, '--g': 0 }}>
+        {/* Fond blanc uni : le contraste reste maximal, le ton passe par les libellés. */}
 
         {slides.map((sl, i) => {
           const on = i === state.idx
