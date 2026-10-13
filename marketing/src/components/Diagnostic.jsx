@@ -86,9 +86,9 @@ const SECTEURS = {
   societe: ['Véhicules de société', 'Des véhicules confiés à des collaborateurs dont ce n’est pas le métier : FleetDesk fait le suivi à leur place.', '/secteurs/vehicules-de-societe'],
 }
 const PLANS = {
-  starter: { name: 'Starter', price: '9', annual: '5,60', why: 'jusqu’à 5 véhicules et 3 conducteurs' },
-  pro: { name: 'Pro', price: '29', annual: '18,40', why: 'jusqu’à 25 véhicules, conducteurs illimités' },
-  enterprise: { name: 'Enterprise', price: '79', annual: '50,40', why: 'véhicules illimités, et vos chauffeurs saisissent eux-mêmes' },
+  starter: { name: 'Starter', price: '9', annual: '70', why: 'jusqu’à 5 véhicules et 3 conducteurs' },
+  pro: { name: 'Pro', price: '29', annual: '220', why: 'jusqu’à 25 véhicules, conducteurs illimités' },
+  enterprise: { name: 'Enterprise', price: '79', annual: '600', why: 'véhicules illimités, et vos chauffeurs saisissent eux-mêmes' },
 }
 
 function analyse(a) {
@@ -197,7 +197,7 @@ export default function Diagnostic({ variant = 'full' }) {
         <div className="mt-10 rounded-2xl border-2 border-[#0066FF] bg-white p-6 sm:p-8">
           <p className="text-sm font-semibold text-[#0066FF]">La formule qui vous correspond</p>
           <p className="font-display text-3xl font-semibold text-zinc-900 mt-1">{plan.name}</p>
-          <p className="text-zinc-600 mt-1">{plan.why[0].toUpperCase() + plan.why.slice(1)}. {plan.price} € par mois, ou {plan.annual} € par mois en annuel.</p>
+          <p className="text-zinc-600 mt-1">{plan.why[0].toUpperCase() + plan.why.slice(1)}. {plan.price} € par mois, ou {plan.annual} € par an.</p>
           <ul className="mt-5 grid sm:grid-cols-2 gap-2 text-sm text-zinc-700">
             {['7 jours d’essai, sans carte bancaire', 'Prévenu par e-mail 48 h avant la fin', 'Rien n’est prélevé sans votre accord', 'Mensuel sans engagement, arrêt sans frais'].map(t => (
               <li key={t} className="flex gap-2"><Check />{t}</li>

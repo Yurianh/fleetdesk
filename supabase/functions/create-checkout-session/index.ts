@@ -4,8 +4,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const stripeKey = (Deno.env.get('STRIPE_SECRET_KEY') || '').trim()
 const stripe = new Stripe(stripeKey)
 
-// Prix annuels (5,60 / 18,40 / 50,40 € par mois, facturés 67,20 / 220,80 /
-// 604,80 € par an). À renseigner avec les identifiants Stripe : tant qu'un
+// Prix annuels (70 / 220 / 600 € par an). À renseigner avec les identifiants
+// Stripe : tant qu'un
 // identifiant est vide, le choix annuel retombe sur le prix mensuel.
 const ANNUAL_PRICE_IDS: Record<string, string> = {
   starter:    '',
