@@ -187,7 +187,9 @@ Deno.serve(async (req) => {
       'price_1TEiw8B6Ej53MTDrp4sDJxQS': 'starter',
       'price_1TEiw7B6Ej53MTDrTW3RbjfW': 'pro',
       'price_1TEiw1B6Ej53MTDrzE2nmyDR': 'enterprise',
-      // Prix annuels : identifiants à reporter ici aussi (create-checkout-session).
+      'price_1UPuFtB6Ej53MTDrfd8xxEUC': 'starter',     // annuel
+      'price_1UPuGPB6Ej53MTDrgY3uW7co': 'pro',         // annuel
+      // Enterprise annuel : identifiant à venir.
     }
     const newPlan = PLAN_BY_PRICE[priceId] ?? null
     if (!newPlan) return new Response(JSON.stringify({ received: true }), { headers: { 'Content-Type': 'application/json' } })
