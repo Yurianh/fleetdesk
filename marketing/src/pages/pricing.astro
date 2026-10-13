@@ -165,17 +165,17 @@ const breadcrumb = {
       <div class="flex items-center justify-center mb-12">
         <div class="inline-flex bg-white border border-zinc-200 rounded-full p-1 shadow-sm">
           <button
-            id="btn-monthly"
-            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 bg-[#E5EEFF] text-[#0052D6]"
-          >
-            Mensuel
-          </button>
-          <button
             id="btn-annual"
-            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-zinc-600 hover:text-zinc-800 flex items-center gap-2"
+            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 hover:text-zinc-800 flex items-center gap-2 bg-[#E5EEFF] text-[#0052D6]"
           >
             Annuel
             <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">jusqu'à −37 %</span>
+          </button>
+          <button
+            id="btn-monthly"
+            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-zinc-600"
+          >
+            Mensuel
           </button>
         </div>
       </div>
@@ -200,14 +200,14 @@ const breadcrumb = {
                   data-monthly={p.monthlyPrice}
                   data-annual={p.annualPrice}
                 >
-                  {p.monthlyPrice}
+                  {p.annualPrice}
                 </span>
                 <span class="text-xl font-bold text-zinc-900 mb-0.5">€</span>
-                <span class="price-period text-sm mb-1.5 text-zinc-500">{p.period}</span>
+                <span class="price-period text-sm mb-1.5 text-zinc-500">/an</span>
               </div>
               {/* Annual subtotal line */}
               <p
-                class="annual-total text-xs text-zinc-500 hidden"
+                class="annual-total text-xs text-zinc-500"
               >
                 soit {p.annualMonthly} € par mois · {p.annualSaving} € d'économie sur l'année
               </p>
@@ -233,7 +233,7 @@ const breadcrumb = {
 
             {/* CTA */}
             <a
-              href={p.ctaHref}
+              href={`${p.ctaHref}&billing=annual`}
               data-plan-cta
               class={`block w-full text-center text-sm font-semibold px-5 py-3 rounded-xl transition-colors ${
                 p.ctaStyle === 'primary'
@@ -300,7 +300,7 @@ const breadcrumb = {
   const ctas = document.querySelectorAll('a[data-plan-cta]')
   const setBilling = annual => ctas.forEach(a => {
     const url = new URL(a.href)
-    if (annual) url.searchParams.set('billing', 'annual'); else url.searchParams.delete('billing')
+    url.searchParams.set('billing', annual ? 'annual' : 'monthly')
     a.href = url.toString()
   })
 

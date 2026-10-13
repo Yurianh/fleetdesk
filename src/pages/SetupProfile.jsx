@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import BillingToggle from '@/components/shared/BillingToggle'
+import { priceLabel, DEFAULT_BILLING } from '@/lib/pricing'
 import { useNavigate } from 'react-router-dom'
 import { Truck, ChevronRight, Building2, Users, CheckCircle2, Check, Zap, Shield, Briefcase } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
@@ -65,6 +67,8 @@ export default function SetupProfile() {
   const [fleetSize, setFleetSize] = useState('')
   const [activity, setActivity]   = useState('')
   const [plan, setPlan]           = useState(() => sessionStorage.getItem('selected_plan') || 'starter')
+  // Annuel par défaut ; le choix fait sur la page tarifs l'emporte.
+  const [billing, setBilling]     = useState(() => sessionStorage.getItem('selected_billing') || DEFAULT_BILLING)
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState('')
 
@@ -98,7 +102,6 @@ export default function SetupProfile() {
     setLoading(true)
     setError('')
     try {
-      const billing = sessionStorage.getItem('selected_billing') === 'annual' ? 'annual' : 'monthly'
       sessionStorage.removeItem('selected_plan')
       sessionStorage.removeItem('selected_billing')
       const { error: profileErr } = await supabase.auth.updateUser({
@@ -287,8 +290,10 @@ export default function SetupProfile() {
                 </div>
               )}
 
+              <BillingToggle value={billing} onChange={setBilling} className="mb-3" />
               <div className="space-y-3 mb-6">
                 {plans.map(p => {
+                  const pl = priceLabel(p.id, billing)
                   const Icon = p.icon
                   const selected = plan === p.id
                   return (
@@ -317,8 +322,9 @@ export default function SetupProfile() {
                           </div>
                         </div>
                         <div className="text-right flex-shrink-0">
-                          <span className="text-sm font-bold text-zinc-900">{p.price}</span>
-                          {p.period && <span className="text-[11px] text-zinc-400">{p.period}</span>}
+                          <span className="text-sm font-bold text-zinc-900">{pl.amount}</span>
+                          <span className="text-[11px] text-zinc-400">{pl.period}</span>
+                          <span className="block text-[10px] text-zinc-400">{pl.hint}</span>
                           <span className="block text-[10px] font-semibold text-emerald-600 mt-0.5">7 j gratuits</span>
                         </div>
                       </div>

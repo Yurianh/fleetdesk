@@ -41,7 +41,7 @@ export default function Login() {
     if (planParam) sessionStorage.setItem('selected_plan', planParam)
     // Choix « Annuel » fait sur la page tarifs : il suit le visiteur jusqu'au paiement.
     const billing = new URLSearchParams(window.location.search).get('billing')
-    if (planParam) sessionStorage.setItem('selected_billing', billing === 'annual' ? 'annual' : 'monthly')
+    if (billing === 'annual' || billing === 'monthly') sessionStorage.setItem('selected_billing', billing)
   }, [planParam])
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

@@ -96,6 +96,8 @@ masquage réactivable.
 - [x] **T-C08** — Diagnostic de flotte : page `/diagnostic` (5 questions : taille, suivi actuel, activité, relevé du kilométrage, incidents des 12 derniers mois) et encart de 2 questions sur l'accueil qui ouvre le diagnostic complet. Résultat personnalisé : niveau d'exposition, pour chaque réponse « Aujourd'hui » face à « Avec FleetDesk », ligne propre au secteur, formule conseillée et essai de 7 jours. Uniquement des promesses vérifiées dans l'application ; lien depuis le hero. _(2026-10-13)_
 - [x] **T-C09** — Hero : plus de survol interactif des cartes de la vidéo, parallaxe environ trois fois plus discrète et plus lente. La démo commentée (branche `feat/demo-video`) n'est pas publiée : ce n'était pas ce que Julian recherchait. _(2026-10-13)_
 
+- [x] **T-C10** — L'annuel est proposé d'abord partout où les formules s'affichent : page tarifs (affichée en annuel dès l'arrivée, sans clignotement), aperçu des tarifs de l'accueil, choix de formule à l'inscription, changement de formule dans les Paramètres, et formule conseillée du diagnostic. Le visiteur bascule lui-même sur le mensuel ; son choix suit jusqu'au paiement (`billing=annual|monthly`). Prix centralisés dans l'application (`src/lib/pricing.js`) et sélecteur commun (`BillingToggle`). _(2026-10-13)_
+
 ## Phase P — Preuve sociale _(fait 2026-09-04)_
 
 - [x] **T-P01** — Retirer les faux témoignages (risque pratique trompeuse) → section signaux de confiance honnêtes sur la home. _(2026-09-04)_

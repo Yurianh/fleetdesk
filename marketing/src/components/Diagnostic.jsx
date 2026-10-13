@@ -197,14 +197,14 @@ export default function Diagnostic({ variant = 'full' }) {
         <div className="mt-10 rounded-2xl border-2 border-[#0066FF] bg-white p-6 sm:p-8">
           <p className="text-sm font-semibold text-[#0066FF]">La formule qui vous correspond</p>
           <p className="font-display text-3xl font-semibold text-zinc-900 mt-1">{plan.name}</p>
-          <p className="text-zinc-600 mt-1">{plan.why[0].toUpperCase() + plan.why.slice(1)}. {plan.price} € par mois, ou {plan.annual} € par an.</p>
+          <p className="text-zinc-600 mt-1">{plan.why[0].toUpperCase() + plan.why.slice(1)}. {plan.annual} € par an, ou {plan.price} € par mois sans engagement.</p>
           <ul className="mt-5 grid sm:grid-cols-2 gap-2 text-sm text-zinc-700">
             {['7 jours d’essai, sans carte bancaire', 'Prévenu par e-mail 48 h avant la fin', 'Rien n’est prélevé sans votre accord', 'Mensuel sans engagement, arrêt sans frais'].map(t => (
               <li key={t} className="flex gap-2"><Check />{t}</li>
             ))}
           </ul>
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
-            <a href={`${APP_URL}/login?plan=${result.plan}`} className="inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-7 py-3.5 rounded-xl transition-colors">
+            <a href={`${APP_URL}/login?plan=${result.plan}&billing=annual`} className="inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-7 py-3.5 rounded-xl transition-colors">
               Essayer {plan.name} 7 jours gratuitement
             </a>
             <a href="/pricing" className="inline-flex items-center justify-center text-sm font-medium text-zinc-600 hover:text-zinc-900 px-5 py-3.5">Comparer les formules</a>

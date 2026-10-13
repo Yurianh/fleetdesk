@@ -120,10 +120,11 @@ const faq = [
   },
 ]
 
+// Annuel affiché d'abord ; le visiteur bascule lui-même sur le mensuel.
 const teaserPlans = [
-  { name: 'Starter', price: '9',  note: 'Jusqu\'à 5 véhicules',      highlighted: false, href: '/pricing', cta: 'Essayer' },
-  { name: 'Pro',     price: '29', note: '7 jours d\'essai gratuit', highlighted: true,  href: '/pricing',     cta: 'Essayer' },
-  { name: 'Enterprise', price: '79', note: 'Flottes illimitées',     highlighted: false, href: '/pricing', cta: 'Essayer' },
+  { name: 'Starter', price: '9',  annual: '70',  note: 'Jusqu\'à 5 véhicules',      highlighted: false, href: '/pricing', cta: 'Essayer' },
+  { name: 'Pro',     price: '29', annual: '220', note: '7 jours d\'essai gratuit', highlighted: true,  href: '/pricing',     cta: 'Essayer' },
+  { name: 'Enterprise', price: '79', annual: '600', note: 'Flottes illimitées',     highlighted: false, href: '/pricing', cta: 'Essayer' },
 ]
 
 // Structured data for the homepage: organisation, product and the FAQ.
@@ -585,7 +586,15 @@ const faqSchema = {
       <div class="mb-10 text-center">
         <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Tarifs transparents</p>
         <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-3">Un prix qui tient sur une ligne</h2>
-        <p class="text-lg text-zinc-600">Dès 9 €/mois. 7 jours d'essai sur toutes les formules, sans carte, sans engagement.</p>
+        <p class="text-lg text-zinc-600">Dès 70 € par an, ou 9 € par mois sans engagement. 7 jours d'essai sur toutes les formules, sans carte.</p>
+      </div>
+      <div class="flex justify-center mb-8">
+        <div class="inline-flex bg-white border border-zinc-200 rounded-full p-1" role="group" aria-label="Facturation">
+          <button type="button" data-teaser-billing="annual" class="teaser-billing px-4 py-1.5 rounded-full text-sm font-semibold flex items-center gap-2 bg-[#E5EEFF] text-[#0052D6]">
+            Annuel <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">jusqu'à −37 %</span>
+          </button>
+          <button type="button" data-teaser-billing="monthly" class="teaser-billing px-4 py-1.5 rounded-full text-sm font-semibold text-zinc-600">Mensuel</button>
+        </div>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {teaserPlans.map(p => (
@@ -593,9 +602,9 @@ const faqSchema = {
             class={`group rounded-2xl p-6 transition-all ${p.highlighted ? 'bg-white border-2 border-[#0066FF] shadow-lg shadow-[#0066FF]/10' : 'bg-white border border-zinc-200 hover:border-zinc-300'}`}>
             <p class={`text-xs font-semibold uppercase tracking-widest mb-3 ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-500'}`}>{p.name}</p>
             <div class="flex items-end gap-1 mb-1">
-              <span class="text-3xl font-bold text-zinc-900">{p.price}</span>
+              <span class="teaser-amount text-3xl font-bold text-zinc-900" data-monthly={p.price} data-annual={p.annual}>{p.annual}</span>
               <span class="text-base font-bold text-zinc-900 mb-0.5">€</span>
-              <span class="text-xs text-zinc-500 mb-1.5">/mois</span>
+              <span class="teaser-period text-xs text-zinc-500 mb-1.5">/an</span>
             </div>
             <p class="text-sm text-zinc-600 mb-5">{p.note}</p>
             <span class={`inline-flex items-center gap-1.5 text-sm font-semibold ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-700'}`}>
@@ -668,3 +677,18 @@ const faqSchema = {
 
   <Footer />
 </Layout>
+
+<script>
+  // Aperçu des formules : annuel par défaut, le visiteur bascule lui-même.
+  const teaserBtns = document.querySelectorAll('.teaser-billing')
+  teaserBtns.forEach(btn => btn.addEventListener('click', () => {
+    const annual = btn.dataset.teaserBilling === 'annual'
+    teaserBtns.forEach(b => {
+      const on = b === btn
+      b.classList.toggle('bg-[#E5EEFF]', on); b.classList.toggle('text-[#0052D6]', on); b.classList.toggle('text-zinc-600', !on)
+    })
+    document.querySelectorAll('.teaser-amount').forEach(el => { el.textContent = annual ? el.dataset.annual : el.dataset.monthly })
+    document.querySelectorAll('.teaser-period').forEach(el => { el.textContent = annual ? '/an' : '/mois' })
+  }))
+</script>
+

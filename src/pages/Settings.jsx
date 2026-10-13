@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import BillingToggle from '@/components/shared/BillingToggle'
+import { priceLabel, DEFAULT_BILLING } from '@/lib/pricing'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { User, CreditCard, Globe, Shield, ChevronRight, Check, Loader2, Truck, Zap, Users, UserPlus, Trash2, Mail, Sparkles, GraduationCap } from 'lucide-react'
 import SectionTutorials from '@/components/onboarding/SectionTutorials'
@@ -134,11 +136,14 @@ export default function Settings() {
     } finally { setSaving(false) }
   }
 
+  // Annuel proposé d'abord ; le client bascule lui-même sur le mensuel.
+  const [billing, setBilling] = useState(DEFAULT_BILLING)
+
   async function handleUpgrade(targetPlan) {
     setSaving(true)
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { plan: targetPlan, return_url: `${window.location.origin}/billing/success` },
+        body: { plan: targetPlan, billing, return_url: `${window.location.origin}/billing/success` },
       })
       if (error) throw error
       window.location.href = data.url
@@ -533,9 +538,12 @@ export default function Settings() {
               {/* Upgrade options */}
               {(readOnly || plan !== 'enterprise') && !isCollaborator && (
                 <div className="bg-white border border-zinc-200 rounded-xl p-5">
-                  <h2 className="text-sm font-semibold text-zinc-900 mb-4">
-                    {readOnly ? 'Choisir une formule' : t('settings.upgradePlan')}
-                  </h2>
+                  <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                    <h2 className="text-sm font-semibold text-zinc-900">
+                      {readOnly ? 'Choisir une formule' : t('settings.upgradePlan')}
+                    </h2>
+                    <BillingToggle value={billing} onChange={setBilling} />
+                  </div>
                   <div className="space-y-3">
                     {readOnly && (
                       <div className="flex items-center justify-between p-4 border border-zinc-200 bg-zinc-50/60 rounded-xl">
@@ -549,7 +557,7 @@ export default function Settings() {
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-sm font-bold text-zinc-900">9 €<span className="text-xs font-normal text-zinc-400">/mois</span></span>
+                          <span className="text-sm font-bold text-zinc-900 text-right">{priceLabel('starter', billing).amount}<span className="text-xs font-normal text-zinc-400">{priceLabel('starter', billing).period}</span><span className="block text-[10px] font-normal text-zinc-400">{priceLabel('starter', billing).hint}</span></span>
                           <button onClick={() => handleUpgrade('starter')} disabled={saving}
                             className="flex items-center gap-1.5 bg-zinc-900 hover:bg-zinc-700 text-white text-xs font-medium rounded-lg px-3 py-1.5 transition-colors">
                             Choisir <ChevronRight className="w-3.5 h-3.5" />
@@ -569,7 +577,7 @@ export default function Settings() {
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-sm font-bold text-zinc-900">29 €<span className="text-xs font-normal text-zinc-400">/mois</span></span>
+                          <span className="text-sm font-bold text-zinc-900 text-right">{priceLabel('pro', billing).amount}<span className="text-xs font-normal text-zinc-400">{priceLabel('pro', billing).period}</span><span className="block text-[10px] font-normal text-zinc-400">{priceLabel('pro', billing).hint}</span></span>
                           <button onClick={() => handleUpgrade('pro')} disabled={saving}
                             className="flex items-center gap-1.5 bg-[#0066FF] hover:bg-[#0052D6] text-white text-xs font-medium rounded-lg px-3 py-1.5 transition-colors">
                             {t('settings.upgrade')} <ChevronRight className="w-3.5 h-3.5" />
@@ -588,7 +596,7 @@ export default function Settings() {
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-sm font-bold text-zinc-900">79 €<span className="text-xs font-normal text-zinc-400">/mois</span></span>
+                        <span className="text-sm font-bold text-zinc-900 text-right">{priceLabel('enterprise', billing).amount}<span className="text-xs font-normal text-zinc-400">{priceLabel('enterprise', billing).period}</span><span className="block text-[10px] font-normal text-zinc-400">{priceLabel('enterprise', billing).hint}</span></span>
                         <button onClick={() => handleUpgrade('enterprise')} disabled={saving}
                           className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs font-medium rounded-lg px-3 py-1.5 transition-colors">
                           {t('settings.upgrade')} <ChevronRight className="w-3.5 h-3.5" />
