@@ -15,7 +15,7 @@ const breadcrumb = {
 ---
 <Layout
   title="Diagnostic de flotte : votre parc est-il exposé ?"
-  description="Cinq questions, une minute : découvrez ce qui expose votre flotte à un contrôle raté, un document expiré ou une panne évitable, et ce qui changerait avec un suivi automatique."
+  description="Dix questions, deux minutes : découvrez ce qui expose votre flotte à un contrôle raté, un document expiré ou une panne évitable, et ce qui changerait avec un suivi automatique."
   jsonLd={[breadcrumb]}
 >
   <Navbar client:load currentPath="/diagnostic" />
@@ -25,12 +25,12 @@ const breadcrumb = {
         <a href="/" class="hover:text-[#0066FF]">Accueil</a><span>/</span>
         <span class="text-zinc-600">Diagnostic de flotte</span>
       </nav>
-      <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Diagnostic gratuit · 1 minute</p>
+      <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Diagnostic gratuit · 2 minutes</p>
       <h1 class="font-display text-4xl sm:text-5xl font-semibold text-zinc-900 tracking-tight leading-[1.05] mb-5">
         Votre flotte est-elle à l'abri d'un contrôle raté ?
       </h1>
       <p class="text-lg text-zinc-600 leading-relaxed mb-12">
-        Cinq questions sur votre façon de suivre vos véhicules. À la fin, ce qui vous expose aujourd'hui, et ce que
+        Dix questions sur votre façon de suivre vos véhicules. À la fin, ce qui vous expose aujourd'hui, et ce que
         FleetDesk changerait concrètement dans votre cas. Sans inscription.
       </p>
       <Diagnostic client:load variant="full" />

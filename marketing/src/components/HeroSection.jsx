@@ -167,7 +167,7 @@ export default function HeroSection() {
             ))}
           </div>
           <a href="/diagnostic" style={delay(940)} className="enter mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-[#0066FF] hover:underline">
-            Votre flotte est-elle exposée ? Faites le diagnostic en 1 minute
+            Votre flotte est-elle exposée ? Faites le diagnostic en 2 minutes
             <Icon name="arrowRight" size={14} strokeWidth={2} />
           </a>
         </div>

@@ -13,12 +13,24 @@ function toPath(stored) {
   return stored // already a bare path
 }
 
+// In production, show the file under app.fleetdesk.fr/fichiers/… instead of the
+// Supabase project address. vercel.json proxies that path to the same signed
+// object, token included. The dev server has no such rewrite, so it keeps the
+// direct link.
+const SIGN_PREFIX = '/storage/v1/object/sign/invoices/'
+function brandUrl(signedUrl) {
+  if (!import.meta.env.PROD) return signedUrl
+  const i = signedUrl.indexOf(SIGN_PREFIX)
+  if (i === -1) return signedUrl
+  return `${window.location.origin}/fichiers/${signedUrl.slice(i + SIGN_PREFIX.length)}`
+}
+
 export async function getSignedUrl(stored, expiresIn = 3600) {
   const path = toPath(stored)
   if (!path) return null
   const { data, error } = await supabase.storage.from('invoices').createSignedUrl(path, expiresIn)
   if (error) return null
-  return data?.signedUrl || null
+  return data?.signedUrl ? brandUrl(data.signedUrl) : null
 }
 
 // Open a stored file in a new tab via a fresh signed URL. The tab is opened

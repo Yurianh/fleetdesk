@@ -200,3 +200,8 @@
   .cta-brand .spark { transition: opacity .2s ease }
   .cta-brand:hover .spark { transform: scale(1) rotate(0deg) }
 }
+
+/* Diagnostic : le résultat apparaît en douceur après l'analyse. */
+.diag-reveal { animation: diag-reveal 600ms cubic-bezier(.2,.8,.2,1) both; }
+@keyframes diag-reveal { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .diag-reveal { animation: none; } }
