@@ -1,4 +1,4 @@
-// Sélecteur Annuel / Mensuel. L'annuel est à gauche et sélectionné par défaut.
+// Sélecteur Mensuel / Annuel. L'annuel est à droite et sélectionné par défaut.
 export default function BillingToggle({ value, onChange, className = '' }) {
   const opt = (v, label, extra) => (
     <button
@@ -14,8 +14,8 @@ export default function BillingToggle({ value, onChange, className = '' }) {
   )
   return (
     <div className={`inline-flex bg-white border border-zinc-200 rounded-full p-0.5 ${className}`} role="group" aria-label="Facturation">
-      {opt('annual', 'Annuel', <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">jusqu'à −37 %</span>)}
       {opt('monthly', 'Mensuel')}
+      {opt('annual', 'Annuel', <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">jusqu'à −37 %</span>)}
     </div>
   )
 }

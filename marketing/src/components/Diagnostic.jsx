@@ -147,8 +147,8 @@ const SECTEURS = {
   societe: ['Véhicules de société', 'Des véhicules confiés à des collaborateurs dont ce n’est pas le métier : FleetDesk fait le suivi à leur place.', '/secteurs/vehicules-de-societe'],
 }
 const PLANS = {
-  starter: { name: 'Starter', price: '9', annual: '70', annualMonthly: '5,83', why: 'jusqu’à 5 véhicules et 3 conducteurs' },
-  pro: { name: 'Pro', price: '29', annual: '220', annualMonthly: '18,33', why: 'jusqu’à 25 véhicules, conducteurs illimités' },
+  starter: { name: 'Starter', price: '9', annual: '70', annualMonthly: '6', why: 'jusqu’à 5 véhicules et 3 conducteurs' },
+  pro: { name: 'Pro', price: '29', annual: '220', annualMonthly: '18', why: 'jusqu’à 25 véhicules, conducteurs illimités' },
   enterprise: { name: 'Enterprise', price: '79', annual: '600', annualMonthly: '50', why: 'véhicules illimités, et vos chauffeurs saisissent eux-mêmes' },
 }
 
