@@ -18,6 +18,10 @@
       "destination": "/api/$1"
     },
     {
+      "source": "/fichiers/:path*",
+      "destination": "https://cigxngzdnhqrbhshrpgj.supabase.co/storage/v1/object/sign/invoices/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
@@ -33,7 +37,24 @@
       ]
     },
     {
-      "source": "/(.*)",
+      "source": "/fichiers/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "private, no-store"
+        }
+      ]
+    },
+    {
+      "source": "/((?!fichiers/).*)",
       "headers": [
         {
           "key": "X-Frame-Options",
