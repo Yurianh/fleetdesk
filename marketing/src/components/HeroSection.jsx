@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { ICONS } from '../lib/icons.js'
 
 const APP_URL = 'https://app.fleetdesk.fr'
@@ -79,24 +79,10 @@ function useParallax() {
 }
 
 // Vidéo du hero, rendue depuis du code (motion/hero) : les trois promesses du
-// titre, une échéance à la fois. Boucle muette.
-//
-// Chaque carte de la vidéo a son segment, qui commence et finit sur la même
-// image : au survol d'une carte, on rejoue son segment en boucle. À reporter
-// depuis SEGMENTS dans motion/hero/index.html si le minutage change.
-const SEGMENTS = [[1.0, 7.4], [7.4, 13.8], [13.8, 20.2]]
-// Position des cartes dans la vidéo 16:9 (toile 1536 × 864), en pourcentages.
-const ZONES = [0, 1, 2].map(i => ({
-  left: `${((80 + i * 467) / 1536) * 100}%`, top: `${(240 / 864) * 100}%`,
-  width: `${(442 / 1536) * 100}%`, height: `${(480 / 864) * 100}%`,
-}))
-const ZONE_LABELS = ['Contrôles techniques', 'Documents conducteurs', 'Entretien']
-
+// titre, une échéance à la fois. Boucle muette, démarrée une fois l'écran posé.
 function HeroVideo() {
   const frame = useRef(null)
   const video = useRef(null)
-  const segment = useRef(null)
-  const [interactive, setInteractive] = useState(false)
 
   useEffect(() => {
     const v = video.current, f = frame.current
@@ -104,10 +90,7 @@ function HeroVideo() {
     // React ne pose pas toujours `muted` à l'hydratation : sans lui, la lecture
     // automatique est refusée sur mobile.
     v.muted = true
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const hover = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 640px)')
-    if (reduce.matches) { v.pause(); return }
-    setInteractive(hover.matches)
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { v.pause(); return }
 
     // La vidéo démarre une fois le cadre posé : l'histoire se lit depuis le début.
     let started = false
@@ -115,27 +98,8 @@ function HeroVideo() {
     const onEnd = e => { if (e.target === f) start() }
     f.addEventListener('animationend', onEnd)
     const fallback = setTimeout(start, 3400)
-
-    // Survol d'une carte : on reste dans son segment.
-    let raf = 0
-    const loop = () => {
-      const s = segment.current
-      if (s !== null) {
-        const [a, b] = SEGMENTS[s]
-        if (v.currentTime < a - 0.05 || v.currentTime >= b - 0.03) v.currentTime = a
-      }
-      raf = requestAnimationFrame(loop)
-    }
-    raf = requestAnimationFrame(loop)
-    return () => { f.removeEventListener('animationend', onEnd); clearTimeout(fallback); cancelAnimationFrame(raf) }
+    return () => { f.removeEventListener('animationend', onEnd); clearTimeout(fallback) }
   }, [])
-
-  const enter = i => {
-    segment.current = i
-    const v = video.current
-    if (v && (v.currentTime < SEGMENTS[i][0] || v.currentTime >= SEGMENTS[i][1])) v.currentTime = SEGMENTS[i][0]
-  }
-  const leave = () => { segment.current = null }
 
   return (
     <div
@@ -152,17 +116,6 @@ function HeroVideo() {
         <source media="(max-width: 639px)" src="/hero/fleetdesk-hero-portrait.mp4" type="video/mp4" />
         <source src="/hero/fleetdesk-hero.mp4" type="video/mp4" />
       </video>
-      {interactive && ZONES.map((z, i) => (
-        <button
-          key={i}
-          type="button"
-          style={z}
-          aria-label={`Revoir l'exemple : ${ZONE_LABELS[i]}`}
-          onPointerEnter={() => enter(i)} onPointerLeave={leave}
-          onFocus={() => enter(i)} onBlur={leave}
-          className="absolute rounded-[1.4%] cursor-default outline-none transition-shadow duration-300 hover:shadow-[0_0_0_2px_rgba(0,102,255,0.45)] focus-visible:shadow-[0_0_0_2px_rgba(0,102,255,0.7)]"
-        />
-      ))}
     </div>
   )
 }
@@ -193,7 +146,7 @@ export default function HeroSection() {
           </p>
 
           <div style={delay(700)} className="enter flex flex-col sm:flex-row gap-3 mb-6">
-            <a href="/souscrire/pro"
+            <a href="/pricing"
               className="inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-[#0066FF]/25">
               Essayer gratuitement
               <Icon name="arrowRight" size={16} strokeWidth={2} />
@@ -205,7 +158,7 @@ export default function HeroSection() {
           </div>
 
           <div style={delay(840)} className="enter flex items-center gap-x-5 gap-y-2 text-sm text-zinc-600 flex-wrap">
-            {["14 jours d'essai", 'Sans carte bancaire', 'Hébergé en Europe'].map((item, i) => (
+            {["7 jours d'essai gratuit", 'Sans carte bancaire', 'Sans engagement'].map((item, i) => (
               <div key={item} className="flex items-center gap-2">
                 {i > 0 && <span className="hidden sm:block w-1 h-1 rounded-full bg-zinc-300 -ml-2.5" />}
                 <Icon name="check" size={15} strokeWidth={2.5} className="text-[#0066FF] flex-shrink-0" />
@@ -213,6 +166,10 @@ export default function HeroSection() {
               </div>
             ))}
           </div>
+          <a href="/diagnostic" style={delay(940)} className="enter mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-[#0066FF] hover:underline">
+            Votre flotte est-elle exposée ? Faites le diagnostic en 1 minute
+            <Icon name="arrowRight" size={14} strokeWidth={2} />
+          </a>
         </div>
 
         {/* Produit : reproduction de l'écran Tableau de bord */}

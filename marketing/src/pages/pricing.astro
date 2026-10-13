@@ -10,12 +10,13 @@ const plans = [
   {
     name: 'Starter',
     monthlyPrice: '9',
-    annualPrice: '7',
+    annualPrice: '70',
     period: '/mois',
-    annualTotal: '86',
+    annualMonthly: '5,83',
+    annualSaving: '38',
     desc: 'Pour les artisans et indépendants : piloter sa flotte et rester conforme, sans tableur.',
     badge: null,
-    trialNote: '14 jours gratuits · Sans carte bancaire',
+    trialNote: '7 jours gratuits · Sans carte bancaire',
     features: [
       { text: 'Jusqu\'à 5 véhicules et 3 conducteurs', highlight: false },
       { text: 'Documents conducteurs (7) et véhicule suivis', highlight: false },
@@ -24,19 +25,20 @@ const plans = [
       { text: 'Support par email', highlight: false },
     ],
     cta: 'Démarrer l\'essai gratuit',
-    ctaHref: '/souscrire/starter',
+    ctaHref: `${APP_URL}/login?plan=starter`,
     ctaStyle: 'border',
     highlighted: false,
   },
   {
     name: 'Pro',
     monthlyPrice: '29',
-    annualPrice: '23',
+    annualPrice: '220',
     period: '/mois',
-    annualTotal: '278',
+    annualMonthly: '18,33',
+    annualSaving: '128',
     desc: 'Pour les équipes en croissance qui ne peuvent pas se permettre un incident de conformité.',
     badge: 'Le plus populaire',
-    trialNote: '14 jours gratuits · Sans carte bancaire',
+    trialNote: '7 jours gratuits · Sans carte bancaire',
     features: [
       { text: 'Jusqu\'à 25 véhicules · conducteurs illimités', highlight: true },
       { text: 'Tout Starter, sans la limite de flotte', highlight: false },
@@ -46,19 +48,20 @@ const plans = [
       { text: 'Support prioritaire', highlight: false },
     ],
     cta: 'Démarrer l\'essai gratuit',
-    ctaHref: '/souscrire/pro',
+    ctaHref: `${APP_URL}/login?plan=pro`,
     ctaStyle: 'primary',
     highlighted: true,
   },
   {
     name: 'Enterprise',
     monthlyPrice: '79',
-    annualPrice: '63',
+    annualPrice: '600',
     period: '/mois',
-    annualTotal: '758',
+    annualMonthly: '50',
+    annualSaving: '348',
     desc: 'Pour les flottes qui font saisir le terrain : chauffeurs, équipe et traçabilité.',
     badge: null,
-    trialNote: '14 jours gratuits · Sans carte bancaire',
+    trialNote: '7 jours gratuits · Sans carte bancaire',
     features: [
       { text: 'Véhicules et conducteurs illimités', highlight: false },
       { text: 'Invitez votre équipe : admins et membres', highlight: true },
@@ -68,7 +71,7 @@ const plans = [
       { text: 'Onboarding personnalisé et SLA garanti', highlight: false },
     ],
     cta: 'Démarrer l\'essai gratuit',
-    ctaHref: '/souscrire/enterprise',
+    ctaHref: `${APP_URL}/login?plan=enterprise`,
     ctaStyle: 'border',
     highlighted: false,
   },
@@ -77,7 +80,7 @@ const plans = [
 const faq = [
   {
     q: 'L\'essai est-il vraiment sans carte bancaire ?',
-    a: 'Oui. 14 jours d\'accès complet à la formule de votre choix, sans rien saisir. Vous choisissez de continuer, ou pas : aucun prélèvement sans votre accord. Sans abonnement à la fin de l\'essai, votre compte passe en lecture seule — vos données restent consultables.'
+    a: 'Oui. 7 jours d\'accès complet à la formule de votre choix, sans carte bancaire. 48 h avant la fin, on vous prévient par e-mail. Vous choisissez de continuer, ou pas : rien n\'est prélevé sans votre accord, et arrêter ne coûte rien. Sans abonnement à la fin de l\'essai, votre compte passe en lecture seule : vos données restent consultables.'
   },
   {
     q: 'Puis-je changer de formule à tout moment ?',
@@ -97,7 +100,7 @@ const faq = [
   },
   {
     q: 'La facturation annuelle est-elle disponible ?',
-    a: 'Oui, avec une remise de 20 %. Activez-la depuis vos paramètres ou contactez-nous pour la configurer. Vous payez en une fois pour l\'année et économisez 2 mois.'
+    a: 'Oui, et elle revient jusqu\'à 37 % moins cher que le mensuel : 70 €, 220 € ou 600 € par an selon la formule, payés en une fois. Choisissez « Annuel » au-dessus des formules. Le mensuel, lui, est sans engagement : vous arrêtez quand vous voulez, sans frais.'
   },
 ]
 
@@ -113,7 +116,7 @@ const productSchema = {
     name: pl.name,
     price: pl.monthlyPrice,
     priceCurrency: 'EUR',
-    url: 'https://fleetdesk.fr' + pl.ctaHref,
+    url: 'https://fleetdesk.fr/pricing',
     availability: 'https://schema.org/InStock',
   })),
 }
@@ -137,7 +140,7 @@ const breadcrumb = {
 <Layout
   title="Tarifs d'un logiciel de gestion de flotte"
   jsonLd={[productSchema, faqSchema, breadcrumb]}
-  description="Dès 9 €/mois, 14 jours d'essai sans carte sur toutes les formules. Piloter et rester conforme sur toutes les formules ; équipe et saisie chauffeur sur Enterprise."
+  description="Dès 9 €/mois, 7 jours d'essai gratuit sans carte sur toutes les formules, prévenu 48 h avant la fin, sans engagement. Jusqu'à 37 % de moins en annuel."
 >
   <Navbar client:load currentPath="/pricing" />
 
@@ -149,7 +152,7 @@ const breadcrumb = {
         Simple. Transparent. Sans surprise.
       </h1>
       <p class="text-lg text-zinc-600 max-w-xl mx-auto">
-        Démarrez en 5 minutes. Évoluez quand vous voulez. Résiliez en un clic.
+        7 jours d'essai sur toutes les formules, sans carte bancaire. On vous prévient 48 h avant la fin, et arrêter ne coûte rien.
       </p>
     </div>
   </section>
@@ -162,17 +165,17 @@ const breadcrumb = {
       <div class="flex items-center justify-center mb-12">
         <div class="inline-flex bg-white border border-zinc-200 rounded-full p-1 shadow-sm">
           <button
-            id="btn-monthly"
-            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 bg-[#E5EEFF] text-[#0052D6]"
-          >
-            Mensuel
-          </button>
-          <button
             id="btn-annual"
-            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-zinc-600 hover:text-zinc-800 flex items-center gap-2"
+            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 hover:text-zinc-800 flex items-center gap-2 bg-[#E5EEFF] text-[#0052D6]"
           >
             Annuel
-            <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">-20%</span>
+            <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">jusqu'à −37 %</span>
+          </button>
+          <button
+            id="btn-monthly"
+            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-zinc-600"
+          >
+            Mensuel
           </button>
         </div>
       </div>
@@ -197,17 +200,16 @@ const breadcrumb = {
                   data-monthly={p.monthlyPrice}
                   data-annual={p.annualPrice}
                 >
-                  {p.monthlyPrice}
+                  {p.annualPrice}
                 </span>
                 <span class="text-xl font-bold text-zinc-900 mb-0.5">€</span>
-                <span class="text-sm mb-1.5 text-zinc-500">{p.period}</span>
+                <span class="price-period text-sm mb-1.5 text-zinc-500">/an</span>
               </div>
               {/* Annual subtotal line */}
               <p
-                class="annual-total text-xs text-zinc-500 hidden"
-                data-total={p.annualTotal}
+                class="annual-total text-xs text-zinc-500"
               >
-                soit {p.annualTotal} € / an
+                soit {p.annualMonthly} € par mois · {p.annualSaving} € d'économie sur l'année
               </p>
               {p.trialNote && (
                 <p class="text-xs font-semibold text-emerald-700 mt-1">{p.trialNote}</p>
@@ -231,7 +233,8 @@ const breadcrumb = {
 
             {/* CTA */}
             <a
-              href={p.ctaHref}
+              href={`${p.ctaHref}&billing=annual`}
+              data-plan-cta
               class={`block w-full text-center text-sm font-semibold px-5 py-3 rounded-xl transition-colors ${
                 p.ctaStyle === 'primary'
                   ? 'bg-[#0066FF] text-white hover:bg-[#0052D6]'
@@ -244,25 +247,27 @@ const breadcrumb = {
         ))}
       </div>
 
-      <!-- Trust bar -->
-      <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mt-10 text-xs text-zinc-500">
-        <span class="flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          Sans engagement
-        </span>
-        <span class="flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Résiliation en 1 clic
-        </span>
-        <span class="flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          Données hébergées en Europe
-        </span>
-        <span class="flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-          Paiement sécurisé par Stripe
-        </span>
+      <!-- Transparence de l'essai -->
+      <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+        {[
+          ['7 jours d\'essai', 'Sur toutes les formules, accès complet.'],
+          ['Sans carte bancaire', 'Rien n\'est prélevé pendant l\'essai.'],
+          ['Prévenu 48 h avant', 'Un e-mail avant la fin de l\'essai : vous décidez.'],
+          ['Sans engagement', 'Mensuel résiliable à tout moment, sans frais.'],
+        ].map(([t, d]) => (
+          <div class="rounded-xl bg-white border border-zinc-200 px-4 py-3.5">
+            <p class="font-semibold text-zinc-900 flex items-center gap-2">
+              <svg class="w-4 h-4 text-emerald-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              {t}
+            </p>
+            <p class="text-zinc-500 text-xs mt-1 leading-relaxed">{d}</p>
+          </div>
+        ))}
       </div>
+      <p class="text-center text-xs text-zinc-500 mt-6">
+        Données hébergées en Europe · Paiement sécurisé par Stripe · En démarrant l'essai, vous acceptez les
+        <a href="/legal#cgu" class="underline underline-offset-2 hover:text-zinc-800">conditions générales</a>.
+      </p>
     </div>
   </section>
 
@@ -290,8 +295,17 @@ const breadcrumb = {
   const btnAnnual  = document.getElementById('btn-annual')
   const amounts    = document.querySelectorAll('.price-amount')
   const totals     = document.querySelectorAll('.annual-total')
+  const periods    = document.querySelectorAll('.price-period')
+
+  const ctas = document.querySelectorAll('a[data-plan-cta]')
+  const setBilling = annual => ctas.forEach(a => {
+    const url = new URL(a.href)
+    url.searchParams.set('billing', annual ? 'annual' : 'monthly')
+    a.href = url.toString()
+  })
 
   function setMonthly() {
+    setBilling(false)
     btnMonthly.classList.add('bg-[#E5EEFF]', 'text-[#0052D6]')
     btnMonthly.classList.remove('text-zinc-600')
     btnAnnual.classList.remove('bg-[#E5EEFF]', 'text-[#0052D6]')
@@ -299,10 +313,12 @@ const breadcrumb = {
     amounts.forEach(el => {
       el.textContent = el.dataset.monthly
     })
+    periods.forEach(el => { el.textContent = '/mois' })
     totals.forEach(el => el.classList.add('hidden'))
   }
 
   function setAnnual() {
+    setBilling(true)
     btnAnnual.classList.add('bg-[#E5EEFF]', 'text-[#0052D6]')
     btnAnnual.classList.remove('text-zinc-600')
     btnMonthly.classList.remove('bg-[#E5EEFF]', 'text-[#0052D6]')
@@ -310,6 +326,7 @@ const breadcrumb = {
     amounts.forEach(el => {
       el.textContent = el.dataset.annual
     })
+    periods.forEach(el => { el.textContent = '/an' })
     totals.forEach(el => el.classList.remove('hidden'))
   }
 

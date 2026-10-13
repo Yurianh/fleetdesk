@@ -95,7 +95,7 @@ export default function Navbar({ currentPath = '/' }) {
                 className="text-sm text-zinc-600 hover:text-zinc-900 font-medium transition-colors">
                 Se connecter
               </a>
-              <a href={"/souscrire/pro"}
+              <a href={"/pricing"}
                 className="cta-brand text-sm text-white font-medium px-4 py-2 rounded-xl">
                 Essayer gratuitement<Spark />
               </a>
@@ -143,7 +143,7 @@ export default function Navbar({ currentPath = '/' }) {
                   className="block text-center text-sm text-zinc-600 font-medium py-2 hover:text-zinc-900">
                   Se connecter
                 </a>
-                <a href={"/souscrire/pro"} onClick={() => setOpen(false)}
+                <a href={"/pricing"} onClick={() => setOpen(false)}
                   className="cta-brand block text-center text-sm text-white font-medium px-4 py-2.5 rounded-xl">
                   Essayer gratuitement<Spark />
                 </a>

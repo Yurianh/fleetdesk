@@ -100,19 +100,20 @@
 
 /* ── Parallaxe au survol de l'écran du hero ─────────────────────────────────
    Les variables --tilt-x / --tilt-y (−1 → 1) sont écrites par HeroSection au
-   rythme de l'écran, sur un calque distinct de celui de l'arrivée. */
+   rythme de l'écran, sur un calque distinct de celui de l'arrivée. Volontairement
+   léger : l'écran suit le curseur, il ne bascule pas. */
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .reveal-tilt {
     transform:
-      rotateY(calc(var(--tilt-x, 0) * 3.2deg))
-      rotateX(calc(var(--tilt-y, 0) * -2.4deg))
-      translate3d(calc(var(--tilt-x, 0) * 6px), calc(var(--tilt-y, 0) * 4px), 0);
+      rotateY(calc(var(--tilt-x, 0) * 1.2deg))
+      rotateX(calc(var(--tilt-y, 0) * -0.9deg))
+      translate3d(calc(var(--tilt-x, 0) * 2px), calc(var(--tilt-y, 0) * 1.5px), 0);
     transform-style: preserve-3d;
     will-change: transform;
-    transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
   }
   /* Pendant le survol, la réponse est immédiate ; au départ du curseur, retour lent. */
-  .reveal-stage.is-tilting .reveal-tilt { transition: transform 120ms linear; }
+  .reveal-stage.is-tilting .reveal-tilt { transition: transform 260ms ease-out; }
 }
 
 

@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
 
-// Discreet trial reminder (every plan starts with a card-free 14-day trial). Deliberately restrained: it only appears in the
+// Discreet trial reminder (every plan starts with a card-free 7-day trial). Deliberately restrained: it only appears in the
 // final stretch of the trial (≤ WINDOW days left), is dismissible for the
 // session, and uses a calm tone — a nudge, not a nag. The card-free trial won't
 // auto-charge, so converting requires the user to add a payment method.

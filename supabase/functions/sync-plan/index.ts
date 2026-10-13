@@ -17,6 +17,9 @@ const PLAN_BY_PRICE: Record<string, string> = {
   'price_1TEiw8B6Ej53MTDrp4sDJxQS': 'starter',
   'price_1TEiw7B6Ej53MTDrTW3RbjfW': 'pro',
   'price_1TEiw1B6Ej53MTDrzE2nmyDR': 'enterprise',
+  'price_1UPuFtB6Ej53MTDrfd8xxEUC': 'starter',     // annuel
+  'price_1UPuGPB6Ej53MTDrgY3uW7co': 'pro',         // annuel
+  'price_1UPuGxB6Ej53MTDr1RCNljy3': 'enterprise',  // annuel
 }
 
 // Active-ish subscription states that should grant the paid plan.

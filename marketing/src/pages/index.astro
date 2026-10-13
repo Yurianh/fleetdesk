@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar.jsx'
 import HeroSection from '../components/HeroSection.jsx'
 import CTASection from '../components/CTASection.astro'
 import FeatureVideo from '../components/FeatureVideo.astro'
+import Diagnostic from '../components/Diagnostic.jsx'
 import Footer from '../components/Footer.astro'
 import { ICONS } from '../lib/icons.js'
 
@@ -82,8 +83,8 @@ const trust = [
     icon: ICONS.lock,
   },
   {
-    title: '14 jours d\'essai, sans carte bancaire',
-    text: 'Testez la formule Pro sans engagement. Vous ne renseignez un moyen de paiement que si vous décidez de continuer.',
+    title: '7 jours d\'essai, sans carte bancaire',
+    text: 'Testez la formule de votre choix. On vous prévient 48 h avant la fin, et vous ne renseignez un moyen de paiement que si vous décidez de continuer.',
     icon: ICONS.clock,
   },
 ]
@@ -95,7 +96,7 @@ const faq = [
   },
   {
     q: 'L\'essai est-il vraiment sans carte bancaire ?',
-    a: 'Oui. 14 jours d\'accès complet à la formule de votre choix, sans rien saisir. Vous choisissez de continuer, ou pas : aucun prélèvement sans votre accord. Sans abonnement à la fin de l\'essai, votre compte passe en lecture seule — vos données restent consultables.',
+    a: 'Oui. 7 jours d\'accès complet à la formule de votre choix, sans carte bancaire. 48 h avant la fin, on vous prévient par e-mail. Vous choisissez de continuer, ou pas : rien n\'est prélevé sans votre accord, et arrêter ne coûte rien. Sans abonnement à la fin de l\'essai, votre compte passe en lecture seule — vos données restent consultables.',
   },
   {
     q: 'Combien de véhicules puis-je suivre ?',
@@ -119,10 +120,11 @@ const faq = [
   },
 ]
 
+// Annuel affiché d'abord ; le visiteur bascule lui-même sur le mensuel.
 const teaserPlans = [
-  { name: 'Starter', price: '9',  note: 'Jusqu\'à 5 véhicules',      highlighted: false, href: '/souscrire/starter', cta: 'Essayer' },
-  { name: 'Pro',     price: '29', note: '14 jours d\'essai gratuit', highlighted: true,  href: '/souscrire/pro',     cta: 'Essayer' },
-  { name: 'Enterprise', price: '79', note: 'Flottes illimitées',     highlighted: false, href: '/souscrire/enterprise', cta: 'Essayer' },
+  { name: 'Starter', price: '9',  annual: '70',  note: 'Jusqu\'à 5 véhicules',      highlighted: false, href: '/pricing', cta: 'Essayer' },
+  { name: 'Pro',     price: '29', annual: '220', note: '7 jours d\'essai gratuit', highlighted: true,  href: '/pricing',     cta: 'Essayer' },
+  { name: 'Enterprise', price: '79', annual: '600', note: 'Flottes illimitées',     highlighted: false, href: '/pricing', cta: 'Essayer' },
 ]
 
 // Structured data for the homepage: organisation, product and the FAQ.
@@ -252,6 +254,25 @@ const faqSchema = {
     </div>
   </section>
 
+  <!-- Diagnostic : deux questions ici, le résultat complet sur /diagnostic -->
+  <section id="diagnostic" class="scroll-mt-28 py-24 bg-[#F5F8FF] border-b border-zinc-100">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 grid lg:grid-cols-[0.85fr_1.15fr] gap-12 lg:gap-20 items-start">
+      <div>
+        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Diagnostic gratuit · 1 minute</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
+          Et votre flotte, elle est exposée ?
+        </h2>
+        <p class="text-lg text-zinc-600 leading-relaxed">
+          Cinq questions sur votre façon de suivre vos véhicules. Vous saurez ce qui vous expose aujourd'hui, et ce que
+          FleetDesk changerait dans votre cas.
+        </p>
+      </div>
+      <div class="rounded-2xl bg-white border border-zinc-200 p-6 sm:p-8">
+        <Diagnostic client:visible variant="teaser" />
+      </div>
+    </div>
+  </section>
+
   <!-- Comparison -->
   <section class="py-24 bg-zinc-50 border-b border-zinc-100">
     <div class="max-w-5xl mx-auto px-4 sm:px-6">
@@ -339,14 +360,14 @@ const faqSchema = {
         </div>
       </div>
       <div class="mt-14 text-center">
-        <a href={"/souscrire/pro"}
+        <a href={"/pricing"}
           class="inline-flex items-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
           Essayer gratuitement
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
           </svg>
         </a>
-        <p class="mt-3 text-xs text-zinc-500">14 jours d'essai sur toutes les formules · sans carte bancaire</p>
+        <p class="mt-3 text-xs text-zinc-500">7 jours d'essai sur toutes les formules · sans carte · prévenu 48 h avant la fin</p>
       </div>
     </div>
   </section>
@@ -510,7 +531,7 @@ const faqSchema = {
         <p class="text-zinc-600 leading-relaxed mb-6">
           FleetDesk démarre. Plutôt que d'inventer des avis, voici ce sur quoi vous pouvez déjà nous juger : conformité, sécurité et transparence, dès le premier jour.
         </p>
-        <a href={"/souscrire/pro"} class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0066FF] hover:text-[#0052D6]">
+        <a href={"/pricing"} class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0066FF] hover:text-[#0052D6]">
           Commencer l'essai gratuit
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
@@ -565,7 +586,15 @@ const faqSchema = {
       <div class="mb-10 text-center">
         <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Tarifs transparents</p>
         <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-3">Un prix qui tient sur une ligne</h2>
-        <p class="text-lg text-zinc-600">Dès 9 €/mois. 14 jours d'essai sur toutes les formules, sans carte.</p>
+        <p class="text-lg text-zinc-600">Dès 70 € par an, ou 9 € par mois sans engagement. 7 jours d'essai sur toutes les formules, sans carte.</p>
+      </div>
+      <div class="flex justify-center mb-8">
+        <div class="inline-flex bg-white border border-zinc-200 rounded-full p-1" role="group" aria-label="Facturation">
+          <button type="button" data-teaser-billing="annual" class="teaser-billing px-4 py-1.5 rounded-full text-sm font-semibold flex items-center gap-2 bg-[#E5EEFF] text-[#0052D6]">
+            Annuel <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">jusqu'à −37 %</span>
+          </button>
+          <button type="button" data-teaser-billing="monthly" class="teaser-billing px-4 py-1.5 rounded-full text-sm font-semibold text-zinc-600">Mensuel</button>
+        </div>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {teaserPlans.map(p => (
@@ -573,9 +602,9 @@ const faqSchema = {
             class={`group rounded-2xl p-6 transition-all ${p.highlighted ? 'bg-white border-2 border-[#0066FF] shadow-lg shadow-[#0066FF]/10' : 'bg-white border border-zinc-200 hover:border-zinc-300'}`}>
             <p class={`text-xs font-semibold uppercase tracking-widest mb-3 ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-500'}`}>{p.name}</p>
             <div class="flex items-end gap-1 mb-1">
-              <span class="text-3xl font-bold text-zinc-900">{p.price}</span>
+              <span class="teaser-amount text-3xl font-bold text-zinc-900" data-monthly={p.price} data-annual={p.annual}>{p.annual}</span>
               <span class="text-base font-bold text-zinc-900 mb-0.5">€</span>
-              <span class="text-xs text-zinc-500 mb-1.5">/mois</span>
+              <span class="teaser-period text-xs text-zinc-500 mb-1.5">/an</span>
             </div>
             <p class="text-sm text-zinc-600 mb-5">{p.note}</p>
             <span class={`inline-flex items-center gap-1.5 text-sm font-semibold ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-700'}`}>
@@ -640,7 +669,7 @@ const faqSchema = {
   <CTASection />
 
   <!-- Sticky mobile CTA -->
-  <a href={"/souscrire/pro"}
+  <a href={"/pricing"}
     class="md:hidden fixed bottom-4 inset-x-4 z-40 flex items-center justify-center gap-2 bg-[#0066FF] text-white font-semibold text-sm py-3.5 rounded-xl shadow-xl shadow-[#0066FF]/30">
     Essayer gratuitement
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -648,3 +677,18 @@ const faqSchema = {
 
   <Footer />
 </Layout>
+
+<script>
+  // Aperçu des formules : annuel par défaut, le visiteur bascule lui-même.
+  const teaserBtns = document.querySelectorAll('.teaser-billing')
+  teaserBtns.forEach(btn => btn.addEventListener('click', () => {
+    const annual = btn.dataset.teaserBilling === 'annual'
+    teaserBtns.forEach(b => {
+      const on = b === btn
+      b.classList.toggle('bg-[#E5EEFF]', on); b.classList.toggle('text-[#0052D6]', on); b.classList.toggle('text-zinc-600', !on)
+    })
+    document.querySelectorAll('.teaser-amount').forEach(el => { el.textContent = annual ? el.dataset.annual : el.dataset.monthly })
+    document.querySelectorAll('.teaser-period').forEach(el => { el.textContent = annual ? '/an' : '/mois' })
+  }))
+</script>
+
