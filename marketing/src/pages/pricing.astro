@@ -12,7 +12,7 @@ const plans = [
     monthlyPrice: '9',
     annualPrice: '70',
     period: '/mois',
-    annualMonthly: '5,83',
+    annualMonthly: '6',
     annualSaving: '38',
     desc: 'Pour les artisans et indépendants : piloter sa flotte et rester conforme, sans tableur.',
     badge: null,
@@ -34,7 +34,7 @@ const plans = [
     monthlyPrice: '29',
     annualPrice: '220',
     period: '/mois',
-    annualMonthly: '18,33',
+    annualMonthly: '18',
     annualSaving: '128',
     desc: 'Pour les équipes en croissance qui ne peuvent pas se permettre un incident de conformité.',
     badge: 'Le plus populaire',
@@ -100,7 +100,7 @@ const faq = [
   },
   {
     q: 'La facturation annuelle est-elle disponible ?',
-    a: 'Oui, et elle revient jusqu\'à 37 % moins cher que le mensuel : 70 €, 220 € ou 600 € par an selon la formule, payés en une fois. Choisissez « Annuel » au-dessus des formules. Le mensuel, lui, est sans engagement : vous arrêtez quand vous voulez, sans frais.'
+    a: 'Oui, et elle revient jusqu\'à 37 % moins cher que le mensuel : 70 €, 220 € ou 600 € par an (environ 6, 18 ou 50 € par mois) selon la formule, payés en une fois. Choisissez « Annuel » au-dessus des formules. Le mensuel, lui, est sans engagement : vous arrêtez quand vous voulez, sans frais.'
   },
 ]
 
@@ -165,17 +165,17 @@ const breadcrumb = {
       <div class="flex items-center justify-center mb-12">
         <div class="inline-flex bg-white border border-zinc-200 rounded-full p-1 shadow-sm">
           <button
+            id="btn-monthly"
+            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-zinc-600"
+          >
+            Mensuel
+          </button>
+          <button
             id="btn-annual"
             class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 hover:text-zinc-800 flex items-center gap-2 bg-[#E5EEFF] text-[#0052D6]"
           >
             Annuel
             <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">jusqu'à −37 %</span>
-          </button>
-          <button
-            id="btn-monthly"
-            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-zinc-600"
-          >
-            Mensuel
           </button>
         </div>
       </div>
