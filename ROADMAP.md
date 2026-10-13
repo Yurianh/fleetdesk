@@ -97,6 +97,7 @@ masquage réactivable.
 - [x] **T-C09** — Hero : plus de survol interactif des cartes de la vidéo, parallaxe environ trois fois plus discrète et plus lente. La démo commentée (branche `feat/demo-video`) n'est pas publiée : ce n'était pas ce que Julian recherchait. _(2026-10-13)_
 
 - [x] **T-C10** — L'annuel est proposé d'abord partout où les formules s'affichent : page tarifs (affichée en annuel dès l'arrivée, sans clignotement), aperçu des tarifs de l'accueil, choix de formule à l'inscription, changement de formule dans les Paramètres, et formule conseillée du diagnostic. Le visiteur bascule lui-même sur le mensuel ; son choix suit jusqu'au paiement (`billing=annual|monthly`). Prix centralisés dans l'application (`src/lib/pricing.js`) et sélecteur commun (`BillingToggle`). _(2026-10-13)_
+- [x] **T-C11** — Correctif de mise en ligne : le `.vercelignore` racine excluait `marketing/`, ce qui faisait échouer le build du site (`package.json` introuvable) ; dossier réintégré et avertissement ajouté dans le fichier. _(2026-10-13)_
 
 ## Phase P — Preuve sociale _(fait 2026-09-04)_
 
