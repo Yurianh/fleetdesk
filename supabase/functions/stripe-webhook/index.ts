@@ -189,7 +189,7 @@ Deno.serve(async (req) => {
       'price_1TEiw1B6Ej53MTDrzE2nmyDR': 'enterprise',
       'price_1UPuFtB6Ej53MTDrfd8xxEUC': 'starter',     // annuel
       'price_1UPuGPB6Ej53MTDrgY3uW7co': 'pro',         // annuel
-      // Enterprise annuel : identifiant à venir.
+      'price_1UPuGxB6Ej53MTDr1RCNljy3': 'enterprise',  // annuel
     }
     const newPlan = PLAN_BY_PRICE[priceId] ?? null
     if (!newPlan) return new Response(JSON.stringify({ received: true }), { headers: { 'Content-Type': 'application/json' } })

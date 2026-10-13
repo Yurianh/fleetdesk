@@ -10,7 +10,7 @@ const stripe = new Stripe(stripeKey)
 const ANNUAL_PRICE_IDS: Record<string, string> = {
   starter:    'price_1UPuFtB6Ej53MTDrfd8xxEUC',  // 70 € / an
   pro:        'price_1UPuGPB6Ej53MTDrgY3uW7co',  // 220 € / an
-  enterprise: '',                                // 600 € / an : identifiant à venir
+  enterprise: 'price_1UPuGxB6Ej53MTDr1RCNljy3',  // 600 € / an
 }
 const PRICE_IDS: Record<string, string> = {
   starter:    'price_1TEiw8B6Ej53MTDrp4sDJxQS',
