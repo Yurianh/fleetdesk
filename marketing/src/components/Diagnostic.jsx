@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import DiagnosticStory from './DiagnosticStory.jsx'
 
 // Diagnostic de flotte : dix questions, une analyse qui reprend les réponses
-// une à une, puis un résultat : score de maîtrise, ordres de grandeur (échéances
-// par an, temps récupérable), et ce que FleetDesk change dans ce cas précis.
+// une à une, puis un résultat raconté au défilement (DiagnosticStory) : score de
+// maîtrise, ordres de grandeur (échéances par an, temps récupérable), ce que
+// FleetDesk change dans ce cas précis, et la formule conseillée.
 // Tout ce qui est promis ici existe dans l'application (alertes 30 jours avant,
 // e-mail hebdomadaire, alerte entretien 5 000 km avant, documents véhicules et
 // conducteurs, affectations, saisie chauffeur sur Enterprise). Les estimations
@@ -202,7 +204,7 @@ function analyse(a) {
 
   return {
     score, level, items, plan, secteur: SECTEURS[a.secteur],
-    stats: { echeances, heures, drivers, fleet, ctAnnuel, sharePct: Math.round(share * 100), vigilance: items.length },
+    stats: { echeances, heures, heuresNow: Math.max(1, Math.round((HOURS[a.temps] ?? 2) * 4.33)), drivers, fleet, ctAnnuel, sharePct: Math.round(share * 100), vigilance: items.length },
   }
 }
 
@@ -281,25 +283,6 @@ function Analysis({ steps, onDone }) {
   )
 }
 
-function ScoreRing({ score, color }) {
-  const [shown, setShown] = useState(0)
-  useEffect(() => { const t = setTimeout(() => setShown(score), 80); return () => clearTimeout(t) }, [score])
-  const r = 44, c = 2 * Math.PI * r
-  return (
-    <div className="relative w-28 h-28 flex-shrink-0">
-      <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90" aria-hidden="true">
-        <circle cx="50" cy="50" r={r} fill="none" stroke="#F4F4F5" strokeWidth="8" />
-        <circle cx="50" cy="50" r={r} fill="none" stroke={color} strokeWidth="8" strokeLinecap="round"
-          strokeDasharray={c} strokeDashoffset={c * (1 - shown / 100)} style={{ transition: 'stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1)' }} />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-display text-3xl font-semibold text-zinc-900 tabular-nums">{score}</span>
-        <span className="text-[11px] text-zinc-500 -mt-0.5">sur 100</span>
-      </div>
-    </div>
-  )
-}
-
 export default function Diagnostic({ variant = 'full' }) {
   const teaser = variant === 'teaser'
   const questions = teaser ? QUESTIONS.slice(0, 2) : QUESTIONS
@@ -359,53 +342,10 @@ export default function Diagnostic({ variant = 'full' }) {
   }
 
   if (result) {
-    const lvl = LEVELS[result.level], plan = PLANS[result.plan], s = result.stats
-    const stats = [
-      { value: `≈ ${s.echeances}`, unit: 'échéances par an', note: `Contrôles techniques${s.ctAnnuel ? ' annuels' : ''}, assurances, entretiens et documents d’environ ${s.drivers} conducteur${s.drivers > 1 ? 's' : ''}, pour ${s.fleet.label} véhicules.` },
-      { value: `≈ ${s.heures} h`, unit: 'récupérées par mois', note: `Environ ${s.sharePct} % du temps que vous y passez : relances, recopie de relevés, recherche de documents.` },
-      { value: s.vigilance, unit: s.vigilance > 1 ? 'points de vigilance' : 'point de vigilance', note: 'Les situations, détaillées ci-dessous, où une échéance peut vous échapper aujourd’hui.' },
-    ]
+    const lvl = LEVELS[result.level], plan = PLANS[result.plan]
     return (
-      <div ref={topRef} tabIndex={-1} aria-live="polite" className="outline-none scroll-mt-28 diag-reveal">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-          <ScoreRing score={result.score} color={lvl.ring} />
-          <div>
-            <p className="text-sm font-medium text-zinc-500">Votre score de maîtrise</p>
-            <p className={`inline-flex items-center gap-2 text-sm font-semibold border rounded-full px-3.5 py-1.5 mt-2 ${lvl.tone}`}>{lvl.label}</p>
-            <p className="mt-3 text-lg text-zinc-700 leading-relaxed max-w-2xl">{lvl.text}</p>
-          </div>
-        </div>
-
-        <div className="grid sm:grid-cols-3 gap-3 mt-10">
-          {stats.map(st => (
-            <div key={st.unit} className="rounded-2xl border border-zinc-200 bg-white p-5">
-              <p className="font-display text-3xl font-semibold text-zinc-900 tabular-nums">{st.value}</p>
-              <p className="text-sm font-semibold text-zinc-700 mt-0.5">{st.unit}</p>
-              <p className="text-xs text-zinc-500 leading-relaxed mt-2">{st.note}</p>
-            </div>
-          ))}
-        </div>
-        <p className="text-xs text-zinc-400 mt-3">Ordres de grandeur calculés à partir de vos réponses, pas un audit.</p>
-
-        {result.items.length > 0 && (
-          <>
-            <h2 className="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mt-12 mb-5">Ce qui change pour vous</h2>
-            <div className="space-y-3">
-              {result.items.map(([risk, gain], i) => (
-                <div key={i} className="grid md:grid-cols-2 gap-px rounded-2xl overflow-hidden border border-zinc-200 bg-zinc-200">
-                  <div className="bg-white p-5">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-amber-700 mb-1.5">Aujourd’hui</p>
-                    <p className="text-zinc-700 leading-relaxed">{risk}</p>
-                  </div>
-                  <div className="bg-[#F5F8FF] p-5">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-[#0052D6] mb-1.5">Avec FleetDesk</p>
-                    <p className="text-zinc-800 leading-relaxed flex gap-2"><Check />{gain}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+      <div ref={topRef} tabIndex={-1} aria-live="polite" className="outline-none">
+        <DiagnosticStory result={result} lvl={lvl} plan={plan} />
 
         {result.secteur && (
           <p className="mt-6 text-zinc-600 leading-relaxed">
@@ -414,7 +354,7 @@ export default function Diagnostic({ variant = 'full' }) {
           </p>
         )}
 
-        <div className="mt-10 rounded-2xl border-2 border-[#0066FF] bg-white p-6 sm:p-8">
+        <div id="diag-plan" className="mt-10 scroll-mt-28 rounded-2xl border-2 border-[#0066FF] bg-white p-6 sm:p-8">
           <p className="text-sm font-semibold text-[#0066FF]">La formule qui vous correspond</p>
           <p className="font-display text-3xl font-semibold text-zinc-900 mt-1">{plan.name}</p>
           <p className="text-zinc-600 mt-1">{plan.why[0].toUpperCase() + plan.why.slice(1)}. {plan.annual} € par an, ou {plan.price} € par mois sans engagement.</p>
