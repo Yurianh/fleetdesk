@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Lock, ArrowRight } from 'lucide-react'
+import { Lock, ArrowRight } from '@/lib/icons'
 
 const PLAN_LABEL = { pro: 'Pro', enterprise: 'Enterprise' }
 

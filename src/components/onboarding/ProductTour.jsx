@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
-import { Truck, Layers, Bell, Sparkles, ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { Truck, Layers, Bell, Sparkles, ChevronLeft, ChevronRight, X } from '@/lib/icons'
 import { useTranslation } from 'react-i18next'
 import { useOnboarding } from '@/lib/OnboardingContext'
 

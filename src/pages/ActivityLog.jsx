@@ -1,7 +1,7 @@
 import { useActivityLog } from '@/lib/useOrg'
 import { usePageTitle } from '@/lib/usePageTitle'
 import PageHeader from '@/components/shared/PageHeader'
-import { Truck, Users, Gauge, Wrench, ClipboardCheck, Droplets, ArrowLeftRight, Clock } from 'lucide-react'
+import { Truck, Users, Gauge, Wrench, ClipboardCheck, Droplets, ArrowLeftRight, Clock } from '@/lib/icons'
 
 const ACTION_META = {
   createVehicle:            { label: 'Ajout véhicule',       icon: Truck,          color: 'bg-blue-50 text-blue-600' },

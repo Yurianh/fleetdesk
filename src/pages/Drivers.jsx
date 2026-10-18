@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Plus, Search, ChevronRight, Users, Trash2, Loader2, Download, Truck, UserMinus } from 'lucide-react'
+import { Plus, Search, ChevronRight, Users, Trash2, Loader2, Download, Truck, UserMinus } from '@/lib/icons'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'

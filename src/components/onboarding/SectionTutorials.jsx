@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, Truck, Users, ArrowLeftRight, Gauge, Wrench,
   ClipboardCheck, Droplets, Sparkles, Play,
-} from 'lucide-react'
+} from '@/lib/icons'
 import { useOnboarding } from '@/lib/OnboardingContext'
 
 // Each entry launches an on-page coach-mark tour (see SectionTour). The id must

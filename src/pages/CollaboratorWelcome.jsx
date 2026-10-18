@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Users, CheckCircle2, Truck, Eye, EyeOff } from 'lucide-react'
+import { Users, CheckCircle2, Truck, Eye, EyeOff } from '@/lib/icons'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 

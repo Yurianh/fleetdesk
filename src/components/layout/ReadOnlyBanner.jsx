@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Lock } from 'lucide-react'
+import { Lock } from '@/lib/icons'
 import { useAccess } from '@/lib/capabilities'
 import { useAuth } from '@/lib/AuthContext'
 

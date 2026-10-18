@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
-import { Menu } from 'lucide-react'
+import { Menu } from '@/lib/icons'
 import Sidebar from './Sidebar'
 import AppLoader from './AppLoader'
 import BillingBanner from './BillingBanner'

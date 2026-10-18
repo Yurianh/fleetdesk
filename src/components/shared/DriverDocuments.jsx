@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { FileText, Pencil, Trash2, X, Check, AlertTriangle, CheckCircle2, Clock, Upload, ExternalLink, Loader2, Plus } from 'lucide-react'
+import { FileText, Pencil, Trash2, X, Check, AlertTriangle, CheckCircle2, Clock, Upload, ExternalLink, Loader2, Plus } from '@/lib/icons'
 import { format, differenceInDays, addYears, differenceInYears } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { Button } from '@/components/ui/button'

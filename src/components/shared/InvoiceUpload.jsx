@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { Paperclip, X, FileText, ImageIcon, Camera } from 'lucide-react'
+import { Paperclip, X, FileText, ImageIcon, Camera } from '@/lib/icons'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'

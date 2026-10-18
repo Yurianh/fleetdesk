@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown } from '@/lib/icons';
 
 export default function StatCard({ label, value, icon: Icon, delta, trend, sublabel = 'par rapport au mois dernier' }) {
   const trendColor = trend === 'up' ? 'text-emerald-600' : trend === 'down' ? 'text-red-500' : 'text-zinc-400';

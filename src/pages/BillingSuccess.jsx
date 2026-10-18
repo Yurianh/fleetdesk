@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { CheckCircle2, XCircle, Loader2, Truck, AlertCircle, ArrowRight, Sparkles } from 'lucide-react'
+import { CheckCircle2, XCircle, Loader2, Truck, AlertCircle, ArrowRight, Sparkles } from '@/lib/icons'
 import { supabase } from '@/lib/supabase'
 
 const GRADIENT = 'linear-gradient(135deg, #bfdbfe 0%, #d1fae5 45%, #fef3c7 100%)'
