@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro'
 import Navbar from '../components/Navbar.jsx'
 import CTASection from '../components/CTASection.astro'
 import Footer from '../components/Footer.astro'
-import { ICONS } from '../lib/icons.js'
+import { ICONS, ICON_VIEWBOX } from '../lib/icons.js'
 
 const categories = [
   {
@@ -190,7 +190,7 @@ const breadcrumb = {
           {cat.features.map(f => (
             <div class="py-7 first:md:pt-0 flex gap-5">
               <span class="flex-shrink-0 inline-flex items-center justify-center w-11 h-11 rounded-xl bg-[#0066FF]/[0.06]">
-                <svg class="w-[22px] h-[22px] text-[#0066FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={f.icon} />
+                <svg class="w-6 h-6 text-[#0066FF]" viewBox={ICON_VIEWBOX} fill="currentColor" set:html={f.icon} />
               </span>
               <div class="min-w-0">
                 <h3 class="text-lg font-semibold text-zinc-900 tracking-tight mb-1.5">{f.title}</h3>

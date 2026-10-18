@@ -1,15 +1,13 @@
 import { useEffect, useRef } from 'react'
-import { ICONS } from '../lib/icons.js'
+import { ICONS, ICON_VIEWBOX } from '../lib/icons.js'
 
 const APP_URL = 'https://app.fleetdesk.fr'
 
-// Icône du jeu partagé (même set que l'application).
-function Icon({ name, size = 20, className = '', strokeWidth = 1.75 }) {
+// Icône du jeu du site (Phosphor plein).
+function Icon({ name, size = 20, className = '' }) {
   return (
     <svg
-      width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth={strokeWidth}
-      strokeLinecap="round" strokeLinejoin="round"
+      width={size} height={size} viewBox={ICON_VIEWBOX} fill="currentColor"
       className={className} aria-hidden="true"
       dangerouslySetInnerHTML={{ __html: ICONS[name] }}
     />
@@ -130,7 +128,7 @@ export default function HeroSection() {
         {/* Copy */}
         <div className="max-w-2xl mb-12 lg:mb-14">
           <div style={delay(80)} className="enter inline-flex items-center gap-2 bg-[#E5EEFF] text-[#0052D6] text-xs font-semibold px-3.5 py-1.5 rounded-full mb-7">
-            <Icon name="truck" size={13} strokeWidth={2} />
+            <Icon name="truck" size={13} />
             Pour les flottes de 2 à 50 véhicules
           </div>
 
@@ -149,7 +147,7 @@ export default function HeroSection() {
             <a href="/pricing"
               className="inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-[#0066FF]/25">
               Essayer gratuitement
-              <Icon name="arrowRight" size={16} strokeWidth={2} />
+              <Icon name="arrowRight" size={16} />
             </a>
             <a href="#how"
               className="inline-flex items-center justify-center gap-2 border border-zinc-300 hover:border-zinc-400 text-zinc-700 hover:text-zinc-900 font-medium text-sm px-8 py-3.5 rounded-xl transition-all">
@@ -161,14 +159,14 @@ export default function HeroSection() {
             {["7 jours d'essai gratuit", 'Sans carte bancaire', 'Sans engagement'].map((item, i) => (
               <div key={item} className="flex items-center gap-2">
                 {i > 0 && <span className="hidden sm:block w-1 h-1 rounded-full bg-zinc-300 -ml-2.5" />}
-                <Icon name="check" size={15} strokeWidth={2.5} className="text-[#0066FF] flex-shrink-0" />
+                <Icon name="check" size={15} className="text-[#0066FF] flex-shrink-0" />
                 {item}
               </div>
             ))}
           </div>
           <a href="/diagnostic" style={delay(940)} className="enter mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-[#0066FF] hover:underline">
             Votre flotte est-elle exposée ? Faites le diagnostic en 2 minutes
-            <Icon name="arrowRight" size={14} strokeWidth={2} />
+            <Icon name="arrowRight" size={14} />
           </a>
         </div>
 
