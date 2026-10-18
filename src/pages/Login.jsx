@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Truck, Eye, EyeOff, Check, X } from 'lucide-react'
+import { Truck, Eye, EyeOff, Check, X } from '@/lib/icons'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useTranslation } from 'react-i18next'

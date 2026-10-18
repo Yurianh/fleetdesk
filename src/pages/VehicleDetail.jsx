@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Truck, Plus, FileText, Paperclip, Camera, X, ChevronRight, Pencil, Gauge } from 'lucide-react'
+import { ArrowLeft, Truck, Plus, FileText, Paperclip, Camera, X, ChevronRight, Pencil, Gauge } from '@/lib/icons'
 import { differenceInDays } from 'date-fns'
 import { format, addYears } from 'date-fns'
 import { useTranslation } from 'react-i18next'

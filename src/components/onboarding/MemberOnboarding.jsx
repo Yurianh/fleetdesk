@@ -1,5 +1,5 @@
 import React from 'react'
-import { Gauge, Droplets, ArrowLeftRight, Users, Sparkles, ArrowRight, X, PlayCircle } from 'lucide-react'
+import { Gauge, Droplets, ArrowLeftRight, Users, Sparkles, ArrowRight, X, PlayCircle } from '@/lib/icons'
 import { useTranslation } from 'react-i18next'
 import { useOnboarding } from '@/lib/OnboardingContext'
 

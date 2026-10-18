@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Truck, Users, ArrowLeftRight,
   Gauge, Wrench, ClipboardCheck, Droplets,
   X, ChevronLeft, ChevronRight, LogOut, Settings, History, Sparkles, IdCard, FileBarChart,
-} from 'lucide-react';
+} from '@/lib/icons';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/AuthContext';
 import { useFeature } from '@/lib/activity';

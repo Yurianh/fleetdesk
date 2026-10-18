@@ -1,5 +1,5 @@
 import React from 'react'
-import { Truck, Users, ArrowLeftRight, ClipboardCheck, Check, X, Sparkles, ArrowRight, PlayCircle, Wand2 } from 'lucide-react'
+import { Truck, Users, ArrowLeftRight, ClipboardCheck, Check, X, Sparkles, ArrowRight, PlayCircle, Wand2 } from '@/lib/icons'
 import { useTranslation } from 'react-i18next'
 import { useOnboarding } from '@/lib/OnboardingContext'
 

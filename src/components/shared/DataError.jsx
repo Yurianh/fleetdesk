@@ -1,5 +1,5 @@
 import React from 'react'
-import { AlertTriangle, RefreshCw } from 'lucide-react'
+import { AlertTriangle, RefreshCw } from '@/lib/icons'
 import { useTranslation } from 'react-i18next'
 
 // Renders a retryable error banner when any of the given react-query results

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Users, CreditCard, Car, Droplets, Pencil, Check, X, MapPin, Hash, Truck, ChevronRight, ArrowLeftRight, UserMinus, Search, Mail, Cake } from 'lucide-react'
+import { ArrowLeft, Users, CreditCard, Car, Droplets, Pencil, Check, X, MapPin, Hash, Truck, ChevronRight, ArrowLeftRight, UserMinus, Search, Mail, Cake } from '@/lib/icons'
 import { useTranslation } from 'react-i18next'
 import { useDateLocale } from '@/lib/useDateLocale'
 import { format, differenceInCalendarDays } from 'date-fns'

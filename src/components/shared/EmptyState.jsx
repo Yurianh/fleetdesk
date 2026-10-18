@@ -1,5 +1,5 @@
 import React from 'react'
-import { Inbox } from 'lucide-react'
+import { Inbox } from '@/lib/icons'
 import { Button } from '@/components/ui/button'
 import { useTranslation } from 'react-i18next'
 

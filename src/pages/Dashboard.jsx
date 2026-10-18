@@ -5,7 +5,7 @@ import {
   CheckCircle2, Loader2,
   TrendingUp, TrendingDown, Clock, Activity,
   Bell, ChevronRight, StickyNote, Check, Tag, X
-} from 'lucide-react'
+} from '@/lib/icons'
 import {
   format, differenceInDays, subMonths, eachMonthOfInterval,
   endOfMonth, isAfter, subDays

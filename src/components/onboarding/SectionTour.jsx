@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { ChevronLeft, ChevronRight, X, Sparkles } from 'lucide-react'
+import { ChevronLeft, ChevronRight, X, Sparkles } from '@/lib/icons'
 import { useOnboarding } from '@/lib/OnboardingContext'
 
 // On-page coach-mark tour, launched from Settings → Tutoriels. It navigates to

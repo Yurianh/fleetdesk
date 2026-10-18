@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import { format } from 'date-fns'
-import { Download, Wrench, Droplets, Fuel, CalendarClock, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Gauge, Coins } from 'lucide-react'
+import { Download, Wrench, Droplets, Fuel, CalendarClock, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Gauge, Coins } from '@/lib/icons'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/AuthContext'
 import { useDateLocale } from '@/lib/useDateLocale'
