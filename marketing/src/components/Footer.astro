@@ -1,4 +1,6 @@
 ---
+import { ICONS, ICON_VIEWBOX } from '../lib/icons.js'
+
 const APP_URL = 'https://app.fleetdesk.fr'
 const year = new Date().getFullYear()
 
@@ -6,11 +8,11 @@ const nav = [
   {
     title: 'Produit',
     links: [
-      { label: 'Fonctionnalités',          href: '/features' },
+      { label: 'Fonctionnalités',            href: '/features' },
       { label: 'Gestion de parc automobile', href: '/logiciel-gestion-de-flotte' },
-      { label: 'Suivi d\'entretien',        href: '/logiciel-suivi-entretien-vehicule' },
-      { label: 'Conformité',               href: '/conformite' },
-      { label: 'Tarifs',                   href: '/pricing'  },
+      { label: 'Suivi d\'entretien',          href: '/logiciel-suivi-entretien-vehicule' },
+      { label: 'Conformité',                 href: '/conformite' },
+      { label: 'Tarifs',                     href: '/pricing' },
     ],
   },
   {
@@ -25,74 +27,147 @@ const nav = [
   {
     title: 'Ressources',
     links: [
-      { label: 'Guides',              href: '/guides' },
+      { label: 'Guides',               href: '/guides' },
+      { label: 'Diagnostic de flotte', href: '/diagnostic' },
       { label: 'Modèle Excel gratuit', href: '/outils/modele-suivi-parc-automobile-excel' },
-      { label: 'Contact',             href: '/contact' },
-    ],
-  },
-  {
-    title: 'Légal',
-    links: [
-      { label: 'Mentions légales',  href: '/legal#mentions'        },
-      { label: 'CGU',               href: '/legal#cgu'             },
-      { label: 'Confidentialité',   href: '/legal#confidentialite' },
-      { label: 'RGPD',              href: '/legal#rgpd'            },
-    ],
-  },
-  {
-    title: 'Compte',
-    links: [
-      { label: 'Se connecter', href: `${APP_URL}/login`            },
-      { label: 'Commencer',    href: "/pricing" },
+      { label: 'Contact',              href: '/contact' },
     ],
   },
 ]
----
-<footer class="bg-white border-t border-zinc-100">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-    <div class="grid grid-cols-2 md:grid-cols-6 gap-10">
 
-      <!-- Brand -->
-      <div class="col-span-2 md:col-span-1 md:col-start-1">
-        <a href="/" class="flex items-center gap-2.5 mb-4">
-          <div class="w-8 h-8 bg-[#0066FF] rounded-lg flex items-center justify-center">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+const contact = [
+  { icon: ICONS.envelope, label: 'Écrire à l\'équipe', href: '/contact' },
+  { icon: ICONS.mapPin,   label: 'Conçu en France' },
+  { icon: ICONS.shield,   label: 'Données hébergées dans l\'UE', href: '/legal#rgpd' },
+]
+
+const legal = [
+  { label: 'Mentions légales', href: '/legal#mentions' },
+  { label: 'CGU',              href: '/legal#cgu' },
+  { label: 'Confidentialité',  href: '/legal#confidentialite' },
+  { label: 'RGPD',             href: '/legal#rgpd' },
+]
+---
+<!-- Footer gravé : encre bleue sur papier crème, paysage en bas (scripts/footer-landscape.mjs). -->
+<footer class="site-footer relative overflow-hidden">
+  <div class="relative max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20">
+    <div class="grid grid-cols-2 lg:grid-cols-[1.35fr_1fr_1fr_1fr_1.3fr] gap-x-8 gap-y-12">
+
+      <!-- Marque -->
+      <div class="col-span-2 lg:col-span-1">
+        <a href="/" class="inline-flex items-center gap-3 mb-6">
+          <span class="w-9 h-9 rounded-lg flex items-center justify-center bg-[var(--paper)]">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/>
               <rect x="9" y="11" width="14" height="10" rx="2"/>
               <circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
             </svg>
-          </div>
-          <span class="text-[15px] font-semibold text-zinc-900 tracking-tight">FleetDesk</span>
+          </span>
+          <span class="font-display text-[26px] leading-none tracking-tight">FleetDesk</span>
         </a>
-        <p class="text-sm leading-relaxed text-zinc-500">
-          La gestion de flotte pour les équipes qui bougent.
+        <p class="font-display italic text-[17px] leading-relaxed opacity-90 max-w-[17rem] mb-7">
+          La gestion de flotte pour les équipes qui bougent, sans tableur et sans oubli.
         </p>
+        <ul class="space-y-3">
+          {contact.map(c => (
+            <li class="flex items-center gap-3 font-display text-[16.5px]">
+              <svg width="17" height="17" viewBox={ICON_VIEWBOX} fill="currentColor" aria-hidden="true" set:html={c.icon} />
+              {c.href ? <a href={c.href} class="footer-link">{c.label}</a> : <span>{c.label}</span>}
+            </li>
+          ))}
+        </ul>
       </div>
 
-      <!-- Nav columns -->
+      <!-- Navigation -->
       {nav.map(col => (
         <div>
-          <p class="text-[10px] font-semibold uppercase tracking-[0.08em] text-zinc-500 mb-4">{col.title}</p>
+          <p class="footer-title">{col.title}</p>
           <ul class="space-y-2.5">
             {col.links.map(l => (
-              <li>
-                <a href={l.href} class="text-sm text-zinc-600 hover:text-zinc-900 transition-colors">
-                  {l.label}
-                </a>
-              </li>
+              <li><a href={l.href} class="footer-link font-display text-[16.5px]">{l.label}</a></li>
             ))}
           </ul>
         </div>
       ))}
-    </div>
 
-    <div class="mt-10 pt-6 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-3">
-      <p class="text-xs text-zinc-500">© {year} FleetDesk. Tous droits réservés.</p>
-      <div class="flex items-center gap-4">
-        <a href="/legal#confidentialite" class="text-xs text-zinc-500 hover:text-zinc-600 transition-colors">Confidentialité</a>
-        <a href="/legal#cgu" class="text-xs text-zinc-500 hover:text-zinc-600 transition-colors">CGU</a>
-        <a href="/legal#rgpd" class="text-xs text-zinc-500 hover:text-zinc-600 transition-colors">RGPD</a>
+      <!-- Essai -->
+      <div class="col-span-2 lg:col-span-1">
+        <p class="footer-title">Essai gratuit</p>
+        <p class="font-display italic text-[17px] leading-relaxed opacity-90 mb-5">
+          Sept jours pour voir toute votre flotte au même endroit. Sans carte bancaire.
+        </p>
+        <a href="/pricing" class="group inline-flex items-stretch border border-[var(--paper)]/70 rounded-sm overflow-hidden">
+          <span class="px-4 py-2.5 font-display italic text-[16px]">Démarrer l'essai</span>
+          <span class="w-11 flex items-center justify-center bg-[var(--paper)] text-[var(--ink)] transition-colors group-hover:bg-white">
+            <svg width="16" height="16" viewBox={ICON_VIEWBOX} fill="currentColor" aria-hidden="true" set:html={ICONS.arrowRight} />
+          </span>
+        </a>
+        <p class="mt-4 text-[14px] opacity-80">
+          Déjà client ? <a href={`${APP_URL}/login`} class="footer-link underline underline-offset-4 decoration-[var(--paper)]/40">Se connecter</a>
+        </p>
       </div>
     </div>
+
+    <!-- Mentions -->
+    <div class="mt-14 flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 font-display italic text-[14px]">
+      <p class="opacity-75">© {year} FleetDesk</p>
+      <ul class="flex flex-wrap items-center gap-y-2">
+        {legal.map((l, i) => (
+          <li class="flex items-center">
+            {i > 0 && <span class="mx-3 sm:mx-4 h-3.5 w-px bg-current opacity-50" aria-hidden="true"></span>}
+            <a href={l.href} class="footer-link">{l.label}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
   </div>
+
+  <!-- Paysage gravé -->
+  <img src="/footer-landscape.svg" alt="" width="1600" height="440" loading="lazy" decoding="async"
+       class="relative block w-full h-[230px] sm:h-[290px] lg:h-auto object-cover object-[60%_100%] -mt-2 sm:-mt-4 select-none pointer-events-none" />
 </footer>
+
+<style>
+  .site-footer {
+    --ink: #1238A8;
+    --paper: #F4EBD6;
+    background-color: var(--ink);
+    color: var(--paper);
+  }
+  /* Grain de papier, très léger, sur le fond bleu. */
+  .site-footer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: .22;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .footer-title {
+    font-family: 'Spectral', Georgia, serif;
+    font-size: 14px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+    padding-bottom: .9rem;
+    position: relative;
+  }
+  .footer-title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 28px;
+    height: 1px;
+    background: currentColor;
+    opacity: .7;
+  }
+  .footer-link {
+    color: var(--paper);
+    opacity: .92;
+    transition: opacity .15s;
+  }
+  .footer-link:hover { opacity: 1; text-decoration: underline; text-underline-offset: 4px; }
+  .footer-link:focus-visible { outline: 2px solid var(--paper); outline-offset: 3px; border-radius: 2px; }
+</style>
