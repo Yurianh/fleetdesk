@@ -48,7 +48,7 @@ const legal = [
   { label: 'RGPD',             href: '/legal#rgpd' },
 ]
 ---
-<!-- Footer gravé : encre bleue sur papier crème, paysage en bas (scripts/footer-landscape.mjs). -->
+<!-- Footer gravé : bleu FleetDesk, texte blanc, paysage en bas (scripts/footer-landscape.mjs). -->
 <footer class="site-footer relative overflow-hidden">
   <div class="relative max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20">
     <div class="grid grid-cols-2 lg:grid-cols-[1.35fr_1fr_1fr_1fr_1.3fr] gap-x-8 gap-y-12">
@@ -63,14 +63,14 @@ const legal = [
               <circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
             </svg>
           </span>
-          <span class="font-display text-[26px] leading-none tracking-tight">FleetDesk</span>
+          <span class="text-[22px] font-semibold leading-none tracking-tight">FleetDesk</span>
         </a>
-        <p class="font-display italic text-[17px] leading-relaxed opacity-90 max-w-[17rem] mb-7">
+        <p class="text-[15px] leading-relaxed opacity-85 max-w-[17rem] mb-7">
           La gestion de flotte pour les équipes qui bougent, sans tableur et sans oubli.
         </p>
         <ul class="space-y-3">
           {contact.map(c => (
-            <li class="flex items-center gap-3 font-display text-[16.5px]">
+            <li class="flex items-center gap-3 text-[15px]">
               <svg width="17" height="17" viewBox={ICON_VIEWBOX} fill="currentColor" aria-hidden="true" set:html={c.icon} />
               {c.href ? <a href={c.href} class="footer-link">{c.label}</a> : <span>{c.label}</span>}
             </li>
@@ -84,7 +84,7 @@ const legal = [
           <p class="footer-title">{col.title}</p>
           <ul class="space-y-2.5">
             {col.links.map(l => (
-              <li><a href={l.href} class="footer-link font-display text-[16.5px]">{l.label}</a></li>
+              <li><a href={l.href} class="footer-link text-[15px]">{l.label}</a></li>
             ))}
           </ul>
         </div>
@@ -93,23 +93,23 @@ const legal = [
       <!-- Essai -->
       <div class="col-span-2 lg:col-span-1">
         <p class="footer-title">Essai gratuit</p>
-        <p class="font-display italic text-[17px] leading-relaxed opacity-90 mb-5">
+        <p class="text-[15px] leading-relaxed opacity-85 mb-5">
           Sept jours pour voir toute votre flotte au même endroit. Sans carte bancaire.
         </p>
-        <a href="/pricing" class="group inline-flex items-stretch border border-[var(--paper)]/70 rounded-sm overflow-hidden">
-          <span class="px-4 py-2.5 font-display italic text-[16px]">Démarrer l'essai</span>
+        <a href="/pricing" class="group inline-flex items-stretch border border-white/70 rounded-lg overflow-hidden">
+          <span class="px-4 py-2.5 text-[15px] font-medium">Démarrer l'essai</span>
           <span class="w-11 flex items-center justify-center bg-[var(--paper)] text-[var(--ink)] transition-colors group-hover:bg-white">
             <svg width="16" height="16" viewBox={ICON_VIEWBOX} fill="currentColor" aria-hidden="true" set:html={ICONS.arrowRight} />
           </span>
         </a>
         <p class="mt-4 text-[14px] opacity-80">
-          Déjà client ? <a href={`${APP_URL}/login`} class="footer-link underline underline-offset-4 decoration-[var(--paper)]/40">Se connecter</a>
+          Déjà client ? <a href={`${APP_URL}/login`} class="footer-link underline underline-offset-4 decoration-white/40">Se connecter</a>
         </p>
       </div>
     </div>
 
     <!-- Mentions -->
-    <div class="mt-14 flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 font-display italic text-[14px]">
+    <div class="mt-14 flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 text-[13.5px]">
       <p class="opacity-75">© {year} FleetDesk</p>
       <ul class="flex flex-wrap items-center gap-y-2">
         {legal.map((l, i) => (
@@ -129,8 +129,8 @@ const legal = [
 
 <style>
   .site-footer {
-    --ink: #1238A8;
-    --paper: #F4EBD6;
+    --ink: #0052D6;
+    --paper: #FFFFFF;
     background-color: var(--ink);
     color: var(--paper);
   }
@@ -145,9 +145,9 @@ const legal = [
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   .footer-title {
-    font-family: 'Spectral', Georgia, serif;
-    font-size: 14px;
-    letter-spacing: .16em;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .14em;
     text-transform: uppercase;
     margin-bottom: 1.25rem;
     padding-bottom: .9rem;

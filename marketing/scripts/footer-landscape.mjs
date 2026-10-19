@@ -1,127 +1,252 @@
-// Génère public/footer-landscape.svg : paysage gravé (collines, plaine, route,
-// utilitaire) en traits bleus sur papier crème, pour le bas du footer.
+// Génère public/footer-landscape.svg : une rue de ville gravée (immeubles,
+// arbres, réverbères, trottoir, chaussée, utilitaire), traits bleu FleetDesk
+// sur papier blanc, pour le bas du footer.
 //   node scripts/footer-landscape.mjs
 // Déterministe (graine fixe) : relancer donne le même fichier.
 import { writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
-const W = 1600, H = 440
-const INK = 'var(--ink, #1238A8)', PAPER = 'var(--paper, #F4EBD6)'
+const W = 1600, H = 520
+const INK = '#0052D6', PAPER = '#F7F9FF'
+const GROUND = 408            // pied des façades
+const CURB = 426              // bordure du trottoir
+const LANE = 492              // roues de l'utilitaire
 
-let seed = 7
+let seed = 11
 const rnd = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646
 const r = (a, b) => a + rnd() * (b - a)
+const ri = (a, b) => Math.floor(r(a, b + 1))
 const f = n => Math.round(n * 10) / 10
 
-// Bruit 1D lissé (valeurs aléatoires interpolées en cosinus), plusieurs octaves.
-function noise(freq, oct = 4) {
-  const tables = Array.from({ length: oct }, () => Array.from({ length: 400 }, rnd))
-  return x => {
-    let v = 0, amp = 1, fr = freq, norm = 0
-    for (const t of tables) {
-      const p = (x + 1000) * fr, i = Math.floor(p), u = (1 - Math.cos((p - i) * Math.PI)) / 2
-      v += amp * (t[i % 400] * (1 - u) + t[(i + 1) % 400] * u); norm += amp; amp *= 0.5; fr *= 2.1
-    }
-    return v / norm
+// Chaque couche accumule ses tracés dans quelques <path> (fichier compact).
+function layer() {
+  const fills = [], strokes = { 0.6: '', 0.8: '', 1: '', 1.3: '', 1.8: '' }
+  return {
+    fill: d => fills.push(d),
+    line: (w, d) => { strokes[w] += d },
+    svg: () => fills.map(d => `<path d="${d}" fill="${PAPER}"/>`).join('')
+      + Object.entries(strokes).filter(([, d]) => d).map(([w, d]) =>
+        `<path d="${d}" fill="none" stroke="${INK}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`).join(''),
   }
 }
+const rect = (x, y, w, h) => `M${f(x)},${f(y)}h${f(w)}v${f(h)}h${f(-w)}Z`
+const hl = (x1, x2, y) => `M${f(x1)},${f(y)}H${f(x2)}`
+const vl = (x, y1, y2) => `M${f(x)},${f(y1)}V${f(y2)}`
 
-// Une chaîne de collines : remplissage papier, puis lignes de gravure parallèles
-// à la crête, plus serrées et plus continues sur le versant à l'ombre.
-function ridge({ base, amp, freq, depth, gap, peak }) {
-  const n = noise(freq)
-  const top = x => base - amp * n(x) - (peak ? peak.h * Math.exp(-(((x - peak.x) / peak.w) ** 2)) : 0)
-  const pts = []
-  for (let x = -10; x <= W + 10; x += 6) pts.push([x, top(x)])
-  const fill = `M${pts.map(p => `${f(p[0])},${f(p[1])}`).join('L')}L${W + 10},${H}L-10,${H}Z`
-  const crest = `M${pts.map(p => `${f(p[0])},${f(p[1])}`).join('L')}`
-  let d = ''
-  for (let k = 1; k * gap < depth; k++) {
-    const off = k * gap * (1 + k * 0.04)
-    let x = -10
-    while (x < W) {
-      const len = r(14, 70), x2 = Math.min(W + 10, x + len)
-      const slope = (top(x + 4) - top(x - 4)) / 8
-      const shade = slope < 0 ? 0.92 : 0.45                 // versant gauche à l'ombre
-      if (rnd() < shade * (1 - k * gap / depth * 0.75)) {
-        const seg = []
-        for (let xx = x; xx <= x2; xx += 5) seg.push([xx, top(xx) + off + Math.sin(xx * 0.05 + k) * 0.8])
-        d += `M${seg.map(p => `${f(p[0])},${f(p[1])}`).join('L')}`
-      }
-      x = x2 + r(4, 18)
+// Hachures horizontales interrompues, comme une gravure au burin.
+function hatchH(L, x, y, w, h, gap, density, wgt = 0.6) {
+  for (let yy = y + gap / 2; yy < y + h; yy += gap) {
+    let xx = x + r(0, 6)
+    while (xx < x + w) {
+      const len = r(8, 34), x2 = Math.min(x + w, xx + len)
+      if (rnd() < density) L.line(wgt, hl(xx, x2, yy + r(-0.3, 0.3)))
+      xx = x2 + r(2, 9)
     }
   }
-  return `<path d="${fill}" fill="${PAPER}"/><path d="${d}" fill="none" stroke="${INK}" stroke-width="1.1" stroke-linecap="round"/><path d="${crest}" fill="none" stroke="${INK}" stroke-width="1.8"/>`
+}
+const hatchV = (L, x, y, w, h, gap, wgt = 0.6) => { for (let xx = x + gap / 2; xx < x + w; xx += gap) L.line(wgt, vl(xx, y, y + h)) }
+
+// ── Lointain : toits et coupoles, gravure légère ────────────────────────────
+function skyline() {
+  const L = layer()
+  let x = -20
+  while (x < W + 20) {
+    const w = r(40, 110), h = r(70, 150), y = GROUND - 40 - h
+    L.fill(rect(x, y, w, h + 60)); L.line(0.8, `M${f(x)},${f(y + h + 60)}V${f(y)}H${f(x + w)}V${f(y + h + 60)}`)
+    hatchH(L, x + 2, y + 4, w - 4, h + 50, 3.2, 0.42)
+    if (rnd() < 0.5) for (let c = 0; c < ri(1, 3); c++) { const cx = x + r(6, w - 14); L.fill(rect(cx, y - 10, 8, 10)); L.line(0.8, `M${f(cx)},${f(y)}V${f(y - 10)}h8V${f(y)}`) }
+    x += w - r(0, 6)
+  }
+  // Une coupole et une flèche au loin, pour situer la ville.
+  const dome = (cx, base, rad) => {
+    L.fill(`M${cx - rad},${base}A${rad},${rad * 1.1} 0 0 1 ${cx + rad},${base}Z`)
+    L.line(1, `M${cx - rad},${base}A${rad},${rad * 1.1} 0 0 1 ${cx + rad},${base}M${cx},${f(base - rad * 1.1)}v-14`)
+    for (let k = -3; k <= 3; k++) L.line(0.6, `M${cx + k * rad / 4},${base}Q${cx + k * rad / 7},${f(base - rad * 0.9)} ${cx},${f(base - rad * 1.1)}`)
+    L.fill(rect(cx - rad - 6, base, 2 * rad + 12, 40)); L.line(1, rect(cx - rad - 6, base, 2 * rad + 12, 40)); hatchV(L, cx - rad - 4, base + 4, 2 * rad + 8, 30, 6)
+  }
+  dome(470, 176, 30)
+  const sx = 1270
+  L.fill(`M${sx - 14},200L${sx},90L${sx + 14},200Z`); L.line(1, `M${sx - 14},200L${sx},90L${sx + 14},200`)
+  for (let y = 110; y < 200; y += 7) L.line(0.6, hl(sx - (y - 90) * 0.12, sx + (y - 90) * 0.12, y))
+  return L.svg()
 }
 
-// Plaine : traits horizontaux qui s'espacent vers le premier plan, touffes d'herbe.
-function plain(y0) {
-  let d = ''
-  for (let y = y0 + 4, g = 3; y < H; y += g, g *= 1.09) {
-    let x = r(-20, 0)
-    while (x < W) {
-      const len = r(10, 40 + g * 6)
-      if (rnd() < 0.55) d += `M${f(x)},${f(y + r(-0.6, 0.6))}h${f(len)}`
-      x += len + r(6, 22 + g * 3)
+// ── Rang d'immeubles haussmanniens ───────────────────────────────────────────
+function building(L, x, w) {
+  const floors = ri(5, 6), fh = r(25, 29), shop = 38
+  const top = GROUND - shop - floors * fh
+  const roofH = r(26, 34), inset = 9
+  const cols = Math.max(2, Math.round((w - 16) / 26)), cw = (w - 16) / cols
+  const dark = rnd() < 0.45
+
+  L.fill(rect(x, top, w, GROUND - top))
+  L.line(1.3, `M${f(x)},${GROUND}V${f(top)}H${f(x + w)}V${GROUND}`)
+  // Toit mansardé, lucarnes, souches de cheminée.
+  L.fill(`M${f(x - 2)},${f(top)}L${f(x + inset)},${f(top - roofH)}H${f(x + w - inset)}L${f(x + w + 2)},${f(top)}Z`)
+  L.line(1.3, `M${f(x - 2)},${f(top)}L${f(x + inset)},${f(top - roofH)}H${f(x + w - inset)}L${f(x + w + 2)},${f(top)}`)
+  for (let yy = top - roofH + 3; yy < top; yy += 2.6) {
+    const t = (yy - (top - roofH)) / roofH
+    L.line(0.6, hl(x + inset - t * (inset + 2) + 1, x + w - inset + t * (inset + 2) - 1, yy))
+  }
+  for (let c = 0; c < cols; c += 2) {
+    const dx = x + 8 + c * cw + cw / 2 - 6, dy = top - roofH * 0.72
+    L.fill(`M${f(dx)},${f(top - 2)}V${f(dy)}l6,-7l6,7V${f(top - 2)}Z`)
+    L.line(1, `M${f(dx)},${f(top - 2)}V${f(dy)}l6,-7l6,7V${f(top - 2)}`)
+    hatchV(L, dx + 2, dy + 2, 8, top - dy - 5, 2.2)
+  }
+  for (let c = 0; c < ri(1, 3); c++) {
+    const cx = x + r(inset + 4, w - inset - 22), ch = r(12, 22)
+    L.fill(rect(cx, top - roofH - ch, 18, ch + 2)); L.line(1, `M${f(cx)},${f(top - roofH)}V${f(top - roofH - ch)}h18V${f(top - roofH)}`)
+    for (let p = 0; p < 3; p++) L.line(1, vl(cx + 3 + p * 6, top - roofH - ch, top - roofH - ch - 5))
+    hatchV(L, cx + 1, top - roofH - ch + 2, 16, ch - 2, 3)
+  }
+  // Corniche et bandeaux d'étage.
+  L.line(1.3, hl(x - 3, x + w + 3, top + 3))
+  for (let fl = 1; fl <= floors; fl++) L.line(0.8, hl(x, x + w, top + fl * fh))
+  // Ombre de façade : gravure plus dense sur un immeuble sur deux.
+  hatchH(L, x + 1, top + 5, w - 2, floors * fh - 5, dark ? 2.2 : 3.6, dark ? 0.8 : 0.45)
+  // Fenêtres : encadrement, vitrage hachuré, croisillon ; balcons filants.
+  for (let fl = 0; fl < floors; fl++) {
+    const fy = top + fl * fh + 5, wh = fh - 9
+    for (let c = 0; c < cols; c++) {
+      const wx = x + 8 + c * cw + cw / 2 - 5.5
+      L.fill(rect(wx - 1.5, fy - 1.5, 14, wh + 3))
+      L.line(0.8, rect(wx, fy, 11, wh))
+      hatchV(L, wx, fy + 1, 11, wh - 2, 1.9, 0.6)
+      L.line(0.8, vl(wx + 5.5, fy, fy + wh))
+      if (rnd() < 0.3) L.line(1, `M${f(wx - 1)},${f(fy - 3)}h13`)
+    }
+    if (fl === 1 || fl === floors - 1) {
+      const by = fy + wh - 2
+      L.line(1.3, hl(x + 3, x + w - 3, by)); L.line(1, hl(x + 3, x + w - 3, by - 6))
+      for (let bx = x + 5; bx < x + w - 4; bx += 2.6) L.line(0.6, vl(bx, by - 6, by))
     }
   }
-  let g = ''
-  for (let i = 0; i < 260; i++) {
-    const y = y0 + 20 + (H - y0 - 20) * Math.pow(rnd(), 0.7), s = 0.25 + ((y - y0) / (H - y0)) * 1.4
-    const x = r(0, W)
-    if (y > 286 && y < 316) continue                         // pas d'herbe sur la route
-    for (let b = 0; b < 7; b++) {
-      const a = -Math.PI / 2 + r(-0.9, 0.9), l = r(8, 20) * s
-      g += `M${f(x + r(-4, 4) * s)},${f(y)}q${f(Math.cos(a) * l * 0.3)},${f(-l * 0.6)},${f(Math.cos(a) * l)},${f(Math.sin(a) * l)}`
+  // Rez-de-chaussée : vitrines, store rayé, porte cochère.
+  const sy = GROUND - shop
+  L.line(1.3, hl(x, x + w, sy))
+  const door = x + w / 2 - 9
+  L.fill(`M${f(door)},${GROUND}V${f(sy + 12)}a9,9 0 0 1 18,0V${GROUND}Z`)
+  L.line(1, `M${f(door)},${GROUND}V${f(sy + 12)}a9,9 0 0 1 18,0V${GROUND}`)
+  hatchV(L, door + 1, sy + 8, 16, shop - 8, 2)
+  for (const [a, b] of [[x + 6, door - 6], [door + 24, x + w - 6]]) {
+    if (b - a < 16) continue
+    L.line(1, rect(a, sy + 12, b - a, shop - 16))
+    hatchH(L, a + 1, sy + 13, b - a - 2, shop - 18, 2, 0.8)
+    if (rnd() < 0.7) {
+      const aw = sy + 4
+      L.fill(`M${f(a - 3)},${f(aw)}H${f(b + 3)}l5,12H${f(a - 8)}Z`)
+      L.line(1, `M${f(a - 3)},${f(aw)}H${f(b + 3)}l5,12H${f(a - 8)}Z`)
+      for (let s = a - 3; s < b + 3; s += 6) L.line(0.8, `M${f(s)},${f(aw)}l${f(-2)},12`)
+      let sc = ''
+      for (let s = a - 8; s < b + 8; s += 6) sc += `M${f(s)},${f(aw + 12)}q3,4 6,0`
+      L.line(1, sc)
     }
   }
-  return `<path d="M-10,${y0}H${W + 10}V${H}H-10Z" fill="${PAPER}"/>`
-    + `<path d="${d}" fill="none" stroke="${INK}" stroke-width="1" stroke-linecap="round" opacity=".85"/>`
-    + `<path d="${g}" fill="none" stroke="${INK}" stroke-width="1.2" stroke-linecap="round"/>`
+}
+function street() {
+  const L = layer()
+  let x = -30
+  while (x < W + 30) { const w = r(130, 210); building(L, x, w); x += w + r(0, 3) }
+  return L.svg()
 }
 
-// Route de campagne qui traverse la plaine, légèrement ondulée.
-const roadY = x => 300 + Math.sin(x / 260) * 5 + Math.sin(x / 97) * 1.5
-function road() {
-  const edge = o => { let s = ''; for (let x = -10; x <= W + 10; x += 8) s += `${s ? 'L' : 'M'}${x},${f(roadY(x) + o)}`; return s }
-  const top = [], bot = []
-  for (let x = -10; x <= W + 10; x += 8) { top.push(`${x},${f(roadY(x) - 9)}`); bot.unshift(`${x},${f(roadY(x) + 11)}`) }
-  let dash = ''
-  for (let x = 0; x < W; x += 34) dash += `M${x},${f(roadY(x) + 1)}h16`
-  let gravel = ''
-  for (let i = 0; i < 500; i++) { const x = r(0, W); gravel += `M${f(x)},${f(roadY(x) + r(-8, 10))}h${f(r(2, 7))}` }
-  return `<path d="M${top.join('L')}L${bot.join('L')}Z" fill="${PAPER}"/>`
-    + `<path d="${edge(-9)}${edge(11)}" fill="none" stroke="${INK}" stroke-width="1.4"/>`
-    + `<path d="${gravel}" fill="none" stroke="${INK}" stroke-width=".8" opacity=".5"/>`
-    + `<path d="${dash}" fill="none" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/>`
+// ── Arbres d'alignement et réverbères ───────────────────────────────────────
+function tree(L, cx) {
+  const base = CURB - 6, crown = base - r(150, 168), rad = r(58, 70)
+  L.fill(`M${cx - 5},${base}L${cx - 3},${f(crown + rad * 0.6)}h6L${cx + 5},${base}Z`)
+  L.line(1.3, `M${cx - 5},${base}L${cx - 3},${f(crown + rad * 0.6)}M${cx + 5},${base}L${cx + 3},${f(crown + rad * 0.6)}`)
+  for (let i = 0; i < 6; i++) L.line(0.6, hl(cx - 4, cx + 4, base - 10 - i * 12))
+  L.line(1, rect(cx - 14, base - 2, 28, 4))
+  // Feuillage : grappes de petites boucles, plus denses en bas (ombre).
+  const blobs = Array.from({ length: 11 }, () => [cx + r(-rad, rad) * 0.85, crown + r(-rad, rad) * 0.5, r(20, 30)])
+  for (const [bx, by, br] of blobs) L.fill(`M${f(bx - br)},${f(by)}a${f(br)},${f(br * 0.85)} 0 1 0 ${f(2 * br)},0a${f(br)},${f(br * 0.85)} 0 1 0 ${f(-2 * br)},0Z`)
+  let leaves = ''
+  for (let i = 0; i < 700; i++) {
+    const [bx, by, br] = blobs[i % blobs.length]
+    const a = r(0, Math.PI * 2), d = Math.sqrt(rnd()) * br
+    const lx = bx + Math.cos(a) * d, ly = by + Math.sin(a) * d * 0.85
+    if (ly < by - br * 0.2 && rnd() < 0.6) continue
+    leaves += `M${f(lx)},${f(ly)}q${f(r(1, 3))},${f(r(-3, -1))} ${f(r(4, 6))},${f(r(-1, 1))}`
+  }
+  L.line(0.8, leaves)
+  let rim = ''
+  for (const [bx, by, br] of blobs) for (let k = 0; k < 9; k++) {
+    const a = -Math.PI + (k / 8) * Math.PI * 1.1 + r(-0.1, 0.1)
+    rim += `M${f(bx + Math.cos(a) * br)},${f(by + Math.sin(a) * br * 0.85)}q2,-3 5,-1`
+  }
+  L.line(1, rim)
+}
+function lamp(L, cx) {
+  const base = CURB - 4, top = base - 112
+  L.line(1.8, vl(cx, base, top + 10))
+  L.line(1, `M${cx - 4},${base}h8M${cx - 3},${base - 18}h6M${cx},${top + 10}q0,-8 -8,-10`)
+  L.fill(`M${cx - 15},${top}l4,-10h8l4,10Z`)
+  L.line(1, `M${cx - 15},${top}l4,-10h8l4,10ZM${cx - 11},${top - 10}l4,-4l4,4M${cx - 7},${top}v-10`)
+  L.line(0.6, `M${cx - 13},${top - 3}h12M${cx - 12},${top - 6}h10`)
+}
+function furniture() {
+  const L = layer()
+  for (const x of [90, 610, 1110, 1520]) tree(L, x)
+  for (const x of [350, 860, 1340]) lamp(L, x)
+  return L.svg()
 }
 
-// Utilitaire vu de profil, roulant vers la droite, avec hachures de volume.
-function van(cx) {
-  const y = roadY(cx) + 4, x = cx - 62
-  const body = `M${x},${y - 8}V${y - 46}q0,-6 6,-6H${x + 86}q6,0 9,5l15,22q3,4 8,5l5,1q5,1 5,6V${y - 8}q0,3 -3,3H${x + 3}q-3,0 -3,-3Z`
-  let hatch = ''
-  for (let i = 0; i < 9; i++) hatch += `M${x + 4},${y - 12 - i * 3.6}H${x + 66}`
-  const wheel = wx => `<circle cx="${wx}" cy="${y - 5}" r="10" fill="${INK}"/><circle cx="${wx}" cy="${y - 5}" r="4" fill="${PAPER}"/>`
-  return `<g>`
-    + `<path d="M${x - 40},${y + 2}h190" stroke="${INK}" stroke-width="1" opacity=".6"/>`
-    + `<path d="${body}" fill="${PAPER}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>`
-    + `<path d="${hatch}" stroke="${INK}" stroke-width="1" opacity=".75"/>`
-    + `<path d="M${x + 88},${y - 46}h5l12,18h-17Z" fill="${INK}"/>`
-    + `<path d="M${x + 70},${y - 52}V${y - 8}M${x + 74},${y - 30}h7" stroke="${INK}" stroke-width="1.6"/>`
-    + `<path d="M${x + 128},${y - 18}h6" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>`
-    + wheel(x + 24) + wheel(x + 104)
-    + `<path d="M${x - 8},${y - 20}h-14M${x - 10},${y - 30}h-22M${x - 6},${y - 12}h-10" stroke="${INK}" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>`
-    + `</g>`
+// ── Trottoir et chaussée ────────────────────────────────────────────────────
+function ground() {
+  const L = layer()
+  L.fill(rect(-10, GROUND, W + 20, H - GROUND))
+  L.line(1.3, hl(-10, W + 10, GROUND))
+  for (let x = r(0, 30); x < W; x += r(34, 44)) L.line(0.6, `M${f(x)},${GROUND + 2}l-6,${CURB - GROUND - 4}`)
+  hatchH(L, -10, GROUND + 2, W + 20, CURB - GROUND - 4, 3, 0.25)
+  L.line(1.8, hl(-10, W + 10, CURB)); L.line(1, hl(-10, W + 10, CURB + 4))
+  // Chaussée : grain d'asphalte, plus serré au premier plan, marquage au sol.
+  for (let y = CURB + 9, g = 6; y < H; y += g, g *= 0.97) hatchH(L, -10, y, W + 20, 1, 1, 0.38, 0.6)
+  for (let x = 20; x < W; x += 96) L.line(1.8, hl(x, x + 48, LANE + 20))
+  return L.svg()
+}
+
+// ── Utilitaire FleetDesk, de profil vers la droite ──────────────────────────
+function van(x) {
+  const L = layer(), y = LANE
+  const len = 236, roof = y - 104
+  const body = `M${x},${y - 14}V${roof + 10}q0,-10 10,-10H${x + 160}q8,0 12,6l26,40q4,6 12,7l14,3q10,2 10,12V${y - 14}q0,4 -4,4H${x + 4}q-4,0 -4,-4Z`
+  // Ombre portée hachurée.
+  for (let k = 0; k < 5; k++) L.line(0.8, hl(x - 6 + k * 3, x + len + 8 - k * 4, y + 2 + k * 2))
+  L.fill(body)
+  // Volume : hachures du bas de caisse, plus serrées vers le sol.
+  for (let yy = y - 46, g = 5; yy < y - 15; yy += g, g *= 0.85) L.line(0.6, hl(x + 3, x + len - 4, yy))
+  L.line(1.8, body)
+  // Vitre conducteur, montant, rétroviseur, phare, pare-chocs.
+  L.fill(`M${x + 168},${roof + 10}l22,34H${x + 158}V${roof + 10}Z`)
+  L.line(1.3, `M${x + 168},${roof + 10}l22,34H${x + 158}V${roof + 10}Z`)
+  hatchV(L, x + 159, roof + 11, 22, 32, 2.2)
+  L.line(1.3, `M${x + 152},${roof}V${y - 14}M${x + 200},${roof + 50}l6,-4h8v8h-10`)
+  L.fill(rect(x + 222, y - 50, 10, 7)); L.line(1, rect(x + 222, y - 50, 10, 7))
+  L.line(1.8, `M${x + 214},${y - 22}h24`)
+  // Porte latérale coulissante et portes arrière.
+  L.line(1, `M${x + 96},${roof + 6}V${y - 18}M${x + 8},${roof + 6}V${y - 18}M${x + 90},${y - 58}h-12M${x + 140},${y - 58}h-8`)
+  L.line(0.8, `M${x + 96},${roof + 14}H${x + 150}`)
+  // Marque FleetDesk sur le flanc.
+  L.fill(rect(x + 26, roof + 30, 20, 20)); L.line(1.3, rect(x + 26, roof + 30, 20, 20))
+  L.line(1.3, `M${x + 30},${roof + 43}v-8h8M${x + 34},${roof + 39}h8v8h-8Z`)
+  L.line(1.3, hl(x + 52, x + 82, roof + 36)); L.line(0.8, hl(x + 52, x + 74, roof + 44))
+  // Roues : passages de roue, pneu, jante à rayons.
+  for (const wx of [x + 50, x + 190]) {
+    L.fill(`M${wx - 24},${y - 14}a24,24 0 0 1 48,0Z`); L.line(1.3, `M${wx - 24},${y - 14}a24,24 0 0 1 48,0`)
+    L.fill(`M${wx - 19},${y - 5}a19,19 0 1 0 38,0a19,19 0 1 0 -38,0Z`)
+    for (let rr = 19; rr > 11; rr -= 1.6) L.line(0.8, `M${f(wx - rr)},${y - 5}a${f(rr)},${f(rr)} 0 1 0 ${f(2 * rr)},0a${f(rr)},${f(rr)} 0 1 0 ${f(-2 * rr)},0`)
+    L.line(1.8, `M${wx - 19},${y - 5}a19,19 0 1 0 38,0a19,19 0 1 0 -38,0`)
+    for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3; L.line(1, `M${wx},${y - 5}l${f(Math.cos(a) * 9)},${f(Math.sin(a) * 9)}`) }
+    L.line(1.3, `M${wx - 3},${y - 5}a3,3 0 1 0 6,0a3,3 0 1 0 -6,0`)
+  }
+  // Traits de vitesse.
+  L.line(1, `M${x - 12},${y - 70}h-40M${x - 10},${y - 50}h-64M${x - 14},${y - 30}h-30`)
+  return L.svg()
 }
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">`
-  + ridge({ base: 175, amp: 95, freq: 0.0045, depth: 110, gap: 3.4, peak: { x: 1180, w: 150, h: 85 } })
-  + ridge({ base: 222, amp: 50, freq: 0.007, depth: 60, gap: 3.2, peak: { x: 330, w: 120, h: 30 } })
-  + plain(232)
-  + road()
-  + van(980)
-  + `</svg>`
+  + skyline() + street() + ground() + furniture() + van(930) + `</svg>`
 
 const out = fileURLToPath(new URL('../public/footer-landscape.svg', import.meta.url))
 writeFileSync(out, svg)
