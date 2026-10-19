@@ -10,6 +10,7 @@ import ReadOnlyBanner from './ReadOnlyBanner'
 import { OnboardingProvider, useOnboarding } from '@/lib/OnboardingContext'
 import ProductTour from '@/components/onboarding/ProductTour'
 import SectionTour from '@/components/onboarding/SectionTour'
+import WhatsNewDialog from '@/components/shared/WhatsNewDialog'
 import {
   useFleetRealtime,
   useVehicles, useDrivers, useAssignments,
@@ -116,7 +117,7 @@ export default function AppLayout() {
         <div className="flex-1 flex flex-col overflow-hidden min-w-0">
 
           {/* Mobile top bar */}
-          <header className="lg:hidden flex items-center h-14 px-4 bg-background border-b border-zinc-100">
+          <header className="fd-topbar lg:hidden flex items-center h-14 px-4 bg-background border-b border-zinc-100">
             <button
               onClick={() => setSidebarOpen(true)}
               className="p-2 -ml-2 text-zinc-500 hover:text-zinc-900"
@@ -138,6 +139,8 @@ export default function AppLayout() {
       <ProductTour />
       <SectionTour />
       <TourReadyBridge ready={loaderGone} />
+      {/* Nouveautés des mises à jour majeures, une fois par utilisateur (src/lib/releases.js). */}
+      <WhatsNewDialog ready={loaderGone} />
 
       {/* Loader overlay — fades out once data is ready, then unmounts */}
       {!loaderGone && (

@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from './supabase'
 import { mockUser } from './mockData'
 import { clearLanding } from '@/lib/motion'
+import { syncDesignFromUser } from '@/lib/design'
 import { resolveAccess } from './capabilities'
 import { setWritable } from './writeAccess'
 
@@ -25,6 +26,8 @@ export function AuthProvider({ children }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const user = session?.user ?? null
       setUser(user)
+      // Le design choisi suit le compte d'un appareil à l'autre.
+      syncDesignFromUser(user)
       // Sync a cross-subdomain cookie so the marketing site can detect auth state
       if (user) {
         document.cookie = 'fd_auth=1; domain=.fleetdesk.fr; path=/; max-age=604800; SameSite=Lax'

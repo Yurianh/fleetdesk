@@ -159,10 +159,10 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
   }, [ranked, vehicles, months, vehicleMonthlyKm, fleetTotal])
 
   return (
-    <div data-land className="bg-white rounded-xl p-4 sm:p-6 shadow-sm mb-8">
+    <div data-land className="fd-plate bg-white rounded-xl p-4 sm:p-6 shadow-sm mb-8">
       <div data-land className="flex flex-wrap items-start justify-between gap-3 mb-3">
         <div>
-          <h2 className="text-base font-bold text-zinc-900">Utilisation des véhicules</h2>
+          <h2 className="fd-title text-base font-bold text-zinc-900">Utilisation des véhicules</h2>
           <p className="text-sm text-zinc-400 mt-0.5">
             Kilométrage total parcouru
             {months.length > 0 && (
@@ -180,8 +180,8 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
             <button
               key={o.v}
               onClick={() => selectPreset(o.v)}
-              className={'px-3 py-1 text-xs font-semibold rounded-md transition-all duration-150 ' + (
-                !isCustom && !showCustom && timeRange === o.v ? 'bg-[#E5EEFF] text-[#0052D6]' : 'text-zinc-500 hover:text-zinc-800'
+              className={'fd-seg px-3 py-1 text-xs font-semibold rounded-md transition-all duration-150 ' + (
+                !isCustom && !showCustom && timeRange === o.v ? 'fd-seg-on bg-[#E5EEFF] text-[#0052D6]' : 'text-zinc-500 hover:text-zinc-800'
               )}
             >
               {o.l}
@@ -189,8 +189,8 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
           ))}
           <button
             onClick={() => setShowCustom(s => !s)}
-            className={'px-3 py-1 text-xs font-semibold rounded-md transition-all duration-150 ' + (
-              isCustom || showCustom ? 'bg-[#E5EEFF] text-[#0052D6]' : 'text-zinc-500 hover:text-zinc-800'
+            className={'fd-seg px-3 py-1 text-xs font-semibold rounded-md transition-all duration-150 ' + (
+              isCustom || showCustom ? 'fd-seg-on bg-[#E5EEFF] text-[#0052D6]' : 'text-zinc-500 hover:text-zinc-800'
             )}
           >
             Custom
@@ -244,7 +244,7 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
           {/* Fleet synthesis banner */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-5">
             {kpis.map(k => (
-              <div key={k.l} data-land className="rounded-lg border border-zinc-100 bg-zinc-50/70 px-3 py-2.5">
+              <div key={k.l} data-land className="fd-kpi rounded-lg border border-zinc-100 bg-zinc-50/70 px-3 py-2.5">
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 truncate">{k.l}</p>
                 <p className={`text-sm font-bold mt-0.5 truncate ${k.color || 'text-zinc-900'}`} title={String(k.n)}>{k.n}</p>
                 <p className="text-[11px] text-zinc-400 truncate">{k.s}</p>
@@ -264,8 +264,8 @@ function VehicleUsageAnalytics({ vehicles, mileageEntries, drivers = [], latestA
               <div key={r.id} data-land className="flex items-center gap-3">
                 <div className="w-28 flex-shrink-0 text-xs font-semibold text-zinc-700 truncate"
                   title={`${r.plate}${r.model ? ` — ${r.model}` : ''}${r.driver ? ` · ${r.driver}` : ''}`}>{rowLabel(r)}</div>
-                <div className="flex-1 h-4 bg-zinc-100 rounded-md overflow-hidden">
-                  <div data-land-bar className="h-full rounded-md bg-gradient-to-r from-[#2f7bff] to-[#0066FF]"
+                <div className="fd-track flex-1 h-4 bg-zinc-100 rounded-md overflow-hidden">
+                  <div data-land-bar className="fd-bar h-full rounded-md bg-gradient-to-r from-[#2f7bff] to-[#0066FF]"
                     style={{ width: `${Math.max(3, (r.total / maxTotal) * 100)}%` }} />
                 </div>
                 <div className="w-20 flex-shrink-0 text-right text-xs tabular-nums text-zinc-800">{r.total.toLocaleString('fr-FR')} km</div>
@@ -478,11 +478,11 @@ function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, v
   const allClear = totalUrgent === 0 && totalWarning === 0 && !dataUnavailable
 
   return (
-    <div data-land className="bg-white rounded-xl p-5 border border-zinc-100">
+    <div data-land className="fd-card bg-white rounded-xl p-5 border border-zinc-100">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Bell className="w-4 h-4 text-zinc-500" />
-          <h3 className="font-bold text-zinc-900">{t('alerts.title')}</h3>
+          <h3 className="fd-title font-bold text-zinc-900">{t('alerts.title')}</h3>
         </div>
         {(totalUrgent + totalWarning) > 0 && (
           <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${totalUrgent > 0 ? 'bg-amber-100 text-amber-800' : 'bg-zinc-100 text-zinc-700'}`}>
@@ -520,11 +520,11 @@ function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, v
             <div>
               <div className="flex items-center gap-1.5 mb-1.5 px-0.5">
                 <Truck className="w-3.5 h-3.5 text-zinc-400" />
-                <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Véhicules</span>
+                <span className="fd-label text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Véhicules</span>
               </div>
               <div className="space-y-1.5">
                 {(urgentInspections.length > 0 || urgentForecasts.filter(f => f.status === 'overdue').length > 0) && (
-                  <div className="rounded-xl bg-amber-50 border border-amber-200 overflow-hidden">
+                  <div className="fd-urgent rounded-xl bg-amber-50 border border-amber-200 overflow-hidden">
                     <div className="flex items-center gap-2 px-3 pt-2.5 pb-1.5">
                       <span className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0" />
                       <p className="text-xs font-semibold text-amber-900">Action immédiate</p>
@@ -556,7 +556,7 @@ function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, v
                   </div>
                 )}
                 {(warningInspections.length > 0 || urgentForecasts.filter(f => f.status === 'due_soon').length > 0) && (
-                  <div className="rounded-xl bg-zinc-50 border border-zinc-200 overflow-hidden">
+                  <div className="fd-warn rounded-xl bg-zinc-50 border border-zinc-200 overflow-hidden">
                     <div className="flex items-center gap-2 px-3 pt-2.5 pb-1.5">
                       <span className="w-2 h-2 rounded-full bg-zinc-400 flex-shrink-0" />
                       <p className="text-xs font-semibold text-zinc-700">À surveiller</p>
@@ -598,11 +598,11 @@ function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, v
             <div>
               <div className="flex items-center gap-1.5 mb-1.5 px-0.5">
                 <Users className="w-3.5 h-3.5 text-zinc-400" />
-                <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Conducteurs</span>
+                <span className="fd-label text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Conducteurs</span>
               </div>
               <div className="space-y-1.5">
                 {urgentDocAlerts.length > 0 && (
-                  <div className="rounded-xl bg-amber-50 border border-amber-200 overflow-hidden">
+                  <div className="fd-urgent rounded-xl bg-amber-50 border border-amber-200 overflow-hidden">
                     <div className="flex items-center gap-2 px-3 pt-2.5 pb-1.5">
                       <span className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0" />
                       <p className="text-xs font-semibold text-amber-900">Documents expirés</p>
@@ -623,7 +623,7 @@ function AlertCenter({ urgentInspections, warningInspections, urgentForecasts, v
                   </div>
                 )}
                 {warningDocAlerts.length > 0 && (
-                  <div className="rounded-xl bg-zinc-50 border border-zinc-200 overflow-hidden">
+                  <div className="fd-warn rounded-xl bg-zinc-50 border border-zinc-200 overflow-hidden">
                     <div className="flex items-center gap-2 px-3 pt-2.5 pb-1.5">
                       <span className="w-2 h-2 rounded-full bg-zinc-400 flex-shrink-0" />
                       <p className="text-xs font-semibold text-zinc-700">Documents à renouveler</p>
@@ -686,15 +686,15 @@ function FleetInsights({ vehicles, mileageEntries }) {
   if (!insights || vehicles.length === 0) return null
 
   return (
-    <div data-land className="bg-white rounded-xl p-5 border border-zinc-100">
+    <div data-land className="fd-card bg-white rounded-xl p-5 border border-zinc-100">
       <div className="flex items-center gap-2 mb-4">
         <Activity className="w-4 h-4 text-zinc-500" />
-        <h3 className="font-bold text-zinc-900">{t('insights.title')}</h3>
+        <h3 className="fd-title font-bold text-zinc-900">{t('insights.title')}</h3>
       </div>
       <div className="space-y-3">
         {insights.mostUsed && (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0">
+            <div className="fd-ring w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0">
               <TrendingUp className="w-4 h-4 text-emerald-500" />
             </div>
             <div className="flex-1 min-w-0">
@@ -707,7 +707,7 @@ function FleetInsights({ vehicles, mileageEntries }) {
 
         {insights.leastUsed && insights.leastUsed.id !== insights.mostUsed?.id && (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-zinc-50 flex items-center justify-center flex-shrink-0">
+            <div className="fd-ring w-8 h-8 rounded-lg bg-zinc-50 flex items-center justify-center flex-shrink-0">
               <TrendingDown className="w-4 h-4 text-zinc-400" />
             </div>
             <div className="flex-1 min-w-0">
@@ -720,7 +720,7 @@ function FleetInsights({ vehicles, mileageEntries }) {
 
         {insights.inactiveCount > 0 && (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#0066FF]/[0.06] flex items-center justify-center flex-shrink-0">
+            <div className="fd-ring w-8 h-8 rounded-lg bg-[#0066FF]/[0.06] flex items-center justify-center flex-shrink-0">
               <Clock className="w-4 h-4 text-[#0066FF]" />
             </div>
             <div className="flex-1 min-w-0">
@@ -746,10 +746,10 @@ function TimelineItem({ icon: Icon, iconBg, iconColor, title, subtitle, time, is
     <div data-land className="flex gap-4 group">
       {/* Spine */}
       <div className="flex flex-col items-center flex-shrink-0">
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${iconBg}`}>
+        <div className={`fd-ring w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${iconBg}`}>
           <Icon className={`w-3.5 h-3.5 ${iconColor}`} />
         </div>
-        {!isLast && <div className="w-px flex-1 bg-zinc-100 mt-1" />}
+        {!isLast && <div className="fd-spine w-px flex-1 bg-zinc-100 mt-1" />}
       </div>
       {/* Content */}
       <div className={`pb-5 flex-1 min-w-0 ${isLast ? '' : ''}`}>
@@ -827,11 +827,11 @@ function SmartNotepad({ userId }) {
   const lines = text.split('\n').filter(Boolean).length
 
   return (
-    <div data-land className="bg-white border border-zinc-100 rounded-xl overflow-hidden flex flex-col">
+    <div data-land className="fd-card bg-white border border-zinc-100 rounded-xl overflow-hidden flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-zinc-100">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-[#0066FF]/[0.06] rounded-lg flex items-center justify-center">
+          <div className="fd-ring w-7 h-7 bg-[#0066FF]/[0.06] rounded-lg flex items-center justify-center">
             <StickyNote className="w-3.5 h-3.5 text-[#0066FF]" />
           </div>
           <span className="text-sm font-semibold text-zinc-900">Notes</span>
@@ -859,7 +859,7 @@ function SmartNotepad({ userId }) {
         value={text}
         onChange={handleChange}
         placeholder={"Vos notes de flotte...\n\nEx: BL-934-RM → vidange le 28/03\nAP-271-KL → CT avant fin du mois"}
-        className="flex-1 w-full resize-none px-4 py-3 text-sm text-zinc-700 placeholder-zinc-300 focus:outline-none min-h-[140px] leading-relaxed font-[inherit]"
+        className="fd-lined flex-1 w-full resize-none px-4 py-3 text-sm text-zinc-700 placeholder-zinc-300 focus:outline-none min-h-[140px] leading-relaxed font-[inherit]"
       />
 
       {/* Quick insert chips */}
@@ -873,9 +873,9 @@ function SmartNotepad({ userId }) {
             <button
               key={chip.label}
               onClick={() => insertChip(chip.label)}
-              className="flex items-center gap-1 text-[11px] font-medium text-zinc-500 bg-zinc-50 hover:bg-zinc-100 border border-zinc-100 rounded-lg px-2 py-1 transition-colors leading-none"
+              className="fd-chip flex items-center gap-1 text-[11px] font-medium text-zinc-500 bg-zinc-50 hover:bg-zinc-100 border border-zinc-100 rounded-lg px-2 py-1 transition-colors leading-none"
             >
-              <span>{chip.emoji}</span>
+              <span className="fd-emoji">{chip.emoji}</span>
               {chip.label}
             </button>
           ))}
@@ -1115,7 +1115,7 @@ export default function Dashboard() {
   )
 
   return (
-    <div className="flex flex-col xl:flex-row min-h-dvh">
+    <div className="fd-dash flex flex-col xl:flex-row min-h-dvh">
       <AddVehicleModal open={showAddVehicle} onClose={() => setShowAddVehicle(false)} />
       <AddDriverModal  open={showAddDriver}  onClose={() => setShowAddDriver(false)} />
       <RecordMileageModal open={showMileage} onClose={() => setShowMileage(false)} vehicles={vehicles} />
@@ -1128,16 +1128,16 @@ export default function Dashboard() {
         {/* Header */}
         <div className="flex flex-wrap items-start gap-3 justify-between mb-6">
           <div>
-            <p data-land className="text-xs font-medium text-zinc-400 mb-1 capitalize">
+            <p data-land className="fd-date text-xs font-medium text-zinc-400 mb-1 capitalize">
               {format(new Date(), 'EEEE d MMMM yyyy', { locale: dateLocale })}
             </p>
-            <h1 data-land className="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 tracking-tight">
+            <h1 data-land className="fd-greeting font-display text-2xl sm:text-3xl font-semibold text-zinc-900 tracking-tight">
               {t('dashboard.greeting', { name: user?.user_metadata?.full_name?.split(' ')[0] || user?.user_metadata?.name?.split(' ')[0] || '' })}
             </h1>
             <p data-land className="text-zinc-400 text-sm mt-0.5">{t('dashboard.subtitle')}</p>
           </div>
           {totalAlerts > 0 && (
-            <div data-land className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${
+            <div data-land className={`fd-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${
               urgentInspections.length + urgentForecasts.filter(f => f.status === 'overdue').length > 0
                 ? 'bg-amber-100 text-amber-900'
                 : 'bg-zinc-100 text-zinc-700'
@@ -1185,7 +1185,7 @@ export default function Dashboard() {
               key={label}
               data-land
               onClick={onClick}
-              className="flex items-center gap-2 bg-white border border-zinc-200 rounded-lg px-4 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 hover:border-zinc-300 active:scale-[0.98] transition-all duration-150 w-full sm:w-auto"
+              className="fd-quick flex items-center gap-2 bg-white border border-zinc-200 rounded-lg px-4 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 hover:border-zinc-300 active:scale-[0.98] transition-all duration-150 w-full sm:w-auto"
             >
               <Icon className="w-4 h-4 text-zinc-400" />
               {label}
@@ -1197,10 +1197,10 @@ export default function Dashboard() {
         <div className="xl:hidden mb-8">{alertCenter}</div>
 
         {/* Stat cards */}
-        <div data-land className="flex flex-col sm:flex-row bg-white border border-zinc-100 rounded-xl overflow-hidden mb-8">
+        <div data-land className="fd-plate fd-stats flex flex-col sm:flex-row bg-white border border-zinc-100 rounded-xl overflow-hidden mb-8">
           {statCards.map(({ label, sub, value, icon: Icon }, idx) => (
-            <div key={label} data-land className={`flex-1 px-5 py-5 min-w-0 ${idx < statCards.length - 1 ? 'border-b sm:border-b-0 sm:border-r border-zinc-100' : ''}`}>
-              <p className="text-xs font-medium text-zinc-400 mb-3">{label}</p>
+            <div key={label} data-land className={`fd-stat flex-1 px-5 py-5 min-w-0 ${idx < statCards.length - 1 ? 'border-b sm:border-b-0 sm:border-r border-zinc-100' : ''}`}>
+              <p className="fd-label text-xs font-medium text-zinc-400 mb-3">{label}</p>
               <p className="text-[28px] font-bold text-zinc-900 leading-none tracking-tight">{value}</p>
             </div>
           ))}
@@ -1218,10 +1218,10 @@ export default function Dashboard() {
         )}
 
         {/* ── Activity Timeline ────────────────────────────────────── */}
-        <div data-land className="bg-white rounded-xl border border-zinc-100 overflow-hidden">
+        <div data-land className="fd-plate bg-white rounded-xl border border-zinc-100 overflow-hidden">
           <div data-land className="px-4 sm:px-6 pt-6 pb-4 flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-zinc-900">{t('dashboard.recentActivity')}</h2>
+              <h2 className="fd-title text-xl font-bold text-zinc-900">{t('dashboard.recentActivity')}</h2>
               <p className="text-sm text-zinc-400">{t('dashboard.recentActivitySub')}</p>
             </div>
             <Link to="/Assignments" className="text-xs text-zinc-400 hover:text-zinc-700 font-medium">{t('dashboard.viewAll')}</Link>
@@ -1260,9 +1260,9 @@ export default function Dashboard() {
       <div className="xl:w-80 flex-shrink-0 p-4 sm:p-7 xl:pl-0 flex flex-col gap-5">
 
         {/* Fleet summary card */}
-        <div data-land className="bg-white border border-zinc-100 rounded-xl p-5">
+        <div data-land className="fd-card fd-fleet bg-white border border-zinc-100 rounded-xl p-5">
           <div className="flex items-center gap-2.5 mb-4">
-            <div className="w-8 h-8 bg-[#0066FF]/[0.08] rounded-lg flex items-center justify-center">
+            <div className="fd-ring w-8 h-8 bg-[#0066FF]/[0.08] rounded-lg flex items-center justify-center">
               <Truck className="w-4 h-4 text-[#0066FF]" strokeWidth={1.5} />
             </div>
             <div>

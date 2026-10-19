@@ -18,10 +18,11 @@ function NavItem({ item, isActive, isCollapsed, onMobileClose }) {
   return (
     <Link
       to={item.path}
+      aria-current={isActive ? 'page' : undefined}
       title={isCollapsed ? item.label : undefined}
       onClick={() => { if (window.innerWidth < 1024) onMobileClose(); }}
       className={cn(
-        'group relative flex items-center gap-3 rounded-lg py-2 text-[13px] font-medium',
+        'fd-nav group relative flex items-center gap-3 rounded-lg py-2 text-[13px] font-medium',
         'transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF]/60',
         isCollapsed ? 'lg:justify-center lg:px-0 px-3' : 'px-3',
         isActive
@@ -30,7 +31,7 @@ function NavItem({ item, isActive, isCollapsed, onMobileClose }) {
       )}
     >
       {isActive && (
-        <span className="absolute left-0 top-[7px] bottom-[7px] w-[3px] rounded-r-full bg-[#0066FF]" />
+        <span className="fd-nav-bar absolute left-0 top-[7px] bottom-[7px] w-[3px] rounded-r-full bg-[#0066FF]" />
       )}
       <Icon className={cn(
         'flex-shrink-0 transition-colors duration-150',
@@ -131,7 +132,7 @@ export default function Sidebar({ open, onToggle }) {
 
       <aside
         className={cn(
-          'fixed top-0 left-0 z-50 h-full flex flex-col',
+          'fd-sidebar fixed top-0 left-0 z-50 h-full flex flex-col',
           'bg-white border-r border-zinc-100',
           'transition-all duration-300 ease-in-out',
           'lg:translate-x-0 lg:static lg:z-auto',
@@ -140,7 +141,7 @@ export default function Sidebar({ open, onToggle }) {
         )}
       >
         {/* ── Header ── */}
-        <div className="flex items-center h-[56px] px-3 gap-2 border-b border-zinc-100 flex-shrink-0">
+        <div className="fd-sidebar-head flex items-center h-[56px] px-3 gap-2 border-b border-zinc-100 flex-shrink-0">
           <div className={cn('flex items-center gap-2.5 flex-1 min-w-0', isCollapsed && 'lg:hidden')}>
             <LogoMark size={28} />
             <div className="min-w-0 leading-none">
@@ -181,7 +182,7 @@ export default function Sidebar({ open, onToggle }) {
               {group.label && (
                 <>
                   <p className={cn(
-                    'px-2.5 pb-1.5 pt-4 text-[10px] font-semibold uppercase tracking-[0.08em]',
+                    'fd-label px-2.5 pb-1.5 pt-4 text-[10px] font-semibold uppercase tracking-[0.08em]',
                     'text-zinc-400 select-none leading-none',
                     isCollapsed && 'lg:hidden'
                   )}>
@@ -210,7 +211,7 @@ export default function Sidebar({ open, onToggle }) {
 
         {/* ── Footer ── */}
         <div className={cn(
-          'flex-shrink-0 border-t border-zinc-100 px-4 py-3 space-y-2',
+          'fd-sidebar-foot flex-shrink-0 border-t border-zinc-100 px-4 py-3 space-y-2',
           isCollapsed && 'lg:px-2'
         )}>
           <p className={cn('text-[10px] text-zinc-400 font-medium select-none', isCollapsed && 'lg:hidden')}>
@@ -221,7 +222,7 @@ export default function Sidebar({ open, onToggle }) {
               to="/Activity"
               onClick={() => { if (window.innerWidth < 1024) onToggle() }}
               className={cn(
-                'flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-xs font-medium',
+                'fd-nav flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-xs font-medium',
                 'transition-colors',
                 isActive('/Activity')
                   ? 'bg-zinc-100 text-zinc-900'
@@ -238,7 +239,7 @@ export default function Sidebar({ open, onToggle }) {
               onClick={openGettingStarted}
               title={isCollapsed ? t('gettingStarted.title') : undefined}
               className={cn(
-                'flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-xs font-medium',
+                'fd-nav flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-xs font-medium',
                 'text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50 transition-colors',
                 isCollapsed && 'lg:justify-center lg:px-0'
               )}
@@ -252,7 +253,7 @@ export default function Sidebar({ open, onToggle }) {
               to="/mon-profil"
               onClick={() => { if (window.innerWidth < 1024) onToggle() }}
               className={cn(
-                'flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-xs font-medium',
+                'fd-nav flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-xs font-medium',
                 'transition-colors',
                 isActive('/mon-profil')
                   ? 'bg-zinc-100 text-zinc-900'
@@ -269,7 +270,7 @@ export default function Sidebar({ open, onToggle }) {
               to="/Settings"
               onClick={() => { if (window.innerWidth < 1024) onToggle() }}
               className={cn(
-                'flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-xs font-medium',
+                'fd-nav flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-xs font-medium',
                 'transition-colors',
                 isActive('/Settings')
                   ? 'bg-zinc-100 text-zinc-900'
@@ -284,7 +285,7 @@ export default function Sidebar({ open, onToggle }) {
           <button
             onClick={signOut}
             className={cn(
-              'flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-xs font-medium',
+              'fd-nav flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-xs font-medium',
               'text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50 transition-colors',
               isCollapsed && 'lg:justify-center lg:px-0'
             )}
@@ -293,6 +294,8 @@ export default function Sidebar({ open, onToggle }) {
             <span className={cn(isCollapsed && 'lg:hidden')}>{t('nav.signOut')}</span>
           </button>
         </div>
+        {/* Rue gravée en pied de barre : visible seulement en design « Planche » (index.css). */}
+        <div aria-hidden="true" className={cn('fd-street', isCollapsed && 'lg:hidden')} />
       </aside>
     </>
   );

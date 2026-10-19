@@ -180,3 +180,170 @@ html.motion-on [data-panel-land] [data-row-land] {
   from { opacity: 0; transform: translateX(-6px) }
   to   { opacity: 1; transform: none }
 }
+
+/* ── Design « Planche » ────────────────────────────────────────────────────
+   Même direction artistique que fleetdesk.fr : encre bleue #0052D6 sur papier
+   #F7F9FF, filets fins, planches à double filet, pictos cerclés, Onest seul.
+   Tout est scopé sous html[data-design="planche"] (src/lib/design.js) : en
+   design « classique », aucune de ces règles ne s'applique et l'interface
+   d'avant reste intacte. Les crochets `fd-*` sont posés dans Sidebar.jsx et
+   Dashboard.jsx ; ils ne portent aucun style par eux-mêmes. */
+:root {
+  --pl-ink: #0052D6;
+  --pl-ink-deep: #003A99;
+  --pl-paper: #F7F9FF;
+  --pl-text: #0B1B3F;
+  --pl-body: #34446A;
+  --pl-muted: #4A5A80;
+  --pl-rule: #B9C7E4;
+  --pl-tint: #EAF0FC;
+}
+
+html[data-design="planche"] .fd-street { display: block; }
+.fd-street { display: none; }
+
+/* Titres : Onest gras, comme le site. */
+html[data-design="planche"] .font-display {
+  font-family: 'Onest', system-ui, sans-serif;
+  font-weight: 700 !important;
+  letter-spacing: -0.03em;
+}
+
+/* Barre latérale : papier, filet d'encre, élément actif en bloc d'encre. */
+html[data-design="planche"] .fd-sidebar { background: var(--pl-paper); border-right: 1px solid var(--pl-ink); }
+html[data-design="planche"] .fd-sidebar-head,
+html[data-design="planche"] .fd-sidebar-foot { border-color: var(--pl-ink); }
+html[data-design="planche"] .fd-sidebar .fd-label { color: var(--pl-muted); letter-spacing: 0.16em; }
+html[data-design="planche"] .fd-nav { border-radius: 0; color: #24365C; }
+html[data-design="planche"] .fd-nav svg { color: var(--pl-ink); }
+html[data-design="planche"] .fd-nav:hover { background: var(--pl-tint); color: var(--pl-text); }
+html[data-design="planche"] .fd-nav[aria-current="page"],
+html[data-design="planche"] .fd-nav.bg-zinc-100 { background: var(--pl-ink); color: #fff; }
+html[data-design="planche"] .fd-nav[aria-current="page"] svg,
+html[data-design="planche"] .fd-nav.bg-zinc-100 svg { color: #fff; }
+html[data-design="planche"] .fd-nav-bar { display: none; }
+html[data-design="planche"] .fd-street {
+  height: 120px;
+  flex-shrink: 0;
+  background: var(--pl-ink) url('/engraving-street.svg') no-repeat;
+  background-size: 760px auto;
+  background-position: -250px bottom;
+  border-top: 1px solid var(--pl-ink);
+}
+@media (max-height: 760px) { html[data-design="planche"] .fd-street { display: none; } }
+
+/* Tableau de bord : papier, planches, filets. */
+html[data-design="planche"] .fd-dash { background: var(--pl-paper); color: var(--pl-text); }
+html[data-design="planche"] .fd-dash .text-zinc-900,
+html[data-design="planche"] .fd-dash .text-zinc-800 { color: var(--pl-text); }
+html[data-design="planche"] .fd-dash .text-zinc-700,
+html[data-design="planche"] .fd-dash .text-zinc-600 { color: var(--pl-body); }
+html[data-design="planche"] .fd-dash .text-zinc-500,
+html[data-design="planche"] .fd-dash .text-zinc-400 { color: var(--pl-muted); }
+html[data-design="planche"] .fd-dash .border-zinc-100,
+html[data-design="planche"] .fd-dash .border-zinc-50 { border-color: var(--pl-rule); }
+
+html[data-design="planche"] .fd-date { color: var(--pl-ink); font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; }
+html[data-design="planche"] .fd-greeting { font-size: clamp(1.9rem, 3vw, 2.5rem); }
+html[data-design="planche"] .fd-pill { border-radius: 999px; border: 1px solid #B45309; }
+
+html[data-design="planche"] .fd-quick { border-radius: 0; border-color: var(--pl-ink); color: var(--pl-text); }
+html[data-design="planche"] .fd-quick svg { color: var(--pl-ink); }
+html[data-design="planche"] .fd-quick:hover { background: var(--pl-tint); border-color: var(--pl-ink); }
+
+/* Planche : filet extérieur, marge blanche, filet intérieur. */
+html[data-design="planche"] .fd-plate {
+  border-radius: 0;
+  border: 1px solid var(--pl-ink);
+  background: #fff;
+  box-shadow: inset 0 0 0 6px #fff, inset 0 0 0 7px var(--pl-ink);
+  padding: 7px;
+}
+html[data-design="planche"] .fd-plate.p-4 { padding: 1.75rem; }
+html[data-design="planche"] .fd-stats .fd-stat { border-color: var(--pl-rule); }
+html[data-design="planche"] .fd-stat .text-\[28px\] { font-size: 2.25rem; letter-spacing: -0.03em; }
+html[data-design="planche"] .fd-label { color: var(--pl-muted); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+html[data-design="planche"] .fd-title { letter-spacing: -0.02em; }
+
+/* Cartes du rail : un filet d'encre, coins droits. */
+html[data-design="planche"] .fd-card { border-radius: 0; border: 1px solid var(--pl-ink); background: #fff; }
+html[data-design="planche"] .fd-fleet::before {
+  content: '';
+  display: block;
+  height: 84px;
+  margin: -1.25rem -1.25rem 1rem;
+  background: var(--pl-ink) url('/engraving-depot.svg') center 70% / cover no-repeat;
+  border-bottom: 1px solid var(--pl-ink);
+}
+
+/* Utilisation : sélecteur en pilule, chiffres sous filet, barres gravées. */
+html[data-design="planche"] .fd-seg { border-radius: 999px; color: #24365C; }
+html[data-design="planche"] .fd-seg-on { background: var(--pl-ink); color: #fff; }
+html[data-design="planche"] .fd-kpi { border-radius: 0; background: transparent; border: 0; border-top: 2px solid var(--pl-ink); padding-left: 0; }
+html[data-design="planche"] .fd-track { background: transparent; border-radius: 0; }
+html[data-design="planche"] .fd-bar {
+  border-radius: 0;
+  border: 1px solid var(--pl-ink);
+  background: repeating-linear-gradient(135deg, var(--pl-ink) 0 1.5px, transparent 1.5px 5px);
+}
+
+/* Pictos cerclés à double filet, comme sur le site. */
+html[data-design="planche"] .fd-ring {
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--pl-ink);
+  box-shadow: inset 0 0 0 3px #fff, inset 0 0 0 4px var(--pl-ink);
+}
+html[data-design="planche"] .fd-ring svg { color: var(--pl-ink); }
+html[data-design="planche"] .fd-spine { width: 0; background: none; border-left: 2px dashed var(--pl-ink); }
+
+/* Alertes : l'ambre reste réservé à l'urgent, en filet plutôt qu'en aplat. */
+html[data-design="planche"] .fd-urgent { border-radius: 0; background: #FFFBEB; border-color: #B45309; }
+html[data-design="planche"] .fd-warn { border-radius: 0; background: #fff; border-color: var(--pl-ink); }
+html[data-design="planche"] .fd-warn .bg-zinc-400 { background: var(--pl-ink); }
+
+/* Bloc-notes : lignes de cahier, raccourcis en pilules d'encre, sans emoji. */
+html[data-design="planche"] .fd-lined {
+  background: var(--pl-paper) repeating-linear-gradient(transparent 0 23px, #DDE5F5 23px 24px);
+  background-attachment: local;
+  line-height: 24px;
+}
+html[data-design="planche"] .fd-chip { border-radius: 999px; background: #fff; border-color: var(--pl-ink); color: var(--pl-ink); }
+html[data-design="planche"] .fd-chip:hover { background: var(--pl-tint); }
+html[data-design="planche"] .fd-emoji { display: none; }
+html[data-design="planche"] .fd-topbar { background: var(--pl-paper); border-color: var(--pl-ink); }
+/* Encarts partagés posés sur le tableau de bord (premiers pas, offre Pro…) :
+   coins droits et filet d'encre, pour rester dans la planche. */
+html[data-design="planche"] .fd-dash .rounded-2xl,
+html[data-design="planche"] .fd-dash .rounded-xl:not(.fd-pill) { border-radius: 0; }
+html[data-design="planche"] .fd-dash .border-zinc-200 { border-color: var(--pl-ink); }
+html[data-design="planche"] .fd-dash .shadow-sm:not(.fd-plate) { box-shadow: none; }
+
+/* ── Mouvement « Planche » ─────────────────────────────────────────────────
+   Même grammaire que fleetdesk.fr : chaque bloc monte de 20 px en fondu, 1 s
+   sur la courbe du site, sans flou ni zoom ; la cadence serrée est réglée
+   dans runLanding() (src/lib/motion.js). Les barres gravées se remplissent
+   comme celles de la planche « Ajoutez votre flotte » de l'accueil. */
+html[data-design="planche"].motion-on.is-landing [data-land] {
+  animation: pl-land 1000ms cubic-bezier(0.16, 1, 0.3, 1) var(--land-delay, 0ms) both;
+}
+@keyframes pl-land {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: none; }
+}
+html[data-design="planche"].motion-on.is-landing [data-land-bar] {
+  animation: app-land-bar 1400ms cubic-bezier(0.65, 0, 0.35, 1) var(--land-delay, 0ms) both;
+}
+html[data-design="planche"].motion-on [data-panel-land] > * {
+  animation-name: pl-panel;
+}
+@keyframes pl-panel {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Survols : réponse sobre, comme les liens et boutons du site. */
+html[data-design="planche"] .fd-quick,
+html[data-design="planche"] .fd-nav,
+html[data-design="planche"] .fd-chip { transition: background-color .25s ease, color .25s ease, border-color .25s ease; }
+html[data-design="planche"] .fd-quick:active { transform: translateY(1px); }
