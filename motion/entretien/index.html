@@ -9,18 +9,18 @@
   .head { position: absolute; left: 52px; top: 50px; }
   .head .title { font-size: 28px; margin-top: 6px; }
   #counter { position: absolute; top: 56px; right: 52px; }
-  .row { position: absolute; left: 52px; width: 536px; height: 108px; border-top: 1px solid #f4f4f5; }
+  .row { position: absolute; left: 52px; width: 536px; height: 108px; border-top: 1px solid #F7F9FF; }
   .row .ico { position: absolute; left: 0; top: 22px; width: 42px; height: 42px; }
   .row .plate { position: absolute; left: 58px; top: 22px; font-weight: 600; font-size: 18px; }
-  .row .model { position: absolute; left: 58px; top: 47px; font-size: 13.5px; color: #71717a; }
+  .row .model { position: absolute; left: 58px; top: 47px; font-size: 13.5px; color: #4A5A80; }
   .row .rem { position: absolute; right: 0; top: 20px; height: 26px; width: 240px; text-align: right; font-weight: 600; font-size: 18px; }
   .row .rem .txt { left: auto; right: 0; }
-  .row .sub { position: absolute; right: 0; top: 47px; height: 20px; width: 240px; font-size: 13px; color: #71717a; }
+  .row .sub { position: absolute; right: 0; top: 47px; height: 20px; width: 240px; font-size: 13px; color: #4A5A80; }
   .row .sub .txt { left: auto; right: 0; }
-  .row .bar { position: absolute; left: 58px; right: 0; top: 80px; height: 8px; border-radius: 99px; background: #f4f4f5; overflow: hidden; }
-  .row .fill { position: relative; height: 100%; border-radius: 99px; background: #0066FF; overflow: hidden; }
+  .row .bar { position: absolute; left: 58px; right: 0; top: 80px; height: 8px; border-radius: 99px; background: #F7F9FF; overflow: hidden; }
+  .row .fill { position: relative; height: 100%; border-radius: 99px; background: #0052D6; overflow: hidden; }
   .row .fill i { position: absolute; inset: 0; border-radius: 99px; }
-  .foot { position: absolute; left: 52px; top: 446px; font-size: 13px; color: #71717a; display: flex; gap: 8px; align-items: center; }
+  .foot { position: absolute; left: 52px; top: 446px; font-size: 13px; color: #4A5A80; display: flex; gap: 8px; align-items: center; }
 </style>
 </head>
 <body>
@@ -48,13 +48,13 @@ const Y0 = 122, H = 108
 
 $('rows').innerHTML = ROWS.map((r, i) => `
   <div class="row" style="top:${Y0 + i * H}px">
-    <div class="ico">${ICON.truck(22, '#52525b')}</div>
+    <div class="ico">${ICON.truck(22, '#0052D6')}</div>
     <div class="plate">${r.plate}</div><div class="model">${r.model}</div>
     <div class="rem swap" id="rem${i}"></div>
     <div class="sub swap" id="sub${i}"></div>
     <div class="bar"><div class="fill" id="fill${i}"><i id="amb${i}" style="background:#F59E0B"></i><i id="okf${i}" style="background:#10B981"></i></div></div>
   </div>`).join('')
-$('footIco').innerHTML = ICON.gauge(16, '#71717a')
+$('footIco').innerHTML = ICON.gauge(16, '#4A5A80')
 
 const mod = (a, n) => ((a % n) + n) % n
 // Instant (périodique) de la dernière vidange et du dernier passage sous 5 000 km.
@@ -101,7 +101,7 @@ scene({
       // Calques superposés : pas de mélange bleu → ambre, qui virerait au kaki.
       $('amb' + i).style.opacity = s.inEvent ? 0 : clamp(k * 2.2)
       $('okf' + i).style.opacity = s.inEvent ? 1 - clamp((s.sEvent - (EVENT - 0.3)) / 0.3) : 0
-      $('rem' + i).style.color = mixc('#18181b', WARN.fg, k)
+      $('rem' + i).style.color = mixc('#0B1B3F', WARN.fg, k)
 
       // Texte principal : le compteur défile, sauf pendant l'enregistrement.
       const label = s.inEvent ? '<span style="color:#047857">Entretien enregistré</span>' : `dans ${fr(Math.round(s.remaining / 100) * 100)} km`

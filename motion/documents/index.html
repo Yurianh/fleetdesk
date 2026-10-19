@@ -8,25 +8,25 @@
   #panel { left: 24px; top: 24px; width: 592px; height: 464px; }
   .head { position: absolute; left: 52px; top: 50px; }
   .head .title { font-size: 28px; margin-top: 6px; }
-  .row { position: absolute; left: 52px; width: 536px; height: 76px; border-top: 1px solid #f4f4f5; }
+  .row { position: absolute; left: 52px; width: 536px; height: 76px; border-top: 1px solid #F7F9FF; }
   .avatar { position: absolute; left: 0; top: 18px; width: 40px; height: 40px; border-radius: 99px; background: #E5EEFF; color: #0052D6; display: grid; place-items: center; font-size: 13.5px; font-weight: 700; }
   .row .name { position: absolute; left: 56px; top: 16px; font-weight: 600; font-size: 18px; }
-  .row .role { position: absolute; left: 56px; top: 41px; font-size: 13.5px; color: #71717a; }
+  .row .role { position: absolute; left: 56px; top: 41px; font-size: 13.5px; color: #4A5A80; }
   .row .chip { position: absolute; right: 0; top: 23px; }
   #shape { position: absolute; background: #fff; border: 1px solid transparent; overflow: hidden; z-index: 5; }
   #rowL { position: absolute; left: 0; top: 0; width: 536px; height: 76px; }
   #docs { position: absolute; left: 26px; top: 24px; right: 26px; bottom: 24px; }
   #docs .avatar { top: 0; width: 46px; height: 46px; font-size: 15px; }
   #docs .name { position: absolute; left: 62px; top: 0; font-weight: 600; font-size: 22px; }
-  #docs .role { position: absolute; left: 62px; top: 29px; font-size: 14px; color: #71717a; }
-  .doc { position: absolute; left: 0; right: 0; height: 74px; border: 1px solid #f0f0f1; border-radius: 14px; background: #fafafa; }
-  .doc .ico { position: absolute; left: 16px; top: 16px; width: 40px; height: 40px; background: #fff; border: 1px solid #ececee; }
+  #docs .role { position: absolute; left: 62px; top: 29px; font-size: 14px; color: #4A5A80; }
+  .doc { position: absolute; left: 0; right: 0; height: 74px; border: 1px solid #E8EEF8; border-radius: 14px; background: #F7F9FF; }
+  .doc .ico { position: absolute; left: 16px; top: 16px; width: 40px; height: 40px; background: #fff; border: 1px solid #E3EAF6; }
   .doc .dn { position: absolute; left: 70px; top: 15px; font-weight: 600; font-size: 16.5px; }
-  .doc .dd { position: absolute; left: 70px; top: 40px; font-size: 13.5px; color: #71717a; height: 20px; width: 300px; }
+  .doc .dd { position: absolute; left: 70px; top: 40px; font-size: 13.5px; color: #4A5A80; height: 20px; width: 300px; }
   .doc .chip { position: absolute; right: 16px; top: 22px; }
-  #file { position: absolute; z-index: 20; white-space: nowrap; height: 58px; background: #fff; border: 1px solid #e4e4e7; border-radius: 12px; display: flex; align-items: center; gap: 10px; padding: 0 14px; font-size: 13.5px; font-weight: 500; box-shadow: 0 14px 30px -14px rgba(24,24,27,.35); }
-  #file b { width: 30px; height: 36px; border-radius: 6px; background: #f4f4f5; border: 1px solid #e4e4e7; display: grid; place-items: center; font-size: 8.5px; color: #71717a; }
-  #toast { position: absolute; left: 50%; bottom: 40px; z-index: 30; transform: translateX(-50%); background: #18181b; color: #fff; font-size: 13.5px; font-weight: 500; padding: 10px 16px; border-radius: 10px; display: flex; gap: 8px; align-items: center; white-space: nowrap; }
+  #file { position: absolute; z-index: 20; white-space: nowrap; height: 58px; background: #fff; border: 1px solid #DDE5F5; border-radius: 12px; display: flex; align-items: center; gap: 10px; padding: 0 14px; font-size: 13.5px; font-weight: 500; box-shadow: 0 14px 30px -14px rgba(11,27,63,.35); }
+  #file b { width: 30px; height: 36px; border-radius: 6px; background: #F7F9FF; border: 1px solid #DDE5F5; display: grid; place-items: center; font-size: 8.5px; color: #4A5A80; }
+  #toast { position: absolute; left: 50%; bottom: 40px; z-index: 30; transform: translateX(-50%); background: #0B1B3F; color: #fff; font-size: 13.5px; font-weight: 500; padding: 10px 16px; border-radius: 10px; display: flex; gap: 8px; align-items: center; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -59,7 +59,7 @@ const rowHTML = ([ini, n, v], chip) => `<div class="avatar">${ini}</div><div cla
 const okChip = '<div class="chip ok"><span class="dot"></span>À jour</div>'
 $('rows').innerHTML = DRIVERS.map((d, i) => i === FOCUS ? '' : `<div class="row" style="top:${Y0 + i * H}px">${rowHTML(d, okChip)}</div>`).join('')
 $('rowL').innerHTML = `<div class="row" style="left:0;top:0;border-top:0">${rowHTML(DRIVERS[FOCUS], '<div class="chip" id="rChip"><span class="dot"></span><span class="swap" id="rChipTxt" style="height:18px"></span></div>')}</div>`
-;['i0', 'i1', 'i2'].forEach(id => $(id).innerHTML = ICON.file(18, '#52525b'))
+;['i0', 'i1', 'i2'].forEach(id => $(id).innerHTML = ICON.file(18, '#0052D6'))
 $('tIco').innerHTML = ICON.check(16, '#34d399')
 $('cursor').innerHTML = CURSOR_SVG
 
@@ -83,16 +83,16 @@ scene({
     Object.assign($('shape').style, {
       left: lerp(ROW.x, OPEN.x, m) + 'px', top: lerp(ROW.y, OPEN.y, m) + 'px',
       width: lerp(ROW.w, OPEN.w, m) + 'px', height: lerp(ROW.h, OPEN.h, m) + 'px',
-      borderRadius: lerp(10, 18, clamp(m)) + 'px', borderColor: m > 0.02 ? '#e4e4e7' : 'transparent',
-      boxShadow: `0 ${(20 * clamp(m)).toFixed(1)}px ${(48 * clamp(m)).toFixed(1)}px -20px rgba(24,24,27,${(0.22 * clamp(m)).toFixed(3)})`,
+      borderRadius: lerp(10, 18, clamp(m)) + 'px', borderColor: m > 0.02 ? '#DDE5F5' : 'transparent',
+      boxShadow: `0 ${(20 * clamp(m)).toFixed(1)}px ${(48 * clamp(m)).toFixed(1)}px -20px rgba(11,27,63,${(0.22 * clamp(m)).toFixed(3)})`,
     })
     $('rowL').style.opacity = clamp((0.5 - m) * 4)
     $('docs').style.opacity = clamp((m - 0.32) / 0.25)
 
     // Ligne « Visite médicale » : ambre jusqu'au dépôt, puis émeraude.
     const vm = $('vm')
-    vm.style.background = mixc('#FFFBEB', '#fafafa', 1 - due)
-    vm.style.borderColor = mixc('#FDE68A', '#f0f0f1', 1 - due)
+    vm.style.background = mixc('#FFFDF7', '#F7F9FF', 1 - due)
+    vm.style.borderColor = mixc('#F2C77A', '#E8EEF8', 1 - due)
     const hover = spring(t - (T.drop - 0.35), SPRING.snappy) * (1 - spring(t - T.drop, SPRING.snappy))
     vm.style.boxShadow = `0 0 0 ${(3 * hover).toFixed(2)}px rgba(0,102,255,${(0.35 * hover).toFixed(3)})`
     paint($('vmChip'), OK, WARN, due)

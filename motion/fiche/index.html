@@ -8,25 +8,25 @@
   #panel { left: 24px; top: 24px; width: 592px; height: 464px; }
   .head { position: absolute; left: 52px; top: 50px; }
   .head .title { font-size: 28px; margin-top: 6px; }
-  .count { position: absolute; right: 52px; top: 62px; font-size: 14px; color: #71717a; }
-  .row { position: absolute; left: 52px; width: 536px; height: 76px; border-top: 1px solid #f4f4f5; }
+  .count { position: absolute; right: 52px; top: 62px; font-size: 14px; color: #4A5A80; }
+  .row { position: absolute; left: 52px; width: 536px; height: 76px; border-top: 1px solid #F7F9FF; }
   .row .ico, #fiche .ico { position: absolute; left: 0; top: 17px; width: 42px; height: 42px; }
   .row .plate { position: absolute; left: 58px; top: 15px; font-weight: 600; font-size: 18px; }
-  .row .model { position: absolute; left: 58px; top: 40px; font-size: 13.5px; color: #71717a; }
+  .row .model { position: absolute; left: 58px; top: 40px; font-size: 13.5px; color: #4A5A80; }
   .row .chip { position: absolute; right: 120px; top: 23px; }
-  .row .km { position: absolute; right: 0; top: 27px; font-size: 15px; color: #52525b; }
-  #shape { position: absolute; background: #fff; border: 1px solid #e4e4e7; overflow: hidden; z-index: 5; }
+  .row .km { position: absolute; right: 0; top: 27px; font-size: 15px; color: #34446A; }
+  #shape { position: absolute; background: #fff; border: 1px solid #DDE5F5; overflow: hidden; z-index: 5; }
   #rowL { position: absolute; left: 0; top: 0; width: 536px; height: 76px; }
   #fiche { position: absolute; left: 28px; top: 26px; right: 28px; bottom: 26px; }
   #fiche .ico { top: 2px; width: 48px; height: 48px; }
   #fiche .plate { position: absolute; left: 64px; top: 0; font-weight: 600; font-size: 24px; }
-  #fiche .model { position: absolute; left: 64px; top: 32px; font-size: 14px; color: #71717a; }
+  #fiche .model { position: absolute; left: 64px; top: 32px; font-size: 14px; color: #4A5A80; }
   #fiche > .chip { position: absolute; right: 0; top: 10px; }
-  .tile { position: absolute; width: 246px; height: 128px; border: 1px solid #f0f0f1; border-radius: 14px; background: #fafafa; padding: 16px 18px; }
+  .tile { position: absolute; width: 246px; height: 128px; border: 1px solid #E8EEF8; border-radius: 14px; background: #F7F9FF; padding: 16px 18px; }
   .tile .val { font-weight: 600; font-size: 22px; margin-top: 10px; display: flex; align-items: center; gap: 10px; }
   .tile .note { margin-top: 10px; }
   .avatar { width: 34px; height: 34px; border-radius: 99px; background: #E5EEFF; color: #0052D6; display: grid; place-items: center; font-size: 12.5px; font-weight: 700; }
-  #close { position: absolute; right: 0; top: 330px; font-size: 13.5px; color: #71717a; display: flex; align-items: center; gap: 6px; }
+  #close { position: absolute; right: 0; top: 330px; font-size: 13.5px; color: #4A5A80; display: flex; align-items: center; gap: 6px; }
 </style>
 </head>
 <body>
@@ -63,10 +63,10 @@ const VEHICLES = [
   ['MN-012-OP', 'Ford Transit', 'Actif', '52 900 km'],
 ]
 const Y0 = 122, H = 76, FOCUS = 1
-const rowHTML = ([p, m, st, km]) => `<div class="ico">${ICON.truck(22, '#52525b')}</div><div class="plate">${p}</div><div class="model">${m}</div><div class="chip ok"><span class="dot"></span>${st}</div><div class="km">${km}</div>`
+const rowHTML = ([p, m, st, km]) => `<div class="ico">${ICON.truck(22, '#0052D6')}</div><div class="plate">${p}</div><div class="model">${m}</div><div class="chip ok"><span class="dot"></span>${st}</div><div class="km">${km}</div>`
 $('rows').innerHTML = VEHICLES.map((v, i) => i === FOCUS ? '' : `<div class="row" style="top:${Y0 + i * H}px">${rowHTML(v)}</div>`).join('')
 $('rowL').innerHTML = `<div class="row" style="left:0;top:0;border-top:0">${rowHTML(VEHICLES[FOCUS])}</div>`
-$('fIco').innerHTML = ICON.truck(24, '#52525b')
+$('fIco').innerHTML = ICON.truck(24, '#0052D6')
 $('cursor').innerHTML = CURSOR_SVG
 
 const ROW = { x: 52, y: Y0 + FOCUS * H, w: 536, h: H }
@@ -82,8 +82,8 @@ scene({
       left: lerp(ROW.x - 1, OPEN.x, m) + 'px', top: lerp(ROW.y - 1, OPEN.y, m) + 'px',
       width: lerp(ROW.w + 2, OPEN.w, m) + 'px', height: lerp(ROW.h + 2, OPEN.h, m) + 'px',
       borderRadius: lerp(10, 18, clamp(m)) + 'px',
-      borderColor: m > 0.02 ? '#e4e4e7' : 'transparent',
-      boxShadow: `0 ${(20 * clamp(m)).toFixed(1)}px ${(48 * clamp(m)).toFixed(1)}px -20px rgba(24,24,27,${(0.22 * clamp(m)).toFixed(3)})`,
+      borderColor: m > 0.02 ? '#DDE5F5' : 'transparent',
+      boxShadow: `0 ${(20 * clamp(m)).toFixed(1)}px ${(48 * clamp(m)).toFixed(1)}px -20px rgba(11,27,63,${(0.22 * clamp(m)).toFixed(3)})`,
     })
     // Les deux contenus se relaient sans trou : la ligne s'efface pendant que l'en-tête de la fiche arrive.
     $('rowL').style.opacity = clamp((0.5 - m) * 4)

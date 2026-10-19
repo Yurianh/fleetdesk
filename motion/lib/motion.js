@@ -35,9 +35,9 @@ export const $ = id => document.getElementById(id)
 
 // ─── Palette FleetDesk ────────────────────────────────────────────────────
 export const OK   = { bg: '#ECFDF5', fg: '#047857', bd: '#A7F3D0', dot: '#10B981' }
-export const WARN = { bg: '#FFFBEB', fg: '#B45309', bd: '#FDE68A', dot: '#F59E0B' }
-export const NEUTRAL = { bg: '#F4F4F5', fg: '#52525B', bd: '#E4E4E7', dot: '#A1A1AA' }
-export const BLUE = '#0066FF', BLUE_SOFT = '#E5EEFF', BLUE_INK = '#0052D6'
+export const WARN = { bg: '#FFFDF7', fg: '#B45309', bd: '#F2C77A', dot: '#F59E0B' }
+export const NEUTRAL = { bg: '#F7F9FF', fg: '#34446A', bd: '#DDE5F5', dot: '#8A98B8' }
+export const BLUE = '#0052D6', BLUE_SOFT = '#E5EEFF', BLUE_INK = '#0052D6'
 
 // Couleur d'un état entre deux palettes.
 export function paint(el, from, to, k, { text = true, border = true } = {}) {
@@ -99,7 +99,7 @@ export const ICON = {
   // Symbole FleetDesk : deux traits, un épais et un fin (sans le carré, posé par la tuile).
   brand: (s, c) => `<svg width="${s}" height="${s}" viewBox="0 0 32 32" fill="${c}" aria-hidden="true"><rect x="7.7" y="11" width="16.6" height="5.4" rx="1.6"/><rect x="7.7" y="19" width="12" height="1.9" rx="0.95"/></svg>`,
 }
-export const CURSOR_SVG = '<svg viewBox="0 0 24 24" width="100%" height="100%"><path d="M4 2.5 19.5 12l-7 1.6L9 20.5z" fill="#18181b" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>'
+export const CURSOR_SVG = '<svg viewBox="0 0 24 24" width="100%" height="100%"><path d="M4 2.5 19.5 12l-7 1.6L9 20.5z" fill="#0B1B3F" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>'
 
 // Une scène déclare sa durée et son seek ; le moteur de rendu attend `ready`.
 export function scene({ duration, seek }) {
