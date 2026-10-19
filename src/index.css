@@ -280,11 +280,15 @@ html[data-design="planche"] .fd-fleet::before {
 html[data-design="planche"] .fd-seg { border-radius: 999px; color: #24365C; }
 html[data-design="planche"] .fd-seg-on { background: var(--pl-ink); color: #fff; }
 html[data-design="planche"] .fd-kpi { border-radius: 0; background: transparent; border: 0; border-top: 2px solid var(--pl-ink); padding-left: 0; }
-html[data-design="planche"] .fd-track { background: transparent; border-radius: 0; }
+html[data-design="planche"] .fd-track { background: transparent; border-radius: 0; padding: 0 3px 3px 0; }
+/* Barres pleines, façon BD : aplat d'encre, contour net, reflet clair en
+   haut et ombre portée dure décalée (pas de flou), comme un imprimé. */
+html[data-design="planche"] .fd-track { overflow: visible; }
 html[data-design="planche"] .fd-bar {
   border-radius: 0;
-  border: 1px solid var(--pl-ink);
-  background: repeating-linear-gradient(135deg, var(--pl-ink) 0 1.5px, transparent 1.5px 5px);
+  border: 1.5px solid var(--pl-text);
+  background: var(--pl-ink);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.28), 3px 3px 0 var(--pl-rule);
 }
 
 /* Pictos cerclés à double filet, comme sur le site. */
@@ -322,8 +326,8 @@ html[data-design="planche"] .fd-dash .shadow-sm:not(.fd-plate) { box-shadow: non
 /* ── Mouvement « Planche » ─────────────────────────────────────────────────
    Même grammaire que fleetdesk.fr : chaque bloc monte de 20 px en fondu, 1 s
    sur la courbe du site, sans flou ni zoom ; la cadence serrée est réglée
-   dans runLanding() (src/lib/motion.js). Les barres gravées se remplissent
-   comme celles de la planche « Ajoutez votre flotte » de l'accueil. */
+   dans runLanding() (src/lib/motion.js). Les barres se remplissent comme
+   celles de la planche « Ajoutez votre flotte » de l'accueil. */
 html[data-design="planche"].motion-on.is-landing [data-land] {
   animation: pl-land 1000ms cubic-bezier(0.16, 1, 0.3, 1) var(--land-delay, 0ms) both;
 }

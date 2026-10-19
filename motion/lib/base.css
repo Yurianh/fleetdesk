@@ -2,18 +2,18 @@
 
 /* Toile 5:4 des vidéos de section : 640 × 512 CSS, rendue en 1280 × 1024. */
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { width: 640px; height: 512px; overflow: hidden; background: #f4f4f5; }
-body { font-family: 'Onest', system-ui, sans-serif; color: #18181b; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+html, body { width: 640px; height: 512px; overflow: hidden; background: #F7F9FF; }
+body { font-family: 'Onest', system-ui, sans-serif; color: #0B1B3F; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
 .abs { position: absolute; }
-.panel { position: absolute; background: #fff; border: 1px solid #e4e4e7; border-radius: 18px; }
+.panel { position: absolute; background: #fff; border: 1px solid #DDE5F5; border-radius: 18px; }
 .chip { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid; font-weight: 600; font-size: 13.5px; white-space: nowrap; }
 .dot { width: 7px; height: 7px; border-radius: 99px; flex: none; }
 .ok   { background: #ECFDF5; color: #047857; border-color: #A7F3D0; } .ok .dot { background: #10B981; }
-.warn { background: #FFFBEB; color: #B45309; border-color: #FDE68A; } .warn .dot { background: #F59E0B; }
-.mute { color: #71717a; }
-.label { font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #71717a; }
+.warn { background: #FFFDF7; color: #B45309; border-color: #F2C77A; } .warn .dot { background: #F59E0B; }
+.mute { color: #4A5A80; }
+.label { font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #4A5A80; }
 .title { font-family: 'Onest', system-ui, sans-serif; font-weight: 700; letter-spacing: -0.025em; }
-.ico { display: grid; place-items: center; border-radius: 10px; background: #f4f4f5; color: #52525b; flex: none; }
+.ico { display: grid; place-items: center; border-radius: 10px; background: #EAF0FC; color: #0052D6; flex: none; }
 .swap { position: relative; display: inline-block; vertical-align: top; }
 .txt { position: absolute; left: 0; top: 0; white-space: nowrap; }
 #cursor { position: absolute; left: 0; top: 0; width: 24px; height: 24px; z-index: 50; }

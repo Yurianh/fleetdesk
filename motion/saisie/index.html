@@ -5,27 +5,27 @@
 <title>FleetDesk — Vos chauffeurs saisissent au volant</title>
 <link rel="stylesheet" href="../lib/base.css">
 <style>
-  #phone { left: 34px; top: 26px; width: 236px; height: 460px; border-radius: 34px; background: #18181b; padding: 9px; }
+  #phone { left: 34px; top: 26px; width: 236px; height: 460px; border-radius: 34px; background: #0B1B3F; padding: 9px; }
   #screen { position: absolute; left: 9px; top: 9px; right: 9px; bottom: 9px; border-radius: 26px; background: #fff; overflow: hidden; }
-  .notch { position: absolute; left: 50%; top: 8px; width: 74px; height: 20px; margin-left: -37px; background: #18181b; border-radius: 99px; }
+  .notch { position: absolute; left: 50%; top: 8px; width: 74px; height: 20px; margin-left: -37px; background: #0B1B3F; border-radius: 99px; }
   .ph { position: absolute; left: 16px; right: 16px; }
   .ph .t { font-weight: 600; font-size: 15.5px; }
-  .field { border: 1px solid #e4e4e7; border-radius: 10px; height: 42px; padding: 0 12px; display: flex; align-items: center; font-size: 16px; font-weight: 600; }
-  .field.focus { border-color: #0066FF; box-shadow: 0 0 0 3px rgba(0,102,255,.15); }
-  .flabel { font-size: 11.5px; color: #71717a; font-weight: 600; margin-bottom: 5px; }
-  .caret { display: inline-block; width: 2px; height: 18px; background: #0066FF; margin-left: 1px; }
+  .field { border: 1px solid #DDE5F5; border-radius: 10px; height: 42px; padding: 0 12px; display: flex; align-items: center; font-size: 16px; font-weight: 600; }
+  .field.focus { border-color: #0052D6; box-shadow: 0 0 0 3px rgba(0,102,255,.15); }
+  .flabel { font-size: 11.5px; color: #4A5A80; font-weight: 600; margin-bottom: 5px; }
+  .caret { display: inline-block; width: 2px; height: 18px; background: #0052D6; margin-left: 1px; }
   .shots { display: flex; gap: 8px; }
-  .shot { flex: 1; height: 64px; border: 1px dashed #d4d4d8; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 11px; color: #71717a; position: relative; overflow: hidden; }
-  .shot .img { position: absolute; inset: 0; background: #e4e4e7; display: grid; place-items: center; }
-  #send { height: 44px; border-radius: 12px; background: #0066FF; color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; font-size: 15px; }
+  .shot { flex: 1; height: 64px; border: 1px dashed #C9D5EC; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 11px; color: #4A5A80; position: relative; overflow: hidden; }
+  .shot .img { position: absolute; inset: 0; background: #DDE5F5; display: grid; place-items: center; }
+  #send { height: 44px; border-radius: 12px; background: #0052D6; color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; font-size: 15px; }
   #desk { left: 296px; top: 64px; width: 320px; height: 384px; }
   .dh { position: absolute; left: 22px; top: 20px; }
   .dh .title { font-size: 22px; margin-top: 4px; }
   .item { position: absolute; left: 14px; width: 292px; height: 80px; border-radius: 12px; }
   .item .ico { position: absolute; left: 10px; top: 14px; width: 36px; height: 36px; }
   .item .a { position: absolute; left: 58px; top: 12px; font-weight: 600; font-size: 14.5px; }
-  .item .b { position: absolute; left: 58px; top: 34px; font-size: 12.5px; color: #52525b; }
-  .item .c { position: absolute; left: 58px; top: 53px; font-size: 12px; color: #a1a1aa; }
+  .item .b { position: absolute; left: 58px; top: 34px; font-size: 12.5px; color: #34446A; }
+  .item .c { position: absolute; left: 58px; top: 53px; font-size: 12px; color: #8A98B8; }
   #fly { position: absolute; z-index: 20; overflow: hidden; border: 1px solid #cfe0ff; background: #fff; }
 </style>
 </head>
@@ -54,16 +54,16 @@ const D = 12.8
 const T = { k1: 0.9, k2: 2.6, shot1: 4.4, shot2: 5.0, send: 5.9, fly: 6.3, land: 6.8, reset: 11.0 }
 const KM = '51 177', AMT = '82,40 €'
 
-const ITEM = (ico, a, b, c) => `<div class="ico" style="background:#f4f4f5">${ico}</div><div class="a">${a}</div><div class="b">${b}</div><div class="c">${c}</div>`
+const ITEM = (ico, a, b, c) => `<div class="ico" style="background:#F7F9FF">${ico}</div><div class="a">${a}</div><div class="b">${b}</div><div class="c">${c}</div>`
 const OLD = [
-  ITEM(ICON.drop(18, '#52525b'), 'Lavage enregistré', 'AB-123-CD · 24,00 €', 'Marc Lefebvre · il y a 2 h'),
-  ITEM(ICON.shield(18, '#52525b'), 'Contrôle technique', 'IJ-789-KL · valide jusqu’au 04/2028', 'hier'),
-  ITEM(ICON.wrench(18, '#52525b'), 'Entretien', 'MN-012-OP · vidange', 'lundi'),
+  ITEM(ICON.drop(18, '#0052D6'), 'Lavage enregistré', 'AB-123-CD · 24,00 €', 'Marc Lefebvre · il y a 2 h'),
+  ITEM(ICON.shield(18, '#0052D6'), 'Contrôle technique', 'IJ-789-KL · valide jusqu’au 04/2028', 'hier'),
+  ITEM(ICON.wrench(18, '#0052D6'), 'Entretien', 'MN-012-OP · vidange', 'lundi'),
 ]
-const NEW = ITEM(ICON.gauge(18, '#0066FF'), 'Kilométrage saisi', `EF-456-GH · ${KM} km · plein ${AMT}`, 'Sophie Renard · à l’instant · 2 photos')
+const NEW = ITEM(ICON.gauge(18, '#0052D6'), 'Kilométrage saisi', `EF-456-GH · ${KM} km · plein ${AMT}`, 'Sophie Renard · à l’instant · 2 photos')
 $('feed').innerHTML = OLD.map((h, i) => `<div class="item" id="o${i}">${h}</div>`).join('')
 $('fly').innerHTML = `<div class="item" style="left:0;top:0;position:absolute">${NEW}</div>`
-$('cam1').innerHTML = ICON.camera(18, '#a1a1aa'); $('cam2').innerHTML = ICON.camera(18, '#a1a1aa')
+$('cam1').innerHTML = ICON.camera(18, '#8A98B8'); $('cam2').innerHTML = ICON.camera(18, '#8A98B8')
 $('img1').innerHTML = ICON.check(20, '#047857'); $('img2').innerHTML = ICON.check(20, '#047857')
 
 const FEED_Y0 = 84, FEED_H = 88
@@ -90,13 +90,13 @@ scene({
     for (const [id, at] of [['img1', T.shot1], ['img2', T.shot2]]) {
       const k = spring(t - at, SPRING.snappy) * live
       $(id).style.opacity = clamp(k * 1.5)
-      $(id).style.background = mixc('#e4e4e7', OK.bg, clamp(k))
+      $(id).style.background = mixc('#DDE5F5', OK.bg, clamp(k))
     }
 
     // Bouton : « Envoyer » → « Envoyé »
     const sent = spring(t - (T.send + 0.1), SPRING.snappy) * live
     const send = $('send')
-    send.style.background = mixc('#0066FF', OK.dot, sent)
+    send.style.background = mixc('#0052D6', OK.dot, sent)
     send.style.transform = `scale(${(1 - 0.05 * press(t, T.send)).toFixed(4)})`
     $('sendIco').innerHTML = sent > 0.5 ? ICON.check(17, '#fff') : ICON.send(16, '#fff')
     swapText($('sendTxt'), t, t < T.reset ? (t < T.send + 0.1 ? [[0, 'Envoyer']] : [[0, 'Envoyer'], [T.send + 0.1, 'Envoyé']]) : [[T.reset, 'Envoyer']], 12)
@@ -110,8 +110,8 @@ scene({
       left: box.x + 'px', top: box.y + 'px', width: box.w + 'px', height: box.h + 'px',
       borderRadius: lerp(12, 12, f) + 'px', opacity: shown ? clamp(spring(t - T.fly, SPRING.snappy) * 2) * live : 0,
       background: mixc('#EFF5FF', '#ffffff', spring(t - (T.land + 1.4), SPRING.heavy)),
-      borderColor: mixc('#BFD6FF', '#f4f4f5', spring(t - (T.land + 1.4), SPRING.heavy)),
-      boxShadow: `0 ${(14 * (1 - f)).toFixed(1)}px ${(30 * (1 - f)).toFixed(1)}px -14px rgba(24,24,27,${(0.3 * (1 - f)).toFixed(3)})`,
+      borderColor: mixc('#BFD6FF', '#F7F9FF', spring(t - (T.land + 1.4), SPRING.heavy)),
+      boxShadow: `0 ${(14 * (1 - f)).toFixed(1)}px ${(30 * (1 - f)).toFixed(1)}px -14px rgba(11,27,63,${(0.3 * (1 - f)).toFixed(3)})`,
     })
     fly.firstElementChild.style.opacity = clamp((f - 0.5) / 0.35)
     // Les anciennes lignes descendent pour lui laisser la place, puis remontent.

@@ -14,7 +14,7 @@ export const RELEASES = [
     intro: 'Le tableau de bord et la navigation prennent le style de fleetdesk.fr. Rien ne change dans vos données ni dans les fonctions : tout est au même endroit.',
     items: [
       'Encre bleue sur papier, filets fins et pictos cerclés : une lecture plus calme, les alertes ressortent mieux.',
-      'Utilisation des véhicules en barres gravées, activité récente en frise, carte de flotte illustrée.',
+      'Utilisation des véhicules en barres pleines à l\'encre, activité récente en frise, carte de flotte illustrée.',
       'Vous préférez l\'ancienne interface ? Réglages › Affichage › Design classique, à tout moment.',
       'Nouveau : Réglages › Nous écrire, pour signaler un bug ou proposer une amélioration.',
     ],
