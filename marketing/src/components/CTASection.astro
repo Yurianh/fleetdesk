@@ -1,31 +1,28 @@
 ---
-const APP_URL = 'https://app.fleetdesk.fr'
+// Appel final des pages : une planche encadrée sur le papier, juste avant le
+// pied de page gravé (qui porte déjà la rue : pas d'illustration ici).
 ---
-<section class="py-28 bg-[#0066FF] relative overflow-hidden">
-  <!-- Soft radial depth, not a decorative grid -->
-  <div class="absolute inset-0 opacity-40 pointer-events-none"
-    style="background: radial-gradient(60% 80% at 50% 0%, rgba(255,255,255,0.18) 0%, transparent 70%)"></div>
-
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center relative">
-    <p class="text-sm font-semibold text-white/70 tracking-wide mb-4">7 jours d'essai, sans carte</p>
-    <h2 class="font-display text-3xl sm:text-5xl font-semibold text-white mb-5" style="text-wrap: balance">
-      Votre flotte mérite mieux qu'un tableur.
-    </h2>
-    <p class="text-lg text-white/80 max-w-xl mx-auto mb-10">
-      Opérationnel en 5 minutes. Sans formation, sans carte bancaire, sans prise de tête.
-    </p>
-    <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
-      <a href={"/pricing"}
-        class="inline-flex items-center gap-2 bg-white hover:bg-zinc-100 text-[#0066FF] font-semibold text-sm px-7 py-3.5 rounded-lg transition-colors shadow-lg shadow-[#003a99]/30">
-        Essayer gratuitement
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-        </svg>
-      </a>
-      <a href="/contact" class="text-sm font-medium text-white/80 hover:text-white transition-colors">
-        Parler à un commercial
-      </a>
+<section class="max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
+  <div class="border border-plate-ink bg-white p-1.5 sm:p-2">
+    <div class="border border-plate-ink px-6 sm:px-12 py-12 sm:py-16 grid lg:grid-cols-[1.25fr_0.75fr] gap-10 items-end">
+      <div>
+        <p class="text-[12.5px] font-semibold tracking-[0.14em] text-plate-ink mb-4">7 JOURS D'ESSAI, SANS CARTE</p>
+        <h2 class="text-3xl sm:text-5xl font-bold tracking-[-0.025em] leading-[1.08] text-plate-text mb-5" style="text-wrap: balance">
+          Votre flotte mérite mieux qu'un tableur.
+        </h2>
+        <p class="text-lg text-plate-body max-w-xl">
+          Opérationnel en 5 minutes. Sans formation, sans carte bancaire, sans prise de tête.
+        </p>
+      </div>
+      <div class="flex flex-col items-start lg:items-end gap-4">
+        <a href="/pricing" class="cta-brand inline-flex items-center gap-2.5 text-white font-semibold px-7 py-4 rounded-xl">
+          Essayer gratuitement
+          <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"/></svg>
+        </a>
+        <a href="/contact" class="font-semibold text-plate-ink hover:underline underline-offset-4">Parler à l'équipe</a>
+        <p class="text-[13px] text-plate-muted">Prévenu 48 h avant la fin · Sans engagement</p>
+      </div>
     </div>
-    <p class="mt-6 text-xs text-white/60">Sans carte bancaire · Prévenu 48 h avant la fin · Sans engagement</p>
   </div>
+  <p class="mt-2.5 text-[12.5px] tracking-[0.04em] text-plate-muted">DERNIÈRE PLANCHE · VOTRE FLOTTE</p>
 </section>

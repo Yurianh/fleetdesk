@@ -54,8 +54,8 @@ function Ring({ score, color, on }) {
           strokeDasharray={c} strokeDashoffset={c * (1 - v / 100)} />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-display text-7xl sm:text-8xl font-semibold text-zinc-900 tabular-nums leading-none">{v}</span>
-        <span className="text-sm text-zinc-500 mt-1">sur 100</span>
+        <span className="font-display text-7xl sm:text-8xl font-semibold text-plate-text tabular-nums leading-none">{v}</span>
+        <span className="text-sm text-plate-muted mt-1">sur 100</span>
       </div>
     </div>
   )
@@ -64,10 +64,10 @@ function Ring({ score, color, on }) {
 function ScoreSlide({ result, lvl, on }) {
   return (
     <div className="flex flex-col items-center text-center">
-      <p className="text-sm font-semibold tracking-wide uppercase text-zinc-500 land" style={d(0)}>Votre score de maîtrise</p>
+      <p className="text-sm font-semibold tracking-wide uppercase text-plate-muted land" style={d(0)}>Votre score de maîtrise</p>
       <div className="mt-6"><Ring score={result.score} color={lvl.ring} on={on} /></div>
       <p className={`mt-6 inline-flex items-center text-sm font-semibold border rounded-full px-4 py-1.5 pop ${lvl.tone}`} style={d(1300)}>{lvl.label}</p>
-      <p className="mt-5 text-xl sm:text-2xl text-zinc-700 leading-relaxed max-w-2xl land" style={d(1500)}>{lvl.text}</p>
+      <p className="mt-5 text-xl sm:text-2xl text-plate-body leading-relaxed max-w-2xl land" style={d(1500)}>{lvl.text}</p>
     </div>
   )
 }
@@ -78,23 +78,23 @@ function DeadlinesSlide({ s, on }) {
   const dots = Math.min(perMonth, 9)
   return (
     <div className="text-center">
-      <p className="text-sm font-semibold tracking-wide uppercase text-zinc-500 land" style={d(0)}>Ce que votre flotte doit tenir chaque année</p>
-      <p className="mt-4 font-display font-semibold text-zinc-900 tabular-nums leading-none text-7xl sm:text-9xl land" style={d(120)}>≈ {v}</p>
-      <p className="mt-2 text-2xl sm:text-3xl font-display text-zinc-800 land" style={d(220)}>échéances</p>
+      <p className="text-sm font-semibold tracking-wide uppercase text-plate-muted land" style={d(0)}>Ce que votre flotte doit tenir chaque année</p>
+      <p className="mt-4 font-display font-semibold text-plate-text tabular-nums leading-none text-7xl sm:text-9xl land" style={d(120)}>≈ {v}</p>
+      <p className="mt-2 text-2xl sm:text-3xl font-display text-plate-text land" style={d(220)}>échéances</p>
       <div className="mt-9 mx-auto max-w-xl grid grid-cols-12 gap-1.5 sm:gap-2.5 items-end" aria-hidden="true">
         {MONTHS.map((m, col) => (
           <div key={col} className="flex flex-col-reverse items-center gap-1 sm:gap-1.5">
-            <span className="text-[10px] sm:text-xs text-zinc-400 mt-1">{m}</span>
+            <span className="text-[10px] sm:text-xs text-plate-muted mt-1">{m}</span>
             {Array.from({ length: dots }, (_, row) => (
-              <span key={row} className={`w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full pop ${row === dots - 1 && col % 4 === 1 ? 'bg-amber-400' : 'bg-[#0066FF]/80'}`} style={d(500 + col * 70 + row * 45)} />
+              <span key={row} className={`w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full pop ${row === dots - 1 && col % 4 === 1 ? 'bg-amber-400' : 'bg-[#0052D6]/80'}`} style={d(500 + col * 70 + row * 45)} />
             ))}
           </div>
         ))}
       </div>
-      <p className="mt-8 text-lg sm:text-xl text-zinc-700 leading-relaxed max-w-2xl mx-auto land" style={d(1500)}>
-        Soit environ <strong className="text-zinc-900">{perMonth} par mois</strong>. Une seule oubliée peut suffire : 135 € d’amende pour un contrôle technique expiré, et un véhicule qui peut être immobilisé.
+      <p className="mt-8 text-lg sm:text-xl text-plate-body leading-relaxed max-w-2xl mx-auto land" style={d(1500)}>
+        Soit environ <strong className="text-plate-text">{perMonth} par mois</strong>. Une seule oubliée peut suffire : 135 € d’amende pour un contrôle technique expiré, et un véhicule qui peut être immobilisé.
       </p>
-      <p className="mt-3 text-sm text-zinc-500 land" style={d(1700)}>
+      <p className="mt-3 text-sm text-plate-muted land" style={d(1700)}>
         Contrôles techniques{s.ctAnnuel ? ' annuels' : ''}, assurances, entretiens, et documents d’environ {s.drivers} conducteur{s.drivers > 1 ? 's' : ''}.
       </p>
     </div>
@@ -104,18 +104,18 @@ function DeadlinesSlide({ s, on }) {
 function ItemSlide({ item: [risk, gain], n, total }) {
   return (
     <div className="max-w-3xl mx-auto">
-      <p className="text-sm font-semibold tracking-wide uppercase text-zinc-500 land" style={d(0)}>Point de vigilance {n + 1} / {total}</p>
+      <p className="text-sm font-semibold tracking-wide uppercase text-plate-muted land" style={d(0)}>Point de vigilance {n + 1} / {total}</p>
       <div className="story-risk mt-5">
         <p className="text-xs font-semibold uppercase tracking-wider text-amber-700 land" style={d(120)}>Aujourd’hui</p>
-        <p className="mt-3 font-display text-3xl sm:text-[2.6rem] leading-[1.15] font-semibold text-zinc-900 land" style={d(200)}>{risk}</p>
+        <p className="mt-3 font-display text-3xl sm:text-[2.6rem] leading-[1.15] font-semibold text-plate-text land" style={d(200)}>{risk}</p>
       </div>
-      <div className="story-gain mt-8 rounded-3xl bg-white border border-[#0066FF]/25 shadow-2xl shadow-[#0066FF]/10 p-6 sm:p-8 flex gap-4 sm:gap-5">
-        <span className="story-check w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#0066FF] text-white flex items-center justify-center flex-shrink-0">
+      <div className="story-gain mt-8 rounded-3xl bg-white border border-[#0052D6]/25 shadow-2xl shadow-[#0052D6]/10 p-6 sm:p-8 flex gap-4 sm:gap-5">
+        <span className="story-check w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#0052D6] text-white flex items-center justify-center flex-shrink-0">
           <svg className="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>
         </span>
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-[#0052D6]">Avec FleetDesk</p>
-          <p className="mt-2 text-lg sm:text-xl text-zinc-800 leading-relaxed">{gain}</p>
+          <p className="mt-2 text-lg sm:text-xl text-plate-text leading-relaxed">{gain}</p>
         </div>
       </div>
     </div>
@@ -137,37 +137,37 @@ function TimeSlide({ s, plan, on }) {
   const fmt = n => n.toLocaleString('fr-FR')
   return (
     <div className="max-w-3xl mx-auto text-center">
-      <p className="text-sm font-semibold tracking-wide uppercase text-zinc-500 land" style={d(0)}>Le temps que vous récupérez</p>
-      <p className="mt-4 font-display font-semibold text-zinc-900 tabular-nums leading-none text-7xl sm:text-9xl land" style={d(120)}>≈ {v} h</p>
-      <p className="mt-2 text-2xl sm:text-3xl font-display text-zinc-800 land" style={d(220)}>rendues chaque année</p>
+      <p className="text-sm font-semibold tracking-wide uppercase text-plate-muted land" style={d(0)}>Le temps que vous récupérez</p>
+      <p className="mt-4 font-display font-semibold text-plate-text tabular-nums leading-none text-7xl sm:text-9xl land" style={d(120)}>≈ {v} h</p>
+      <p className="mt-2 text-2xl sm:text-3xl font-display text-plate-text land" style={d(220)}>rendues chaque année</p>
 
       <div className="mt-9 flex flex-wrap justify-center gap-2 sm:gap-2.5" aria-hidden="true">
         {Array.from({ length: shown }, (_, k) => (
-          <span key={k} className="pop w-9 h-11 sm:w-11 sm:h-[3.25rem] rounded-lg bg-white border border-[#0066FF]/25 shadow-sm overflow-hidden flex flex-col" style={d(500 + k * 90)}>
-            <span className="h-2.5 sm:h-3 bg-[#0066FF]" />
+          <span key={k} className="pop w-9 h-11 sm:w-11 sm:h-[3.25rem] rounded-lg bg-white border border-[#0052D6]/25 shadow-sm overflow-hidden flex flex-col" style={d(500 + k * 90)}>
+            <span className="h-2.5 sm:h-3 bg-[#0052D6]" />
             <span className="flex-1 flex items-center justify-center text-[11px] sm:text-xs font-semibold text-[#0052D6]">{k + 1}</span>
           </span>
         ))}
       </div>
-      <p className="mt-4 text-lg sm:text-xl text-zinc-700 land" style={d(600 + shown * 90)}>
-        Soit <strong className="text-zinc-900">≈ {days} journée{days > 1 ? 's' : ''} de travail</strong>{days > shown ? ` (${shown} affichées)` : ''}, environ {s.heures} h par mois.
+      <p className="mt-4 text-lg sm:text-xl text-plate-body land" style={d(600 + shown * 90)}>
+        Soit <strong className="text-plate-text">≈ {days} journée{days > 1 ? 's' : ''} de travail</strong>{days > shown ? ` (${shown} affichées)` : ''}, environ {s.heures} h par mois.
       </p>
 
       {roi && (
-        <div className="mt-8 grid grid-cols-2 gap-px rounded-2xl overflow-hidden border border-zinc-200 bg-zinc-200 text-left land" style={d(900 + shown * 90)}>
+        <div className="mt-8 grid grid-cols-2 gap-px rounded-none overflow-hidden border border-plate-rule bg-zinc-200 text-left land" style={d(900 + shown * 90)}>
           <div className="bg-white p-4 sm:p-5">
-            <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Ce temps vaut</p>
-            <p className="mt-1 font-display text-3xl sm:text-4xl font-semibold text-zinc-900 tabular-nums">≈ {fmt(value)} €</p>
-            <p className="mt-1 text-xs text-zinc-500">par an, à {HOURLY} € de l’heure</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-plate-muted">Ce temps vaut</p>
+            <p className="mt-1 font-display text-3xl sm:text-4xl font-semibold text-plate-text tabular-nums">≈ {fmt(value)} €</p>
+            <p className="mt-1 text-xs text-plate-muted">par an, à {HOURLY} € de l’heure</p>
           </div>
-          <div className="bg-[#F5F8FF] p-4 sm:p-5">
+          <div className="bg-plate-tint p-4 sm:p-5">
             <p className="text-xs font-semibold uppercase tracking-wide text-[#0052D6]">FleetDesk {plan.name}</p>
             <p className="mt-1 font-display text-3xl sm:text-4xl font-semibold text-[#0052D6] tabular-nums">{fmt(price)} €</p>
-            <p className="mt-1 text-xs text-zinc-500">par an</p>
+            <p className="mt-1 text-xs text-plate-muted">par an</p>
           </div>
         </div>
       )}
-      <p className="mt-5 text-sm text-zinc-500 leading-relaxed land" style={d(1100 + shown * 90)}>
+      <p className="mt-5 text-sm text-plate-muted leading-relaxed land" style={d(1100 + shown * 90)}>
         Environ {s.sharePct} % du temps que vous y passez aujourd’hui : relances, recopie de relevés, recherche de documents.
       </p>
     </div>
@@ -182,18 +182,18 @@ function SummarySlide({ s, plan }) {
   ]
   return (
     <div className="max-w-2xl mx-auto">
-      <p className="font-display text-4xl sm:text-6xl font-semibold text-zinc-900 leading-[1.05] land" style={d(0)}>Avec FleetDesk, votre flotte :</p>
+      <p className="font-display text-4xl sm:text-6xl font-semibold text-plate-text leading-[1.05] land" style={d(0)}>Avec FleetDesk, votre flotte :</p>
       <ul className="mt-9 space-y-4">
         {lines.map((t, i) => (
-          <li key={t} className="flex items-center gap-4 text-xl sm:text-2xl text-zinc-800 land" style={d(350 + i * 260)}>
-            <span className="w-9 h-9 rounded-full bg-[#0066FF] text-white flex items-center justify-center flex-shrink-0 pop" style={d(450 + i * 260)}>
+          <li key={t} className="flex items-center gap-4 text-xl sm:text-2xl text-plate-text land" style={d(350 + i * 260)}>
+            <span className="w-9 h-9 rounded-full bg-[#0052D6] text-white flex items-center justify-center flex-shrink-0 pop" style={d(450 + i * 260)}>
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>
             </span>
             {t}
           </li>
         ))}
       </ul>
-      <a href="#diag-plan" className="mt-10 inline-flex items-center gap-2 text-lg font-semibold text-[#0066FF] land" style={d(1300)}>
+      <a href="#diag-plan" className="mt-10 inline-flex items-center gap-2 text-lg font-semibold text-[#0052D6] land" style={d(1300)}>
         Votre formule : {plan.name} <span className="story-hint inline-block">↓</span>
       </a>
     </div>
@@ -289,28 +289,28 @@ export default function DiagnosticStory({ result, lvl, plan }) {
         <nav aria-label="Étapes du résultat" className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 hidden sm:flex flex-col gap-2.5">
           {slides.map((sl, i) => (
             <button key={sl.key} type="button" onClick={() => goTo(i)} aria-label={`Aller à : ${label(sl)}`} aria-current={i === state.idx ? 'step' : undefined}
-              className={`relative w-2 rounded-full overflow-hidden transition-all duration-500 ${i === state.idx ? 'h-9 bg-[#0066FF]/20' : i < state.idx ? 'h-2 bg-[#0066FF]/50' : 'h-2 bg-zinc-300'}`}>
-              {i === state.idx && <span className="story-rail-fill absolute inset-x-0 top-0 bg-[#0066FF] rounded-full" />}
+              className={`relative w-2 rounded-full overflow-hidden transition-all duration-500 ${i === state.idx ? 'h-9 bg-[#0052D6]/20' : i < state.idx ? 'h-2 bg-[#0052D6]/50' : 'h-2 bg-zinc-300'}`}>
+              {i === state.idx && <span className="story-rail-fill absolute inset-x-0 top-0 bg-[#0052D6] rounded-full" />}
             </button>
           ))}
         </nav>
         <div aria-hidden="true" className="sm:hidden absolute top-[84px] left-5 right-5 h-1 rounded-full bg-zinc-200/70 overflow-hidden">
-          <div className="story-bar-fill h-full bg-[#0066FF]" />
+          <div className="story-bar-fill h-full bg-[#0052D6]" />
         </div>
 
-        <div className="absolute bottom-5 inset-x-0 flex items-center justify-between px-5 sm:px-8 text-xs text-zinc-400">
+        <div className="absolute bottom-5 inset-x-0 flex items-center justify-between px-5 sm:px-8 text-xs text-plate-muted">
           <span>Ordres de grandeur calculés à partir de vos réponses, pas un audit.</span>
-          <a href="#diag-plan" className="hidden sm:inline text-zinc-500 hover:text-zinc-800">Passer à ma formule ↓</a>
+          <a href="#diag-plan" className="hidden sm:inline text-plate-muted hover:text-plate-text">Passer à ma formule ↓</a>
         </div>
         {/* « Suivant » : l'anneau se remplit au fil du défilement, jusqu'à la prochaine étape. */}
         <div aria-hidden="true" className="story-next absolute bottom-[4.5rem] sm:bottom-14 inset-x-0 flex justify-center pointer-events-none">
-          <div key={nextLabel} className="story-next-chip inline-flex items-center gap-2.5 rounded-full bg-white/85 backdrop-blur border border-zinc-200 shadow-sm pl-2 pr-4 py-1.5 text-sm text-zinc-600">
+          <div key={nextLabel} className="story-next-chip inline-flex items-center gap-2.5 rounded-full bg-white/85 backdrop-blur border border-plate-rule shadow-sm pl-2 pr-4 py-1.5 text-sm text-plate-body">
             <svg viewBox="0 0 24 24" className="w-6 h-6 -rotate-90">
               <circle cx="12" cy="12" r="9" fill="none" stroke="#E4E4E7" strokeWidth="2.5" />
-              <circle className="story-next-ring" cx="12" cy="12" r="9" fill="none" stroke="#0066FF" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="56.55" />
+              <circle className="story-next-ring" cx="12" cy="12" r="9" fill="none" stroke="#0052D6" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="56.55" />
             </svg>
-            <span>{state.idx === 0 && !state.phase2 ? 'Faites défiler' : 'Suivant'} · <span className="font-medium text-zinc-800">{nextLabel}</span></span>
-            <span className="story-hint inline-block text-[#0066FF]">↓</span>
+            <span>{state.idx === 0 && !state.phase2 ? 'Faites défiler' : 'Suivant'} · <span className="font-medium text-plate-text">{nextLabel}</span></span>
+            <span className="story-hint inline-block text-[#0052D6]">↓</span>
           </div>
         </div>
       </div>

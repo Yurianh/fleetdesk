@@ -232,7 +232,7 @@ const LEVELS = {
   faible: { label: 'Exposition faible', tone: 'bg-emerald-50 text-emerald-800 border-emerald-200', ring: '#10B981', text: 'Votre flotte est bien tenue. FleetDesk vous ferait surtout gagner le temps que ce suivi vous coûte.' },
 }
 
-const Check = ({ className = 'w-4 h-4 mt-0.5 text-[#0066FF]' }) => (
+const Check = ({ className = 'w-4 h-4 mt-0.5 text-[#0052D6]' }) => (
   <svg className={`flex-shrink-0 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
 )
 
@@ -258,21 +258,21 @@ function Analysis({ steps, onDone }) {
   const pct = Math.round((current / steps.length) * 100)
   return (
     <div role="status" aria-live="polite" className="py-2">
-      <p className="font-display text-2xl sm:text-[1.7rem] font-semibold text-zinc-900">Analyse de vos réponses…</p>
+      <p className="font-display text-2xl sm:text-[1.7rem] font-semibold text-plate-text">Analyse de vos réponses…</p>
       <div className="flex items-center gap-3 mt-5 mb-7">
-        <div className="flex-1 h-1.5 rounded-full bg-zinc-100 overflow-hidden">
-          <div className="h-full bg-[#0066FF] rounded-full transition-all duration-700 ease-out" style={{ width: `${pct}%` }} />
+        <div className="flex-1 h-1.5 rounded-full bg-plate-tint overflow-hidden">
+          <div className="h-full bg-[#0052D6] rounded-full transition-all duration-700 ease-out" style={{ width: `${pct}%` }} />
         </div>
-        <span className="text-xs font-medium text-zinc-500 tabular-nums w-9 text-right">{pct} %</span>
+        <span className="text-xs font-medium text-plate-muted tabular-nums w-9 text-right">{pct} %</span>
       </div>
       <ul className="space-y-3">
         {steps.map((s, i) => {
           const state = i < current ? 'done' : i === current ? 'active' : 'todo'
           return (
-            <li key={s} className={`flex items-start gap-3 text-[15px] transition-colors duration-300 ${state === 'todo' ? 'text-zinc-300' : state === 'active' ? 'text-zinc-900 font-medium' : 'text-zinc-600'}`}>
+            <li key={s} className={`flex items-start gap-3 text-[15px] transition-colors duration-300 ${state === 'todo' ? 'text-zinc-300' : state === 'active' ? 'text-plate-text font-medium' : 'text-plate-body'}`}>
               <span className="w-5 h-5 mt-0.5 flex items-center justify-center flex-shrink-0">
                 {state === 'done' && <Check className="w-4 h-4 text-emerald-500" />}
-                {state === 'active' && <span className="w-4 h-4 rounded-full border-2 border-[#0066FF] border-t-transparent animate-spin" />}
+                {state === 'active' && <span className="w-4 h-4 rounded-full border-2 border-[#0052D6] border-t-transparent animate-spin" />}
                 {state === 'todo' && <span className="w-1.5 h-1.5 rounded-full bg-zinc-300" />}
               </span>
               {s}
@@ -349,30 +349,30 @@ export default function Diagnostic({ variant = 'full' }) {
         <DiagnosticStory result={result} lvl={lvl} plan={plan} />
 
         {result.secteur && (
-          <p className="mt-6 text-zinc-600 leading-relaxed">
-            <span className="font-semibold text-zinc-800">{result.secteur[0]} :</span> {result.secteur[1]}{' '}
-            <a href={result.secteur[2]} className="text-[#0066FF] font-medium hover:underline">Voir ce que FleetDesk suit pour vous →</a>
+          <p className="mt-6 text-plate-body leading-relaxed">
+            <span className="font-semibold text-plate-text">{result.secteur[0]} :</span> {result.secteur[1]}{' '}
+            <a href={result.secteur[2]} className="text-[#0052D6] font-medium hover:underline">Voir ce que FleetDesk suit pour vous →</a>
           </p>
         )}
 
-        <div id="diag-plan" className="mt-10 scroll-mt-28 rounded-2xl border-2 border-[#0066FF] bg-white p-6 sm:p-8">
-          <p className="text-sm font-semibold text-[#0066FF]">La formule qui vous correspond</p>
-          <p className="font-display text-3xl font-semibold text-zinc-900 mt-1">{plan.name}</p>
-          <p className="text-zinc-600 mt-1">{plan.why[0].toUpperCase() + plan.why.slice(1)}. {plan.annualMonthly} € par mois en annuel (facturé {plan.annual} € par an), ou {plan.price} € par mois sans engagement.</p>
-          <ul className="mt-5 grid sm:grid-cols-2 gap-2 text-sm text-zinc-700">
+        <div id="diag-plan" className="mt-10 scroll-mt-28 rounded-none border-2 border-[#0052D6] bg-white p-6 sm:p-8">
+          <p className="text-sm font-semibold text-[#0052D6]">La formule qui vous correspond</p>
+          <p className="font-display text-3xl font-semibold text-plate-text mt-1">{plan.name}</p>
+          <p className="text-plate-body mt-1">{plan.why[0].toUpperCase() + plan.why.slice(1)}. {plan.annualMonthly} € par mois en annuel (facturé {plan.annual} € par an), ou {plan.price} € par mois sans engagement.</p>
+          <ul className="mt-5 grid sm:grid-cols-2 gap-2 text-sm text-plate-body">
             {['7 jours d’essai, sans carte bancaire', 'Prévenu par e-mail 48 h avant la fin', 'Rien n’est prélevé sans votre accord', 'Mensuel sans engagement, arrêt sans frais'].map(t => (
               <li key={t} className="flex gap-2"><Check />{t}</li>
             ))}
           </ul>
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
-            <a href={`${APP_URL}/login?plan=${result.plan}&billing=annual`} className="inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-7 py-3.5 rounded-xl transition-colors">
+            <a href={`${APP_URL}/login?plan=${result.plan}&billing=annual`} className="inline-flex items-center justify-center gap-2 bg-[#0052D6] hover:bg-[#003A99] text-white font-semibold text-sm px-7 py-3.5 rounded-xl transition-colors">
               Essayer {plan.name} 7 jours gratuitement
             </a>
-            <a href="/pricing" className="inline-flex items-center justify-center text-sm font-medium text-zinc-600 hover:text-zinc-900 px-5 py-3.5">Comparer les formules</a>
+            <a href="/pricing" className="inline-flex items-center justify-center text-sm font-medium text-plate-body hover:text-plate-text px-5 py-3.5">Comparer les formules</a>
           </div>
         </div>
 
-        <button type="button" onClick={restart} className="mt-6 text-sm text-zinc-500 hover:text-zinc-800 underline underline-offset-2">Refaire le diagnostic</button>
+        <button type="button" onClick={restart} className="mt-6 text-sm text-plate-muted hover:text-plate-text underline underline-offset-2">Refaire le diagnostic</button>
       </div>
     )
   }
@@ -384,15 +384,15 @@ export default function Diagnostic({ variant = 'full' }) {
     <div>
       {/* Progression */}
       <div className="flex items-center gap-3 mb-6" aria-hidden="true">
-        <div className="flex-1 h-1.5 rounded-full bg-zinc-100 overflow-hidden">
-          <div className="h-full bg-[#0066FF] rounded-full transition-all duration-500" style={{ width: `${(step / QUESTIONS.length) * 100}%` }} />
+        <div className="flex-1 h-1.5 rounded-full bg-plate-tint overflow-hidden">
+          <div className="h-full bg-[#0052D6] rounded-full transition-all duration-500" style={{ width: `${(step / QUESTIONS.length) * 100}%` }} />
         </div>
-        <span className="text-xs font-medium text-zinc-500 tabular-nums">{step + 1} / {QUESTIONS.length}</span>
+        <span className="text-xs font-medium text-plate-muted tabular-nums">{step + 1} / {QUESTIONS.length}</span>
       </div>
 
       <fieldset key={q.id}>
-        <legend className="font-display text-2xl sm:text-[1.7rem] font-semibold text-zinc-900 leading-snug mb-2">{q.title}</legend>
-        {q.hint && <p className="text-sm text-zinc-500 mb-4">{q.hint}</p>}
+        <legend className="font-display text-2xl sm:text-[1.7rem] font-semibold text-plate-text leading-snug mb-2">{q.title}</legend>
+        {q.hint && <p className="text-sm text-plate-muted mb-4">{q.hint}</p>}
         <div className={`grid gap-2.5 mt-4 ${q.options.length > 4 ? 'sm:grid-cols-2' : ''}`}>
           {q.options.map(o => {
             const on = q.multi ? (selected || []).includes(o.v) : selected === o.v
@@ -402,7 +402,7 @@ export default function Diagnostic({ variant = 'full' }) {
                 type="button"
                 aria-pressed={on}
                 onClick={() => choose(q, o.v)}
-                className={`text-left rounded-xl border px-4 py-3.5 text-[15px] font-medium transition-colors ${on ? 'border-[#0066FF] bg-[#F5F8FF] text-[#0052D6]' : 'border-zinc-200 bg-white text-zinc-800 hover:border-zinc-300 hover:bg-zinc-50'}`}
+                className={`text-left rounded-xl border px-4 py-3.5 text-[15px] font-medium transition-colors ${on ? 'border-[#0052D6] bg-plate-tint text-[#0052D6]' : 'border-plate-rule bg-white text-plate-text hover:border-plate-rule hover:bg-white'}`}
               >
                 {o.label}
               </button>
@@ -413,14 +413,14 @@ export default function Diagnostic({ variant = 'full' }) {
 
       <div className="flex items-center justify-between mt-6">
         {step > 0 ? (
-          <button type="button" onClick={() => setStep(step - 1)} className="text-sm text-zinc-500 hover:text-zinc-800">← Retour</button>
+          <button type="button" onClick={() => setStep(step - 1)} className="text-sm text-plate-muted hover:text-plate-text">← Retour</button>
         ) : <span />}
         {q.multi && (
           <button
             type="button"
             disabled={!(selected || []).length}
             onClick={advance}
-            className="inline-flex items-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] disabled:bg-zinc-200 disabled:text-zinc-400 text-white text-sm font-semibold px-6 py-3 rounded-xl transition-colors"
+            className="inline-flex items-center gap-2 bg-[#0052D6] hover:bg-[#003A99] disabled:bg-zinc-200 disabled:text-plate-muted text-white text-sm font-semibold px-6 py-3 rounded-xl transition-colors"
           >
             {last ? 'Lancer l’analyse' : 'Continuer'}
           </button>

@@ -36,14 +36,14 @@ const breadcrumb = {
 >
   <Navbar client:load currentPath="/guides" />
 
-  <section class="bg-white border-b border-zinc-100 pt-20 pb-16">
+  <section class=" border-b border-plate-ink pt-20 pb-16">
     <div class="max-w-5xl mx-auto px-4 sm:px-6">
-      <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-4">Guides</p>
-      <h1 class="font-display text-4xl sm:text-5xl font-semibold text-zinc-900 tracking-tight leading-[1.05] max-w-2xl mb-5">
+      <p class="text-sm font-semibold text-[#0052D6] tracking-wide mb-4">Guides</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-semibold text-plate-text tracking-tight leading-[1.05] max-w-2xl mb-5">
         La gestion de flotte, expliquée simplement.
       </h1>
-      <p class="text-lg text-zinc-600 max-w-2xl leading-relaxed">
-        Ce qu'un gestionnaire doit savoir pour garder ses véhicules et ses conducteurs en règle, et piloter ses coûts. Pour aller plus loin, voir la <a href="/conformite" class="text-[#0066FF] font-medium hover:underline">page conformité</a> ou le comparatif des <a href="/logiciel-gestion-de-flotte" class="text-[#0066FF] font-medium hover:underline">fonctions d'un logiciel de parc automobile</a>.
+      <p class="text-lg text-plate-body max-w-2xl leading-relaxed">
+        Ce qu'un gestionnaire doit savoir pour garder ses véhicules et ses conducteurs en règle, et piloter ses coûts. Pour aller plus loin, voir la <a href="/conformite" class="text-[#0052D6] font-medium hover:underline">page conformité</a> ou le comparatif des <a href="/logiciel-gestion-de-flotte" class="text-[#0052D6] font-medium hover:underline">fonctions d'un logiciel de parc automobile</a>.
       </p>
     </div>
   </section>
@@ -51,11 +51,11 @@ const breadcrumb = {
   <section class="py-16 sm:py-20">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
       {guides.map(g => (
-        <a href={g.href} class="group flex flex-col border border-zinc-200 rounded-2xl p-6 hover:border-[#0066FF]/40 hover:shadow-sm transition-all">
-          <span class="text-xs font-semibold uppercase tracking-wide text-[#0066FF] mb-3">{g.tag}</span>
-          <h2 class="font-display text-lg font-semibold text-zinc-900 tracking-tight leading-snug mb-2 group-hover:text-[#0066FF] transition-colors">{g.title}</h2>
-          <p class="text-sm text-zinc-600 leading-relaxed flex-1">{g.desc}</p>
-          <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0066FF] mt-4">
+        <a href={g.href} class="group flex flex-col border border-plate-ink rounded-none p-6 hover:border-[#0052D6]/40 hover:shadow-sm transition-all">
+          <span class="text-xs font-semibold uppercase tracking-wide text-[#0052D6] mb-3">{g.tag}</span>
+          <h2 class="font-display text-lg font-semibold text-plate-text tracking-tight leading-snug mb-2 group-hover:text-[#0052D6] transition-colors">{g.title}</h2>
+          <p class="text-sm text-plate-body leading-relaxed flex-1">{g.desc}</p>
+          <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0052D6] mt-4">
             Lire le guide
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </span>
@@ -64,12 +64,12 @@ const breadcrumb = {
     </div>
 
     <div class="max-w-5xl mx-auto px-4 sm:px-6 mt-12">
-      <div class="rounded-2xl border border-zinc-200 bg-zinc-50 px-6 py-6 sm:flex sm:items-center sm:justify-between gap-6">
+      <div class="rounded-none border border-plate-ink bg-white px-6 py-6 sm:flex sm:items-center sm:justify-between gap-6">
         <div>
-          <h2 class="font-display text-lg font-semibold text-zinc-900 mb-1">Modèle de suivi de parc automobile</h2>
-          <p class="text-sm text-zinc-600 leading-relaxed">Un fichier Excel prêt à l'emploi pour structurer véhicules, conducteurs et échéances. Gratuit, sans inscription.</p>
+          <h2 class="font-display text-lg font-semibold text-plate-text mb-1">Modèle de suivi de parc automobile</h2>
+          <p class="text-sm text-plate-body leading-relaxed">Un fichier Excel prêt à l'emploi pour structurer véhicules, conducteurs et échéances. Gratuit, sans inscription.</p>
         </div>
-        <a href="/outils/modele-suivi-parc-automobile-excel" class="mt-4 sm:mt-0 inline-flex flex-shrink-0 items-center gap-1.5 bg-zinc-900 text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-zinc-800 transition-colors">
+        <a href="/outils/modele-suivi-parc-automobile-excel" class="mt-4 sm:mt-0 inline-flex flex-shrink-0 items-center gap-1.5 bg-[#0052D6] text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-[#003A99] transition-colors">
           Télécharger le modèle
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>

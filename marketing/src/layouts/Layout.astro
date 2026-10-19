@@ -7,9 +7,6 @@ import '@fontsource/onest/500.css'
 import '@fontsource/onest/600.css'
 import '@fontsource/onest/700.css'
 import '@fontsource/onest/800.css'
-import '@fontsource/spectral/400.css'
-import '@fontsource/spectral/500.css'
-import '@fontsource/spectral/600.css'
 
 interface Props {
   title: string
@@ -86,7 +83,7 @@ const ogImageUrl = ogImage.startsWith('http') ? ogImage : SITE_URL + ogImage
       <script type="application/ld+json" set:html={JSON.stringify(obj)} />
     ))}
   </head>
-  <body class="page-enter bg-white text-zinc-900 font-sans">
+  <body class="page-enter bg-plate-paper text-plate-text font-sans">
     <slot />
     <script>
       import '../scripts/motion.js'

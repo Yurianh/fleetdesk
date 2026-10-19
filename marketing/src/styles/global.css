@@ -9,15 +9,21 @@
   font-variant-numeric: normal;
 }
 
-/* Spectral headings sit at a refined medium weight, never bold, tracking tightened */
+/* Titres : Onest gras, approche resserrée (direction « Planche », Onest seul). */
 .font-display {
-  font-weight: 500 !important;
-  letter-spacing: -0.02em;
+  font-weight: 700 !important;
+  letter-spacing: -0.025em;
+}
+
+/* Picto cerclé des planches : filet extérieur, liseré papier, filet intérieur. */
+.plate-ring {
+  border: 1px solid #0052D6;
+  box-shadow: inset 0 0 0 4px #F7F9FF, inset 0 0 0 5px #0052D6;
 }
 
 :root {
-  --brand:        #0066FF;
-  --brand-hover:  #0052D6;
+  --brand:        #0052D6;
+  --brand-hover:  #003A99;
   --brand-light:  #E5EEFF;
   --brand-muted:  #80AAFF;
   --accent:       #38BDF8;

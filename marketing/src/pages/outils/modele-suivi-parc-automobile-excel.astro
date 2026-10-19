@@ -81,44 +81,44 @@ const datasetSchema = {
 >
   <Navbar client:load currentPath="/outils" />
 
-  <section class="bg-white border-b border-zinc-100 pt-20 pb-16">
+  <section class=" border-b border-plate-ink pt-20 pb-16">
     <div class="max-w-5xl mx-auto px-4 sm:px-6">
-      <nav class="text-xs text-zinc-500 mb-8 flex items-center gap-1.5" aria-label="Fil d'ariane">
-        <a href="/" class="hover:text-[#0066FF]">Accueil</a><span>/</span>
-        <span class="text-zinc-600">Modèle de suivi de parc automobile</span>
+      <nav class="text-xs text-plate-muted mb-8 flex items-center gap-1.5" aria-label="Fil d'ariane">
+        <a href="/" class="hover:text-[#0052D6]">Accueil</a><span>/</span>
+        <span class="text-plate-body">Modèle de suivi de parc automobile</span>
       </nav>
-      <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-4">Outil gratuit</p>
-      <h1 class="font-display text-4xl sm:text-5xl font-semibold text-zinc-900 tracking-tight leading-[1.05] max-w-3xl mb-6">
+      <p class="text-sm font-semibold text-[#0052D6] tracking-wide mb-4">Outil gratuit</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-semibold text-plate-text tracking-tight leading-[1.05] max-w-3xl mb-6">
         Modèle Excel de suivi de parc automobile
       </h1>
-      <p class="text-lg text-zinc-600 max-w-2xl leading-relaxed mb-8">
+      <p class="text-lg text-plate-body max-w-2xl leading-relaxed mb-8">
         Quatre onglets prêts à l'emploi — véhicules, conducteurs, dépenses, coût kilométrique — avec les échéances qui
         passent en couleur à l'approche de la date limite. Téléchargement direct, sans inscription.
       </p>
       <div class="flex flex-col sm:flex-row gap-3 items-start">
         <a href={FILE} download
-          class="inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
+          class="inline-flex items-center justify-center gap-2 bg-[#0052D6] hover:bg-[#003A99] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Télécharger le modèle (.xlsx)
         </a>
-        <span class="text-xs text-zinc-500 sm:py-3.5">Gratuit · Sans email · 10 Ko</span>
+        <span class="text-xs text-plate-muted sm:py-3.5">Gratuit · Sans email · 10 Ko</span>
       </div>
     </div>
   </section>
 
   <!-- Contenu du fichier -->
-  <section class="py-16 sm:py-20 bg-zinc-50 border-b border-zinc-100">
+  <section class="py-16 sm:py-20 bg-white border-b border-plate-ink">
     <div class="max-w-5xl mx-auto px-4 sm:px-6">
-      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-10 max-w-2xl leading-tight">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-plate-text mb-10 max-w-2xl leading-tight">
         Ce que contient le fichier
       </h2>
       <div class="grid md:grid-cols-2 gap-5">
         {sheets.map(s => (
-          <div class="bg-white border border-zinc-200 rounded-2xl p-6">
-            <span class="inline-block text-xs font-semibold uppercase tracking-wide text-[#0066FF] mb-3">Onglet</span>
-            <h3 class="font-display text-lg font-semibold text-zinc-900 mb-2">{s.name}</h3>
-            <p class="text-sm text-zinc-600 leading-relaxed mb-3">{s.desc}</p>
-            <p class="text-xs text-zinc-500 leading-relaxed">{s.extra}</p>
+          <div class="bg-white border border-plate-ink rounded-none p-6">
+            <span class="inline-block text-xs font-semibold uppercase tracking-wide text-[#0052D6] mb-3">Onglet</span>
+            <h3 class="font-display text-lg font-semibold text-plate-text mb-2">{s.name}</h3>
+            <p class="text-sm text-plate-body leading-relaxed mb-3">{s.desc}</p>
+            <p class="text-xs text-plate-muted leading-relaxed">{s.extra}</p>
           </div>
         ))}
       </div>
@@ -126,12 +126,12 @@ const datasetSchema = {
   </section>
 
   <!-- Limites -->
-  <section class="py-16 sm:py-20 border-b border-zinc-100">
+  <section class="py-16 sm:py-20 border-b border-plate-ink">
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
-      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-5 leading-tight">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-plate-text mb-5 leading-tight">
         Ce qu'un tableur ne fera jamais
       </h2>
-      <p class="text-zinc-600 leading-relaxed mb-6">
+      <p class="text-plate-body leading-relaxed mb-6">
         Ce modèle fait correctement son travail : consigner. Il atteint ses limites dès qu'on attend de lui qu'il
         surveille à votre place.
       </p>
@@ -143,16 +143,16 @@ const datasetSchema = {
           "Il protège mal les données personnelles des conducteurs, qui relèvent du RGPD.",
         ].map(t => (
           <li class="flex gap-3 items-start">
-            <svg class="w-5 h-5 flex-shrink-0 text-zinc-400 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-            <span class="text-zinc-600 leading-relaxed">{t}</span>
+            <svg class="w-5 h-5 flex-shrink-0 text-plate-muted mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            <span class="text-plate-body leading-relaxed">{t}</span>
           </li>
         ))}
       </ul>
-      <p class="text-zinc-600 leading-relaxed">
+      <p class="text-plate-body leading-relaxed">
         Le détail de ces limites, et le seuil à partir duquel elles coûtent cher, sont dans notre guide sur la
-        <a href="/guides/gestion-parc-automobile-excel" class="text-[#0066FF] font-medium hover:underline">gestion et le suivi de parc automobile sur Excel</a>.
+        <a href="/guides/gestion-parc-automobile-excel" class="text-[#0052D6] font-medium hover:underline">gestion et le suivi de parc automobile sur Excel</a>.
         Pour calculer proprement vos coûts, voir la méthode du
-        <a href="/guides/cout-revient-kilometrique" class="text-[#0066FF] font-medium hover:underline">prix de revient kilométrique</a>.
+        <a href="/guides/cout-revient-kilometrique" class="text-[#0052D6] font-medium hover:underline">prix de revient kilométrique</a>.
       </p>
     </div>
   </section>
@@ -160,12 +160,12 @@ const datasetSchema = {
   <!-- FAQ -->
   <section class="py-16 sm:py-20">
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
-      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-8">Questions fréquentes</h2>
-      <div class="divide-y divide-zinc-100 border-t border-zinc-100">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-plate-text mb-8">Questions fréquentes</h2>
+      <div class="divide-y divide-plate-rule border-t border-plate-rule">
         {faq.map(f => (
           <div class="py-6">
-            <h3 class="font-semibold text-zinc-900 mb-2">{f.q}</h3>
-            <p class="text-sm text-zinc-600 leading-relaxed">{f.a}</p>
+            <h3 class="font-semibold text-plate-text mb-2">{f.q}</h3>
+            <p class="text-sm text-plate-body leading-relaxed">{f.a}</p>
           </div>
         ))}
       </div>
