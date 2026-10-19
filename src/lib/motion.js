@@ -71,14 +71,25 @@ export function clearLanding() {
 // qu'on descend (loi exponentielle) — large au début, serré à la fin, pour que
 // la séquence respire sans s'éterniser.
 
-const LAND_SPREAD = 3200   // étalement total des départs, en ms
-const LAND_EASE = 9        // plus grand = cadence plus régulière
-const LAND_DURATION = 1500 // durée d'entrée d'un élément
-const BAR_DURATION = 1600  // durée de remplissage d'une barre
-const BAR_OFFSET = 240     // les barres se remplissent après leur ligne
-const NEST_GAP = 140       // écart minimal entre une carte et ce qu'elle contient
+const CLASSIC = {
+  spread: 3200,   // étalement total des départs, en ms
+  ease: 9,        // plus grand = cadence plus régulière
+  duration: 1500, // durée d'entrée d'un élément
+  bar: 1600,      // durée de remplissage d'une barre
+  barOffset: 240, // les barres se remplissent après leur ligne
+  nest: 140,      // écart minimal entre une carte et ce qu'elle contient
+}
+
+// Design « Planche » : la grammaire de fleetdesk.fr (global.css du site) —
+// montée de 20 px en fondu, 1 s sur la même courbe, cascade serrée. La page
+// est posée en à peine plus d'une seconde, comme une section du site.
+const PLANCHE = { spread: 1100, ease: 6, duration: 1000, bar: 1400, barOffset: 180, nest: 90 }
+
+const timing = () =>
+  (typeof document !== 'undefined' && document.documentElement.dataset.design === 'classic') ? CLASSIC : PLANCHE
 
 export function runLanding(root = document) {
+  const { spread: LAND_SPREAD, ease: LAND_EASE, duration: LAND_DURATION, bar: BAR_DURATION, barOffset: BAR_OFFSET, nest: NEST_GAP } = timing()
   const items = [...root.querySelectorAll('[data-land]')]
   if (!items.length) return 0
 

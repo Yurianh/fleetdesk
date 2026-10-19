@@ -21,6 +21,9 @@ import { ACTIVITIES, MODULES, useFeatures } from '@/lib/activity'
 import { SlidersHorizontal, Briefcase, Wand2, Bell } from '@/lib/icons'
 import { Switch } from '@/components/ui/switch'
 import { useMotionSetting } from '@/lib/motion'
+import { useDesignSetting } from '@/lib/design'
+import SectionFeedback from '@/components/settings/SectionFeedback'
+import { MessageSquare, Palette } from '@/lib/icons'
 import { useAccess } from '@/lib/capabilities'
 
 const SECTIONS = [
@@ -32,6 +35,7 @@ const SECTIONS = [
   { id: 'notifications', icon: Bell,  label: 'Notifications' },
   { id: 'display',  icon: Wand2,      label: 'Affichage' },
   { id: 'language', icon: Globe,      labelKey: 'settings.language' },
+  { id: 'feedback', icon: MessageSquare, label: 'Nous écrire' },
   { id: 'account',  icon: Shield,     labelKey: 'settings.account' },
 ]
 
@@ -114,6 +118,7 @@ export default function Settings() {
 
   const [searchParams] = useSearchParams()
   const { enabled: motionOn, setMotion, systemReduced } = useMotionSetting()
+  const { design, setDesign } = useDesignSetting(user)
 
   const [section, setSection] = useState(() => {
     const s = searchParams.get('section')
@@ -383,8 +388,40 @@ export default function Settings() {
             </div>
           )}
 
+          {section === 'feedback' && <SectionFeedback />}
+
           {section === 'display' && (
             <div className="space-y-4">
+              <div className="bg-white border border-zinc-200 rounded-xl p-5">
+                <h2 className="text-sm font-semibold text-zinc-900 mb-1 flex items-center gap-2">
+                  <Palette className="w-4 h-4 text-[#0066FF]" /> Design de l'application
+                </h2>
+                <p className="text-xs text-zinc-500 mb-4">
+                  Uniquement l'apparence : vos données, vos écrans et vos fonctions restent les mêmes dans les deux
+                  designs. Votre choix suit votre compte, sur tous vos appareils.
+                </p>
+                <div role="radiogroup" aria-label="Design de l'application" className="grid sm:grid-cols-2 gap-3">
+                  {[
+                    { id: 'planche', title: 'Nouveau design', desc: 'Encre bleue sur papier, filets et gravures, comme fleetdesk.fr.' },
+                    { id: 'classic', title: 'Design classique', desc: 'L\'interface d\'avant octobre 2026, blanche et grise.' },
+                  ].map(o => {
+                    const on = design === o.id
+                    return (
+                      <button key={o.id} type="button" role="radio" aria-checked={on} onClick={() => setDesign(o.id)}
+                        className={`text-left rounded-lg border p-3 transition-colors ${on ? 'border-[#0052D6] bg-[#F5F8FF]' : 'border-zinc-200 hover:border-zinc-300'}`}>
+                        <span className={`block h-16 mb-3 border ${o.id === 'planche'
+                          ? 'border-[#0052D6] bg-[#F7F9FF] shadow-[inset_0_0_0_4px_#fff,inset_0_0_0_5px_#0052D6]'
+                          : 'border-zinc-200 bg-zinc-50 rounded-md'}`} aria-hidden="true" />
+                        <span className="flex items-center justify-between gap-2">
+                          <span className="text-sm font-semibold text-zinc-900">{o.title}</span>
+                          {on && <Check className="w-4 h-4 text-[#0052D6]" />}
+                        </span>
+                        <span className="block text-xs text-zinc-500 mt-0.5">{o.desc}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
               <div className="bg-white border border-zinc-200 rounded-xl p-5">
                 <h2 className="text-sm font-semibold text-zinc-900 mb-1 flex items-center gap-2">
                   <Wand2 className="w-4 h-4 text-[#0066FF]" /> Animations
