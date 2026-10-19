@@ -17,6 +17,16 @@ export default {
           light:   '#E5EEFF',
           muted:   '#80AAFF',
         },
+        // Direction « Planche » (gravure) : encre bleue sur papier, filets fins.
+        plate: {
+          ink:   '#0052D6',
+          paper: '#F7F9FF',
+          text:  '#0B1B3F',
+          body:  '#34446A',
+          muted: '#4A5A80',
+          rule:  '#B9C7E4',
+          tint:  '#EAF0FC',
+        },
       },
     },
   },
