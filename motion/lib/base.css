@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Spectral:wght@500&display=block');
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=block');
 
 /* Toile 5:4 des vidéos de section : 640 × 512 CSS, rendue en 1280 × 1024. */
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -12,7 +12,7 @@ body { font-family: 'Onest', system-ui, sans-serif; color: #18181b; -webkit-font
 .warn { background: #FFFBEB; color: #B45309; border-color: #FDE68A; } .warn .dot { background: #F59E0B; }
 .mute { color: #71717a; }
 .label { font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #71717a; }
-.title { font-family: 'Spectral', Georgia, serif; font-weight: 500; letter-spacing: -0.02em; }
+.title { font-family: 'Onest', system-ui, sans-serif; font-weight: 700; letter-spacing: -0.025em; }
 .ico { display: grid; place-items: center; border-radius: 10px; background: #f4f4f5; color: #52525b; flex: none; }
 .swap { position: relative; display: inline-block; vertical-align: top; }
 .txt { position: absolute; left: 0; top: 0; white-space: nowrap; }

@@ -1,92 +1,103 @@
 ---
+// Accueil, direction « Planche » : encre bleue sur papier, filets doubles,
+// gravures légendées comme des planches d'atlas (canvas « FleetDesk gravure »,
+// variante A). Les illustrations viennent de scripts/footer-landscape.mjs.
 import Layout from '../layouts/Layout.astro'
 import Navbar from '../components/Navbar.jsx'
-import HeroSection from '../components/HeroSection.jsx'
-import CTASection from '../components/CTASection.astro'
 import FeatureVideo from '../components/FeatureVideo.astro'
 import Diagnostic from '../components/Diagnostic.jsx'
 import Footer from '../components/Footer.astro'
-import { ICONS, ICON_VIEWBOX } from '../lib/icons.js'
-
-const APP_URL = 'https://app.fleetdesk.fr'
+import Icon from '../components/Icon.astro'
 
 const pains = [
   {
-    icon: ICONS.calendarClock,
-    iconCls: 'bg-zinc-100 text-zinc-600',
-    title: 'CT manqué, véhicule à l\'arrêt',
-    desc: 'Un oubli de date = immobilisation immédiate, amende, client non livré. FleetDesk alerte 30 jours avant l\'échéance.',
+    icon: 'calendarClock',
+    title: 'Contrôle technique manqué, véhicule à l\'arrêt',
+    desc: 'Un oubli de date, et c\'est l\'immobilisation, l\'amende, le client non livré. FleetDesk alerte 30 jours avant l\'échéance.',
   },
   {
-    icon: ICONS.idCard,
-    iconCls: 'bg-zinc-100 text-zinc-600',
+    icon: 'idCard',
     title: 'Conducteur hors conformité',
     desc: 'Visite médicale périmée, formation SST expirée : votre chauffeur roule illégalement, sans que personne le sache.',
   },
   {
-    icon: ICONS.wrench,
-    iconCls: 'bg-zinc-100 text-zinc-600',
+    icon: 'wrench',
     title: 'La panne qu\'on aurait pu éviter',
-    desc: 'La vidange oubliée qui finit en moteur HS. Sans suivi kilométrique, les maintenances préventives ne se font jamais.',
+    desc: 'La vidange oubliée qui finit en moteur HS. Sans suivi kilométrique, l\'entretien préventif ne se fait jamais.',
   },
   {
-    icon: ICONS.spreadsheet,
-    iconCls: 'bg-zinc-100 text-zinc-600',
+    icon: 'spreadsheet',
     title: 'Excel n\'est pas un outil de flotte',
-    desc: 'Formules cassées, onglets divergents, données perdues. Dès 5 véhicules, un tableur devient un problème.',
+    desc: 'Formules cassées, onglets divergents, données perdues. Dès 5 véhicules, le tableur devient un problème.',
   },
 ]
 
-const steps = [
+const pillars = [
   {
-    num: '01',
-    title: 'Ajoutez votre flotte',
-    desc: 'Immatriculations, kilométrages, conducteurs : tout est en place en moins de 5 minutes. Aucune formation requise.',
-    color: 'text-[#0066FF]',
-    numBg: 'bg-[#E5EEFF] text-[#0066FF]',
-    border: 'border-[#C8DBFF]',
+    img: '/engravings/depot.svg',
+    alt: 'Gravure : trois berlines FleetDesk alignées devant le dépôt',
+    title: 'Piloter votre flotte',
+    desc: 'Véhicules, conducteurs, coûts et kilométrages dans un seul tableau de bord. Vous décidez sur des données, plus sur des souvenirs.',
+    points: ['Fiches véhicules et historiques', 'Affectations et suivi kilométrique', 'Coûts et utilisation par véhicule'],
   },
   {
-    num: '02',
-    title: 'Configurez vos alertes',
-    desc: 'Contrôles techniques, documents conducteurs, intervalles de maintenance : FleetDesk surveille à votre place, 24h/24.',
-    color: 'text-[#0066FF]',
-    numBg: 'bg-[#E5EEFF] text-[#0066FF]',
-    border: 'border-[#C8DBFF]',
+    img: '/engravings/controle-technique.svg',
+    alt: 'Gravure : une berline sur le pont d\'un centre de contrôle technique',
+    title: 'Rester conforme',
+    desc: 'Contrôles techniques, documents conducteurs et véhicules suivis avec leurs échéances. Alerté avant l\'amende, prêt pour le contrôle.',
+    points: ['Contrôles techniques et alertes', 'Permis, visite médicale, formations', 'Récapitulatif des échéances par email'],
   },
   {
-    num: '03',
-    title: 'Pilotez sans y penser',
-    desc: 'Tableau de bord centralisé, alertes proactives, zéro oubli. Votre flotte tourne. Vous restez conformes.',
-    color: 'text-[#0066FF]',
-    numBg: 'bg-[#E5EEFF] text-[#0066FF]',
-    border: 'border-[#C8DBFF]',
+    img: '/engravings/station-service.svg',
+    alt: 'Gravure : à la pompe, le chauffeur saisit son plein sur son téléphone',
+    title: 'Faire saisir le terrain',
+    desc: 'Vos chauffeurs enregistrent kilométrage et pleins depuis leur téléphone, facture à l\'appui. Vous récupérez la donnée sans la ressaisir.',
+    points: ['Accès chauffeur restreint à son véhicule', 'Kilométrage et lavages en un geste', 'Preuve de facture et carte carburant'],
   },
 ]
 
-// Honest trust signals (no fabricated testimonials): every point below is
-// verifiable. Real customer quotes go here once consented.
-const trust = [
+// Ce qui fait la différence : chaque argument montré par sa vidéo (motion/).
+const features = [
   {
-    title: 'Conçu pour la réglementation française',
-    text: 'Carte grise, contrôle technique, documents conducteurs : les échéances propres aux flottes françaises, suivies nativement.',
-    icon: ICONS.shield,
+    video: 'fiche', icon: 'truck',
+    title: 'Vos véhicules, d\'un coup d\'œil',
+    desc: 'Statut, kilométrage, historique de chaque véhicule au même endroit. Vous savez, sans chercher.',
+    label: 'Démonstration : un clic sur le Peugeot Boxer ouvre sa fiche, avec son conducteur, son kilométrage, son contrôle technique et sa prochaine vidange.',
   },
   {
-    title: 'Vos données hébergées dans l\'Union européenne',
-    text: 'Infrastructure en région UE, conforme au RGPD. Vous restez propriétaire de vos données, exportables à tout moment.',
-    icon: ICONS.building,
+    video: 'documents', icon: 'idCard',
+    title: 'Zéro document expiré',
+    desc: 'Permis, visite médicale, formations côté conducteur ; carte grise, assurance, licence de transport côté véhicule. FleetDesk calcule les échéances et vous alerte avant qu\'un conducteur ou un véhicule soit hors la loi.',
+    label: 'Démonstration : la visite médicale de Sophie Renard expire dans 15 jours ; le nouveau certificat est déposé sur sa fiche et l\'échéance est recalculée jusqu\'en 2031.',
   },
   {
-    title: 'Paiements sécurisés par Stripe',
-    text: 'Aucune donnée bancaire ne transite par nos serveurs. Facturation et abonnement gérés par Stripe.',
-    icon: ICONS.lock,
+    video: 'entretien', icon: 'wrench',
+    title: 'Anticipez les pannes',
+    desc: 'Par intervalle kilométrique ou temporel, FleetDesk prévoit l\'entretien et vous prévient avant la casse.',
+    label: 'Démonstration : trois utilitaires et leur prochaine vidange, calculée sur le kilométrage réel ; l\'alerte passe à l\'ambre 5 000 km avant, puis l\'entretien est enregistré.',
   },
   {
-    title: '7 jours d\'essai, sans carte bancaire',
-    text: 'Testez la formule de votre choix. On vous prévient 48 h avant la fin, et vous ne renseignez un moyen de paiement que si vous décidez de continuer.',
-    icon: ICONS.clock,
+    video: 'couts', icon: 'chart',
+    title: 'Comprenez vos coûts réels',
+    desc: 'Coûts, kilométrages, tendances : pas dans un tableur, dans un vrai tableau de bord.',
+    label: 'Démonstration : le rapport du mois se construit, avec le total des dépenses, la répartition entretien, carburant et lavages, et les véhicules les plus coûteux.',
   },
+  {
+    video: 'saisie', icon: 'smartphone',
+    title: 'Vos chauffeurs saisissent au volant',
+    desc: 'Un accès dédié, limité à leur véhicule. Ils notent le kilométrage et le plein en un geste, photo de facture à l\'appui. Vous récupérez la donnée sans la ressaisir.',
+    label: 'Démonstration : une conductrice saisit son kilométrage, le montant du plein et deux photos sur son téléphone ; la saisie apparaît aussitôt dans l\'activité du bureau.',
+  },
+]
+const roman = ['III', 'IV', 'V', 'VI', 'VII']
+
+const comparison = [
+  { label: 'Mise en route',                                  excel: 'Manuelle, formules fragiles',     erp: 'Plusieurs semaines', fd: '5 minutes' },
+  { label: 'Alertes contrôle technique et documents',        excel: false,                             erp: 'Souvent en option',  fd: 'Automatiques, 30 jours avant' },
+  { label: 'Spécificités françaises (contrôle technique, carte grise)', excel: false,                  erp: 'Rarement',           fd: true },
+  { label: 'Courbe d\'apprentissage',                        excel: 'Élevée à grande échelle',         erp: 'Élevée',             fd: 'Aucune formation requise' },
+  { label: 'Prix',                                           excel: 'Gratuit, mais coûteux en oublis', erp: 'Élevé, sur devis',   fd: 'Dès 9 €/mois' },
+  { label: 'Support',                                        excel: false,                             erp: 'Variable',           fd: 'Email et prioritaire' },
 ]
 
 const faq = [
@@ -121,10 +132,31 @@ const faq = [
 ]
 
 // Annuel affiché d'abord ; le visiteur bascule lui-même sur le mensuel.
-const teaserPlans = [
-  { name: 'Starter', price: '9',  annual: '70', annualMonthly: '6',     note: 'Jusqu\'à 5 véhicules',      highlighted: false, href: '/pricing', cta: 'Essayer' },
-  { name: 'Pro',     price: '29', annual: '220', annualMonthly: '18', note: '7 jours d\'essai gratuit', highlighted: true,  href: '/pricing',     cta: 'Essayer' },
-  { name: 'Enterprise', price: '79', annual: '600', annualMonthly: '50', note: 'Flottes illimitées',     highlighted: false, href: '/pricing', cta: 'Essayer' },
+const plans = [
+  { name: 'Starter',    price: '9',  annual: '70',  annualMonthly: '6',  note: 'jusqu\'à 5 véhicules',  highlighted: false },
+  { name: 'Pro',        price: '29', annual: '220', annualMonthly: '18', note: 'jusqu\'à 25 véhicules', highlighted: true },
+  { name: 'Enterprise', price: '79', annual: '600', annualMonthly: '50', note: 'véhicules illimités',   highlighted: false },
+]
+
+const resources = [
+  {
+    t: 'Logiciel de gestion de parc automobile : le guide d\'achat',
+    d: 'Les six fonctions qui séparent un outil utile d\'une base de données de plus, et l\'approche adaptée à chaque taille de parc.',
+    h: '/logiciel-gestion-de-flotte',
+    cta: 'Lire le guide d\'achat',
+  },
+  {
+    t: 'Votre secteur, vos échéances',
+    d: 'Transport routier, BTP, VTC et taxi, véhicules de société : ce que FleetDesk suit pour chaque métier.',
+    h: '/secteurs',
+    cta: 'Voir les secteurs',
+  },
+  {
+    t: 'Modèle Excel de suivi de parc',
+    d: 'Quatre onglets prêts à l\'emploi pour structurer véhicules, conducteurs et échéances. Gratuit, sans inscription.',
+    h: '/outils/modele-suivi-parc-automobile-excel',
+    cta: 'Télécharger le modèle',
+  },
 ]
 
 // Structured data for the homepage: organisation, product and the FAQ.
@@ -142,11 +174,7 @@ const softwareSchema = {
   name: 'FleetDesk',
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Web',
-  offers: [
-    { '@type': 'Offer', name: 'Starter', price: '9', priceCurrency: 'EUR' },
-    { '@type': 'Offer', name: 'Pro', price: '29', priceCurrency: 'EUR' },
-    { '@type': 'Offer', name: 'Enterprise', price: '79', priceCurrency: 'EUR' },
-  ],
+  offers: plans.map(p => ({ '@type': 'Offer', name: p.name, price: p.price, priceCurrency: 'EUR' })),
 }
 const faqSchema = {
   '@context': 'https://schema.org',
@@ -157,539 +185,425 @@ const faqSchema = {
     acceptedAnswer: { '@type': 'Answer', text: item.a },
   })),
 }
+
+// Cadre de planche : filet extérieur, marge blanche, filet intérieur.
+const plate = 'border border-plate-ink bg-white p-1.5 sm:p-2'
+const plateInner = 'border border-plate-ink'
+const caption = 'flex flex-wrap justify-between gap-x-6 gap-y-1 mt-2.5 text-[12.5px] tracking-[0.04em] text-plate-muted'
+const h2 = 'text-[32px] sm:text-[42px] leading-[1.1] font-bold tracking-[-0.02em] text-plate-text'
+const lead = 'text-[17.5px] leading-relaxed text-plate-body'
 ---
 <Layout
   title="Logiciel de gestion de flotte et de conformité pour PME"
   description="Pilotez votre flotte et restez conforme : alertes contrôle technique et documents, suivi du kilométrage et des pleins, prévisions d'entretien. Dès 9 €/mois."
   jsonLd={[orgSchema, softwareSchema, faqSchema]}
 >
+  <div class="bg-plate-paper text-plate-text">
   <Navbar client:load currentPath="/" />
 
-  <HeroSection client:load />
+  <!-- Hero : texte et planche gravée -->
+  <section data-own-motion class="max-w-6xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 lg:pt-20 pb-12 grid lg:grid-cols-[1fr_1.05fr] gap-12 lg:gap-14 items-center">
+    <div class="flex flex-col gap-6 min-w-0">
+      <span style="animation-delay: 80ms" class="enter inline-flex self-start items-center gap-2 border border-plate-ink text-plate-ink text-[12.5px] font-semibold tracking-[0.06em] uppercase px-3 py-1.5 rounded-full">
+        <Icon name="truck" size={14} />
+        Pour les flottes de 2 à 50 véhicules
+      </span>
 
-  <!-- 3 pillars -->
-  <section class="py-24 bg-zinc-50 border-b border-zinc-100">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6">
-      <div class="mb-14 max-w-2xl">
-        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Une flotte, trois métiers</p>
-        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
-          Piloter, rester conforme, faire saisir le terrain
-        </h2>
-        <p class="text-lg text-zinc-600 leading-relaxed">
-          FleetDesk réunit les trois choses qui vous coûtent du temps et de l'argent aujourd'hui, dans un seul outil.
-        </p>
+      <h1 class="text-[40px] sm:text-[52px] lg:text-[58px] leading-[1.04] font-bold tracking-[-0.03em]" style="text-wrap: balance">
+        <span style="animation-delay: 180ms" class="enter block">Le logiciel de gestion de flotte</span>
+        <span style="animation-delay: 320ms" class="enter block text-plate-ink">qui ne laisse passer aucune échéance.</span>
+      </h1>
+
+      <p style="animation-delay: 560ms" class={`enter ${lead} sm:text-[19px] max-w-xl`}>
+        Contrôles techniques, permis et documents conducteurs, entretiens : FleetDesk suit chaque véhicule de votre
+        entreprise et vous alerte 30 jours avant. Vos chauffeurs saisissent kilométrage et pleins depuis leur téléphone.
+      </p>
+
+      <div style="animation-delay: 700ms" class="enter flex flex-col sm:flex-row gap-3">
+        <a href="/pricing" class="cta-brand inline-flex items-center justify-center gap-2.5 bg-plate-ink text-white font-semibold px-6 py-4 rounded-xl">
+          Essayer 7 jours gratuitement
+          <Icon name="arrowRight" size={16} />
+        </a>
+        <a href="#comment" class="inline-flex items-center justify-center bg-white text-plate-text font-medium px-6 py-4 rounded-xl border border-plate-rule hover:border-plate-ink transition-colors">
+          Comment ça marche
+        </a>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-5">
-        {[
-          {
-            tint: 'bg-[#E5EEFF]', color: '#0066FF',
-            icon: ICONS.dashboard,
-            title: 'Piloter votre flotte',
-            desc: 'Véhicules, conducteurs, coûts et kilométrages dans un seul tableau de bord. Vous décidez sur des données, plus sur des souvenirs.',
-            points: ['Fiches véhicules et historiques', 'Affectations et suivi kilométrique', 'Coûts et utilisation par véhicule'],
-          },
-          {
-            tint: 'bg-[#0066FF]/10', color: '#0066FF',
-            icon: ICONS.shield,
-            title: 'Rester conforme',
-            desc: 'Contrôles techniques, documents conducteurs et véhicules suivis avec leurs échéances. Alerté avant l\'amende, prêt pour le contrôle.',
-            points: ['Contrôles techniques et alertes', 'Permis, visite médicale, formations', 'Récapitulatif des échéances par email'],
-          },
-          {
-            tint: 'bg-[#0066FF]/10', color: '#0066FF',
-            icon: ICONS.smartphone,
-            title: 'Faire saisir le terrain',
-            desc: 'Vos chauffeurs enregistrent kilométrage et pleins depuis leur téléphone, facture à l\'appui. Vous récupérez la donnée sans la ressaisir.',
-            points: ['Accès chauffeur restreint à son véhicule', 'Kilométrage et lavages en un geste', 'Preuve de facture et carte carburant'],
-          },
-        ].map(p => (
-          <div class="bg-white border border-zinc-200 rounded-2xl p-6 flex flex-col">
-            <div class={`w-11 h-11 rounded-xl flex items-center justify-center mb-5 ${p.tint}`}>
-              <svg width="21" height="21" viewBox={ICON_VIEWBOX} fill={p.color} set:html={p.icon} />
-            </div>
-            <h3 class="text-lg font-semibold text-zinc-900 mb-2">{p.title}</h3>
-            <p class="text-sm text-zinc-600 leading-relaxed mb-5">{p.desc}</p>
-            <ul class="space-y-2 mt-auto">
+      <ul style="animation-delay: 840ms" class="enter flex flex-wrap gap-x-5 gap-y-2 text-[14.5px] text-plate-body">
+        {['Sans carte bancaire', 'Prêt en 5 minutes', 'Sans engagement'].map(item => (
+          <li class="flex items-center gap-2"><Icon name="check" size={15} class="text-plate-ink" />{item}</li>
+        ))}
+      </ul>
+    </div>
+
+    <figure style="animation-delay: 420ms" class="enter m-0 min-w-0">
+      <div class={plate}>
+        <div class={`${plateInner} relative overflow-hidden aspect-[7/5] bg-plate-ink`}>
+          <img src="/footer-landscape.svg" alt="Gravure : une berline FleetDesk traverse une rue d'immeubles haussmanniens"
+            class="absolute bottom-0 max-w-none w-[250%] left-[-112%]" width="1600" height="520" fetchpriority="high" />
+        </div>
+      </div>
+      <figcaption class={caption}>
+        <span>PLANCHE I · LA TOURNÉE DU MATIN</span>
+        <span>Kangoo AB-123-CD · contrôle technique dans 12 jours</span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- Bandeau de réassurance -->
+  <div class="border-y border-plate-ink bg-white">
+    <ul class="max-w-6xl mx-auto px-4 sm:px-6 py-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-[14.5px] text-[#24365C]">
+      {[
+        ['calendarClock', 'Alerte 30 jours avant chaque échéance'],
+        ['idCard',        'Documents conducteurs suivis'],
+        ['shield',        'Données hébergées dans l\'UE'],
+        ['smartphone',    'Saisie chauffeur sur téléphone'],
+      ].map(([icon, text]) => (
+        <li class="flex items-center gap-2.5"><Icon name={icon as any} size={20} class="text-plate-ink flex-shrink-0" />{text}</li>
+      ))}
+    </ul>
+  </div>
+
+  <!-- Ce que coûte une flotte mal suivie -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-10">
+    <div class="grid lg:grid-cols-2 gap-6 lg:gap-12 items-end mb-10">
+      <h2 class={h2} style="text-wrap: balance">Ce que coûte vraiment une flotte mal suivie</h2>
+      <p class={lead}>Un contrôle technique manqué, une visite médicale oubliée, une vidange trop tardive : les petits oublis finissent toujours par coûter cher.</p>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-6 border-t-2 border-plate-ink">
+      {pains.map(p => (
+        <div class="py-7 border-b border-plate-rule flex flex-col gap-3">
+          <span class="w-[52px] h-[52px] rounded-full border border-plate-ink text-plate-ink flex items-center justify-center shadow-[inset_0_0_0_4px_#F7F9FF,inset_0_0_0_5px_#0052D6]">
+            <Icon name={p.icon as any} size={22} />
+          </span>
+          <h3 class="text-[19px] font-semibold leading-snug">{p.title}</h3>
+          <p class="text-[15.5px] leading-relaxed text-plate-body">{p.desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Trois métiers, chacun avec sa vignette gravée -->
+  <section id="produit" class="scroll-mt-28 max-w-6xl mx-auto px-4 sm:px-6 pt-14 pb-10">
+    <div class="max-w-2xl mb-10">
+      <h2 class={`${h2} mb-3`}>Piloter, rester conforme, faire saisir le terrain</h2>
+      <p class={lead}>Les trois choses qui vous coûtent du temps et de l'argent aujourd'hui, réunies dans un seul outil.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-6">
+      {pillars.map(p => (
+        <article class="bg-white border border-plate-ink flex flex-col">
+          <div class="aspect-[9/5] bg-plate-ink border-b border-plate-ink overflow-hidden">
+            <img src={p.img} alt={p.alt} width="900" height="400" loading="lazy" class="block w-full h-full object-cover" />
+          </div>
+          <div class="p-6 flex flex-col gap-2.5 flex-1">
+            <h3 class="text-xl font-semibold">{p.title}</h3>
+            <p class="text-[15.5px] leading-relaxed text-plate-body">{p.desc}</p>
+            <ul class="mt-auto pt-3 space-y-2">
               {p.points.map(pt => (
-                <li class="flex items-start gap-2 text-sm text-zinc-600">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  {pt}
-                </li>
+                <li class="flex items-start gap-2 text-sm text-plate-body"><Icon name="check" size={15} class="text-plate-ink flex-shrink-0 mt-0.5" />{pt}</li>
               ))}
             </ul>
           </div>
-        ))}
-      </div>
+        </article>
+      ))}
     </div>
   </section>
 
-  <!-- Problem section -->
-  <section class="py-24 bg-white border-b border-zinc-100">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6">
-      <div class="grid lg:grid-cols-[0.85fr_1.15fr] gap-12 lg:gap-20">
-        <div class="lg:sticky lg:top-24 self-start">
-          <p class="text-sm font-semibold text-zinc-600 tracking-wide mb-3">Le vrai coût de l'oubli</p>
-          <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
-            Ce que coûte vraiment une flotte mal suivie
-          </h2>
-          <p class="text-lg text-zinc-600 leading-relaxed">
-            Un CT manqué, une visite médicale oubliée, une vidange trop tardive : les petits oublis finissent toujours par coûter cher.
-          </p>
-        </div>
-        <div class="border-t border-zinc-100">
-          {pains.map(p => (
-            <div class="flex items-start gap-5 py-6 border-b border-zinc-100">
-              <div class={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${p.iconCls}`}>
-                <svg width="21" height="21" viewBox={ICON_VIEWBOX} fill="currentColor" set:html={p.icon} />
-              </div>
-              <div>
-                <h3 class="text-base font-semibold text-zinc-900 mb-1">{p.title}</h3>
-                <p class="text-sm text-zinc-600 leading-relaxed">{p.desc}</p>
-              </div>
-            </div>
-          ))}
+  <!-- Planche II : l'application en mouvement -->
+  <section data-own-motion class="max-w-6xl mx-auto px-4 sm:px-6 py-14">
+    <figure class="m-0">
+      <div class={plate}>
+        <div class={`${plateInner} overflow-hidden`}>
+          <video
+            id="home-film"
+            class="block w-full aspect-[4/5] sm:aspect-video object-cover bg-plate-tint"
+            muted loop playsinline preload="metadata"
+            poster="/hero/fleetdesk-hero-poster.jpg"
+            aria-label="Démonstration FleetDesk : une échéance de contrôle technique, puis une visite médicale, puis une vidange arrivent, chacune réglée en un geste ; le tableau de bord repasse à « Tout est à jour »."
+          >
+            <source media="(max-width: 639px)" src="/hero/fleetdesk-hero-portrait.mp4" type="video/mp4" />
+            <source src="/hero/fleetdesk-hero.mp4" type="video/mp4" />
+          </video>
         </div>
       </div>
-    </div>
+      <figcaption class={caption}>
+        <span>PLANCHE II · LE TABLEAU DE BORD</span>
+        <span>Ce que vous voyez chaque matin, en un coup d'œil</span>
+      </figcaption>
+    </figure>
   </section>
 
-  <!-- Diagnostic : deux questions ici, le résultat complet sur /diagnostic -->
-  <section id="diagnostic" class="scroll-mt-28 py-24 bg-[#F5F8FF] border-b border-zinc-100">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 grid lg:grid-cols-[0.85fr_1.15fr] gap-12 lg:gap-20 items-start">
-      <div>
-        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Diagnostic gratuit · 2 minutes</p>
-        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
-          Et votre flotte, elle est exposée ?
-        </h2>
-        <p class="text-lg text-zinc-600 leading-relaxed">
-          Dix questions sur votre façon de suivre vos véhicules. Vous saurez ce qui vous expose aujourd'hui, et ce que
-          FleetDesk changerait dans votre cas.
-        </p>
-      </div>
-      <div class="rounded-2xl bg-white border border-zinc-200 p-6 sm:p-8">
-        <Diagnostic client:visible variant="teaser" />
-      </div>
+  <!-- Comment ça marche : trois étapes à la verticale, chacune avec son exemple animé -->
+  <section id="comment" class="scroll-mt-28 max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+    <div class="mb-12">
+      <h2 class={`${h2} mb-2`}>Opérationnel en 5 minutes</h2>
+      <p class={lead}>Aucune intégration, aucune formation. Vous êtes prêt avant la fin de votre café.</p>
     </div>
-  </section>
+    <ol class="border-l-2 border-dashed border-plate-ink ml-[26px] flex flex-col gap-14">
 
-  <!-- Comparison -->
-  <section class="py-24 bg-zinc-50 border-b border-zinc-100">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6">
-      <div class="mb-12 max-w-2xl">
-        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Ni tableur, ni usine à gaz</p>
-        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4">
-          Le juste milieu que vous cherchiez
-        </h2>
-        <p class="text-lg text-zinc-600">
-          Le tableur ne suit rien tout seul. L'ERP demande des semaines et un budget. FleetDesk fait le travail, sans la complexité.
-        </p>
-      </div>
-
-      <div class="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
-        <table class="w-full min-w-[640px] border-separate border-spacing-0">
-          <thead>
-            <tr>
-              <th class="text-left align-bottom pb-4 pr-4 w-[34%]"></th>
-              <th class="text-center align-bottom pb-4 px-4 text-sm font-medium text-zinc-500">Tableur Excel</th>
-              <th class="text-center align-bottom pb-4 px-4 text-sm font-medium text-zinc-500">Logiciel ERP</th>
-              <th class="text-center align-bottom pb-3 px-4">
-                <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0066FF] bg-[#E5EEFF] px-3 py-1 rounded-full">FleetDesk</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+      <li class="relative pl-10 sm:pl-14 grid lg:grid-cols-[1fr_1.15fr] gap-8 lg:gap-10 items-center">
+        <span class="absolute -left-[27px] top-0 w-[52px] h-[52px] rounded-full bg-plate-paper border-[1.5px] border-plate-ink text-plate-ink text-[22px] font-bold flex items-center justify-center">1</span>
+        <div class="flex flex-col gap-2.5">
+          <span class="text-[12.5px] font-semibold tracking-[0.14em] text-plate-ink">2 MINUTES</span>
+          <h3 class="text-[26px] font-semibold">Ajoutez votre flotte</h3>
+          <p class="text-base leading-relaxed text-plate-body">Immatriculations, kilométrages, conducteurs : tout est en place en quelques minutes. Aucune formation requise.</p>
+        </div>
+        <div class={plate} aria-hidden="true">
+          <div class={`${plateInner} p-4 sm:p-5 flex flex-col gap-2.5`}>
+            <div class="flex justify-between text-[13px]"><span class="font-semibold">Ma flotte</span><span class="text-plate-muted">4 véhicules</span></div>
+            <div class="h-1.5 bg-[#E5EEFF] rounded overflow-hidden"><div class="pl-bar h-full w-full bg-plate-ink rounded"></div></div>
             {[
-              { label: 'Mise en route',                  excel: 'Manuelle, formules fragiles', erp: 'Plusieurs semaines',     fd: '5 minutes' },
-              { label: 'Alertes CT & documents',         excel: false,                          erp: 'Souvent en option',      fd: 'Automatiques, 30j avant' },
-              { label: 'Spécificités françaises (CT, carte grise)', excel: false,                erp: 'Rarement',               fd: true },
-              { label: 'Courbe d\'apprentissage',        excel: 'Élevée à grande échelle',      erp: 'Élevée',                 fd: 'Aucune formation requise' },
-              { label: 'Prix',                           excel: 'Gratuit, mais coûteux en oublis', erp: 'Élevé, sur devis',    fd: 'Dès 9 €/mois' },
-              { label: 'Support',                        excel: false,                          erp: 'Variable',               fd: 'Email & prioritaire' },
-            ].map((row, i, arr) => (
-              <tr>
-                <td class={`py-4 pr-4 text-sm font-medium text-zinc-700 ${i < arr.length - 1 ? 'border-b border-zinc-100' : ''}`}>{row.label}</td>
-                {[row.excel, row.erp].map(cell => (
-                  <td class={`py-4 px-4 text-center text-sm text-zinc-500 ${i < arr.length - 1 ? 'border-b border-zinc-100' : ''}`}>
-                    {cell === false
-                      ? <svg class="w-4 h-4 mx-auto text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                      : <span>{cell}</span>}
-                  </td>
-                ))}
-                <td class={`py-4 px-4 text-center text-sm font-medium text-zinc-800 bg-[#0066FF]/[0.04] ${i === 0 ? 'rounded-t-xl' : ''} ${i === arr.length - 1 ? 'rounded-b-xl' : ''}`}>
-                  {row.fd === true
-                    ? <svg class="w-4 h-4 mx-auto text-[#0066FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                    : <span>{row.fd}</span>}
-                </td>
-              </tr>
+              ['Kangoo',  'AB-123-CD', '84 200 km'],
+              ['Partner', 'EF-456-GH', '61 900 km'],
+              ['Master',  'IJ-789-KL', '112 000 km'],
+              ['Trafic',  'TU-678-VW', '81 600 km'],
+            ].map(([model, plateNo, km], i, all) => (
+              <div class={`pl-row grid grid-cols-3 text-[13.5px] py-2 ${i < all.length - 1 ? 'border-b border-[#EEF2F9]' : ''}`} style={`animation-delay: ${i * 0.5}s`}>
+                <span class="font-semibold">{model}</span><span>{plateNo}</span><span>{km}</span>
+              </div>
             ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- How it works -->
-  <section id="how" class="scroll-mt-28 py-24 bg-white border-b border-zinc-100">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6">
-      <div class="grid lg:grid-cols-[0.85fr_1.15fr] gap-12 lg:gap-20">
-        <div class="lg:sticky lg:top-24 self-start">
-          <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">3 étapes</p>
-          <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
-            Opérationnel en 5 minutes
-          </h2>
-          <p class="text-lg text-zinc-600 leading-relaxed">
-            Aucune intégration, aucune formation. Vous êtes prêt avant la fin de votre café.
-          </p>
+          </div>
         </div>
+      </li>
 
-        <!-- Vertical timeline -->
-        <div class="relative">
-          <div class="absolute left-[21px] top-3 bottom-3 w-px bg-zinc-200" />
-          {steps.map(s => (
-            <div class="relative flex gap-6 pb-10 last:pb-0">
-              <div class="relative z-10 w-11 h-11 rounded-xl bg-[#E5EEFF] text-[#0066FF] font-bold flex items-center justify-center flex-shrink-0 ring-4 ring-white">
-                {s.num}
+      <li class="relative pl-10 sm:pl-14 grid lg:grid-cols-[1fr_1.15fr] gap-8 lg:gap-10 items-center">
+        <span class="absolute -left-[27px] top-0 w-[52px] h-[52px] rounded-full bg-plate-paper border-[1.5px] border-plate-ink text-plate-ink text-[22px] font-bold flex items-center justify-center">2</span>
+        <div class="flex flex-col gap-2.5">
+          <span class="text-[12.5px] font-semibold tracking-[0.14em] text-plate-ink">1 MINUTE</span>
+          <h3 class="text-[26px] font-semibold">Configurez vos alertes</h3>
+          <p class="text-base leading-relaxed text-plate-body">Contrôles techniques, documents conducteurs, intervalles d'entretien : choisissez ce que FleetDesk surveille, il le fait à votre place.</p>
+        </div>
+        <div class={plate} aria-hidden="true">
+          <div class={`${plateInner} px-4 sm:px-5 py-2 flex flex-col`}>
+            {[
+              ['Contrôle technique',        'Alerte 30 jours avant'],
+              ['Visite médicale et permis', 'Alerte 30 jours avant'],
+              ['Vidange',                   'Tous les 30 000 km'],
+            ].map(([t, d], i, all) => (
+              <div class={`flex justify-between items-center py-3 ${i < all.length - 1 ? 'border-b border-[#EEF2F9]' : ''}`}>
+                <div><div class="text-sm font-semibold">{t}</div><div class="text-[12.5px] text-plate-muted">{d}</div></div>
+                <span class="pl-track w-[42px] h-6 rounded-full p-[3px] flex" style={`animation-delay: ${i}s`}>
+                  <span class="pl-knob w-[18px] h-[18px] rounded-full bg-white" style={`animation-delay: ${i}s`}></span>
+                </span>
               </div>
-              <div class="pt-1.5">
-                <h3 class="text-lg font-semibold text-zinc-900 mb-1.5">{s.title}</h3>
-                <p class="text-zinc-600 leading-relaxed">{s.desc}</p>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-      <div class="mt-14 text-center">
-        <a href={"/pricing"}
-          class="inline-flex items-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
-          Essayer gratuitement
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-          </svg>
-        </a>
-        <p class="mt-3 text-xs text-zinc-500">7 jours d'essai sur toutes les formules · sans carte · prévenu 48 h avant la fin</p>
-      </div>
+      </li>
+
+      <li class="relative pl-10 sm:pl-14 grid lg:grid-cols-[1fr_1.15fr] gap-8 lg:gap-10 items-center">
+        <span class="absolute -left-[27px] top-0 w-[52px] h-[52px] rounded-full bg-plate-ink text-white text-[22px] font-bold flex items-center justify-center">3</span>
+        <div class="flex flex-col gap-2.5">
+          <span class="text-[12.5px] font-semibold tracking-[0.14em] text-plate-ink">ENSUITE, TOUT SEUL</span>
+          <h3 class="text-[26px] font-semibold">Pilotez sans y penser</h3>
+          <p class="text-base leading-relaxed text-plate-body">L'alerte arrive un mois avant l'échéance, par email et dans le tableau de bord. Vous prenez rendez-vous, FleetDesk note que c'est fait.</p>
+        </div>
+        <div class={plate} aria-hidden="true">
+          <div class={`${plateInner} p-4 sm:p-5 flex flex-col gap-3 min-h-[180px] bg-plate-paper`}>
+            <div class="pl-toast bg-white border border-plate-ink rounded-[10px] px-4 py-3.5 flex gap-3 items-start">
+              <span class="pl-bell text-plate-ink flex"><Icon name="bell" size={22} /></span>
+              <div><div class="text-sm font-semibold">Kangoo AB-123-CD</div><div class="text-[13px] text-plate-body">Contrôle technique dans 30 jours, le 18 novembre</div></div>
+            </div>
+            <div class="pl-done flex items-center gap-2.5 bg-[#ECFDF5] border border-[#6EE7B7] rounded-[10px] px-4 py-3 text-[13.5px] text-[#065F46]">
+              <Icon name="checkCircle" size={20} />Rendez-vous noté pour le 12 novembre
+            </div>
+          </div>
+        </div>
+      </li>
+    </ol>
+    <div class="mt-14 flex flex-col items-start gap-3 pl-[26px]">
+      <a href="/pricing" class="cta-brand inline-flex items-center gap-2.5 bg-plate-ink text-white font-semibold px-6 py-3.5 rounded-xl">
+        Essayer gratuitement <Icon name="arrowRight" size={16} />
+      </a>
+      <p class="text-[13px] text-plate-muted">7 jours d'essai sur toutes les formules · sans carte · prévenu 48 h avant la fin</p>
     </div>
   </section>
 
-  <!-- Features: alternating product rows -->
-  <section class="py-24 bg-zinc-50 border-b border-zinc-100">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6">
-      <div class="mb-16 max-w-2xl">
-        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Ce qui fait la différence</p>
-        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
-          Moins d'oublis. Moins de pannes. Plus de maîtrise.
-        </h2>
-        <p class="text-lg text-zinc-600 leading-relaxed">
-          Des fiches véhicules aux prévisions de maintenance : sans tableur, sans formation, sans prise de tête.
-        </p>
+  <!-- Diagnostic : bandeau bleu, toits gravés en pied -->
+  <section id="diagnostic" class="scroll-mt-28 bg-plate-ink text-white relative overflow-hidden">
+    <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20 pb-40 sm:pb-52 grid lg:grid-cols-[0.9fr_1.1fr] gap-10 lg:gap-16 items-start">
+      <div class="flex flex-col gap-3">
+        <span class="text-[12.5px] font-semibold tracking-[0.14em] text-[#DCE6FF]">DIAGNOSTIC GRATUIT · 2 MINUTES</span>
+        <h2 class="text-[32px] sm:text-[38px] font-bold tracking-[-0.02em] leading-tight">Et votre flotte, elle est exposée ?</h2>
+        <p class="text-[17.5px] leading-relaxed text-[#DCE6FF] max-w-xl">Dix questions sur votre façon de suivre vos véhicules. Vous saurez ce qui vous expose aujourd'hui, et ce que FleetDesk changerait dans votre cas.</p>
       </div>
-
-      <div class="space-y-16 lg:space-y-24">
-
-        <!-- Row 1: Véhicules (text left, mockup right) -->
-        <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          <div class="max-w-md">
-            <div class="w-11 h-11 rounded-xl bg-[#E5EEFF] flex items-center justify-center mb-5">
-              <svg width="21" height="21" viewBox={ICON_VIEWBOX} fill="#0066FF" aria-hidden="true" set:html={ICONS.truck} />
-            </div>
-            <h3 class="text-2xl font-semibold text-zinc-900 mb-3">Vos véhicules, d'un coup d'œil</h3>
-            <p class="text-lg text-zinc-600 leading-relaxed">Statut, kilométrage, historique de chaque véhicule au même endroit. Vous savez, sans chercher.</p>
-          </div>
-          <FeatureVideo name="fiche" label="Démonstration : un clic sur le Peugeot Boxer ouvre sa fiche, avec son conducteur, son kilométrage, son contrôle technique et sa prochaine vidange." />
-        </div>
-
-        <!-- Row 2: Conducteurs (mockup left, text right) -->
-        <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          <div class="lg:order-2 max-w-md">
-            <div class="w-11 h-11 rounded-xl bg-[#E5EEFF] flex items-center justify-center mb-5">
-              <svg width="21" height="21" viewBox={ICON_VIEWBOX} fill="#0066FF" aria-hidden="true" set:html={ICONS.idCard} />
-            </div>
-            <h3 class="text-2xl font-semibold text-zinc-900 mb-3">Zéro document expiré</h3>
-            <p class="text-lg text-zinc-600 leading-relaxed">Permis, visite médicale, formations côté conducteur ; carte grise, assurance, licence de transport côté véhicule. FleetDesk calcule les échéances et vous alerte avant qu'un conducteur ou un véhicule soit hors la loi.</p>
-          </div>
-          <FeatureVideo name="documents" class="lg:order-1" label="Démonstration : la visite médicale de Sophie Renard expire dans 15 jours ; le nouveau certificat est déposé sur sa fiche et l'échéance est recalculée jusqu'en 2031." />
-        </div>
-
-        <!-- Row 3: Maintenance (text left, mockup right) -->
-        <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          <div class="max-w-md">
-            <div class="w-11 h-11 rounded-xl bg-[#E5EEFF] flex items-center justify-center mb-5">
-              <svg width="21" height="21" viewBox={ICON_VIEWBOX} fill="#0066FF" aria-hidden="true" set:html={ICONS.wrench} />
-            </div>
-            <h3 class="text-2xl font-semibold text-zinc-900 mb-3">Anticipez les pannes</h3>
-            <p class="text-lg text-zinc-600 leading-relaxed">Par intervalle kilométrique ou temporel, FleetDesk prévoit l'entretien et vous prévient avant la casse.</p>
-          </div>
-          <FeatureVideo name="entretien" label="Démonstration : trois utilitaires et leur prochaine vidange, calculée sur le kilométrage réel ; l'alerte passe à l'ambre 5 000 km avant, puis l'entretien est enregistré." />
-        </div>
-
-        <!-- Row 4: Analytique (mockup left, text right) -->
-        <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          <div class="lg:order-2 max-w-md">
-            <div class="w-11 h-11 rounded-xl bg-[#E5EEFF] flex items-center justify-center mb-5">
-              <svg width="21" height="21" viewBox={ICON_VIEWBOX} fill="#0066FF" aria-hidden="true" set:html={ICONS.chart} />
-            </div>
-            <h3 class="text-2xl font-semibold text-zinc-900 mb-3">Comprenez vos coûts réels</h3>
-            <p class="text-lg text-zinc-600 leading-relaxed">Coûts, kilométrages, tendances : pas dans un tableur, dans un vrai tableau de bord qui décide pour vous.</p>
-          </div>
-          <FeatureVideo name="couts" class="lg:order-1" label="Démonstration : le rapport du mois se construit, avec le total des dépenses, la répartition entretien, carburant et lavages, et les véhicules les plus coûteux." />
-        </div>
-
-        <!-- Row 5: Terrain / chauffeurs (text left, mockup right) -->
-        <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          <div class="max-w-md">
-            <div class="w-11 h-11 rounded-xl bg-[#E5EEFF] flex items-center justify-center mb-5">
-              <svg width="21" height="21" viewBox={ICON_VIEWBOX} fill="#0066FF" aria-hidden="true" set:html={ICONS.smartphone} />
-            </div>
-            <h3 class="text-2xl font-semibold text-zinc-900 mb-3">Vos chauffeurs saisissent au volant</h3>
-            <p class="text-lg text-zinc-600 leading-relaxed">Un accès dédié, limité à leur véhicule. Ils notent le kilométrage et le plein en un geste, photo de facture à l'appui. Vous récupérez la donnée sans la ressaisir.</p>
-          </div>
-          <FeatureVideo name="saisie" label="Démonstration : une conductrice saisit son kilométrage, le montant du plein et deux photos sur son téléphone ; la saisie apparaît aussitôt dans l'activité du bureau." />
-        </div>
-
-      </div>
-      <div class="mt-16 text-center">
-        <a href="/features" class="inline-flex items-center gap-2 text-sm font-medium text-[#0066FF] hover:text-[#0052D6] transition-colors">
-          Voir toutes les fonctionnalités
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-          </svg>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Roles -->
-  <section class="py-24 bg-white border-b border-zinc-100">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6">
-      <div class="mb-12 max-w-2xl">
-        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Chacun son accès</p>
-        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
-          Un accès adapté à chaque rôle
-        </h2>
-        <p class="text-lg text-zinc-600 leading-relaxed">
-          Le gérant pilote, l'équipe gère, les chauffeurs saisissent. Chacun voit ce qui le concerne, ni plus, ni moins.
-        </p>
-      </div>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { role: 'Propriétaire', tint: 'bg-[#E5EEFF] text-[#0066FF]', desc: 'Contrôle total : flotte, équipe, facturation. Le pilote de l\'organisation.' },
-          { role: 'Administrateur', tint: 'bg-[#E5EEFF] text-[#0066FF]', desc: 'Gère la flotte et invite l\'équipe. Toutes les opérations, sans la facturation.' },
-          { role: 'Membre', tint: 'bg-[#E5EEFF] text-[#0066FF]', desc: 'Saisit et suit l\'exploitation au quotidien sur l\'ensemble de la flotte.' },
-          { role: 'Chauffeur', tint: 'bg-[#E5EEFF] text-[#0066FF]', desc: 'Accès restreint à son véhicule : kilométrage, pleins et lavages, depuis son téléphone.' },
-        ].map(r => (
-          <div class="bg-zinc-50 border border-zinc-100 rounded-2xl p-5">
-            <span class={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full mb-3 ${r.tint}`}>{r.role}</span>
-            <p class="text-sm text-zinc-600 leading-relaxed">{r.desc}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- Trust / security -->
-  <section class="py-24 bg-white border-b border-zinc-100">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6">
-      <div class="grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-center">
-        <div>
-          <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Vos données, en sécurité</p>
-          <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4">
-            Hébergé en Europe,<br />conforme dès le premier jour
-          </h2>
-          <p class="text-lg text-zinc-600 leading-relaxed">
-            Permis, assurances, cartes grises : vos documents sont sensibles. Ils sont stockés en privé, jamais en accès public, sur des serveurs situés dans l'Union européenne. Vos données restent chiffrées, et vous appartiennent, exportables à tout moment.
-          </p>
-        </div>
-        <div class="grid sm:grid-cols-2 gap-4">
-          {[
-            { t: 'Hébergement en Europe', d: 'Vos données sont stockées et traitées sur des serveurs situés en Union européenne.', icon: ICONS.building },
-            { t: 'Conforme RGPD', d: 'Traitement des données conducteurs conforme au règlement européen.', icon: ICONS.shield },
-            { t: 'Paiement sécurisé Stripe', d: 'Aucune donnée bancaire ne transite ni n\'est stockée chez nous.', icon: ICONS.lock },
-            { t: 'Vos données vous appartiennent', d: 'Export complet à tout moment. Résiliation en un clic, sans rétention.', icon: ICONS.download },
-          ].map(f => (
-            <div class="bg-zinc-50 border border-zinc-100 rounded-xl p-5">
-              <div class="w-9 h-9 rounded-lg bg-[#E5EEFF] flex items-center justify-center mb-3">
-                <svg width="18" height="18" viewBox={ICON_VIEWBOX} fill="#0066FF" set:html={f.icon} />
-              </div>
-              <h3 class="text-sm font-semibold text-zinc-900 mb-1">{f.t}</h3>
-              <p class="text-sm text-zinc-600 leading-relaxed">{f.d}</p>
-            </div>
-          ))}
+      <div class="bg-white text-zinc-900 border border-white p-1.5 sm:p-2">
+        <div class="border border-plate-ink p-5 sm:p-7 [&_.font-display]:font-sans [&_.font-display]:font-semibold">
+          <Diagnostic client:visible variant="teaser" />
         </div>
       </div>
     </div>
+    <img src="/footer-landscape.svg" alt="" width="1600" height="520" loading="lazy"
+      class="absolute inset-x-0 -bottom-[60px] sm:-bottom-[150px] w-full max-w-none min-w-[900px] pointer-events-none" />
   </section>
 
-  <!-- Trust (honest early-adopter signals, no fabricated testimonials) -->
-  <section class="py-24 bg-zinc-50 border-y border-zinc-100">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 grid md:grid-cols-[0.85fr_1fr] gap-12 md:gap-16 items-start">
-      <div class="md:sticky md:top-28">
-        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Nouveau · Parmi les premières flottes</p>
-        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 leading-tight mb-4">
-          Jeune produit,<br />fondations sérieuses.
-        </h2>
-        <p class="text-zinc-600 leading-relaxed mb-6">
-          FleetDesk démarre. Plutôt que d'inventer des avis, voici ce sur quoi vous pouvez déjà nous juger : conformité, sécurité et transparence, dès le premier jour.
-        </p>
-        <a href={"/pricing"} class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0066FF] hover:text-[#0052D6]">
-          Commencer l'essai gratuit
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
-        <p class="text-xs text-zinc-500 mt-8">Conçu et développé en France par Strelizia Creative Studio.</p>
-      </div>
-
-      <div class="divide-y divide-zinc-200">
-        {trust.map(item => (
-          <div class="flex gap-4 py-6 first:pt-0">
-            <span class="flex-shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white border border-zinc-200">
-              <svg width="22" height="22" viewBox={ICON_VIEWBOX} fill="#0066FF" set:html={item.icon} />
+  <!-- Planches III à VII : ce qui fait la différence -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-10">
+    <div class="max-w-2xl mb-14">
+      <h2 class={`${h2} mb-3`}>Moins d'oublis. Moins de pannes. Plus de maîtrise.</h2>
+      <p class={lead}>Des fiches véhicules aux prévisions d'entretien : sans tableur, sans formation, sans prise de tête.</p>
+    </div>
+    <div class="flex flex-col gap-16 lg:gap-24">
+      {features.map((f, i) => (
+        <div class="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+          <div class={`max-w-md ${i % 2 ? 'lg:order-2' : ''}`}>
+            <span class="w-[52px] h-[52px] mb-5 rounded-full border border-plate-ink text-plate-ink flex items-center justify-center shadow-[inset_0_0_0_4px_#F7F9FF,inset_0_0_0_5px_#0052D6]">
+              <Icon name={f.icon as any} size={22} />
             </span>
-            <div>
-              <h3 class="text-[15px] font-semibold text-zinc-900 mb-1">{item.title}</h3>
-              <p class="text-sm text-zinc-600 leading-relaxed">{item.text}</p>
-            </div>
+            <h3 class="text-2xl font-semibold mb-3">{f.title}</h3>
+            <p class="text-lg leading-relaxed text-plate-body">{f.desc}</p>
           </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section class="py-24 bg-white border-b border-zinc-100">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6">
-      <div class="mb-12 text-center">
-        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Vous vous demandez peut-être</p>
-        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900">Questions fréquentes</h2>
-      </div>
-      <div class="divide-y divide-zinc-100">
-        {faq.map(item => (
-          <details class="group py-5">
-            <summary class="flex items-center justify-between gap-4 cursor-pointer list-none">
-              <span class="font-medium text-zinc-900">{item.q}</span>
-              <svg class="w-4 h-4 flex-shrink-0 text-zinc-500 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9"/>
-              </svg>
-            </summary>
-            <p class="text-sm text-zinc-600 leading-relaxed mt-3 pr-8">{item.a}</p>
-          </details>
-        ))}
-      </div>
-      <p class="text-center text-sm text-zinc-500 mt-10">
-        Une autre question ? <a href="/contact" class="text-[#0066FF] font-medium hover:text-[#0052D6]">Écrivez-nous</a>, réponse sous 24h ouvrées.
-      </p>
-    </div>
-  </section>
-
-  <!-- Pricing teaser -->
-  <section class="py-24 bg-zinc-50 border-b border-zinc-100">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6">
-      <div class="mb-10 text-center">
-        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Tarifs transparents</p>
-        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-3">Un prix qui tient sur une ligne</h2>
-        <p class="text-lg text-zinc-600">Dès 6 € par mois en annuel (70 € par an), ou 9 € par mois sans engagement. 7 jours d'essai sur toutes les formules, sans carte.</p>
-      </div>
-      <div class="flex justify-center mb-8">
-        <div class="inline-flex bg-white border border-zinc-200 rounded-full p-1" role="group" aria-label="Facturation">
-          <button type="button" data-teaser-billing="monthly" class="teaser-billing px-4 py-1.5 rounded-full text-sm font-semibold text-zinc-600">Mensuel</button>
-          <button type="button" data-teaser-billing="annual" class="teaser-billing px-4 py-1.5 rounded-full text-sm font-semibold flex items-center gap-2 bg-[#E5EEFF] text-[#0052D6]">
-            Annuel <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">jusqu'à −37 %</span>
-          </button>
-        </div>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {teaserPlans.map(p => (
-          <a href={p.href}
-            class={`group rounded-2xl p-6 transition-all ${p.highlighted ? 'bg-white border-2 border-[#0066FF] shadow-lg shadow-[#0066FF]/10' : 'bg-white border border-zinc-200 hover:border-zinc-300'}`}>
-            <p class={`text-xs font-medium uppercase tracking-widest mb-3 ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-500'}`}>{p.name}</p>
-            <div class="flex items-end gap-1 mb-1">
-              <span class="teaser-amount text-3xl font-bold text-zinc-900" data-monthly={p.price} data-annual={p.annualMonthly}>{p.annualMonthly}</span>
-              <span class="text-base font-bold text-zinc-900 mb-0.5">€</span>
-              <span class="text-xs text-zinc-500 mb-1.5">/mois</span>
+          <figure class={`m-0 ${i % 2 ? 'lg:order-1' : ''}`}>
+            <div class={plate}>
+              <div class={plateInner}>
+                <FeatureVideo name={f.video} label={f.label} class="!rounded-none !border-0" />
+              </div>
             </div>
-            <p class="teaser-annual text-xs text-zinc-500 mb-1">facturé {p.annual} € par an</p>
-            <p class="text-sm text-zinc-600 mb-5">{p.note}</p>
-            <span class={`inline-flex items-center gap-1.5 text-sm font-medium ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-700'}`}>
-              {p.cta}
-              <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </span>
-          </a>
-        ))}
-      </div>
-      <p class="text-center text-sm mt-8">
-        <a href="/pricing" class="text-[#0066FF] font-medium hover:text-[#0052D6]">Comparer les formules en détail</a>
-      </p>
+            <figcaption class={caption}><span>PLANCHE {roman[i]} · {f.title.toUpperCase()}</span></figcaption>
+          </figure>
+        </div>
+      ))}
     </div>
+    <p class="mt-16">
+      <a href="/features" class="inline-flex items-center gap-1.5 font-semibold text-plate-ink hover:underline">
+        Voir toutes les fonctionnalités <Icon name="arrowRight" size={16} />
+      </a>
+    </p>
+  </section>
+
+  <!-- Comparaison -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+    <div class="grid lg:grid-cols-2 gap-6 lg:gap-12 items-end mb-10">
+      <h2 class={h2} style="text-wrap: balance">Ni tableur, ni usine à gaz</h2>
+      <p class={lead}>Le tableur ne suit rien tout seul. L'ERP demande des semaines et un budget. FleetDesk fait le travail, sans la complexité.</p>
+    </div>
+    <div class="relative overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+      <table class="w-full min-w-[640px] border-collapse border-t-2 border-plate-ink text-[14.5px]">
+        <thead>
+          <tr class="border-b border-plate-ink">
+            <th class="text-left py-4 pr-4 w-[34%]"><span class="sr-only">Critère</span></th>
+            <th class="py-4 px-4 font-medium text-plate-muted">Tableur Excel</th>
+            <th class="py-4 px-4 font-medium text-plate-muted">Logiciel ERP</th>
+            <th class="py-4 px-4 font-semibold text-white bg-plate-ink">FleetDesk</th>
+          </tr>
+        </thead>
+        <tbody>
+          {comparison.map(row => (
+            <tr class="border-b border-plate-rule">
+              <th scope="row" class="text-left font-medium py-4 pr-4">{row.label}</th>
+              {[row.excel, row.erp].map(cell => (
+                <td class="py-4 px-4 text-center text-plate-muted">
+                  {cell === false ? <span class="inline-flex"><Icon name="minus" size={16} /><span class="sr-only">Non</span></span> : cell}
+                </td>
+              ))}
+              <td class="py-4 px-4 text-center font-medium bg-white border-x border-plate-ink">
+                {row.fd === true ? <span class="inline-flex text-plate-ink"><Icon name="check" size={17} /><span class="sr-only">Oui</span></span> : row.fd}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Tarifs -->
+  <section id="tarifs" class="scroll-mt-28 max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+    <div class="flex flex-wrap justify-between items-end gap-6 mb-10">
+      <div>
+        <h2 class={`${h2} mb-2`}>Un prix qui tient sur une ligne</h2>
+        <p class={lead}>Dès 6 € par mois en annuel, ou 9 € par mois sans engagement. 7 jours d'essai sur toutes les formules, sans carte.</p>
+      </div>
+      <div role="group" aria-label="Facturation" class="inline-flex border border-plate-ink rounded-full p-1 bg-white">
+        <button type="button" data-billing="monthly" aria-pressed="false" class="billing-btn text-sm px-4 py-2.5 rounded-full text-[#24365C]">Mensuel</button>
+        <button type="button" data-billing="annual" aria-pressed="true" class="billing-btn text-sm font-semibold px-4 py-2.5 rounded-full bg-plate-ink text-white">Annuel · jusqu'à −37 %</button>
+      </div>
+    </div>
+    <div class="grid md:grid-cols-3 gap-5">
+      {plans.map(p => (
+        <div class={`relative bg-white p-7 flex flex-col gap-3.5 ${p.highlighted ? 'border-2 border-plate-ink' : 'border border-plate-ink'}`}>
+          {p.highlighted && <span class="absolute -top-3 left-6 bg-plate-ink text-white text-xs font-semibold px-2.5 py-1 rounded-full">Le plus choisi</span>}
+          <span class={`text-[13px] tracking-[0.12em] uppercase ${p.highlighted ? 'text-plate-ink' : 'text-plate-muted'}`}>{p.name}</span>
+          <div><span class="price-amount text-5xl font-bold" data-monthly={p.price} data-annual={p.annualMonthly}>{p.annualMonthly}</span><span class="text-5xl font-bold"> €</span><span class="text-plate-muted"> /mois</span></div>
+          <span class="text-[13.5px] text-plate-muted"><span class="price-annual">facturé {p.annual} € par an · </span>{p.note}</span>
+          <a href="/pricing" class={`mt-2 text-center font-semibold py-3.5 rounded-[10px] ${p.highlighted ? 'cta-brand bg-plate-ink text-white' : 'border border-plate-ink text-plate-ink hover:bg-plate-tint transition-colors'}`}>Démarrer l'essai</a>
+        </div>
+      ))}
+    </div>
+    <p class="mt-8"><a href="/pricing" class="font-semibold text-plate-ink hover:underline">Comparer les formules en détail</a></p>
+  </section>
+
+  <!-- Questions -->
+  <section id="faq" class="scroll-mt-28 max-w-3xl mx-auto px-4 sm:px-6 pt-8 pb-20">
+    <h2 class="text-[32px] sm:text-[36px] font-bold tracking-[-0.02em] mb-6">Questions fréquentes</h2>
+    <div class="border-b border-plate-ink">
+      {faq.map(item => (
+        <details class="group border-t border-plate-ink py-5">
+          <summary class="flex items-center justify-between gap-4 cursor-pointer list-none text-[17.5px] font-semibold">
+            {item.q}
+            <svg class="w-4 h-4 flex-shrink-0 text-plate-ink transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <p class="text-plate-body leading-relaxed mt-3 pr-8">{item.a}</p>
+        </details>
+      ))}
+    </div>
+    <p class="text-plate-muted mt-8">
+      Une autre question ? <a href="/contact" class="text-plate-ink font-semibold hover:underline">Écrivez-nous</a>, réponse sous 24 h ouvrées.
+    </p>
   </section>
 
   <!-- Ressources : maillage vers les pages de fond -->
-  <section class="py-20 bg-white border-t border-zinc-100">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6">
-      <div class="max-w-2xl mb-10">
-        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Pour aller plus loin</p>
-        <h2 class="font-display text-3xl sm:text-4xl font-semibold text-zinc-900 mb-4 leading-tight">
-          Choisir, comprendre, se mettre en règle
-        </h2>
-        <p class="text-lg text-zinc-600 leading-relaxed">
-          Avant de changer d'outil, il faut savoir ce qu'on attend de lui. Trois ressources pour cadrer le sujet.
-        </p>
-      </div>
-      <div class="grid md:grid-cols-3 gap-5">
-        {[
-          {
-            t: 'Logiciel de gestion de parc automobile : le guide d\'achat',
-            d: "Les six fonctions qui séparent un outil utile d'une base de données de plus, et l'approche adaptée à chaque taille de parc.",
-            h: '/logiciel-gestion-de-flotte',
-            cta: 'Lire le guide d\'achat',
-          },
-          {
-            t: 'Votre secteur, vos échéances',
-            d: 'Transport routier, BTP, VTC et taxi, véhicules de société : ce que FleetDesk suit pour chaque métier.',
-            h: '/secteurs',
-            cta: 'Voir les secteurs',
-          },
-          {
-            t: 'Modèle Excel de suivi de parc',
-            d: 'Quatre onglets prêts à l\'emploi pour structurer véhicules, conducteurs et échéances. Gratuit, sans inscription.',
-            h: '/outils/modele-suivi-parc-automobile-excel',
-            cta: 'Télécharger le modèle',
-          },
-        ].map(r => (
-          <a href={r.h} class="group flex flex-col border border-zinc-200 rounded-2xl p-6 hover:border-[#0066FF]/40 hover:shadow-sm transition-all">
-            <h3 class="font-display text-lg font-semibold text-zinc-900 tracking-tight leading-snug mb-2 group-hover:text-[#0066FF] transition-colors">{r.t}</h3>
-            <p class="text-sm text-zinc-600 leading-relaxed flex-1">{r.d}</p>
-            <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0066FF] mt-4">
-              {r.cta}
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </span>
-          </a>
-        ))}
-      </div>
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 pb-24">
+    <div class="max-w-2xl mb-10">
+      <h2 class={`${h2} mb-3`}>Choisir, comprendre, se mettre en règle</h2>
+      <p class={lead}>Avant de changer d'outil, il faut savoir ce qu'on attend de lui. Trois ressources pour cadrer le sujet.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-5 border-t-2 border-plate-ink">
+      {resources.map(r => (
+        <a href={r.h} class="group flex flex-col py-6 border-b border-plate-rule">
+          <h3 class="text-lg font-semibold leading-snug mb-2 group-hover:text-plate-ink transition-colors">{r.t}</h3>
+          <p class="text-[15px] text-plate-body leading-relaxed flex-1">{r.d}</p>
+          <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-plate-ink mt-4">{r.cta} <Icon name="arrowRight" size={15} /></span>
+        </a>
+      ))}
     </div>
   </section>
 
-  <CTASection />
-
   <!-- Sticky mobile CTA -->
-  <a href={"/pricing"}
-    class="md:hidden fixed bottom-4 inset-x-4 z-40 flex items-center justify-center gap-2 bg-[#0066FF] text-white font-semibold text-sm py-3.5 rounded-xl shadow-xl shadow-[#0066FF]/30">
-    Essayer gratuitement
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+  <a href="/pricing"
+    class="md:hidden fixed bottom-4 inset-x-4 z-40 flex items-center justify-center gap-2 bg-plate-ink text-white font-semibold text-sm py-3.5 rounded-xl shadow-xl shadow-[#0052D6]/30">
+    Essayer gratuitement <Icon name="arrowRight" size={16} />
   </a>
 
   <Footer />
+  </div>
 </Layout>
 
 <script>
-  // Aperçu des formules : annuel par défaut, le visiteur bascule lui-même.
-  const teaserBtns = document.querySelectorAll('.teaser-billing')
-  teaserBtns.forEach(btn => btn.addEventListener('click', () => {
-    const annual = btn.dataset.teaserBilling === 'annual'
-    teaserBtns.forEach(b => {
+  // Planche II : la vidéo joue tant qu'elle est visible ; image fixe sous « moins d'animations ».
+  const film = document.getElementById('home-film') as HTMLVideoElement | null
+  if (film) {
+    film.muted = true
+    // Mobile : la version portrait a sa propre image d'attente.
+    if (window.matchMedia('(max-width: 639px)').matches) film.poster = '/hero/fleetdesk-hero-portrait-poster.jpg'
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) film.play().catch(() => {})
+        else film.pause()
+      }, { threshold: 0.25 }).observe(film)
+    }
+  }
+
+  // Tarifs : annuel par défaut, le visiteur bascule lui-même.
+  const billingBtns = document.querySelectorAll<HTMLButtonElement>('.billing-btn')
+  billingBtns.forEach(btn => btn.addEventListener('click', () => {
+    const annual = btn.dataset.billing === 'annual'
+    billingBtns.forEach(b => {
       const on = b === btn
-      b.classList.toggle('bg-[#E5EEFF]', on); b.classList.toggle('text-[#0052D6]', on); b.classList.toggle('text-zinc-600', !on)
+      b.setAttribute('aria-pressed', String(on))
+      b.classList.toggle('bg-plate-ink', on); b.classList.toggle('text-white', on)
+      b.classList.toggle('font-semibold', on); b.classList.toggle('text-[#24365C]', !on)
     })
-    document.querySelectorAll('.teaser-amount').forEach(el => { el.textContent = annual ? el.dataset.annual : el.dataset.monthly })
-    document.querySelectorAll('.teaser-annual').forEach(el => { el.classList.toggle('hidden', !annual) })
+    document.querySelectorAll<HTMLElement>('.price-amount').forEach(el => { el.textContent = (annual ? el.dataset.annual : el.dataset.monthly) ?? '' })
+    document.querySelectorAll<HTMLElement>('.price-annual').forEach(el => el.classList.toggle('hidden', !annual))
   }))
 </script>
-

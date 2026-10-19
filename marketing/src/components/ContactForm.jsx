@@ -40,17 +40,17 @@ export default function ContactForm() {
     return (
       <div className="py-8">
         <div className="flex items-center gap-2 mb-5">
-          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#0066FF]">
+          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#0052D6]">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
           </span>
-          <span className="text-xs font-semibold uppercase tracking-wide text-[#0066FF]">C'est envoyé</span>
+          <span className="text-xs font-semibold uppercase tracking-wide text-[#0052D6]">C'est envoyé</span>
         </div>
-        <h3 className="text-2xl font-semibold text-zinc-900 tracking-tight mb-3">On revient vers vous très vite.</h3>
-        <p className="text-sm text-zinc-600 leading-relaxed max-w-md">
+        <h3 className="text-2xl font-semibold text-plate-text tracking-tight mb-3">On revient vers vous très vite.</h3>
+        <p className="text-sm text-plate-body leading-relaxed max-w-md">
           Un accusé de réception vient de partir vers{' '}
-          <span className="font-medium text-zinc-900">{form.email}</span>. Notre équipe vous répond sous 24h ouvrées.
+          <span className="font-medium text-plate-text">{form.email}</span>. Notre équipe vous répond sous 24h ouvrées.
         </p>
       </div>
     )
@@ -60,34 +60,34 @@ export default function ContactForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-medium text-zinc-600 mb-1.5">Nom complet</label>
+          <label className="block text-xs font-medium text-plate-body mb-1.5">Nom complet</label>
           <input required value={form.name} onChange={set('name')} placeholder="Votre nom"
-            className="w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30 placeholder:text-zinc-400" />
+            className="w-full border border-plate-rule rounded-lg px-3 py-2.5 text-sm text-plate-text focus:outline-none focus:ring-2 focus:ring-[#0052D6]/30 placeholder:text-plate-muted" />
         </div>
         <div>
-          <label className="block text-xs font-medium text-zinc-600 mb-1.5">Adresse email</label>
+          <label className="block text-xs font-medium text-plate-body mb-1.5">Adresse email</label>
           <input required type="email" value={form.email} onChange={set('email')} placeholder="vous@exemple.com"
-            className="w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30 placeholder:text-zinc-400" />
+            className="w-full border border-plate-rule rounded-lg px-3 py-2.5 text-sm text-plate-text focus:outline-none focus:ring-2 focus:ring-[#0052D6]/30 placeholder:text-plate-muted" />
         </div>
       </div>
       <div>
-        <label className="block text-xs font-medium text-zinc-600 mb-1.5">Entreprise (optionnel)</label>
+        <label className="block text-xs font-medium text-plate-body mb-1.5">Entreprise (optionnel)</label>
         <input value={form.company} onChange={set('company')} placeholder="Votre entreprise"
-          className="w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30 placeholder:text-zinc-400" />
+          className="w-full border border-plate-rule rounded-lg px-3 py-2.5 text-sm text-plate-text focus:outline-none focus:ring-2 focus:ring-[#0052D6]/30 placeholder:text-plate-muted" />
       </div>
       <div>
-        <label className="block text-xs font-medium text-zinc-600 mb-1.5">Message</label>
+        <label className="block text-xs font-medium text-plate-body mb-1.5">Message</label>
         <textarea required rows={5} value={form.message} onChange={set('message')} placeholder="Comment pouvons-nous vous aider ?"
-          className="w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#0066FF]/30 placeholder:text-zinc-400 resize-none" />
+          className="w-full border border-plate-rule rounded-lg px-3 py-2.5 text-sm text-plate-text focus:outline-none focus:ring-2 focus:ring-[#0052D6]/30 placeholder:text-plate-muted resize-none" />
       </div>
-      <p className="text-[11px] text-zinc-500 leading-relaxed">
+      <p className="text-[11px] text-plate-muted leading-relaxed">
         Les informations saisies servent uniquement à répondre à votre demande et ne sont transmises à personne.
         Vous pouvez demander leur suppression à tout moment —{' '}
-        <a href="/legal#confidentialite" className="underline underline-offset-2 hover:text-zinc-800">politique de confidentialité</a>.
+        <a href="/legal#confidentialite" className="underline underline-offset-2 hover:text-plate-text">politique de confidentialité</a>.
       </p>
 
       <button type="submit" disabled={sending}
-        className="w-full bg-[#0066FF] hover:bg-[#0052D6] disabled:opacity-60 text-white text-sm font-semibold py-3 rounded-lg transition-colors">
+        className="w-full bg-[#0052D6] hover:bg-[#003A99] disabled:opacity-60 text-white text-sm font-semibold py-3 rounded-lg transition-colors">
         {sending ? 'Envoi…' : 'Envoyer le message'}
       </button>
     </form>

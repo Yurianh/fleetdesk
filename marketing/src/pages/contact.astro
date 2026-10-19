@@ -16,9 +16,9 @@ import Footer from '../components/Footer.astro'
 
         <!-- Left: info -->
         <div>
-          <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Contact</p>
-          <h1 class="font-display text-4xl font-semibold text-zinc-900 tracking-tight mb-5">On vous répond sous 24h.</h1>
-          <p class="text-lg text-zinc-600 mb-10">
+          <p class="text-sm font-semibold text-[#0052D6] tracking-wide mb-3">Contact</p>
+          <h1 class="font-display text-4xl font-semibold text-plate-text tracking-tight mb-5">On vous répond sous 24h.</h1>
+          <p class="text-lg text-plate-body mb-10">
             Piloter votre flotte, rester conforme, équiper vos chauffeurs : dites-nous où vous en êtes, on vous oriente.
           </p>
 
@@ -29,14 +29,14 @@ import Footer from '../components/Footer.astro'
               { title: 'Équiper vos chauffeurs', desc: 'Mettre en place l\'accès terrain, les rôles et les invitations d\'équipe.' },
             ].map(item => (
               <div class="flex gap-4">
-                <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg class="w-4 h-4 text-[#0066FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <div class="w-10 h-10 rounded-full plate-ring flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg class="w-4 h-4 text-[#0052D6]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
                 </div>
                 <div>
-                  <p class="text-sm font-semibold text-zinc-900 mb-1">{item.title}</p>
-                  <p class="text-sm text-zinc-600">{item.desc}</p>
+                  <p class="text-sm font-semibold text-plate-text mb-1">{item.title}</p>
+                  <p class="text-sm text-plate-body">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -44,7 +44,7 @@ import Footer from '../components/Footer.astro'
         </div>
 
         <!-- Right: form -->
-        <div class="bg-white border border-zinc-200 rounded-2xl p-8">
+        <div class="bg-white border border-plate-ink rounded-none p-8">
           <ContactForm client:load />
         </div>
       </div>

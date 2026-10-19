@@ -145,34 +145,34 @@ const breadcrumb = {
   <Navbar client:load currentPath="/pricing" />
 
   <!-- Header -->
-  <section class="bg-white border-b border-zinc-100 py-20">
+  <section class=" border-b border-plate-ink py-20">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-      <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Tarifs</p>
-      <h1 class="font-display text-4xl sm:text-5xl font-semibold text-zinc-900 tracking-tight mb-5">
+      <p class="text-sm font-semibold text-[#0052D6] tracking-wide mb-3">Tarifs</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-semibold text-plate-text tracking-tight mb-5">
         Simple. Transparent. Sans surprise.
       </h1>
-      <p class="text-lg text-zinc-600 max-w-xl mx-auto">
+      <p class="text-lg text-plate-body max-w-xl mx-auto">
         7 jours d'essai sur toutes les formules, sans carte bancaire. On vous prévient 48 h avant la fin, et arrêter ne coûte rien.
       </p>
     </div>
   </section>
 
   <!-- Pricing cards -->
-  <section id="plans" class="py-16 bg-zinc-50">
+  <section id="plans" class="py-16 bg-white">
     <div class="max-w-5xl mx-auto px-4 sm:px-6">
 
       <!-- Billing toggle -->
       <div class="flex items-center justify-center mb-12">
-        <div class="inline-flex bg-white border border-zinc-200 rounded-full p-1 shadow-sm">
+        <div class="inline-flex bg-white border border-plate-ink rounded-full p-1 shadow-sm">
           <button
             id="btn-monthly"
-            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-zinc-600"
+            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-plate-body"
           >
             Mensuel
           </button>
           <button
             id="btn-annual"
-            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 hover:text-zinc-800 flex items-center gap-2 bg-[#E5EEFF] text-[#0052D6]"
+            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 hover:text-plate-text flex items-center gap-2 bg-plate-tint text-[#0052D6]"
           >
             Annuel
             <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">jusqu'à −37 %</span>
@@ -182,32 +182,32 @@ const breadcrumb = {
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
         {plans.map(p => (
-          <div class={`relative flex flex-col rounded-2xl p-7 ${p.highlighted ? 'border-2 border-[#0066FF] bg-white shadow-xl shadow-[#0066FF]/10 scale-[1.02]' : 'bg-white border border-zinc-200'}`}>
+          <div class={`relative flex flex-col rounded-none p-7 ${p.highlighted ? 'border-2 border-[#0052D6] bg-white shadow-xl shadow-[#0052D6]/10 scale-[1.02]' : 'bg-white border border-plate-ink'}`}>
 
             {/* Badge */}
             {p.badge && (
               <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                <span class="bg-[#0066FF] text-white text-xs font-semibold px-3 py-1 rounded-full">{p.badge}</span>
+                <span class="bg-[#0052D6] text-white text-xs font-semibold px-3 py-1 rounded-full">{p.badge}</span>
               </div>
             )}
 
             {/* Plan name + price */}
             <div class="mb-5">
-              <p class={`text-xs font-medium uppercase tracking-widest mb-2 ${p.highlighted ? 'text-[#0066FF]' : 'text-zinc-500'}`}>{p.name}</p>
+              <p class={`text-xs font-medium uppercase tracking-widest mb-2 ${p.highlighted ? 'text-[#0052D6]' : 'text-plate-muted'}`}>{p.name}</p>
               <div class="flex items-end gap-1 mb-1">
                 <span
-                  class="price-amount text-4xl font-bold tracking-tight text-zinc-900 font-mono"
+                  class="price-amount text-4xl font-bold tracking-tight text-plate-text font-mono"
                   data-monthly={p.monthlyPrice}
                   data-annual={p.annualMonthly}
                 >
                   {p.annualMonthly}
                 </span>
-                <span class="text-xl font-bold text-zinc-900 mb-0.5">€</span>
-                <span class="text-sm mb-1.5 text-zinc-500">/mois</span>
+                <span class="text-xl font-bold text-plate-text mb-0.5">€</span>
+                <span class="text-sm mb-1.5 text-plate-muted">/mois</span>
               </div>
               {/* Annual subtotal line */}
               <p
-                class="annual-total text-xs text-zinc-500"
+                class="annual-total text-xs text-plate-muted"
               >
                 facturé {p.annualPrice} € par an · {p.annualSaving} € d'économie
               </p>
@@ -217,16 +217,16 @@ const breadcrumb = {
             </div>
 
             {/* Description */}
-            <p class="text-sm text-zinc-600 leading-relaxed mb-6 pb-6 border-b border-zinc-100">{p.desc}</p>
+            <p class="text-sm text-plate-body leading-relaxed mb-6 pb-6 border-b border-plate-rule">{p.desc}</p>
 
             {/* Features */}
             <ul class="space-y-3 mb-8 flex-1">
               {p.features.map(f => (
                 <li class="flex items-start gap-2.5">
-                  <svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-[#0066FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-[#0052D6]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
-                  <span class="text-sm text-zinc-600">{f.text}</span>
+                  <span class="text-sm text-plate-body">{f.text}</span>
                 </li>
               ))}
             </ul>
@@ -237,8 +237,8 @@ const breadcrumb = {
               data-plan-cta
               class={`block w-full text-center text-sm font-medium px-5 py-3 rounded-xl transition-colors ${
                 p.ctaStyle === 'primary'
-                  ? 'bg-[#0066FF] text-white hover:bg-[#0052D6]'
-                  : 'border border-zinc-200 text-zinc-700 hover:bg-zinc-50'
+                  ? 'bg-[#0052D6] text-white hover:bg-[#003A99]'
+                  : 'border border-plate-ink text-plate-body hover:bg-white'
               }`}
             >
               {p.cta}
@@ -255,31 +255,31 @@ const breadcrumb = {
           ['Prévenu 48 h avant', 'Un e-mail avant la fin de l\'essai : vous décidez.'],
           ['Sans engagement', 'Mensuel résiliable à tout moment, sans frais.'],
         ].map(([t, d]) => (
-          <div class="rounded-xl bg-white border border-zinc-200 px-4 py-3.5">
-            <p class="font-semibold text-zinc-900 flex items-center gap-2">
+          <div class=" bg-white border border-plate-ink px-4 py-3.5">
+            <p class="font-semibold text-plate-text flex items-center gap-2">
               <svg class="w-4 h-4 text-emerald-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               {t}
             </p>
-            <p class="text-zinc-500 text-xs mt-1 leading-relaxed">{d}</p>
+            <p class="text-plate-muted text-xs mt-1 leading-relaxed">{d}</p>
           </div>
         ))}
       </div>
-      <p class="text-center text-xs text-zinc-500 mt-6">
+      <p class="text-center text-xs text-plate-muted mt-6">
         Données hébergées en Europe · Paiement sécurisé par Stripe · En démarrant l'essai, vous acceptez les
-        <a href="/legal#cgu" class="underline underline-offset-2 hover:text-zinc-800">conditions générales</a>.
+        <a href="/legal#cgu" class="underline underline-offset-2 hover:text-plate-text">conditions générales</a>.
       </p>
     </div>
   </section>
 
   <!-- FAQ -->
-  <section class="py-20 bg-white">
+  <section class="py-20 ">
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
-      <h2 class="text-2xl font-bold text-zinc-900 tracking-tight mb-10 text-center">Questions fréquentes</h2>
-      <div class="space-y-0 divide-y divide-zinc-100">
+      <h2 class="text-2xl font-bold text-plate-text tracking-tight mb-10 text-center">Questions fréquentes</h2>
+      <div class="space-y-0 divide-y divide-plate-rule">
         {faq.map(item => (
           <div class="py-6">
-            <p class="font-semibold text-zinc-900 mb-2">{item.q}</p>
-            <p class="text-sm text-zinc-600 leading-relaxed">{item.a}</p>
+            <p class="font-semibold text-plate-text mb-2">{item.q}</p>
+            <p class="text-sm text-plate-body leading-relaxed">{item.a}</p>
           </div>
         ))}
       </div>
@@ -305,10 +305,10 @@ const breadcrumb = {
 
   function setMonthly() {
     setBilling(false)
-    btnMonthly.classList.add('bg-[#E5EEFF]', 'text-[#0052D6]')
-    btnMonthly.classList.remove('text-zinc-600')
-    btnAnnual.classList.remove('bg-[#E5EEFF]', 'text-[#0052D6]')
-    btnAnnual.classList.add('text-zinc-600')
+    btnMonthly.classList.add('bg-plate-tint', 'text-[#0052D6]')
+    btnMonthly.classList.remove('text-plate-body')
+    btnAnnual.classList.remove('bg-plate-tint', 'text-[#0052D6]')
+    btnAnnual.classList.add('text-plate-body')
     amounts.forEach(el => {
       el.textContent = el.dataset.monthly
     })
@@ -317,10 +317,10 @@ const breadcrumb = {
 
   function setAnnual() {
     setBilling(true)
-    btnAnnual.classList.add('bg-[#E5EEFF]', 'text-[#0052D6]')
-    btnAnnual.classList.remove('text-zinc-600')
-    btnMonthly.classList.remove('bg-[#E5EEFF]', 'text-[#0052D6]')
-    btnMonthly.classList.add('text-zinc-600')
+    btnAnnual.classList.add('bg-plate-tint', 'text-[#0052D6]')
+    btnAnnual.classList.remove('text-plate-body')
+    btnMonthly.classList.remove('bg-plate-tint', 'text-[#0052D6]')
+    btnMonthly.classList.add('text-plate-body')
     amounts.forEach(el => {
       el.textContent = el.dataset.annual
     })

@@ -9,15 +9,21 @@
   font-variant-numeric: normal;
 }
 
-/* Spectral headings sit at a refined medium weight, never bold, tracking tightened */
+/* Titres : Onest gras, approche resserrée (direction « Planche », Onest seul). */
 .font-display {
-  font-weight: 500 !important;
-  letter-spacing: -0.02em;
+  font-weight: 700 !important;
+  letter-spacing: -0.025em;
+}
+
+/* Picto cerclé des planches : filet extérieur, liseré papier, filet intérieur. */
+.plate-ring {
+  border: 1px solid #0052D6;
+  box-shadow: inset 0 0 0 4px #F7F9FF, inset 0 0 0 5px #0052D6;
 }
 
 :root {
-  --brand:        #0066FF;
-  --brand-hover:  #0052D6;
+  --brand:        #0052D6;
+  --brand-hover:  #003A99;
   --brand-light:  #E5EEFF;
   --brand-muted:  #80AAFF;
   --accent:       #38BDF8;
@@ -79,42 +85,29 @@
   }
 }
 
-/* ── Arrivée de l'écran du hero ─────────────────────────────────────────────
-   Le cadre de la vidéo arrive incliné, flou et décalé, puis se redresse : il
-   « se pose » devant le visiteur. La vidéo ne démarre qu'à la fin de cette
-   animation (HeroSection). Rien ne bouge sous prefers-reduced-motion. */
-.reveal-stage { perspective: 1600px; perspective-origin: 50% 0%; }
-
+/* ── Planches animées de « Comment ça marche » (accueil) ──────────────────────
+   Trois petits écrans rejouent chaque étape en boucle de 6 s : l'import qui
+   remplit la liste, les alertes qu'on active, l'alerte qui arrive puis le
+   rendez-vous noté. Sous prefers-reduced-motion, l'état final reste affiché. */
 @media (prefers-reduced-motion: no-preference) {
-  .reveal-frame {
-    transform-origin: 50% 0%;
-    will-change: transform, opacity, filter;
-    animation: reveal-frame 2200ms var(--ease-cine) 900ms both;
-  }
-  @keyframes reveal-frame {
-    from { opacity: 0; transform: rotateX(12deg) translateY(72px) scale(0.94); filter: blur(14px); }
-    60%  { filter: blur(2px); }
-    to   { opacity: 1; transform: none; filter: none; }
-  }
-}
+  @keyframes pl-row   { 0%, 8% { opacity: 0; transform: translateY(8px); } 16%, 88% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+  @keyframes pl-bar   { 0%, 6% { width: 0; } 60%, 100% { width: 100%; } }
+  @keyframes pl-knob  { 0%, 10% { transform: translateX(0); } 20%, 100% { transform: translateX(18px); } }
+  @keyframes pl-track { 0%, 10% { background: #C9D5EC; } 20%, 100% { background: #0052D6; } }
+  @keyframes pl-toast { 0%, 8% { opacity: 0; transform: translateX(24px); } 18%, 90% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+  @keyframes pl-bell  { 0%, 20%, 40%, 100% { transform: rotate(0); } 24% { transform: rotate(-14deg); } 28% { transform: rotate(12deg); } 32% { transform: rotate(-8deg); } 36% { transform: rotate(4deg); } }
+  @keyframes pl-done  { 0%, 52% { opacity: 0; transform: scale(.9); } 60%, 90% { opacity: 1; transform: none; } 100% { opacity: 0; } }
 
-/* ── Parallaxe au survol de l'écran du hero ─────────────────────────────────
-   Les variables --tilt-x / --tilt-y (−1 → 1) sont écrites par HeroSection au
-   rythme de l'écran, sur un calque distinct de celui de l'arrivée. Volontairement
-   léger : l'écran suit le curseur, il ne bascule pas. */
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .reveal-tilt {
-    transform:
-      rotateY(calc(var(--tilt-x, 0) * 1.2deg))
-      rotateX(calc(var(--tilt-y, 0) * -0.9deg))
-      translate3d(calc(var(--tilt-x, 0) * 2px), calc(var(--tilt-y, 0) * 1.5px), 0);
-    transform-style: preserve-3d;
-    will-change: transform;
-    transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  /* Pendant le survol, la réponse est immédiate ; au départ du curseur, retour lent. */
-  .reveal-stage.is-tilting .reveal-tilt { transition: transform 260ms ease-out; }
+  .pl-row   { animation: pl-row 6s ease-out infinite both; }
+  .pl-bar   { animation: pl-bar 6s ease-in-out infinite; }
+  .pl-track { animation: pl-track 6s ease infinite; }
+  .pl-knob  { animation: pl-knob 6s ease infinite; }
+  .pl-toast { animation: pl-toast 6s ease-out infinite both; }
+  .pl-bell  { transform-origin: 50% 10%; animation: pl-bell 6s ease infinite; }
+  .pl-done  { animation: pl-done 6s ease infinite both; }
 }
+.pl-track { background: #0052D6; }
+.pl-knob  { transform: translateX(18px); }
 
 
 /* ── Accordéon des questions fréquentes ─────────────────────────────────────

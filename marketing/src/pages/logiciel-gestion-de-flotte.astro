@@ -118,26 +118,26 @@ const softwareSchema = {
   <Navbar client:load currentPath="/logiciel-gestion-de-flotte" />
 
   <!-- Hero -->
-  <section class="bg-white border-b border-zinc-100 pt-20 pb-16">
+  <section class=" border-b border-plate-ink pt-20 pb-16">
     <div class="max-w-5xl mx-auto px-4 sm:px-6">
-      <nav class="text-xs text-zinc-500 mb-8 flex items-center gap-1.5" aria-label="Fil d'ariane">
-        <a href="/" class="hover:text-[#0066FF]">Accueil</a><span>/</span>
-        <span class="text-zinc-600">Logiciel de gestion de parc automobile</span>
+      <nav class="text-xs text-plate-muted mb-8 flex items-center gap-1.5" aria-label="Fil d'ariane">
+        <a href="/" class="hover:text-[#0052D6]">Accueil</a><span>/</span>
+        <span class="text-plate-body">Logiciel de gestion de parc automobile</span>
       </nav>
-      <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-4">Guide d'achat</p>
-      <h1 class="font-display text-4xl sm:text-5xl font-semibold text-zinc-900 tracking-tight leading-[1.05] max-w-3xl mb-6">
+      <p class="text-sm font-semibold text-[#0052D6] tracking-wide mb-4">Guide d'achat</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-semibold text-plate-text tracking-tight leading-[1.05] max-w-3xl mb-6">
         Logiciel de gestion de parc automobile : ce qu'il doit vraiment faire
       </h1>
-      <p class="text-lg text-zinc-600 max-w-2xl leading-relaxed mb-8">
+      <p class="text-lg text-plate-body max-w-2xl leading-relaxed mb-8">
         Suivre des véhicules n'est pas le problème. Ne rien oublier l'est. Voici les six critères qui séparent un outil
         utile d'une base de données de plus, et comment choisir selon la taille de votre parc.
       </p>
       <div class="flex flex-col sm:flex-row gap-3">
-        <a href="/pricing" class="inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
+        <a href="/pricing" class="inline-flex items-center justify-center gap-2 bg-[#0052D6] hover:bg-[#003A99] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
           Essayer FleetDesk 7 jours
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
-        <a href="/pricing" class="inline-flex items-center justify-center text-sm font-medium text-zinc-600 hover:text-zinc-900 px-6 py-3">
+        <a href="/pricing" class="inline-flex items-center justify-center text-sm font-medium text-plate-body hover:text-plate-text px-6 py-3">
           Voir les tarifs
         </a>
       </div>
@@ -145,14 +145,14 @@ const softwareSchema = {
   </section>
 
   <!-- Définition -->
-  <section class="py-16 sm:py-20 border-b border-zinc-100">
+  <section class="py-16 sm:py-20 border-b border-plate-ink">
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
-      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-5 leading-tight">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-plate-text mb-5 leading-tight">
         Ce qu'est un logiciel de gestion de parc automobile
       </h2>
-      <div class="space-y-4 text-zinc-600 leading-relaxed">
+      <div class="space-y-4 text-plate-body leading-relaxed">
         <p>
-          Un logiciel de gestion de parc automobile — on parle aussi de <a href="/" class="text-[#0066FF] font-medium hover:underline">logiciel de gestion de flotte</a> — centralise les véhicules d'une entreprise, leurs conducteurs, leurs documents
+          Un logiciel de gestion de parc automobile — on parle aussi de <a href="/" class="text-[#0052D6] font-medium hover:underline">logiciel de gestion de flotte</a> — centralise les véhicules d'une entreprise, leurs conducteurs, leurs documents
           et leurs échéances. Il remplace le trio classique — un tableur, une boîte mail et la mémoire du gestionnaire —
           par une source unique qui calcule et qui prévient.
         </p>
@@ -172,26 +172,26 @@ const softwareSchema = {
   </section>
 
   <!-- Critères -->
-  <section class="py-16 sm:py-20 bg-zinc-50 border-b border-zinc-100">
+  <section class="py-16 sm:py-20 bg-white border-b border-plate-ink">
     <div class="max-w-5xl mx-auto px-4 sm:px-6">
       <div class="max-w-2xl mb-12">
-        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Critères de choix</p>
-        <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-4 leading-tight">
+        <p class="text-sm font-semibold text-[#0052D6] tracking-wide mb-3">Critères de choix</p>
+        <h2 class="font-display text-2xl sm:text-3xl font-semibold text-plate-text mb-4 leading-tight">
           Les six fonctions qui font la différence
         </h2>
-        <p class="text-zinc-600 leading-relaxed">
+        <p class="text-plate-body leading-relaxed">
           Toutes les solutions affichent une liste de véhicules. Ce qui les sépare tient à ces six points — à vérifier
           pendant l'essai, pas sur la page tarifs.
         </p>
       </div>
       <div class="grid md:grid-cols-2 gap-5">
         {criteria.map((c, i) => (
-          <div class="bg-white border border-zinc-200 rounded-2xl p-6">
-            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#E5EEFF] text-[#0066FF] text-xs font-semibold mb-4">
+          <div class="bg-white border border-plate-ink rounded-none p-6">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full plate-ring text-[#0052D6] text-xs font-semibold mb-4">
               {String(i + 1).padStart(2, '0')}
             </span>
-            <h3 class="font-display text-lg font-semibold text-zinc-900 mb-2 leading-snug">{c.title}</h3>
-            <p class="text-sm text-zinc-600 leading-relaxed">{c.desc}</p>
+            <h3 class="font-display text-lg font-semibold text-plate-text mb-2 leading-snug">{c.title}</h3>
+            <p class="text-sm text-plate-body leading-relaxed">{c.desc}</p>
           </div>
         ))}
       </div>
@@ -199,54 +199,54 @@ const softwareSchema = {
   </section>
 
   <!-- Comparatif des approches -->
-  <section class="py-16 sm:py-20 border-b border-zinc-100">
+  <section class="py-16 sm:py-20 border-b border-plate-ink">
     <div class="max-w-5xl mx-auto px-4 sm:px-6">
       <div class="max-w-2xl mb-10">
-        <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-4 leading-tight">
+        <h2 class="font-display text-2xl sm:text-3xl font-semibold text-plate-text mb-4 leading-tight">
           Quatre approches, quatre tailles de flotte
         </h2>
-        <p class="text-zinc-600 leading-relaxed">
+        <p class="text-plate-body leading-relaxed">
           Le mauvais choix n'est pas le mauvais logiciel : c'est le logiciel prévu pour une autre taille de parc.
         </p>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm border-collapse min-w-[640px]">
           <thead>
-            <tr class="border-b border-zinc-200">
-              <th class="text-left font-semibold text-zinc-900 py-3 pr-4">Approche</th>
-              <th class="text-left font-semibold text-zinc-900 py-3 pr-4">Pertinente pour</th>
-              <th class="text-left font-semibold text-zinc-900 py-3">Sa limite</th>
+            <tr class="border-b border-plate-ink">
+              <th class="text-left font-semibold text-plate-text py-3 pr-4">Approche</th>
+              <th class="text-left font-semibold text-plate-text py-3 pr-4">Pertinente pour</th>
+              <th class="text-left font-semibold text-plate-text py-3">Sa limite</th>
             </tr>
           </thead>
           <tbody>
             {compare.map(row => (
-              <tr class="border-b border-zinc-100 align-top">
-                <td class="py-4 pr-4 font-medium text-zinc-900">{row.name}</td>
-                <td class="py-4 pr-4 text-zinc-600">{row.fit}</td>
-                <td class="py-4 text-zinc-600">{row.limit}</td>
+              <tr class="border-b border-plate-rule align-top">
+                <td class="py-4 pr-4 font-medium text-plate-text">{row.name}</td>
+                <td class="py-4 pr-4 text-plate-body">{row.fit}</td>
+                <td class="py-4 text-plate-body">{row.limit}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <p class="text-sm text-zinc-600 leading-relaxed mt-6 max-w-2xl">
+      <p class="text-sm text-plate-body leading-relaxed mt-6 max-w-2xl">
         FleetDesk se place délibérément dans la quatrième ligne : la conformité et le pilotage d'un parc de PME, sans
         boîtier à installer ni projet de déploiement. Pour le détail des fonctions, voir la page
-        <a href="/features" class="text-[#0066FF] font-medium hover:underline">fonctionnalités</a> et le
-        <a href="/conformite" class="text-[#0066FF] font-medium hover:underline">centre de conformité</a>, ainsi que notre page sur le
-        <a href="/logiciel-suivi-entretien-vehicule" class="text-[#0066FF] font-medium hover:underline">suivi d'entretien des véhicules</a>.
+        <a href="/features" class="text-[#0052D6] font-medium hover:underline">fonctionnalités</a> et le
+        <a href="/conformite" class="text-[#0052D6] font-medium hover:underline">centre de conformité</a>, ainsi que notre page sur le
+        <a href="/logiciel-suivi-entretien-vehicule" class="text-[#0052D6] font-medium hover:underline">suivi d'entretien des véhicules</a>.
       </p>
     </div>
   </section>
 
   <!-- Par secteur -->
-  <section class="py-16 sm:py-20 bg-zinc-50 border-b border-zinc-100">
+  <section class="py-16 sm:py-20 bg-white border-b border-plate-ink">
     <div class="max-w-5xl mx-auto px-4 sm:px-6">
       <div class="max-w-2xl mb-10">
-        <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-4 leading-tight">
+        <h2 class="font-display text-2xl sm:text-3xl font-semibold text-plate-text mb-4 leading-tight">
           Les besoins changent selon le métier
         </h2>
-        <p class="text-zinc-600 leading-relaxed">
+        <p class="text-plate-body leading-relaxed">
           Un transporteur surveille la licence et la FCO ; une entreprise de BTP surveille les affectations de chantier
           et l'usure. FleetDesk s'adapte au secteur déclaré à l'inscription.
         </p>
@@ -258,9 +258,9 @@ const softwareSchema = {
           { t: 'VTC et taxi', h: '/secteurs/vtc-taxi' },
           { t: 'Véhicules de société', h: '/secteurs/vehicules-de-societe' },
         ].map(s => (
-          <a href={s.h} class="group bg-white border border-zinc-200 rounded-xl px-5 py-4 flex items-center justify-between hover:border-[#0066FF]/40 transition-colors">
-            <span class="text-sm font-medium text-zinc-800 group-hover:text-[#0066FF] transition-colors">{s.t}</span>
-            <svg class="w-4 h-4 text-zinc-400 group-hover:text-[#0066FF] transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <a href={s.h} class="group bg-white border border-plate-ink rounded-xl px-5 py-4 flex items-center justify-between hover:border-[#0052D6]/40 transition-colors">
+            <span class="text-sm font-medium text-plate-text group-hover:text-[#0052D6] transition-colors">{s.t}</span>
+            <svg class="w-4 h-4 text-plate-muted group-hover:text-[#0052D6] transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
         ))}
       </div>
@@ -268,9 +268,9 @@ const softwareSchema = {
   </section>
 
   <!-- Mise en place -->
-  <section class="py-16 sm:py-20 border-b border-zinc-100">
+  <section class="py-16 sm:py-20 border-b border-plate-ink">
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
-      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-6 leading-tight">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-plate-text mb-6 leading-tight">
         Passer du tableur à l'outil : la méthode en 4 étapes
       </h2>
       <ol class="space-y-5">
@@ -281,19 +281,19 @@ const softwareSchema = {
           ['Ouvrir les accès terrain', 'Les chauffeurs saisissent kilométrage et pleins depuis leur téléphone ; vous arrêtez de courir après l\'information.'],
         ].map(([t, d], i) => (
           <li class="flex gap-4">
-            <span class="flex-shrink-0 w-8 h-8 rounded-lg bg-[#E5EEFF] text-[#0066FF] text-sm font-semibold flex items-center justify-center">{i + 1}</span>
+            <span class="flex-shrink-0 w-8 h-8 rounded-full plate-ring text-[#0052D6] text-sm font-semibold flex items-center justify-center">{i + 1}</span>
             <div>
-              <h3 class="font-semibold text-zinc-900 mb-1">{t}</h3>
-              <p class="text-sm text-zinc-600 leading-relaxed">{d}</p>
+              <h3 class="font-semibold text-plate-text mb-1">{t}</h3>
+              <p class="text-sm text-plate-body leading-relaxed">{d}</p>
             </div>
           </li>
         ))}
       </ol>
-      <p class="text-sm text-zinc-600 leading-relaxed mt-8">
+      <p class="text-sm text-plate-body leading-relaxed mt-8">
         Vous préférez structurer vos données avant de changer d'outil ? Notre
-        <a href="/outils/modele-suivi-parc-automobile-excel" class="text-[#0066FF] font-medium hover:underline">modèle de suivi de parc automobile</a>
+        <a href="/outils/modele-suivi-parc-automobile-excel" class="text-[#0052D6] font-medium hover:underline">modèle de suivi de parc automobile</a>
         donne la bonne base de colonnes, et ce guide explique
-        <a href="/guides/gestion-parc-automobile-excel" class="text-[#0066FF] font-medium hover:underline">où le tableur finit par casser</a>.
+        <a href="/guides/gestion-parc-automobile-excel" class="text-[#0052D6] font-medium hover:underline">où le tableur finit par casser</a>.
       </p>
     </div>
   </section>
@@ -301,12 +301,12 @@ const softwareSchema = {
   <!-- FAQ -->
   <section class="py-16 sm:py-20">
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
-      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-8">Questions fréquentes</h2>
-      <div class="divide-y divide-zinc-100 border-t border-zinc-100">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-plate-text mb-8">Questions fréquentes</h2>
+      <div class="divide-y divide-plate-rule border-t border-plate-rule">
         {faq.map(f => (
           <div class="py-6">
-            <h3 class="font-semibold text-zinc-900 mb-2">{f.q}</h3>
-            <p class="text-sm text-zinc-600 leading-relaxed">{f.a}</p>
+            <h3 class="font-semibold text-plate-text mb-2">{f.q}</h3>
+            <p class="text-sm text-plate-body leading-relaxed">{f.a}</p>
           </div>
         ))}
       </div>

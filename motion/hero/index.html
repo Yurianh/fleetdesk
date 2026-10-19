@@ -9,7 +9,8 @@
   html, body { width: 1536px; height: 864px; }
   #board { left: 40px; top: 36px; width: 1456px; height: 792px; border-radius: 22px; }
   .brand { position: absolute; left: 80px; top: 72px; display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 20px; }
-  .brand i { width: 34px; height: 34px; border-radius: 9px; background: #0066FF; display: grid; place-items: center; }
+  .brand i { width: 34px; height: 34px; border-radius: 8px; background: #0052D6; display: grid; place-items: center; }
+  .brand i svg { width: 100%; height: 100%; }
   .h1 { position: absolute; left: 80px; top: 122px; font-size: 40px; }
   .sub { position: absolute; left: 80px; top: 178px; font-size: 18px; color: #71717a; }
   #counter { position: absolute; top: 76px; height: 48px; font-size: 18px; padding: 0 20px; gap: 10px; }
@@ -162,7 +163,7 @@ const CARDS = [
     btn: ['Enregistrer l’entretien', 'Entretien enregistré'], btnIco: 'check', booked: [OK.bg, OK.fg] },
 ]
 
-$('brandIco').innerHTML = ICON.brand(18, '#fff')
+$('brandIco').innerHTML = ICON.brand(34, '#fff')
 $('cursor').innerHTML = CURSOR_SVG
 $('cards').innerHTML = CARDS.map((c, i) => {
   const r = L.card(i)

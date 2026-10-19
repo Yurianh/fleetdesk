@@ -107,26 +107,26 @@ const softwareSchema = {
   <Navbar client:load currentPath="/logiciel-suivi-entretien-vehicule" />
 
   <!-- Hero -->
-  <section class="bg-white border-b border-zinc-100 pt-20 pb-16">
+  <section class=" border-b border-plate-ink pt-20 pb-16">
     <div class="max-w-5xl mx-auto px-4 sm:px-6">
-      <nav class="text-xs text-zinc-500 mb-8 flex items-center gap-1.5" aria-label="Fil d'ariane">
-        <a href="/" class="hover:text-[#0066FF]">Accueil</a><span>/</span>
-        <span class="text-zinc-600">Suivi d'entretien des véhicules</span>
+      <nav class="text-xs text-plate-muted mb-8 flex items-center gap-1.5" aria-label="Fil d'ariane">
+        <a href="/" class="hover:text-[#0052D6]">Accueil</a><span>/</span>
+        <span class="text-plate-body">Suivi d'entretien des véhicules</span>
       </nav>
-      <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-4">Entretien</p>
-      <h1 class="font-display text-4xl sm:text-5xl font-semibold text-zinc-900 tracking-tight leading-[1.05] max-w-3xl mb-6">
+      <p class="text-sm font-semibold text-[#0052D6] tracking-wide mb-4">Entretien</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-semibold text-plate-text tracking-tight leading-[1.05] max-w-3xl mb-6">
         Logiciel de suivi d'entretien des véhicules d'entreprise
       </h1>
-      <p class="text-lg text-zinc-600 max-w-2xl leading-relaxed mb-8">
+      <p class="text-lg text-plate-body max-w-2xl leading-relaxed mb-8">
         Une vidange repoussée devient une panne, et une panne arrive toujours en pleine tournée. FleetDesk tient le plan
         d'entretien de chaque véhicule, le fait avancer avec le compteur et vous prévient avant l'échéance.
       </p>
       <div class="flex flex-col sm:flex-row gap-3">
-        <a href="/pricing" class="inline-flex items-center justify-center gap-2 bg-[#0066FF] hover:bg-[#0052D6] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
+        <a href="/pricing" class="inline-flex items-center justify-center gap-2 bg-[#0052D6] hover:bg-[#003A99] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors">
           Essayer FleetDesk 7 jours
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
-        <a href="/pricing" class="inline-flex items-center justify-center text-sm font-medium text-zinc-600 hover:text-zinc-900 px-6 py-3">
+        <a href="/pricing" class="inline-flex items-center justify-center text-sm font-medium text-plate-body hover:text-plate-text px-6 py-3">
           Voir les tarifs
         </a>
       </div>
@@ -134,26 +134,26 @@ const softwareSchema = {
   </section>
 
   <!-- Fonctionnement -->
-  <section class="py-16 sm:py-20 bg-zinc-50 border-b border-zinc-100">
+  <section class="py-16 sm:py-20 bg-white border-b border-plate-ink">
     <div class="max-w-5xl mx-auto px-4 sm:px-6">
       <div class="max-w-2xl mb-12">
-        <p class="text-sm font-semibold text-[#0066FF] tracking-wide mb-3">Fonctionnement</p>
-        <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-4 leading-tight">
+        <p class="text-sm font-semibold text-[#0052D6] tracking-wide mb-3">Fonctionnement</p>
+        <h2 class="font-display text-2xl sm:text-3xl font-semibold text-plate-text mb-4 leading-tight">
           Du carnet d'entretien à l'alerte, en cinq étapes
         </h2>
-        <p class="text-zinc-600 leading-relaxed">
+        <p class="text-plate-body leading-relaxed">
           Le principe est celui du carnet constructeur. La différence : le calcul se refait seul à chaque relevé de
           compteur, sur toute la flotte.
         </p>
       </div>
       <div class="grid md:grid-cols-2 gap-5">
         {steps.map((c, i) => (
-          <div class="bg-white border border-zinc-200 rounded-2xl p-6">
-            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#E5EEFF] text-[#0066FF] text-xs font-semibold mb-4">
+          <div class="bg-white border border-plate-ink rounded-none p-6">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full plate-ring text-[#0052D6] text-xs font-semibold mb-4">
               {String(i + 1).padStart(2, '0')}
             </span>
-            <h3 class="font-display text-lg font-semibold text-zinc-900 mb-2 leading-snug">{c.title}</h3>
-            <p class="text-sm text-zinc-600 leading-relaxed">{c.desc}</p>
+            <h3 class="font-display text-lg font-semibold text-plate-text mb-2 leading-snug">{c.title}</h3>
+            <p class="text-sm text-plate-body leading-relaxed">{c.desc}</p>
           </div>
         ))}
       </div>
@@ -161,24 +161,24 @@ const softwareSchema = {
   </section>
 
   <!-- Exemple -->
-  <section class="py-16 sm:py-20 border-b border-zinc-100">
+  <section class="py-16 sm:py-20 border-b border-plate-ink">
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
-      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-5 leading-tight">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-plate-text mb-5 leading-tight">
         Même plan, deux échéances différentes
       </h2>
-      <div class="space-y-4 text-zinc-600 leading-relaxed">
+      <div class="space-y-4 text-plate-body leading-relaxed">
         <p>
           Prenons deux utilitaires identiques, avec une vidange prévue tous les 30 000 km ou tous les 12 mois. Les deux
           ont été vidangés le 15 janvier, à 60 000 km.
         </p>
         <ul class="list-disc pl-5 space-y-2">
           <li>
-            <strong class="text-zinc-900">Le premier roule 3 000 km par mois.</strong> Il atteint 90 000 km vers la
+            <strong class="text-plate-text">Le premier roule 3 000 km par mois.</strong> Il atteint 90 000 km vers la
             mi-novembre, avant la date anniversaire : c'est le compteur qui fixe l'échéance. L'alerte part à
             85 000 km, début octobre.
           </li>
           <li>
-            <strong class="text-zinc-900">Le second roule 1 000 km par mois.</strong> Le 15 janvier suivant, il n'est
+            <strong class="text-plate-text">Le second roule 1 000 km par mois.</strong> Le 15 janvier suivant, il n'est
             qu'à 72 000 km : c'est la date qui fixe l'échéance. L'alerte part 30 jours avant, mi-décembre.
           </li>
         </ul>
@@ -186,10 +186,10 @@ const softwareSchema = {
           Dans un tableur, il faudrait refaire ce calcul à chaque relevé, pour chaque opération de chaque véhicule.
           C'est là que les vidanges se perdent.
         </p>
-        <p class="text-sm text-zinc-500">
+        <p class="text-sm text-plate-muted">
           Les intervalles de cet exemple sont illustratifs. Les vrais sont dans le carnet d'entretien de chaque
           véhicule : notre guide sur le
-          <a href="/guides/plan-entretien-vehicule-utilitaire" class="text-[#0066FF] font-medium hover:underline">plan d'entretien d'un véhicule utilitaire</a>
+          <a href="/guides/plan-entretien-vehicule-utilitaire" class="text-[#0052D6] font-medium hover:underline">plan d'entretien d'un véhicule utilitaire</a>
           explique comment les construire.
         </p>
       </div>
@@ -197,62 +197,62 @@ const softwareSchema = {
   </section>
 
   <!-- Comparatif -->
-  <section class="py-16 sm:py-20 bg-zinc-50 border-b border-zinc-100">
+  <section class="py-16 sm:py-20 bg-white border-b border-plate-ink">
     <div class="max-w-5xl mx-auto px-4 sm:px-6">
       <div class="max-w-2xl mb-10">
-        <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-4 leading-tight">
+        <h2 class="font-display text-2xl sm:text-3xl font-semibold text-plate-text mb-4 leading-tight">
           Carnet, tableur ou logiciel
         </h2>
-        <p class="text-zinc-600 leading-relaxed">
+        <p class="text-plate-body leading-relaxed">
           Les trois conservent l'information. Un seul la fait remonter au bon moment.
         </p>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm border-collapse min-w-[640px]">
           <thead>
-            <tr class="border-b border-zinc-200">
-              <th class="text-left font-semibold text-zinc-900 py-3 pr-4">Outil</th>
-              <th class="text-left font-semibold text-zinc-900 py-3 pr-4">Ce qu'il fait bien</th>
-              <th class="text-left font-semibold text-zinc-900 py-3">Sa limite</th>
+            <tr class="border-b border-plate-ink">
+              <th class="text-left font-semibold text-plate-text py-3 pr-4">Outil</th>
+              <th class="text-left font-semibold text-plate-text py-3 pr-4">Ce qu'il fait bien</th>
+              <th class="text-left font-semibold text-plate-text py-3">Sa limite</th>
             </tr>
           </thead>
           <tbody>
             {compare.map(row => (
-              <tr class="border-b border-zinc-200/70 align-top">
-                <td class="py-4 pr-4 font-medium text-zinc-900">{row.name}</td>
-                <td class="py-4 pr-4 text-zinc-600">{row.good}</td>
-                <td class="py-4 text-zinc-600">{row.limit}</td>
+              <tr class="border-b border-plate-ink/70 align-top">
+                <td class="py-4 pr-4 font-medium text-plate-text">{row.name}</td>
+                <td class="py-4 pr-4 text-plate-body">{row.good}</td>
+                <td class="py-4 text-plate-body">{row.limit}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <p class="text-sm text-zinc-600 leading-relaxed mt-6 max-w-2xl">
+      <p class="text-sm text-plate-body leading-relaxed mt-6 max-w-2xl">
         Pas encore prêt à changer d'outil ? Notre
-        <a href="/outils/modele-suivi-parc-automobile-excel" class="text-[#0066FF] font-medium hover:underline">modèle de suivi de parc automobile</a>
+        <a href="/outils/modele-suivi-parc-automobile-excel" class="text-[#0052D6] font-medium hover:underline">modèle de suivi de parc automobile</a>
         a un onglet « Entretiens & dépenses » prêt à remplir.
       </p>
     </div>
   </section>
 
   <!-- Au-delà de l'entretien -->
-  <section class="py-16 sm:py-20 border-b border-zinc-100">
+  <section class="py-16 sm:py-20 border-b border-plate-ink">
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
-      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-5 leading-tight">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-plate-text mb-5 leading-tight">
         L'entretien, le contrôle technique et les coûts au même endroit
       </h2>
-      <div class="space-y-4 text-zinc-600 leading-relaxed">
+      <div class="space-y-4 text-plate-body leading-relaxed">
         <p>
           Un véhicule bien entretenu passe son contrôle technique sans contre-visite, mais les deux échéances ne suivent
           pas le même calendrier. FleetDesk les suit côte à côte : le
-          <a href="/conformite" class="text-[#0066FF] font-medium hover:underline">centre de conformité</a> réunit
+          <a href="/conformite" class="text-[#0052D6] font-medium hover:underline">centre de conformité</a> réunit
           contrôles techniques, documents et entretiens à prévoir, classés par urgence.
         </p>
         <p>
           Les coûts d'entretien enregistrés alimentent le coût par véhicule : c'est le poste qui fait basculer le
-          <a href="/guides/cout-revient-kilometrique" class="text-[#0066FF] font-medium hover:underline">prix de revient kilométrique</a>
+          <a href="/guides/cout-revient-kilometrique" class="text-[#0052D6] font-medium hover:underline">prix de revient kilométrique</a>
           d'un véhicule vieillissant. Pour l'ensemble des fonctions, voir notre page
-          <a href="/logiciel-gestion-de-flotte" class="text-[#0066FF] font-medium hover:underline">logiciel de gestion de parc automobile</a>.
+          <a href="/logiciel-gestion-de-flotte" class="text-[#0052D6] font-medium hover:underline">logiciel de gestion de parc automobile</a>.
         </p>
       </div>
     </div>
@@ -261,12 +261,12 @@ const softwareSchema = {
   <!-- FAQ -->
   <section class="py-16 sm:py-20">
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
-      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 mb-8">Questions fréquentes</h2>
-      <div class="divide-y divide-zinc-100 border-t border-zinc-100">
+      <h2 class="font-display text-2xl sm:text-3xl font-semibold text-plate-text mb-8">Questions fréquentes</h2>
+      <div class="divide-y divide-plate-rule border-t border-plate-rule">
         {faq.map(f => (
           <div class="py-6">
-            <h3 class="font-semibold text-zinc-900 mb-2">{f.q}</h3>
-            <p class="text-sm text-zinc-600 leading-relaxed">{f.a}</p>
+            <h3 class="font-semibold text-plate-text mb-2">{f.q}</h3>
+            <p class="text-sm text-plate-body leading-relaxed">{f.a}</p>
           </div>
         ))}
       </div>
