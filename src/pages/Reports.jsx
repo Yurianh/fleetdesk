@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { format } from 'date-fns'
 import { Download, Wrench, Droplets, Fuel, CalendarClock, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Gauge, Coins } from '@/lib/icons'
 import { Button } from '@/components/ui/button'
+import { Wordmark } from '@/components/shared/Logo'
 import { useAuth } from '@/lib/AuthContext'
 import { useDateLocale } from '@/lib/useDateLocale'
 import { usePageTitle } from '@/lib/usePageTitle'
@@ -176,7 +177,7 @@ export default function Reports() {
         <div className="bg-[#0066FF] px-8 py-6 flex items-center justify-between">
           <div>
             <p className="text-white/70 text-xs font-semibold uppercase tracking-wider">Rapport mensuel</p>
-            <p className="text-white text-xl font-bold tracking-tight mt-0.5">FleetDesk</p>
+            <p className="text-xl mt-0.5"><Wordmark light /></p>
           </div>
           <div className="text-right">
             <p className="text-white font-semibold">{company}</p>

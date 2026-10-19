@@ -2,6 +2,7 @@ import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Menu } from '@/lib/icons'
 import Sidebar from './Sidebar'
+import { Wordmark } from '@/components/shared/Logo'
 import AppLoader from './AppLoader'
 import BillingBanner from './BillingBanner'
 import TrialBanner from './TrialBanner'
@@ -122,7 +123,7 @@ export default function AppLayout() {
             >
               <Menu className="w-5 h-5" />
             </button>
-            <span className="ml-3 font-semibold text-zinc-900">FleetDesk</span>
+            <span className="ml-3 text-[17px]"><Wordmark /></span>
           </header>
 
           <main className="flex-1 overflow-y-auto bg-background">

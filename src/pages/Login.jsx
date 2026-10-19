@@ -1,8 +1,9 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Truck, Eye, EyeOff, Check, X } from '@/lib/icons'
+import { Eye, EyeOff, Check, X } from '@/lib/icons'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
+import Logo from '@/components/shared/Logo'
 import { useTranslation } from 'react-i18next'
 
 function getPasswordStrength(p) {
@@ -128,12 +129,7 @@ export default function Login() {
       style={{ background: 'linear-gradient(135deg, #bfdbfe 0%, #d1fae5 45%, #fef3c7 100%)', backgroundAttachment: 'fixed' }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-2.5 mb-6 select-none pointer-events-none">
-        <div className="w-8 h-8 bg-[#0066FF] rounded-lg flex items-center justify-center shadow-sm">
-          <Truck className="w-4 h-4 text-white" />
-        </div>
-        <span className="text-[15px] font-semibold text-zinc-800 tracking-tight">FleetDesk</span>
-      </div>
+      <Logo className="mb-6 pointer-events-none" />
 
       {/* Card */}
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-8">

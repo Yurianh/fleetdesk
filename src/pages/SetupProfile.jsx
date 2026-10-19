@@ -6,6 +6,7 @@ import { Truck, ChevronRight, Building2, Users, CheckCircle2, Check, Zap, Shield
 import { useAuth } from '@/lib/AuthContext'
 import { ACTIVITIES } from '@/lib/activity'
 import { supabase } from '@/lib/supabase'
+import Logo from '@/components/shared/Logo'
 import { useTranslation } from 'react-i18next'
 
 const FLEET_SIZE_KEYS = ['1-5', '6-20', '21-50', '50+']
@@ -153,12 +154,7 @@ export default function SetupProfile() {
       <div className="w-full max-w-sm">
 
         {/* Logo */}
-        <div className="flex items-center gap-2.5 mb-6 justify-center select-none pointer-events-none">
-          <div className="w-8 h-8 bg-[#0066FF] rounded-lg flex items-center justify-center shadow-sm">
-            <Truck className="w-4 h-4 text-white" />
-          </div>
-          <span className="text-[15px] font-semibold text-zinc-800 tracking-tight">FleetDesk</span>
-        </div>
+        <div className="flex justify-center mb-6"><Logo className="pointer-events-none" /></div>
 
         <div className={`bg-white rounded-2xl shadow-2xl p-8 ${step === 2 ? 'max-w-lg mx-auto' : ''}`}>
 
