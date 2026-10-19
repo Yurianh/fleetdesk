@@ -1,5 +1,5 @@
 // Génère public/footer-landscape.svg : une rue de ville gravée (immeubles,
-// arbres, réverbères, trottoir, chaussée, utilitaire), traits bleu FleetDesk
+// arbres, réverbères, trottoir, chaussée, berline), traits bleu FleetDesk
 // sur papier blanc, pour le bas du footer.
 //   node scripts/footer-landscape.mjs
 // Déterministe (graine fixe) : relancer donne le même fichier.
@@ -10,7 +10,7 @@ const W = 1600, H = 520
 const INK = '#0052D6', PAPER = '#F7F9FF'
 const GROUND = 408            // pied des façades
 const CURB = 426              // bordure du trottoir
-const LANE = 492              // roues de l'utilitaire
+const LANE = 492              // roues de la berline
 
 let seed = 11
 const rnd = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646
@@ -206,47 +206,53 @@ function ground() {
   return L.svg()
 }
 
-// ── Utilitaire FleetDesk, de profil vers la droite ──────────────────────────
-function van(x) {
+// ── Berline de flotte, de profil vers la droite ─────────────────────────────
+function car(x, moving = true) {
   const L = layer(), y = LANE
-  const len = 236, roof = y - 104
-  const body = `M${x},${y - 14}V${roof + 10}q0,-10 10,-10H${x + 160}q8,0 12,6l26,40q4,6 12,7l14,3q10,2 10,12V${y - 14}q0,4 -4,4H${x + 4}q-4,0 -4,-4Z`
+  const body = `M${x},${y - 16}V${y - 44}q0,-6 8,-8L${x + 40},${y - 54}L${x + 62},${y - 57}`
+    + `C${x + 80},${y - 90} ${x + 92},${y - 93} ${x + 110},${y - 93}H${x + 148}C${x + 164},${y - 93} ${x + 174},${y - 80} ${x + 186},${y - 62}`
+    + `L${x + 214},${y - 56}q18,3 20,12V${y - 16}q0,4 -4,4H${x + 4}q-4,0 -4,-4Z`
   // Ombre portée hachurée.
-  for (let k = 0; k < 5; k++) L.line(0.8, hl(x - 6 + k * 3, x + len + 8 - k * 4, y + 2 + k * 2))
+  for (let k = 0; k < 5; k++) L.line(0.8, hl(x - 4 + k * 3, x + 240 - k * 4, y + 2 + k * 2))
   L.fill(body)
   // Volume : hachures du bas de caisse, plus serrées vers le sol.
-  for (let yy = y - 46, g = 5; yy < y - 15; yy += g, g *= 0.85) L.line(0.6, hl(x + 3, x + len - 4, yy))
+  for (let yy = y - 38, g = 4.5, i = 0; yy < y - 17; yy += g, g *= 0.86, i++) L.line(0.6, hl(x + 3, x + 230, yy))
   L.line(1.8, body)
-  // Vitre conducteur, montant, rétroviseur, phare, pare-chocs.
-  L.fill(`M${x + 168},${roof + 10}l22,34H${x + 158}V${roof + 10}Z`)
-  L.line(1.3, `M${x + 168},${roof + 10}l22,34H${x + 158}V${roof + 10}Z`)
-  hatchV(L, x + 159, roof + 11, 22, 32, 2.2)
-  L.line(1.3, `M${x + 152},${roof}V${y - 14}M${x + 200},${roof + 50}l6,-4h8v8h-10`)
-  L.fill(rect(x + 222, y - 50, 10, 7)); L.line(1, rect(x + 222, y - 50, 10, 7))
-  L.line(1.8, `M${x + 214},${y - 22}h24`)
-  // Porte latérale coulissante et portes arrière.
-  L.line(1, `M${x + 96},${roof + 6}V${y - 18}M${x + 8},${roof + 6}V${y - 18}M${x + 90},${y - 58}h-12M${x + 140},${y - 58}h-8`)
-  L.line(0.8, `M${x + 96},${roof + 14}H${x + 150}`)
-  // Marque FleetDesk sur le flanc.
-  L.fill(rect(x + 26, roof + 30, 20, 20)); L.line(1.3, rect(x + 26, roof + 30, 20, 20))
-  L.line(1.3, `M${x + 30},${roof + 43}v-8h8M${x + 34},${roof + 39}h8v8h-8Z`)
-  L.line(1.3, hl(x + 52, x + 82, roof + 36)); L.line(0.8, hl(x + 52, x + 74, roof + 44))
+  // Vitrages hachurés, montant central.
+  const glass = `M${x + 72},${y - 59}C${x + 86},${y - 85} ${x + 96},${y - 88} ${x + 110},${y - 88}H${x + 147}C${x + 160},${y - 88} ${x + 168},${y - 77} ${x + 178},${y - 61}Z`
+  L.fill(glass); L.line(1.3, glass)
+  for (let xx = x + 76; xx < x + 177; xx += 2.2) {
+    const top = xx < x + 110 ? y - 59 - (xx - x - 72) / 38 * 29 : xx > x + 147 ? y - 88 + (xx - x - 147) / 31 * 27 : y - 88
+    L.line(0.6, vl(xx, top + 2, y - 60))
+  }
+  L.fill(rect(x + 126, y - 89, 6, 30)); L.line(1.3, rect(x + 126, y - 89, 6, 30))
+  // Ligne de caisse, portes, poignées, rétroviseur, optiques.
+  L.line(1, hl(x + 6, x + 228, y - 42))
+  L.line(1.3, `M${x + 76},${y - 58}V${y - 18}M${x + 129},${y - 58}V${y - 18}M${x + 186},${y - 60}V${y - 22}`)
+  L.line(1.8, `M${x + 92},${y - 47}h10M${x + 145},${y - 47}h10`)
+  L.fill(`M${x + 176},${y - 64}l10,-2v7h-8Z`); L.line(1.3, `M${x + 176},${y - 64}l10,-2v7h-8Z`)
+  L.fill(rect(x + 222, y - 50, 11, 6)); L.line(1, rect(x + 222, y - 50, 11, 6))
+  L.fill(rect(x + 1, y - 46, 7, 7)); L.line(1, rect(x + 1, y - 46, 7, 7))
+  L.line(1.8, `M${x + 214},${y - 22}h20M${x + 2},${y - 22}h16`)
+  // Marque FleetDesk discrète sur la porte arrière.
+  L.fill(rect(x + 96, y - 36, 12, 12)); L.line(1, rect(x + 96, y - 36, 12, 12))
+  L.line(1, `M${x + 99},${y - 28}v-5h5M${x + 101},${y - 31}h5v5h-5Z`)
   // Roues : passages de roue, pneu, jante à rayons.
-  for (const wx of [x + 50, x + 190]) {
-    L.fill(`M${wx - 24},${y - 14}a24,24 0 0 1 48,0Z`); L.line(1.3, `M${wx - 24},${y - 14}a24,24 0 0 1 48,0`)
+  for (const wx of [x + 52, x + 186]) {
+    L.fill(`M${wx - 24},${y - 16}a24,24 0 0 1 48,0Z`); L.line(1.3, `M${wx - 24},${y - 16}a24,24 0 0 1 48,0`)
     L.fill(`M${wx - 19},${y - 5}a19,19 0 1 0 38,0a19,19 0 1 0 -38,0Z`)
     for (let rr = 19; rr > 11; rr -= 1.6) L.line(0.8, `M${f(wx - rr)},${y - 5}a${f(rr)},${f(rr)} 0 1 0 ${f(2 * rr)},0a${f(rr)},${f(rr)} 0 1 0 ${f(-2 * rr)},0`)
     L.line(1.8, `M${wx - 19},${y - 5}a19,19 0 1 0 38,0a19,19 0 1 0 -38,0`)
-    for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3; L.line(1, `M${wx},${y - 5}l${f(Math.cos(a) * 9)},${f(Math.sin(a) * 9)}`) }
+    for (let k = 0; k < 5; k++) { const a = k * Math.PI * 2 / 5; L.line(1, `M${wx},${y - 5}l${f(Math.cos(a) * 9)},${f(Math.sin(a) * 9)}`) }
     L.line(1.3, `M${wx - 3},${y - 5}a3,3 0 1 0 6,0a3,3 0 1 0 -6,0`)
   }
   // Traits de vitesse.
-  L.line(1, `M${x - 12},${y - 70}h-40M${x - 10},${y - 50}h-64M${x - 14},${y - 30}h-30`)
+  if (moving) L.line(1, `M${x - 12},${y - 60}h-40M${x - 10},${y - 42}h-64M${x - 14},${y - 26}h-30`)
   return L.svg()
 }
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">`
-  + skyline() + street() + ground() + furniture() + van(930) + `</svg>`
+  + skyline() + street() + ground() + furniture() + car(930) + `</svg>`
 
 const out = fileURLToPath(new URL('../public/footer-landscape.svg', import.meta.url))
 writeFileSync(out, svg)
