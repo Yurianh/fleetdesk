@@ -133,14 +133,13 @@ export default function HeroSection() {
           </div>
 
           <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-semibold text-zinc-900 tracking-tight leading-[1.05] mb-6">
-            <span style={delay(180)} className="enter block">Zéro contrôle raté.</span>
-            <span style={delay(300)} className="enter block">Zéro document expiré.</span>
-            <span style={delay(420)} className="enter block text-[#0066FF]">Zéro panne surprise.</span>
+            <span style={delay(180)} className="enter block">Le logiciel de gestion de flotte</span>
+            <span style={delay(320)} className="enter block text-[#0066FF]">qui ne laisse passer aucune échéance.</span>
           </h1>
 
           <p style={delay(560)} className="enter text-lg text-zinc-600 leading-relaxed mb-8">
-            FleetDesk surveille chaque véhicule et chaque conducteur, et vous alerte avant l'échéance. Vos chauffeurs
-            saisissent kilométrage et pleins depuis le terrain. Vous pilotez, d'un seul tableau de bord.
+            Contrôles techniques, permis et documents conducteurs, entretiens : FleetDesk suit chaque véhicule de votre
+            entreprise et vous alerte 30 jours avant. Vos chauffeurs saisissent kilométrage et pleins depuis leur téléphone.
           </p>
 
           <div style={delay(700)} className="enter flex flex-col sm:flex-row gap-3 mb-6">
