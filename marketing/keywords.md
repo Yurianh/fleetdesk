@@ -60,16 +60,16 @@ flotte ».
 | Priorité | Requête | Volume | Ce que Google classe | Notre URL | Statut | Note |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | logiciel suivi entretien véhicule | n/a (Suggest, + « application », + « gratuit ») | annuaires (GetApp, Capterra, Appvizer catégorie « entretien flotte ») et pages produit | `/logiciel-suivi-entretien-vehicule` | publiée (2026-10-09) | `page-brief` d'abord : `/guides/plan-entretien-vehicule-utilitaire` est le guide sur le sujet. Il n'a aucune impression au 08/10 et vise une intention de lecture : la page fonction ne lui prendrait rien. |
-| 2 | logiciel alerte contrôle technique flotte | n/a (pas de Suggest) | non vérifié | `/conformite` | à optimiser | Demande non confirmée. `/conformite` couvre déjà le sujet. |
-| 3 | suivi véhicule entreprise (carnet, fiche) | n/a (Suggest : « excel », « carnet », « fiche ») | non vérifié | `/outils/modele-suivi-parc-automobile-excel` | à optimiser | Intention « modèle à télécharger ». L'outil est la bonne page : ajouter « carnet » et « fiche » à son texte. |
-| — | application gestion de flotte automobile | n/a (Suggest) | non vérifié | `/` | à optimiser | L'application chauffeur sur téléphone est un argument que la home met peu en avant. |
+| 2 | logiciel alerte contrôle technique flotte | n/a (pas de Suggest) | non vérifié | `/conformite` | attente → 2026-12-18 | Demande non confirmée. `/conformite` couvre déjà le sujet. Page retouchée le 2026-10-19 (refonte Planche, icônes/couleurs uniquement, texte inchangé) : `git log` fait repartir le délai de 60 jours malgré le caractère cosmétique du changement. |
+| 3 | suivi véhicule entreprise (carnet, fiche) | n/a (Suggest : « excel », « carnet », « fiche ») | non vérifié | `/outils/modele-suivi-parc-automobile-excel` | attente → 2026-12-18 | Intention « modèle à télécharger ». L'outil est la bonne page : ajouter « carnet » et « fiche » à son texte, une fois le délai passé. Page retouchée le 2026-10-19 (refonte Planche, cosmétique). |
+| — | application gestion de flotte automobile | n/a (Suggest) | non vérifié | `/` | attente → 2026-12-18 | L'application chauffeur sur téléphone est un argument que la home met peu en avant. Home retouchée le 2026-10-19 (nouveau H1, sections retirées, refonte Planche) : contenu substantiellement changé, laisser Google la recrawler avant d'y retoucher. |
 
 ## Motif 3 — « logiciel » + modificateur
 
 | Requête | Volume | Ce que Google classe | Notre URL | Statut | Note |
 | --- | --- | --- | --- | --- | --- |
 | logiciel de gestion de flotte (automobile, PME) | n/a (Suggest) | — | `/` | publiée | La home porte seule ce terme depuis le 2026-10-08. |
-| logiciel gestion parc automobile | n/a (Suggest) | — | `/logiciel-gestion-de-flotte` | attente → 2026-12-07 | Page recentrée le 2026-10-08. |
+| logiciel gestion parc automobile | n/a (Suggest) | — | `/logiciel-gestion-de-flotte` | attente → 2026-12-18 | Page recentrée le 2026-10-08, puis retouchée le 2026-10-19 (refonte Planche, cosmétique) : délai reparti depuis cette date. |
 | logiciel gestion de flotte gratuit / gestion parc automobile gratuit | n/a (SC 08/10 : 8 impressions, position 7,8 ; nombreuses variantes Suggest) | comparatifs « que peut-on vraiment faire gratuitement » et annuaires filtrés « gratuit » | `/guides/gestion-parc-automobile-excel` | attente → 2026-12-10 | Retouché le 2026-10-11 (sprint SEO n°1). La page 1 répond « tableur ou Odoo Community », exactement ce que dit notre guide. Ne pas créer de guide « logiciel gratuit ». |
 | gestion parc automobile excel (gratuit) | n/a (SC 08/10 : 2 impressions, position 21) | non vérifié | `/guides/gestion-parc-automobile-excel` + `/outils/…` | attente → 2026-12-10 | |
 | logiciel gestion parc automobile open source | n/a (Suggest) | comparatifs et fiches Odoo Fleet | — | écartée | FleetDesk n'est pas open source : la page décevrait le visiteur. |
@@ -86,11 +86,11 @@ Un guide n'entre ici que s'il renvoie naturellement vers une page des motifs
 
 | Requête | Page money servie | Statut |
 | --- | --- | --- |
-| temps de conduite et de repos | `/secteurs/transport-routier` | PR #24 ouverte |
-| chronotachygraphe obligations | `/secteurs/transport-routier` | à créer, après la fusion de #24 (vérifier le recouvrement) |
-| intervalle vidange utilitaire | `/guides/plan-entretien-vehicule-utilitaire` | PR #23 ouverte. Risque de recouvrement avec le plan d'entretien : à trancher avant de fusionner. |
-| carte carburant entreprise (choisir) — URL `/guides/carte-carburant-entreprise` | `/logiciel-gestion-de-flotte` | PR #25 ouverte. Recentrée le 2026-10-11 sur « choisir » : un vrai comparatif demanderait des prix d'émetteurs qu'on ne vérifie pas. |
-| ZFE flotte entreprise | `/secteurs/vehicules-de-societe` | à créer |
+| temps de conduite et de repos | `/secteurs/transport-routier` | publiée (PR #24 fusionnée le 2026-10-11) |
+| chronotachygraphe obligations | `/secteurs/transport-routier` | écartée : le guide fusionné « temps de conduite et de repos » a déjà une section dédiée au chronotachygraphe et une entrée FAQ sur ce point précis, une page séparée ne ferait que le redire. |
+| intervalle vidange utilitaire | `/guides/plan-entretien-vehicule-utilitaire` | publiée (PR #23 fusionnée le 2026-10-11) |
+| carte carburant entreprise (choisir) — URL `/guides/carte-carburant-entreprise` | `/logiciel-gestion-de-flotte` | publiée (PR #25 fusionnée le 2026-10-11) |
+| ZFE flotte entreprise | `/secteurs/vehicules-de-societe` | à créer. Statut légal instable (loi censurée par le Conseil constitutionnel, nouvelles propositions en cours) et sources officielles (service-public.fr, legifrance.gouv.fr, urssaf.fr, ants.gouv.fr) toujours inaccessibles depuis cet environnement (politique réseau, 403 sur le CONNECT, revérifié le 2026-10-19) : pas de guide sourcé possible sans risquer un chiffre ou un délai inventé. |
 
 ## Hors site : annuaires de logiciels
 
