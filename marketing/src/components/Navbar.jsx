@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Wordmark } from './Logo.jsx'
 
 const LINKS = [
   { label: 'Fonctionnalités', href: '/features'   },
@@ -55,15 +56,8 @@ export default function Navbar({ currentPath = '/' }) {
       }`}>
 
         {/* Logo */}
-        <a href="/" className="flex items-center gap-2.5 flex-shrink-0">
-          <div className="w-8 h-8 bg-[#0066FF] rounded-lg flex items-center justify-center shadow-sm">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/>
-              <rect x="9" y="11" width="14" height="10" rx="2"/>
-              <circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-            </svg>
-          </div>
-          <span className="text-[15px] font-semibold text-zinc-900 tracking-tight">FleetDesk</span>
+        <a href="/" aria-label="FleetDesk, accueil" className="flex items-center flex-shrink-0">
+          <Wordmark className="text-[24px]" />
         </a>
 
         {/* Desktop nav */}

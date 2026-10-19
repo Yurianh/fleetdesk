@@ -6,6 +6,7 @@ import {
   X, ChevronLeft, ChevronRight, LogOut, Settings, History, Sparkles, IdCard, FileBarChart,
 } from '@/lib/icons';
 import { cn } from '@/lib/utils';
+import { LogoMark, Wordmark } from '@/components/shared/Logo';
 import { useAuth } from '@/lib/AuthContext';
 import { useFeature } from '@/lib/activity';
 import { useTranslation } from 'react-i18next';
@@ -141,11 +142,9 @@ export default function Sidebar({ open, onToggle }) {
         {/* ── Header ── */}
         <div className="flex items-center h-[56px] px-3 gap-2 border-b border-zinc-100 flex-shrink-0">
           <div className={cn('flex items-center gap-2.5 flex-1 min-w-0', isCollapsed && 'lg:hidden')}>
-            <div className="w-7 h-7 bg-[#0066FF] rounded-lg flex-shrink-0 flex items-center justify-center shadow-sm shadow-[#0066FF]/20">
-              <Truck className="w-[13px] h-[13px] text-white" />
-            </div>
+            <LogoMark size={28} />
             <div className="min-w-0 leading-none">
-              <p className="text-[13px] font-semibold text-zinc-900 tracking-tight">FleetDesk</p>
+              <p className="text-[16px]"><Wordmark /></p>
               <p className="text-[10px] text-zinc-400 mt-[2px]">{t('common.fleetManagement')}</p>
             </div>
           </div>

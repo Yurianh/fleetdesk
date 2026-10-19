@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { CheckCircle2, XCircle, Loader2, Truck, AlertCircle, ArrowRight, Sparkles } from '@/lib/icons'
+import { CheckCircle2, XCircle, Loader2, AlertCircle, ArrowRight, Sparkles } from '@/lib/icons'
 import { supabase } from '@/lib/supabase'
+import Logo from '@/components/shared/Logo'
 
 const GRADIENT = 'linear-gradient(135deg, #bfdbfe 0%, #d1fae5 45%, #fef3c7 100%)'
 
@@ -90,12 +91,7 @@ export default function BillingSuccess() {
       <div className="w-full max-w-sm">
 
         {/* Logo */}
-        <div className="flex items-center gap-2.5 mb-6 justify-center select-none pointer-events-none">
-          <div className="w-8 h-8 bg-[#0066FF] rounded-lg flex items-center justify-center shadow-sm">
-            <Truck className="w-4 h-4 text-white" />
-          </div>
-          <span className="text-[15px] font-semibold text-zinc-800 tracking-tight">FleetDesk</span>
-        </div>
+        <div className="flex justify-center mb-6"><Logo className="pointer-events-none" /></div>
 
         <div className="bg-white rounded-2xl shadow-2xl p-10 text-center">
 

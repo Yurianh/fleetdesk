@@ -1,16 +1,12 @@
+import { LogoMark, Wordmark } from '@/components/shared/Logo'
+
 export default function AppLoader({ message = 'Chargement de vos données...' }) {
   return (
     <div className="fixed inset-0 bg-white flex flex-col items-center justify-center gap-5 z-50">
       {/* Logo */}
       <div className="flex items-center gap-3 mb-2">
-        <div className="w-10 h-10 bg-[#0066FF] rounded-xl flex items-center justify-center shadow-sm">
-          <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
-            <path d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z"/>
-            <circle cx="5.5" cy="18.5" r="2.5"/>
-            <circle cx="18.5" cy="18.5" r="2.5"/>
-          </svg>
-        </div>
-        <span className="text-xl font-bold tracking-tight text-slate-900">FleetDesk</span>
+        <LogoMark size={40} />
+        <Wordmark className="text-[26px]" />
       </div>
 
       {/* Animated bar */}
