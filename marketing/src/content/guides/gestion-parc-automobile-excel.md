@@ -41,7 +41,7 @@ Avant de parler de limites, de quoi démarrer correctement. Notre [modèle de su
 
 - **Véhicules** — immatriculation, genre, date de première mise en circulation, conducteur assigné, kilométrage, dernier et prochain contrôle technique, échéance d'assurance ;
 - **Conducteurs** — permis et sa validité, visite médicale, FIMO et FCO, habilitations ; une colonne donne l'échéance la plus proche de chaque conducteur ;
-- **Entretiens et dépenses** — une ligne par intervention ou dépense (entretien, réparation, pneus, carburant), avec son montant et son justificatif ; pour le carburant, l'export d'une [carte carburant entreprise](/guides/carte-carburant-entreprise) évite de ressaisir chaque plein ;
+- **Entretiens et dépenses** — une ligne par intervention ou dépense (entretien, réparation, pneus, carburant), avec son montant et son justificatif ;
 - **Coût par véhicule** — charges fixes, charges variables et kilométrage de la période, pour obtenir le [prix de revient kilométrique](/guides/cout-revient-kilometrique) de chaque véhicule.
 
 Les échéances proches se colorent d'elles-mêmes : c'est le maximum qu'un tableur sache faire pour vous prévenir.
