@@ -43,7 +43,7 @@ Les deux indicateurs se complètent plus qu'ils ne se concurrencent. Le CRK sert
 Le TCO rassemble des dépenses de nature différente, sur la période de détention complète :
 
 - **Acquisition ou financement** : prix d'achat et décote, ou loyers si le véhicule est en LOA, LLD ou crédit-bail.
-- **Énergie** : carburant ou électricité consommés sur toute la période.
+- **Énergie** : carburant ou électricité consommés sur toute la période. Une [carte carburant entreprise](/guides/carte-carburant-entreprise) rattachée au véhicule donne ce poste transaction par transaction.
 - **Entretien et réparations** : opérations préventives et curatives, pièces d'usure comprises. Un entretien préventif suivi, par exemple avec un [logiciel de suivi d'entretien](/logiciel-suivi-entretien-vehicule), limite la part du curatif.
 - **Assurance** : primes, franchises, sinistralité sur la durée de détention.
 - **Fiscalité** : taxes propres au véhicule d'entreprise, et avantage en nature si le véhicule sert aussi à un usage privé.
